@@ -27,127 +27,102 @@ export function FinalQuestionsSection({
   const isCriticalTime = isTimerRunning && perQuestionTime < 10;
 
   return (
-    <Card className={`shadow-sm ${isCriticalTime ? 'border-red-600 bg-red-100 animate-pulse' : isLowTime ? 'border-orange-500 bg-orange-100' : 'border-red-300 bg-red-50/30'}`} data-testid="final-questions-section">
+    <Card className={`shadow-sm rounded-2xl ${isCriticalTime ? 'border-red-500 bg-red-50' : isLowTime ? 'border-orange-400 bg-orange-50' : 'border-red-200 bg-red-50/30'}`} data-testid="final-questions-section">
       {/* Low Time Alert Banner */}
       {isLowTime && (
-        <div className={`${isCriticalTime ? 'bg-red-600' : 'bg-orange-500'} text-white px-4 py-2 flex items-center justify-center gap-2`}>
-          <AlertCircle className="w-5 h-5 animate-bounce" />
-          <span className="font-bold">
-            {isCriticalTime 
-              ? '¡CRÍTICO! Menos de 10 seg por pregunta' 
-              : '¡ALERTA! Tiempo por pregunta muy bajo'}
+        <div className={`${isCriticalTime ? 'bg-red-500' : 'bg-orange-500'} text-white px-4 py-2 flex items-center justify-center gap-2 rounded-t-2xl`}>
+          <AlertCircle className="w-4 h-4" />
+          <span className="text-sm font-medium">
+            {isCriticalTime ? '¡Tiempo crítico!' : '¡Acelera!'}
           </span>
-          <AlertCircle className="w-5 h-5 animate-bounce" />
         </div>
       )}
       
       <CardHeader className="pb-3">
-        <CardTitle className="font-heading text-lg text-red-700 flex items-center gap-2">
-          <AlertCircle className="w-5 h-5" />
+        <CardTitle className="text-base text-red-700 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4" />
           Preguntas de Repaso
-          <Badge variant="destructive" className="ml-2">{finalQuestions.length}</Badge>
+          <Badge variant="destructive" className="ml-2 text-xs">{finalQuestions.length}</Badge>
         </CardTitle>
         <p className="text-sm text-red-600">
-          Preguntas después de "¿QUÉ RESPONDERÍA?" - {Math.round(totalTime)} seg total
-          {isAdjusted && (
-            <span className={`ml-2 font-medium ${timeDiff > 0 ? 'text-green-600' : isLowTime ? 'text-red-600 font-bold' : 'text-orange-600'}`}>
-              ({timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)} seg/pregunta)
-            </span>
-          )}
+          Después de "¿QUÉ RESPONDERÍA?"
         </p>
         
-        {/* Time indicator for final questions */}
+        {/* Time indicators - Minimalist */}
         {startTime && (
-          <div className="mt-3 flex items-center gap-4 text-xs flex-wrap">
-            <div className="flex items-center gap-1 px-3 py-2 bg-red-100 rounded-lg">
-              <Clock className="w-4 h-4 text-red-600" />
-              <span className="text-red-700 font-medium">Inicio:</span>
-              <span className="font-mono font-bold text-red-800 text-sm">
+          <div className="mt-4 flex items-center gap-6 text-sm">
+            <div className="text-center">
+              <span className="text-red-400 text-xs block mb-1">Inicio</span>
+              <span className="text-lg font-light text-red-700" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                 {isTimerRunning && adjustedTimes.start 
                   ? formatClockTime(adjustedTimes.start)
                   : formatClockTime(addSecondsToDate(startTime, originalStartTime))
                 }
               </span>
             </div>
-            <div className="flex items-center gap-1 px-3 py-2 bg-red-200 rounded-lg">
-              <Clock className="w-4 h-4 text-red-700" />
-              <span className="text-red-700 font-medium">Fin:</span>
-              <span className="font-mono font-bold text-red-900 text-sm">
+            <div className="text-red-300">—</div>
+            <div className="text-center">
+              <span className="text-red-400 text-xs block mb-1">Fin</span>
+              <span className="text-lg font-light text-red-700" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                 {isTimerRunning && adjustedTimes.end
                   ? formatClockTime(adjustedTimes.end)
                   : formatClockTime(addSecondsToDate(startTime, originalStartTime + (finalQuestions.length * 35)))
                 }
               </span>
             </div>
-            <div className={`flex items-center gap-1 px-3 py-2 rounded-lg ${
-              isCriticalTime ? 'bg-red-600 text-white' :
-              isLowTime ? 'bg-orange-500 text-white' :
-              isAdjusted ? (timeDiff > 0 ? 'bg-green-100' : 'bg-orange-100') : 'bg-zinc-100'
+            <div className="text-red-300">|</div>
+            <div className={`text-center px-3 py-2 rounded-lg ${
+              isCriticalTime ? 'bg-red-200' :
+              isLowTime ? 'bg-orange-200' :
+              isAdjusted ? (timeDiff > 0 ? 'bg-green-100' : 'bg-orange-100') : 'bg-red-100'
             }`}>
-              <Timer className={`w-4 h-4 ${isCriticalTime || isLowTime ? 'text-white animate-pulse' : isAdjusted ? (timeDiff > 0 ? 'text-green-600' : 'text-orange-600') : 'text-zinc-600'}`} />
-              <span className={`font-medium ${isCriticalTime || isLowTime ? 'text-white' : isAdjusted ? (timeDiff > 0 ? 'text-green-700' : 'text-orange-700') : 'text-zinc-700'}`}>
-                Por pregunta:
+              <span className="text-xs block mb-1 text-slate-500">Por pregunta</span>
+              <span 
+                className={`text-xl font-light ${
+                  isCriticalTime ? 'text-red-700' :
+                  isLowTime ? 'text-orange-700' :
+                  isAdjusted ? (timeDiff > 0 ? 'text-green-700' : 'text-orange-700') : 'text-red-700'
+                }`}
+                style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+              >
+                {Math.round(perQuestionTime)}s
               </span>
-              <span className={`font-mono font-bold text-sm ${isCriticalTime || isLowTime ? 'text-white' : isAdjusted ? (timeDiff > 0 ? 'text-green-800' : 'text-orange-800') : 'text-zinc-800'}`}>
-                {Math.round(perQuestionTime)} seg
-              </span>
-              {isAdjusted && !isLowTime && (
-                <span className={`text-xs ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
-                  (orig: 35s)
+              {isAdjusted && (
+                <span className={`text-xs block ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                  {timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)}s
                 </span>
               )}
             </div>
           </div>
         )}
-        
-        {/* Low time warning message */}
-        {isLowTime && (
-          <div className={`mt-3 p-3 rounded-lg ${isCriticalTime ? 'bg-red-200 border-2 border-red-600' : 'bg-orange-200 border-2 border-orange-500'}`}>
-            <p className={`text-sm font-bold ${isCriticalTime ? 'text-red-800' : 'text-orange-800'}`}>
-              {isCriticalTime 
-                ? '🚨 ¡Situación crítica! Las respuestas deben ser MUY breves o no habrá tiempo suficiente.'
-                : '⚠️ ¡Acelera la lectura! El tiempo por pregunta está muy bajo.'}
-            </p>
-          </div>
-        )}
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-2 pt-0">
         {finalQuestions.map((q, idx) => (
           <div 
             key={idx}
-            className={`border-l-4 rounded-lg py-3 px-4 text-sm ${
-              isCriticalTime ? 'bg-red-200 border-red-600 text-red-900' :
-              isLowTime ? 'bg-orange-200 border-orange-500 text-orange-900' :
-              'bg-red-100 border-red-500 text-red-800'
+            className={`rounded-xl py-3 px-4 text-sm ${
+              isCriticalTime ? 'bg-red-100 text-red-900' :
+              isLowTime ? 'bg-orange-100 text-orange-900' :
+              'bg-red-100/50 text-red-800'
             }`}
             data-testid={`final-question-${idx}`}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <MessageCircleQuestion className={`w-4 h-4 inline mr-2 ${isCriticalTime ? 'text-red-700' : isLowTime ? 'text-orange-700' : 'text-red-500'}`} />
-                {q.text}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 flex items-start gap-2">
+                <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isCriticalTime ? 'text-red-600' : isLowTime ? 'text-orange-600' : 'text-red-500'}`} />
+                <span>{q.text}</span>
               </div>
-              <div className="flex items-center gap-2 ml-3">
-                {/* Show adjusted time with indicator */}
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-mono whitespace-nowrap font-bold ${
-                  isCriticalTime ? 'bg-red-300 text-red-800' :
-                  isLowTime ? 'bg-orange-300 text-orange-800' :
+              <div className="flex items-center gap-2 shrink-0">
+                <span className={`text-sm font-light px-2 py-0.5 rounded-full ${
+                  isCriticalTime ? 'bg-red-200 text-red-700' :
+                  isLowTime ? 'bg-orange-200 text-orange-700' :
                   isAdjusted ? (timeDiff > 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700') : 
-                  'bg-red-100 text-red-600'
-                }`}>
-                  <span>+{Math.round(perQuestionTime)} seg</span>
-                  {isAdjusted && (
-                    <span className={`text-[10px] ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
-                      ({timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)})
-                    </span>
-                  )}
-                </div>
+                  'bg-red-200 text-red-600'
+                }`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                  +{Math.round(perQuestionTime)}s
+                </span>
                 {startTime && (
-                  <span className={`text-xs px-2 py-1 rounded font-mono whitespace-nowrap ${
-                    isCriticalTime ? 'bg-red-300 text-red-800' :
-                    isLowTime ? 'bg-orange-300 text-orange-800' :
-                    'bg-red-200 text-red-700'
-                  }`}>
+                  <span className="text-xs text-red-500" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                     {isTimerRunning && getQuestionTime
                       ? formatClockTime(getQuestionTime(idx))
                       : formatClockTime(addSecondsToDate(startTime, originalStartTime + (idx * 35)))
