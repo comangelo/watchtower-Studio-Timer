@@ -276,18 +276,20 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
     """Analyze PDF content and return structured analysis"""
     paragraphs = split_into_paragraphs(text)
     
-    # Check if text contains "¿QUÉ RESPONDERÍAS?" to identify final questions
+    # Extract final questions (those after "¿QUÉ RESPONDERÍAS?")
+    final_questions = extract_final_questions(text)
+    
+    # Check if text contains "¿QUÉ RESPONDERÍAS?" 
     text_lower = text.lower()
     has_que_responderias = "qué responderías" in text_lower or "que responderias" in text_lower
     
-    # Find the position of "¿QUÉ RESPONDERÍAS?" to determine which paragraphs precede it
-    que_responderias_position = -1
+    # Find the paragraph that contains "¿QUÉ RESPONDERÍAS?"
+    que_responderias_paragraph = -1
     if has_que_responderias:
         for idx, para in enumerate(paragraphs):
             para_lower = para.lower()
-            # Look for the actual question format, not just the text anywhere
-            if "¿qué responderías?" in para_lower or "¿que responderias?" in para_lower:
-                que_responderias_position = idx
+            if "qué responderías" in para_lower or "que responderias" in para_lower:
+                que_responderias_paragraph = idx
                 break
     
     analyzed_paragraphs = []
@@ -299,26 +301,23 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
     final_questions_start_time = 0.0
     
     for i, para_text in enumerate(paragraphs, 1):
+        # Skip paragraphs that are after "¿QUÉ RESPONDERÍAS?" (final questions section)
+        if que_responderias_paragraph >= 0 and (i - 1) > que_responderias_paragraph:
+            continue
+            
         word_count = count_words(para_text)
         reading_time = calculate_reading_time(word_count)
         
-        # Check if this paragraph's questions are final questions (precede ¿QUÉ RESPONDERÍAS?)
-        # Convert to 0-based indexing for comparison
-        is_before_que_responderias = (que_responderias_position > 0 and (i - 1) == que_responderias_position - 1)
-        
-        questions = detect_questions(para_text, i, is_before_que_responderias)
+        # Detect questions for this paragraph
+        questions = detect_questions(para_text, i, False)
         question_time = len(questions) * QUESTION_ANSWER_TIME
-        
-        # Track when final questions start
-        if is_before_que_responderias and questions:
-            final_questions_start_time = cumulative_time + reading_time
         
         total_words += word_count
         total_questions += len(questions)
         total_reading_time += reading_time
         total_question_time += question_time
         
-        # Calculate cumulative time (time from start to end of this paragraph including questions)
+        # Calculate cumulative time
         cumulative_time += reading_time + question_time
         
         analyzed_paragraphs.append(ParagraphAnalysis(
@@ -331,19 +330,28 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
             cumulative_time_seconds=round(cumulative_time, 2)
         ))
     
+    # Calculate when final questions start (after all paragraphs)
+    final_questions_start_time = cumulative_time
+    
+    # Add final questions time to totals
+    final_questions_time = len(final_questions) * QUESTION_ANSWER_TIME
+    total_questions += len(final_questions)
+    total_question_time += final_questions_time
+    
     # Total time is ALWAYS 60 minutes (3600 seconds)
     FIXED_TOTAL_TIME = 3600  # 60 minutes in seconds
     
     return PDFAnalysisResult(
         filename=filename,
         total_words=total_words,
-        total_paragraphs=len(paragraphs),
+        total_paragraphs=len(analyzed_paragraphs),
         total_questions=total_questions,
         total_reading_time_seconds=round(total_reading_time, 2),
         total_question_time_seconds=round(total_question_time, 2),
         total_time_seconds=FIXED_TOTAL_TIME,
         fixed_duration=True,
         final_questions_start_time=round(final_questions_start_time, 2),
+        final_questions=final_questions,
         paragraphs=analyzed_paragraphs
     )
 
