@@ -151,6 +151,21 @@ def detect_questions(text: str, paragraph_number: int) -> List[QuestionInfo]:
     """
     questions = []
     
+    # Questions to ignore (case-insensitive)
+    IGNORED_QUESTIONS = [
+        "¿qué responderías?",
+        "que responderias",
+        "qué responderías",
+    ]
+    
+    def is_ignored_question(q_text: str) -> bool:
+        """Check if question should be ignored"""
+        q_lower = q_text.lower().strip()
+        for ignored in IGNORED_QUESTIONS:
+            if ignored in q_lower or q_lower in ignored:
+                return True
+        return False
+    
     # Split text into lines to find question lines
     lines = text.split('\n')
     
@@ -170,6 +185,9 @@ def detect_questions(text: str, paragraph_number: int) -> List[QuestionInfo]:
         
         if match:
             question_text = match.group(1).strip()
+            # Skip ignored questions
+            if is_ignored_question(question_text):
+                continue
             if len(question_text) > 5:
                 questions.append(QuestionInfo(
                     text=question_text,
@@ -183,6 +201,9 @@ def detect_questions(text: str, paragraph_number: int) -> List[QuestionInfo]:
         question_matches = re.findall(r'(¿[^?]+\?)', text)
         for q in question_matches:
             q = q.strip()
+            # Skip ignored questions
+            if is_ignored_question(q):
+                continue
             if len(q) > 10:
                 questions.append(QuestionInfo(
                     text=q,
