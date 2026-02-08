@@ -20,7 +20,8 @@ export function ParagraphCard({
   isCompletedParagraph, 
   elapsedTime, 
   onGoToNext, 
-  isLastParagraph 
+  isLastParagraph,
+  adjustedQuestionTime 
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const cardRef = useRef(null);

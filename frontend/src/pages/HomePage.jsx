@@ -571,6 +571,7 @@ export default function HomePage() {
                       elapsedTime={elapsedTime}
                       onGoToNext={goToNextParagraph}
                       isLastParagraph={index === analysisResult.paragraphs.length - 1}
+                      adjustedQuestionTime={adjustedFinalTimes.perQuestion}
                     />
                   ))}
                 </div>
