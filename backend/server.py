@@ -503,6 +503,8 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     paragraphs_data = {}  # Dict: paragraph_number -> {text_lines, questions}
     current_para_num = None
     current_para_lines = []
+    initial_para_lines = []  # Text before first numbered paragraph (paragraph 1)
+    found_first_para_number = False
     final_questions = []
     found_que_responderia = False
     
