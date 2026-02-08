@@ -521,18 +521,6 @@ export default function HomePage() {
                 </Card>
               )}
 
-              {/* Final Questions Section */}
-              {analysisResult.final_questions?.length > 0 && (
-                <FinalQuestionsSection
-                  finalQuestions={analysisResult.final_questions}
-                  startTime={startTime}
-                  isTimerRunning={isTimerRunning}
-                  adjustedTimes={adjustedFinalTimes}
-                  getQuestionTime={getAdjustedFinalQuestionTime}
-                  originalStartTime={getFinalQuestionsTimeSeconds()}
-                />
-              )}
-
               {/* Paragraphs List */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -576,6 +564,18 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
+
+              {/* Final Questions Section - After all paragraphs */}
+              {analysisResult.final_questions?.length > 0 && (
+                <FinalQuestionsSection
+                  finalQuestions={analysisResult.final_questions}
+                  startTime={startTime}
+                  isTimerRunning={isTimerRunning}
+                  adjustedTimes={adjustedFinalTimes}
+                  getQuestionTime={getAdjustedFinalQuestionTime}
+                  originalStartTime={getFinalQuestionsTimeSeconds()}
+                />
+              )}
             </div>
 
             {/* Right Column - Timers */}
