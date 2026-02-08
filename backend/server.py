@@ -34,6 +34,7 @@ QUESTION_ANSWER_TIME = 35  # seconds
 class QuestionInfo(BaseModel):
     text: str
     answer_time: int = QUESTION_ANSWER_TIME
+    is_final_question: bool = False  # Questions that precede "¿QUÉ RESPONDERÍAS?"
 
 class ParagraphAnalysis(BaseModel):
     number: int
@@ -42,6 +43,7 @@ class ParagraphAnalysis(BaseModel):
     reading_time_seconds: float
     questions: List[QuestionInfo] = []
     total_time_seconds: float
+    cumulative_time_seconds: float = 0  # Time from start to end of this paragraph
 
 class PDFAnalysisResult(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -53,6 +55,7 @@ class PDFAnalysisResult(BaseModel):
     total_question_time_seconds: float
     total_time_seconds: float = 3600  # Always 60 minutes (3600 seconds)
     fixed_duration: bool = True  # Indicates duration is fixed at 60 min
+    final_questions_start_time: float = 0  # When final questions section starts
     paragraphs: List[ParagraphAnalysis]
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -143,7 +146,7 @@ def calculate_reading_time(word_count: int) -> float:
     return (word_count / WORDS_PER_MINUTE) * 60
 
 
-def detect_questions(text: str, paragraph_number: int) -> List[QuestionInfo]:
+def detect_questions(text: str, paragraph_number: int, is_before_que_responderias: bool = False) -> List[QuestionInfo]:
     """
     Detect questions in paragraph that start with the paragraph number.
     Questions are identified by their paragraph number at the beginning.
@@ -191,7 +194,8 @@ def detect_questions(text: str, paragraph_number: int) -> List[QuestionInfo]:
             if len(question_text) > 5:
                 questions.append(QuestionInfo(
                     text=question_text,
-                    answer_time=QUESTION_ANSWER_TIME
+                    answer_time=QUESTION_ANSWER_TIME,
+                    is_final_question=is_before_que_responderias
                 ))
     
     # If no questions found with paragraph number, look for standalone questions
@@ -207,7 +211,8 @@ def detect_questions(text: str, paragraph_number: int) -> List[QuestionInfo]:
             if len(q) > 10:
                 questions.append(QuestionInfo(
                     text=q,
-                    answer_time=QUESTION_ANSWER_TIME
+                    answer_time=QUESTION_ANSWER_TIME,
+                    is_final_question=is_before_que_responderias
                 ))
     
     return questions
@@ -217,22 +222,48 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
     """Analyze PDF content and return structured analysis"""
     paragraphs = split_into_paragraphs(text)
     
+    # Check if text contains "¿QUÉ RESPONDERÍAS?" to identify final questions
+    text_lower = text.lower()
+    has_que_responderias = "qué responderías" in text_lower or "que responderias" in text_lower
+    
+    # Find the position of "¿QUÉ RESPONDERÍAS?" to determine which paragraphs precede it
+    que_responderias_position = -1
+    if has_que_responderias:
+        for idx, para in enumerate(paragraphs):
+            para_lower = para.lower()
+            if "qué responderías" in para_lower or "que responderias" in para_lower:
+                que_responderias_position = idx
+                break
+    
     analyzed_paragraphs = []
     total_words = 0
     total_questions = 0
     total_reading_time = 0.0
     total_question_time = 0.0
+    cumulative_time = 0.0
+    final_questions_start_time = 0.0
     
     for i, para_text in enumerate(paragraphs, 1):
         word_count = count_words(para_text)
         reading_time = calculate_reading_time(word_count)
-        questions = detect_questions(para_text, i)
+        
+        # Check if this paragraph's questions are final questions (precede ¿QUÉ RESPONDERÍAS?)
+        is_before_que_responderias = (que_responderias_position > 0 and i == que_responderias_position)
+        
+        questions = detect_questions(para_text, i, is_before_que_responderias)
         question_time = len(questions) * QUESTION_ANSWER_TIME
+        
+        # Track when final questions start
+        if is_before_que_responderias and questions:
+            final_questions_start_time = cumulative_time + reading_time
         
         total_words += word_count
         total_questions += len(questions)
         total_reading_time += reading_time
         total_question_time += question_time
+        
+        # Calculate cumulative time (time from start to end of this paragraph including questions)
+        cumulative_time += reading_time + question_time
         
         analyzed_paragraphs.append(ParagraphAnalysis(
             number=i,
@@ -240,7 +271,8 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
             word_count=word_count,
             reading_time_seconds=round(reading_time, 2),
             questions=questions,
-            total_time_seconds=round(reading_time + question_time, 2)
+            total_time_seconds=round(reading_time + question_time, 2),
+            cumulative_time_seconds=round(cumulative_time, 2)
         ))
     
     # Total time is ALWAYS 60 minutes (3600 seconds)
@@ -255,6 +287,7 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
         total_question_time_seconds=round(total_question_time, 2),
         total_time_seconds=FIXED_TOTAL_TIME,
         fixed_duration=True,
+        final_questions_start_time=round(final_questions_start_time, 2),
         paragraphs=analyzed_paragraphs
     )
 
