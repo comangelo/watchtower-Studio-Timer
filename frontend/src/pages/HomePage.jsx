@@ -130,6 +130,15 @@ export default function HomePage() {
   
   // Presentation mode
   const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [presentationTheme, setPresentationTheme] = useState(() => {
+    const saved = localStorage.getItem('pdfTimer_presentationTheme');
+    return saved !== null ? saved : 'dark';
+  });
+
+  // Save presentation theme to localStorage
+  useEffect(() => {
+    localStorage.setItem('pdfTimer_presentationTheme', presentationTheme);
+  }, [presentationTheme]);
 
   // Save preferences to localStorage
   useEffect(() => {
