@@ -951,64 +951,14 @@ export default function HomePage() {
 
               {/* Final Questions Section */}
               {analysisResult.final_questions && analysisResult.final_questions.length > 0 && (
-                <Card className="border-red-300 bg-red-50/30 shadow-sm" data-testid="final-questions-section">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="font-heading text-lg text-red-700 flex items-center gap-2">
-                      <AlertCircle className="w-5 h-5" />
-                      Preguntas Finales
-                      <Badge variant="destructive" className="ml-2">{analysisResult.final_questions.length}</Badge>
-                    </CardTitle>
-                    <p className="text-sm text-red-600">
-                      Preguntas después de "¿QUÉ RESPONDERÍAS?" - {analysisResult.final_questions.length * 35} seg total
-                    </p>
-                    
-                    {/* Time indicator for final questions */}
-                    {startTime && (
-                      <div className="mt-3 flex items-center gap-4 text-xs">
-                        <div className="flex items-center gap-1 px-3 py-2 bg-red-100 rounded-lg">
-                          <Clock className="w-4 h-4 text-red-600" />
-                          <span className="text-red-700 font-medium">Hora de inicio:</span>
-                          <span className="font-mono font-bold text-red-800 text-sm">
-                            {formatClockTime(addSecondsToDate(startTime, analysisResult.final_questions_start_time))}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1 px-3 py-2 bg-red-200 rounded-lg">
-                          <Clock className="w-4 h-4 text-red-700" />
-                          <span className="text-red-700 font-medium">Hora de fin:</span>
-                          <span className="font-mono font-bold text-red-900 text-sm">
-                            {formatClockTime(addSecondsToDate(startTime, analysisResult.final_questions_start_time + (analysisResult.final_questions.length * 35)))}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {analysisResult.final_questions.map((q, idx) => (
-                      <div 
-                        key={idx}
-                        className="bg-red-100 border-l-4 border-red-500 rounded-lg py-3 px-4 text-sm text-red-800"
-                        data-testid={`final-question-${idx}`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <MessageCircleQuestion className="w-4 h-4 inline mr-2 text-red-500" />
-                            {q.text}
-                          </div>
-                          <div className="flex items-center gap-2 ml-3">
-                            <span className="text-xs text-red-500 font-mono whitespace-nowrap">
-                              +{q.answer_time} seg
-                            </span>
-                            {startTime && (
-                              <span className="text-xs bg-red-200 text-red-700 px-2 py-1 rounded font-mono whitespace-nowrap">
-                                {formatClockTime(addSecondsToDate(startTime, analysisResult.final_questions_start_time + (idx * 35)))}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
+                <FinalQuestionsSection
+                  finalQuestions={analysisResult.final_questions}
+                  startTime={startTime}
+                  isTimerRunning={isTimerRunning}
+                  adjustedTimes={getAdjustedFinalQuestionsTime()}
+                  getQuestionTime={getAdjustedFinalQuestionTime}
+                  originalStartTime={analysisResult.final_questions_start_time}
+                />
               )}
 
               {/* Paragraphs List */}
