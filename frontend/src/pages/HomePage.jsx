@@ -307,6 +307,16 @@ export default function HomePage() {
     }
   }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds]);
 
+  // Get final questions time as Date
+  const getFinalQuestionsTime = useCallback(() => {
+    if (!startTime || !analysisResult) return null;
+    const seconds = getFinalQuestionsTimeSeconds();
+    if (seconds > 0) {
+      return addSecondsToDate(startTime, seconds);
+    }
+    return null;
+  }, [startTime, analysisResult, getFinalQuestionsTimeSeconds]);
+
   // Initialize remaining time when analysis is complete
   useEffect(() => {
     if (analysisResult) {
