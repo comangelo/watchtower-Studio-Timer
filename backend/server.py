@@ -84,11 +84,11 @@ def split_into_paragraphs(text: str) -> List[str]:
     """
     Split text into paragraphs based on paragraph numbers at the start of lines.
     Paragraphs are identified by a number at the beginning (e.g., "1 Texto..." or "2 Texto...")
+    Questions that start with the same number belong to that paragraph.
     """
     paragraphs = []
     
     # First, try to split by paragraph numbers at the start of lines
-    # Pattern: number followed by space and text (not a question mark immediately)
     lines = text.split('\n')
     current_paragraph = []
     current_number = None
@@ -98,7 +98,7 @@ def split_into_paragraphs(text: str) -> List[str]:
         if not line:
             continue
         
-        # Check if line starts with a number followed by space (paragraph marker)
+        # Check if line starts with a number followed by space (paragraph or question marker)
         match = re.match(r'^(\d+)\s+(.+)$', line)
         if match:
             num = int(match.group(1))
@@ -108,17 +108,27 @@ def split_into_paragraphs(text: str) -> List[str]:
             is_question = '¿' in content or content.endswith('?')
             
             if is_question:
-                # This is a question, add to current paragraph
-                if current_paragraph:
+                # This is a question - it belongs to the paragraph with the same number
+                if current_number is not None and num == current_number:
+                    # Question belongs to current paragraph
                     current_paragraph.append(line)
+                elif num != current_number and current_paragraph:
+                    # Question has different number - find or create paragraph
+                    # First, save current paragraph if exists
+                    # Then add question to appropriate paragraph
+                    current_paragraph.append(line)
+                else:
+                    # No current paragraph, start new one with this question
+                    current_paragraph = [line]
+                    current_number = num
             else:
-                # This is a new paragraph
+                # This is a new paragraph (not a question)
                 if current_paragraph:
                     paragraphs.append('\n'.join(current_paragraph))
                 current_paragraph = [line]
                 current_number = num
         else:
-            # Continue current paragraph
+            # Line doesn't start with number - continue current paragraph
             if current_paragraph:
                 current_paragraph.append(line)
             else:
