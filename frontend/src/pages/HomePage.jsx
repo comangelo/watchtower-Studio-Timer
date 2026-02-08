@@ -872,6 +872,20 @@ export default function HomePage() {
                         />
                       </div>
                       
+                      {/* Vibration Toggle */}
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="vibration-toggle" className="text-sm text-zinc-600 flex items-center gap-2">
+                          <Smartphone className={`w-4 h-4 ${vibrationEnabled ? 'text-green-600' : 'text-zinc-400'}`} />
+                          Vibración
+                        </Label>
+                        <Switch
+                          id="vibration-toggle"
+                          checked={vibrationEnabled}
+                          onCheckedChange={setVibrationEnabled}
+                          data-testid="vibration-toggle"
+                        />
+                      </div>
+                      
                       <Separator />
                       
                       {/* Alert Times */}
@@ -907,24 +921,49 @@ export default function HomePage() {
                         </div>
                       </div>
                       
-                      {/* Test Sound Button */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full mt-2"
-                        onClick={() => {
-                          if (soundEnabled) {
-                            playNotificationSound('warning');
-                            toast.info("🔊 Prueba de sonido");
-                          } else {
-                            toast.info("🔇 Sonido desactivado");
-                          }
-                        }}
-                        data-testid="test-sound-btn"
-                      >
-                        <Volume2 className="w-4 h-4 mr-2" />
-                        Probar sonido
-                      </Button>
+                      {/* Test Buttons */}
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            if (soundEnabled) {
+                              playNotificationSound('warning');
+                              toast.info("🔊 Prueba de sonido");
+                            } else {
+                              toast.info("🔇 Sonido desactivado");
+                            }
+                          }}
+                          data-testid="test-sound-btn"
+                        >
+                          <Volume2 className="w-4 h-4 mr-1" />
+                          Sonido
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            if (vibrationEnabled && 'vibrate' in navigator) {
+                              navigator.vibrate([200, 100, 200]);
+                              toast.info("📳 Prueba de vibración");
+                            } else if (!vibrationEnabled) {
+                              toast.info("📴 Vibración desactivada");
+                            } else {
+                              toast.info("📱 Vibración no disponible en este dispositivo");
+                            }
+                          }}
+                          data-testid="test-vibration-btn"
+                        >
+                          <Smartphone className="w-4 h-4 mr-1" />
+                          Vibrar
+                        </Button>
+                      </div>
+                      
+                      <p className="text-xs text-zinc-400 text-center">
+                        Las preferencias se guardan automáticamente
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
