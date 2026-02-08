@@ -5,9 +5,10 @@ import { formatTimeText } from "../utils/timeFormatters";
 export function AnalysisSummary({ analysisResult }) {
   if (!analysisResult) return null;
 
-  const totalQuestions = analysisResult.paragraphs.reduce(
-    (sum, p) => sum + p.questions.length, 0
-  ) + (analysisResult.final_questions?.length || 0);
+  const paragraphQuestions = analysisResult.paragraphs.reduce(
+    (sum, p) => sum + p.questions.filter(q => !q.is_final_question).length, 0
+  );
+  const reviewQuestions = analysisResult.final_questions?.length || 0;
 
   return (
     <Card className="mb-8 border-zinc-100 shadow-sm" data-testid="analysis-summary">
@@ -25,7 +26,16 @@ export function AnalysisSummary({ analysisResult }) {
             </p>
           </div>
           <div className="ml-auto text-right">
-            <span className="text-sm font-medium text-zinc-500">{totalQuestions} preguntas</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-orange-600" data-testid="paragraph-questions-count">
+                {paragraphQuestions} preguntas de párrafos
+              </span>
+              {reviewQuestions > 0 && (
+                <span className="text-sm font-medium text-red-600" data-testid="review-questions-count">
+                  {reviewQuestions} preguntas de repaso
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
