@@ -339,6 +339,7 @@ export default function HomePage() {
     const firstAlertSeconds = alertTimes.firstAlert * 60;
     if (timeUntilFinalQuestions <= firstAlertSeconds && timeUntilFinalQuestions > firstAlertSeconds - 5 && !notificationPlayed.fiveMin) {
       if (soundEnabled) playNotificationSound('warning');
+      triggerVibration([200, 100, 200]); // Double vibration
       setNotificationPlayed(prev => ({ ...prev, fiveMin: true }));
       toast.warning(`⏰ ${alertTimes.firstAlert} minuto${alertTimes.firstAlert > 1 ? 's' : ''} para las preguntas finales`, { duration: 5000 });
     }
@@ -347,6 +348,7 @@ export default function HomePage() {
     const secondAlertSeconds = alertTimes.secondAlert * 60;
     if (timeUntilFinalQuestions <= secondAlertSeconds && timeUntilFinalQuestions > secondAlertSeconds - 5 && !notificationPlayed.oneMin) {
       if (soundEnabled) playNotificationSound('urgent');
+      triggerVibration([200, 100, 200, 100, 200]); // Triple vibration
       setNotificationPlayed(prev => ({ ...prev, oneMin: true }));
       toast.warning(`⚠️ ${alertTimes.secondAlert} minuto${alertTimes.secondAlert > 1 ? 's' : ''} para las preguntas finales`, { duration: 5000 });
     }
@@ -354,10 +356,11 @@ export default function HomePage() {
     // Final questions NOW
     if (timeUntilFinalQuestions <= 0 && timeUntilFinalQuestions > -5 && !notificationPlayed.now) {
       if (soundEnabled) playNotificationSound('final');
+      triggerVibration([500, 200, 500, 200, 500]); // Long vibration pattern
       setNotificationPlayed(prev => ({ ...prev, now: true }));
       toast.success("🎯 ¡Es hora de las preguntas finales!", { duration: 8000 });
     }
-  }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds, soundEnabled, alertTimes]);
+  }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds, soundEnabled, alertTimes, triggerVibration]);
 
   // Get final questions time as Date
   const getFinalQuestionsTime = useCallback(() => {
