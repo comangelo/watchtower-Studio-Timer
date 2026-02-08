@@ -711,12 +711,16 @@ async def analyze_pdf(file: UploadFile = File(...)):
     
     try:
         pdf_bytes = await file.read()
-        text = extract_text_from_pdf(pdf_bytes)
         
-        if not text.strip():
-            raise HTTPException(status_code=400, detail="No se pudo extraer texto del PDF")
-        
-        result = analyze_pdf_content(text, file.filename)
+        # Try to analyze with font size information first
+        try:
+            result = analyze_pdf_with_font_info(pdf_bytes, file.filename)
+        except Exception as font_error:
+            logging.warning(f"Font analysis failed, falling back to text-only: {font_error}")
+            text = extract_text_from_pdf(pdf_bytes)
+            if not text.strip():
+                raise HTTPException(status_code=400, detail="No se pudo extraer texto del PDF")
+            result = analyze_pdf_content(text, file.filename)
         
         # Save to database
         doc = result.model_dump()
