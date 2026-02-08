@@ -905,9 +905,43 @@ export default function HomePage() {
 
               {/* Paragraphs List */}
               <div className="space-y-4">
-                <h3 className="font-heading font-semibold text-lg text-zinc-900">
-                  Desglose por párrafo
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-heading font-semibold text-lg text-zinc-900">
+                    Desglose por párrafo
+                  </h3>
+                  
+                  {/* Paragraph Navigation Controls */}
+                  {isTimerRunning && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={goToPreviousParagraph}
+                        disabled={currentManualParagraph <= 0}
+                        className="text-xs"
+                        data-testid="prev-paragraph-btn"
+                      >
+                        <ChevronUp className="w-4 h-4 mr-1" />
+                        Anterior
+                      </Button>
+                      <span className="text-sm font-mono bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                        {currentManualParagraph + 1} / {analysisResult.paragraphs.length}
+                      </span>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={goToNextParagraph}
+                        disabled={currentManualParagraph >= analysisResult.paragraphs.length - 1}
+                        className="text-xs bg-green-600 hover:bg-green-700"
+                        data-testid="next-paragraph-btn"
+                      >
+                        Siguiente
+                        <ChevronDown className="w-4 h-4 ml-1" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
                 <ScrollArea className="h-[500px] pr-4 custom-scrollbar">
                   <div className="space-y-3">
                     {analysisResult.paragraphs.map((para, index) => (
@@ -916,11 +950,14 @@ export default function HomePage() {
                         paragraph={para} 
                         index={index}
                         startTime={startTime}
-                        paragraphTimes={getParagraphTimes(index)}
+                        paragraphTimes={getAdjustedParagraphTimes(index)}
                         onStartFromHere={() => startFromParagraph(index)}
                         isTimerRunning={isTimerRunning}
-                        isCurrentParagraph={isTimerRunning && index === currentParagraphIndex}
+                        isCurrentParagraph={isTimerRunning && index === currentManualParagraph}
+                        isCompletedParagraph={isTimerRunning && index < currentManualParagraph}
                         elapsedTime={elapsedTime}
+                        onGoToNext={goToNextParagraph}
+                        isLastParagraph={index === analysisResult.paragraphs.length - 1}
                       />
                     ))}
                   </div>
