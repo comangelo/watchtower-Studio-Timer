@@ -666,6 +666,8 @@ export default function HomePage() {
     setStartTime(null);
     setEndTime(null);
     setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
+    setCurrentManualParagraph(0);
+    setParagraphStartTimes({});
   };
 
   const resetAll = () => {
@@ -676,6 +678,8 @@ export default function HomePage() {
     setStartTime(null);
     setEndTime(null);
     setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
+    setCurrentManualParagraph(0);
+    setParagraphStartTimes({});
   };
 
   // Calculate progress percentage based on 60 minutes (3600 seconds)
