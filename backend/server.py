@@ -208,7 +208,10 @@ async def analyze_pdf(file: UploadFile = File(...)):
 @api_router.get("/analyses", response_model=List[PDFAnalysisResult])
 async def get_analyses():
     """Get all PDF analyses"""
-    analyses = await db.pdf_analyses.find({}, {"_id": 0}).to_list(100)
+    analyses = await db.pdf_analyses.find(
+        {}, 
+        {"_id": 0}
+    ).sort("timestamp", -1).to_list(50)
     for analysis in analyses:
         if isinstance(analysis.get('timestamp'), str):
             analysis['timestamp'] = datetime.fromisoformat(analysis['timestamp'])
@@ -227,7 +230,10 @@ async def create_status_check(input: StatusCheckCreate):
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+    status_checks = await db.status_checks.find(
+        {}, 
+        {"_id": 0}
+    ).sort("timestamp", -1).to_list(100)
     for check in status_checks:
         if isinstance(check['timestamp'], str):
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
