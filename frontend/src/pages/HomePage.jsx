@@ -424,8 +424,8 @@ export default function HomePage() {
         ) : (
           /* Analysis Result State */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in">
-            {/* Left Column - Paragraphs */}
-            <div className="lg:col-span-8 space-y-6">
+            {/* Left Column - Paragraphs (Exportable Content) */}
+            <div className="lg:col-span-8 space-y-6" ref={exportRef}>
               {/* Summary Card */}
               <Card className="border-zinc-100 shadow-sm" data-testid="summary-card">
                 <CardHeader className="pb-4">
