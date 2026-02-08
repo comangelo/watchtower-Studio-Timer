@@ -186,6 +186,112 @@ def split_into_paragraphs(text: str) -> List[str]:
     return paragraphs if paragraphs else [text.strip()]
 
 
+def process_pdf_with_font_sizes(pdf_bytes: bytes) -> dict:
+    """
+    Process PDF using font size information to distinguish paragraphs from questions.
+    Questions are identified by:
+    1. Starting with number(s) followed by "." (e.g., "1.", "12.")
+    2. Having smaller font size than paragraph text
+    """
+    lines = extract_text_with_sizes(pdf_bytes)
+    
+    if not lines:
+        return {"paragraphs": [], "questions_by_paragraph": {}}
+    
+    # Calculate the most common (mode) font size - this is likely the paragraph text size
+    size_counts = {}
+    for line in lines:
+        size_key = round(line.font_size, 1)
+        size_counts[size_key] = size_counts.get(size_key, 0) + 1
+    
+    # Find the dominant font size (paragraph text)
+    paragraph_font_size = max(size_counts.keys(), key=lambda k: size_counts[k])
+    
+    # Tolerance for font size comparison (allow small variations)
+    size_tolerance = 0.5
+    
+    paragraphs = []
+    questions_by_paragraph = {}
+    current_paragraph_lines = []
+    current_paragraph_number = None
+    
+    for line in lines:
+        text = line.text
+        font_size = line.font_size
+        
+        if not text:
+            continue
+        
+        # Check if line starts with number(s) followed by period: "1." or "12."
+        # Pattern: one or two digits followed by "."
+        question_pattern = re.match(r'^(\d{1,2})\.\s*(.+)$', text)
+        
+        # Check if line starts with number followed by space (paragraph start): "1 Texto"
+        paragraph_pattern = re.match(r'^(\d{1,2})\s+([^.?¿].*)$', text)
+        
+        # Determine if this is a question based on:
+        # 1. Matches question pattern (number + period)
+        # 2. Has smaller font size than paragraph text
+        # 3. Contains question marks
+        is_smaller_font = font_size < (paragraph_font_size - size_tolerance)
+        has_question_mark = '¿' in text or text.endswith('?')
+        
+        if question_pattern:
+            question_num = int(question_pattern.group(1))
+            question_text = question_pattern.group(2).strip()
+            
+            # This is likely a question if it has smaller font OR contains question marks
+            if is_smaller_font or has_question_mark:
+                # Add to questions for this paragraph number
+                if question_num not in questions_by_paragraph:
+                    questions_by_paragraph[question_num] = []
+                questions_by_paragraph[question_num].append(question_text)
+                
+                # Also add to current paragraph text for display
+                if current_paragraph_lines:
+                    current_paragraph_lines.append(text)
+                continue
+        
+        if paragraph_pattern:
+            para_num = int(paragraph_pattern.group(1))
+            para_text = paragraph_pattern.group(2).strip()
+            
+            # This looks like a paragraph start (number + space + non-question text)
+            if not is_smaller_font and not has_question_mark:
+                # Save previous paragraph
+                if current_paragraph_lines:
+                    paragraphs.append('\n'.join(current_paragraph_lines))
+                
+                # Start new paragraph
+                current_paragraph_lines = [text]
+                current_paragraph_number = para_num
+                continue
+        
+        # Default: add to current paragraph
+        if current_paragraph_lines:
+            current_paragraph_lines.append(text)
+        else:
+            current_paragraph_lines = [text]
+    
+    # Save last paragraph
+    if current_paragraph_lines:
+        paragraphs.append('\n'.join(current_paragraph_lines))
+    
+    return {
+        "paragraphs": paragraphs,
+        "questions_by_paragraph": questions_by_paragraph,
+        "paragraph_font_size": paragraph_font_size,
+        "detected_sizes": dict(size_counts)
+    }
+    
+    # If no numbered paragraphs found, fall back to double newline split
+    if len(paragraphs) <= 1 and '\n\n' in text:
+        paragraphs = re.split(r'\n\s*\n+', text.strip())
+        paragraphs = [p.strip() for p in paragraphs if p.strip()]
+    
+    return paragraphs if paragraphs else [text.strip()]
+
+
 def count_words(text: str) -> int:
     """Count words in text"""
     words = re.findall(r'\b\w+\b', text)
