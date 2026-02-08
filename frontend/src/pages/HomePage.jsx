@@ -296,6 +296,32 @@ export default function HomePage() {
     return addSecondsToDate(adjusted.start, questionIndex * adjusted.perQuestion);
   }, [startTime, analysisResult, getAdjustedFinalQuestionsTime]);
 
+  // Check for low question time alert
+  useEffect(() => {
+    if (!isTimerRunning || !analysisResult) return;
+    
+    const adjustedTimes = getAdjustedFinalQuestionsTime();
+    if (!adjustedTimes || !adjustedTimes.perQuestion) return;
+    
+    const timePerQuestion = adjustedTimes.perQuestion;
+    
+    // Alert when time per question is less than 20 seconds
+    if (timePerQuestion < 20 && !lowTimeAlertShown) {
+      setLowTimeAlertShown(true);
+      if (soundEnabled) playNotificationSound('urgent');
+      triggerVibration([300, 100, 300, 100, 300]);
+      toast.error(`⚠️ ¡Alerta! Solo ${Math.round(timePerQuestion)} seg por pregunta. ¡Acelera la lectura!`, { 
+        duration: 10000,
+        important: true
+      });
+    }
+    
+    // Reset alert if time goes back above 25 seconds
+    if (timePerQuestion >= 25 && lowTimeAlertShown) {
+      setLowTimeAlertShown(false);
+    }
+  }, [isTimerRunning, analysisResult, getAdjustedFinalQuestionsTime, lowTimeAlertShown, soundEnabled, playNotificationSound, triggerVibration]);
+
   // Calculate adjusted paragraph times based on remaining time
   // READING time is FIXED, QUESTION time ADJUSTS
   const getAdjustedParagraphTimes = useCallback((paragraphIndex) => {
