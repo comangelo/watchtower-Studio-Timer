@@ -500,27 +500,6 @@ export default function HomePage() {
               </Card>
               )}
 
-              {/* Final Questions Alert */}
-              {analysisResult.final_questions?.length > 0 && !isTimerRunning && (
-                <Card className="border-2 border-orange-300 bg-orange-50 shadow-md rounded-2xl" data-testid="final-questions-alert">
-                  <CardContent className="p-5">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200">
-                        <AlertCircle className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-slate-800">
-                          Este documento tiene {analysisResult.final_questions.length} preguntas de repaso
-                        </p>
-                        <p className="text-sm text-orange-600">
-                          Aparecen después de "¿QUÉ RESPONDERÍA?"
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
               {/* Paragraphs List */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
