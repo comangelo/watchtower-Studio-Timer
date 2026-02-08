@@ -1,6 +1,6 @@
 import { FileText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatTimeText } from "../utils/timeFormatters";
+import { formatTimeCompact } from "../utils/timeFormatters";
 
 export function AnalysisSummary({ analysisResult }) {
   if (!analysisResult) return null;
@@ -43,13 +43,13 @@ export function AnalysisSummary({ analysisResult }) {
           <div className="bg-zinc-50 rounded-xl p-5 text-center">
             <p className="text-sm text-zinc-500 mb-2">Lectura</p>
             <p className="text-3xl font-light text-zinc-900" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="reading-time">
-              {formatTimeText(analysisResult.total_reading_time_seconds)}
+              {formatTimeCompact(analysisResult.total_reading_time_seconds)}
             </p>
           </div>
           <div className="bg-orange-50 rounded-xl p-5 text-center">
             <p className="text-sm text-orange-600 mb-2">Respuestas</p>
             <p className="text-3xl font-light text-orange-600" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="question-time">
-              {formatTimeText(analysisResult.total_question_time_seconds)}
+              {formatTimeCompact(analysisResult.total_question_time_seconds)}
             </p>
           </div>
           <div className="bg-zinc-900 rounded-xl p-5 text-center">
