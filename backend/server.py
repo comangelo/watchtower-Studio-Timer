@@ -70,6 +70,46 @@ class StatusCheckCreate(BaseModel):
     client_name: str
 
 
+class TextLine:
+    """Represents a line of text with its font size"""
+    def __init__(self, text: str, font_size: float):
+        self.text = text.strip()
+        self.font_size = font_size
+    
+    def __repr__(self):
+        return f"TextLine({self.font_size:.1f}: {self.text[:50]}...)"
+
+
+def extract_text_with_sizes(pdf_bytes: bytes) -> List[TextLine]:
+    """Extract text from PDF with font size information using PyMuPDF"""
+    doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+    lines = []
+    
+    for page in doc:
+        blocks = page.get_text('dict')['blocks']
+        for block in blocks:
+            if 'lines' in block:
+                for line in block['lines']:
+                    line_text = ""
+                    line_size = 0
+                    span_count = 0
+                    
+                    for span in line['spans']:
+                        text = span['text']
+                        size = span['size']
+                        if text.strip():
+                            line_text += text
+                            line_size += size
+                            span_count += 1
+                    
+                    if line_text.strip() and span_count > 0:
+                        avg_size = line_size / span_count
+                        lines.append(TextLine(line_text, avg_size))
+    
+    doc.close()
+    return lines
+
+
 def extract_text_from_pdf(pdf_bytes: bytes) -> str:
     """Extract text from PDF bytes using PyMuPDF"""
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
