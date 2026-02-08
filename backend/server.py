@@ -329,26 +329,29 @@ def detect_horizontal_line_separator(pdf_bytes: bytes) -> dict:
         return {"found": False, "page": -1, "y_position": -1}
 
 
-def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -> List[QuestionInfo]:
+def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -> tuple:
     """
     Extract questions that appear after the horizontal line separator.
     These are the final discussion questions (Preguntas de Repaso).
+    
+    Returns a tuple: (list of QuestionInfo, bold title string)
     
     The format can be:
     1. Traditional: "1. ¿Pregunta?" numbered questions
     2. Bullet points: A main question followed by bullet points (˛)
     """
     final_questions = []
+    bold_title = ""
     
     if not line_info.get("found"):
-        return final_questions
+        return final_questions, bold_title
     
     try:
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         line_page = line_info["page"]
         line_y = line_info["y_position"]
         
-        text_items = []  # List of (y_pos, font_size, text)
+        text_items = []  # List of (y_pos, font_size, text, is_bold)
         
         # Get text from the page with the line, below the line
         if line_page >= 0 and line_page < len(doc):
@@ -362,9 +365,11 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
                             text = span['text'].strip()
                             font_size = span['size']
                             y_pos = span['bbox'][1]
+                            flags = span.get('flags', 0)
+                            is_bold = bool(flags & 16)  # Bold flag
                             # Only include text that starts below the line
                             if y_pos > line_y + 5 and text:
-                                text_items.append((y_pos, font_size, text))
+                                text_items.append((y_pos, font_size, text, is_bold))
         
         # Also get text from pages after the line page
         for page_num in range(line_page + 1, len(doc)):
@@ -377,8 +382,10 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
                             text = span['text'].strip()
                             font_size = span['size']
                             y_pos = span['bbox'][1]
+                            flags = span.get('flags', 0)
+                            is_bold = bool(flags & 16)
                             if text:
-                                text_items.append((y_pos + (page_num - line_page) * 1000, font_size, text))
+                                text_items.append((y_pos + (page_num - line_page) * 1000, font_size, text, is_bold))
         
         doc.close()
         
@@ -389,17 +396,22 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
         bullet_points = []
         numbered_questions = []
         
-        for y_pos, font_size, text in text_items:
+        for y_pos, font_size, text, is_bold in text_items:
             # Skip song references at the end
             text_upper = text.upper()
             if text_upper.startswith("CANCIÓN") or text_upper.startswith("CANCION"):
                 break
             
-            # Skip bullet character alone and main question headers
+            # Skip bullet character alone
             if text == '˛':
                 continue
             
-            # Skip the main question header (all caps with ?)
+            # Capture the first bold text as the title (if it contains ?)
+            if is_bold and not bold_title and '?' in text:
+                bold_title = text
+                continue
+            
+            # Skip any other all-caps headers
             if text.isupper() and '?' in text:
                 continue
             
@@ -432,11 +444,11 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
                     is_final_question=True
                 ))
         
-        return final_questions
+        return final_questions, bold_title
         
     except Exception as e:
         logging.warning(f"Error extracting questions after horizontal line: {e}")
-        return final_questions
+        return final_questions, bold_title
 
 
 def count_words(text: str) -> int:
