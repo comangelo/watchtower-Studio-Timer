@@ -134,14 +134,14 @@ export default function HomePage() {
     setCurrentManualParagraph(nextIndex);
     const now = new Date();
     setParagraphStartTimes(prev => ({ ...prev, [nextIndex]: now }));
-    toast.success(`Avanzando al párrafo #${nextIndex + 1}`);
+    toast.success(`Avanzando al Párrafo ${nextIndex + 1}`);
   }, [currentManualParagraph, analysisResult]);
 
   const goToPreviousParagraph = useCallback(() => {
     if (currentManualParagraph <= 0) return;
     const prevIndex = currentManualParagraph - 1;
     setCurrentManualParagraph(prevIndex);
-    toast.info(`Volviendo al párrafo #${prevIndex + 1}`);
+    toast.info(`Volviendo al Párrafo ${prevIndex + 1}`);
   }, [currentManualParagraph]);
 
   // Check for low question time alert
@@ -314,7 +314,7 @@ export default function HomePage() {
     setIsTimerRunning(true);
     setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
     
-    toast.success(`Iniciando desde párrafo #${paragraphIndex + 1}`);
+    toast.success(`Iniciando desde Párrafo ${paragraphIndex + 1}`);
   }, [analysisResult]);
 
   // Export functions
