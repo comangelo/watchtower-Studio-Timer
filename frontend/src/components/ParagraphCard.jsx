@@ -7,7 +7,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { formatTimeText, formatClockTime } from "../utils/timeFormatters";
+import { formatTimeText, formatClockTime, formatTimeCompact } from "../utils/timeFormatters";
 
 export function ParagraphCard({ 
   paragraph, 
@@ -196,10 +196,11 @@ export function ParagraphCard({
             <CollapsibleContent>
               <div className="mt-4 space-y-2 pl-2 border-l-2 border-orange-200">
                 {paragraph.questions.map((q, qIndex) => {
-                  const displayTime = isTimerRunning && adjustedQuestionTime ? Math.round(adjustedQuestionTime) : q.answer_time;
+                  const displayTime = isTimerRunning && adjustedQuestionTime ? adjustedQuestionTime : q.answer_time;
                   const isAdjusted = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime !== 35;
                   const timeDiff = adjustedQuestionTime ? adjustedQuestionTime - 35 : 0;
                   const isLowTime = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime < 20;
+                  const formattedTime = formatTimeCompact(displayTime);
                   
                   return (
                     <div 
@@ -218,7 +219,7 @@ export function ParagraphCard({
                         <div className="flex-1 flex items-start justify-between">
                           <span>{q.text}</span>
                           <div className="flex items-center gap-1 ml-2 shrink-0">
-                            <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-full ${
+                            <span className={`text-xs font-light px-2 py-0.5 rounded-full ${
                               isLowTime 
                                 ? 'bg-orange-200 text-orange-700' 
                                 : q.is_final_question 
@@ -226,12 +227,12 @@ export function ParagraphCard({
                                   : isAdjusted
                                     ? timeDiff > 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
                                     : 'text-orange-500'
-                            }`}>
-                              +{displayTime}s
+                            }`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                              +{formattedTime}
                             </span>
                             {isAdjusted && (
                               <span className={`text-[10px] ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
-                                ({timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)})
+                                ({timeDiff > 0 ? '+' : ''}{formatTimeCompact(Math.abs(timeDiff))})
                               </span>
                             )}
                           </div>
