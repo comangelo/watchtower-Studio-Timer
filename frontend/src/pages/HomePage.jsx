@@ -1333,6 +1333,9 @@ function FinalQuestionsSection({ finalQuestions, startTime, isTimerRunning, adju
   const perQuestionTime = isTimerRunning && adjustedTimes.perQuestion
     ? adjustedTimes.perQuestion
     : 35;
+  
+  const isAdjusted = isTimerRunning && perQuestionTime !== 35;
+  const timeDiff = perQuestionTime - 35;
 
   return (
     <Card className="border-red-300 bg-red-50/30 shadow-sm" data-testid="final-questions-section">
@@ -1343,9 +1346,11 @@ function FinalQuestionsSection({ finalQuestions, startTime, isTimerRunning, adju
           <Badge variant="destructive" className="ml-2">{finalQuestions.length}</Badge>
         </CardTitle>
         <p className="text-sm text-red-600">
-          Preguntas después de "¿QUÉ RESPONDERÍAS?" - {totalTime} seg total
-          {isTimerRunning && adjustedTimes.totalTime && adjustedTimes.totalTime !== finalQuestions.length * 35 && (
-            <span className="ml-2 text-orange-600 font-medium">(ajustado)</span>
+          Preguntas después de "¿QUÉ RESPONDERÍAS?" - {Math.round(totalTime)} seg total
+          {isAdjusted && (
+            <span className={`ml-2 font-medium ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+              ({timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)} seg/pregunta)
+            </span>
           )}
         </p>
         
@@ -1354,7 +1359,7 @@ function FinalQuestionsSection({ finalQuestions, startTime, isTimerRunning, adju
           <div className="mt-3 flex items-center gap-4 text-xs flex-wrap">
             <div className="flex items-center gap-1 px-3 py-2 bg-red-100 rounded-lg">
               <Clock className="w-4 h-4 text-red-600" />
-              <span className="text-red-700 font-medium">Hora de inicio:</span>
+              <span className="text-red-700 font-medium">Inicio:</span>
               <span className="font-mono font-bold text-red-800 text-sm">
                 {isTimerRunning && adjustedTimes.start 
                   ? formatClockTime(adjustedTimes.start)
@@ -1364,7 +1369,7 @@ function FinalQuestionsSection({ finalQuestions, startTime, isTimerRunning, adju
             </div>
             <div className="flex items-center gap-1 px-3 py-2 bg-red-200 rounded-lg">
               <Clock className="w-4 h-4 text-red-700" />
-              <span className="text-red-700 font-medium">Hora de fin:</span>
+              <span className="text-red-700 font-medium">Fin:</span>
               <span className="font-mono font-bold text-red-900 text-sm">
                 {isTimerRunning && adjustedTimes.end
                   ? formatClockTime(adjustedTimes.end)
@@ -1372,15 +1377,18 @@ function FinalQuestionsSection({ finalQuestions, startTime, isTimerRunning, adju
                 }
               </span>
             </div>
-            {isTimerRunning && adjustedTimes.perQuestion && (
-              <div className="flex items-center gap-1 px-3 py-2 bg-orange-100 rounded-lg">
-                <Timer className="w-4 h-4 text-orange-600" />
-                <span className="text-orange-700 font-medium">Por pregunta:</span>
-                <span className="font-mono font-bold text-orange-800 text-sm">
-                  {perQuestionTime} seg
+            <div className={`flex items-center gap-1 px-3 py-2 rounded-lg ${isAdjusted ? (timeDiff > 0 ? 'bg-green-100' : 'bg-orange-100') : 'bg-zinc-100'}`}>
+              <Timer className={`w-4 h-4 ${isAdjusted ? (timeDiff > 0 ? 'text-green-600' : 'text-orange-600') : 'text-zinc-600'}`} />
+              <span className={`font-medium ${isAdjusted ? (timeDiff > 0 ? 'text-green-700' : 'text-orange-700') : 'text-zinc-700'}`}>Por pregunta:</span>
+              <span className={`font-mono font-bold text-sm ${isAdjusted ? (timeDiff > 0 ? 'text-green-800' : 'text-orange-800') : 'text-zinc-800'}`}>
+                {Math.round(perQuestionTime)} seg
+              </span>
+              {isAdjusted && (
+                <span className={`text-xs ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                  (orig: 35s)
                 </span>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </CardHeader>
@@ -1397,8 +1405,8 @@ function FinalQuestionsSection({ finalQuestions, startTime, isTimerRunning, adju
                 {q.text}
               </div>
               <div className="flex items-center gap-2 ml-3">
-                <span className="text-xs text-red-500 font-mono whitespace-nowrap">
-                  +{perQuestionTime} seg
+                <span className={`text-xs font-mono whitespace-nowrap ${isAdjusted ? (timeDiff > 0 ? 'text-green-600' : 'text-orange-600') : 'text-red-500'}`}>
+                  +{Math.round(perQuestionTime)} seg
                 </span>
                 {startTime && (
                   <span className="text-xs bg-red-200 text-red-700 px-2 py-1 rounded font-mono whitespace-nowrap">
