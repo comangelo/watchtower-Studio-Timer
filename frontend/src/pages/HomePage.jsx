@@ -126,6 +126,9 @@ export default function HomePage() {
     const saved = localStorage.getItem('pdfTimer_alertTimes');
     return saved !== null ? JSON.parse(saved) : { firstAlert: 5, secondAlert: 1 };
   });
+  
+  // Presentation mode
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
 
   // Save preferences to localStorage
   useEffect(() => {
