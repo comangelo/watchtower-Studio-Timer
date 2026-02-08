@@ -48,7 +48,7 @@ export function FinalQuestionsSection({
           <Badge variant="destructive" className="ml-2">{finalQuestions.length}</Badge>
         </CardTitle>
         <p className="text-sm text-red-600">
-          Preguntas después de "¿QUÉ RESPONDERÍAS?" - {Math.round(totalTime)} seg total
+          Preguntas después de "¿QUÉ RESPONDERÍA?" - {Math.round(totalTime)} seg total
           {isAdjusted && (
             <span className={`ml-2 font-medium ${timeDiff > 0 ? 'text-green-600' : isLowTime ? 'text-red-600 font-bold' : 'text-orange-600'}`}>
               ({timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)} seg/pregunta)

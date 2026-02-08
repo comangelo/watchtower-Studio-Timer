@@ -513,7 +513,7 @@ export default function HomePage() {
                           Este documento tiene {analysisResult.final_questions.length} preguntas de repaso
                         </p>
                         <p className="text-sm text-orange-600">
-                          Aparecen después de "¿QUÉ RESPONDERÍAS?"
+                          Aparecen después de "¿QUÉ RESPONDERÍA?"
                         </p>
                       </div>
                     </div>
