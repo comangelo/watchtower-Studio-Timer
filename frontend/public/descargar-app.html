@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descargar APK - Atalaya Timer</title>
+    <title>Descargar App - Atalaya Timer</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,7 @@
             padding: 40px 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
         .header {
@@ -75,6 +75,9 @@
         .card h2 .badge.blue {
             background: #3b82f6;
         }
+        .card h2 .badge.purple {
+            background: #8b5cf6;
+        }
         .steps {
             list-style: none;
             counter-reset: step;
@@ -105,6 +108,9 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
+        .steps.ios li::before {
+            background: #000;
+        }
         .steps li strong {
             color: #1e293b;
         }
@@ -134,6 +140,13 @@
         }
         .btn-secondary:hover {
             background: #2563eb;
+        }
+        .btn-dark {
+            background: #000;
+            color: white;
+        }
+        .btn-dark:hover {
+            background: #333;
         }
         .btn-outline {
             background: white;
@@ -179,6 +192,13 @@
             color: #92400e;
             font-size: 0.9rem;
         }
+        .note.info {
+            background: #dbeafe;
+            border-left-color: #3b82f6;
+        }
+        .note.info p {
+            color: #1e40af;
+        }
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -208,6 +228,61 @@
             color: #475569;
             font-size: 0.9rem;
         }
+        .device-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+        .device-tab {
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .device-tab.android {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .device-tab.android:hover, .device-tab.android.active {
+            background: #22c55e;
+            color: white;
+        }
+        .device-tab.ios {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+        .device-tab.ios:hover, .device-tab.ios.active {
+            background: #000;
+            color: white;
+        }
+        .visual-guide {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .visual-guide .icon {
+            font-size: 2.5rem;
+        }
+        .visual-guide .text {
+            flex: 1;
+        }
+        .visual-guide .text strong {
+            display: block;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+        .visual-guide .text span {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -219,28 +294,17 @@
                     <polyline points="12 6 12 12 16 14"/>
                 </svg>
             </div>
-            <h1>Calculadora de Tiempo</h1>
+            <h1>Instalar Aplicación</h1>
             <p class="subtitle">ATALAYA DE ESTUDIO</p>
         </div>
 
-        <!-- Opción 1: PWA -->
+        <!-- URL de la app -->
         <div class="card">
-            <h2>📱 Opción 1: Instalar como App <span class="badge">Recomendado</span></h2>
-            <p style="color: #64748b; margin-bottom: 20px;">La forma más rápida. Instala directamente desde tu navegador Chrome.</p>
-            
-            <ol class="steps">
-                <li><strong>Abre Chrome</strong> en tu dispositivo Android</li>
-                <li>Visita la URL de la aplicación (ver abajo)</li>
-                <li>Toca el menú <strong>⋮</strong> (tres puntos)</li>
-                <li>Selecciona <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla de inicio"</strong></li>
-                <li>¡Listo! Tendrás el ícono en tu pantalla</li>
-            </ol>
-
+            <h2>🔗 URL de la Aplicación</h2>
             <div class="url-box">
-                <p style="color: #64748b;">URL de la aplicación:</p>
+                <p style="color: #64748b;">Abre esta dirección en tu navegador:</p>
                 <code>https://atalaya-timer.preview.emergentagent.com</code>
             </div>
-
             <div class="buttons">
                 <a href="https://atalaya-timer.preview.emergentagent.com" class="btn btn-primary" target="_blank">
                     🚀 Abrir Aplicación
@@ -248,67 +312,96 @@
             </div>
         </div>
 
-        <!-- Opción 2: PWABuilder -->
+        <!-- Android -->
         <div class="card">
-            <h2>📦 Opción 2: Descargar APK <span class="badge blue">Avanzado</span></h2>
-            <p style="color: #64748b; margin-bottom: 20px;">Genera un archivo APK usando PWABuilder de Microsoft (gratis).</p>
+            <h2>🤖 Instalar en Android <span class="badge">Chrome</span></h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Instala la app directamente desde Chrome en tu dispositivo Android.</p>
             
             <ol class="steps">
-                <li>Haz clic en <strong>"Ir a PWABuilder"</strong></li>
-                <li>Pega la URL de la app y haz clic en <strong>"Start"</strong></li>
-                <li>Espera el análisis y haz clic en <strong>"Package for stores"</strong></li>
-                <li>Selecciona <strong>"Android"</strong> → <strong>"Download"</strong></li>
-                <li>Descarga el archivo <strong>.apk</strong> en tu dispositivo</li>
-                <li>Abre el APK para instalar (habilita "Orígenes desconocidos" si es necesario)</li>
+                <li>Abre <strong>Chrome</strong> en tu dispositivo Android</li>
+                <li>Visita la URL: <strong>https://atalaya-timer.preview.emergentagent.com</strong></li>
+                <li>Toca el menú <strong>⋮</strong> (tres puntos verticales arriba a la derecha)</li>
+                <li>Selecciona <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla de inicio"</strong></li>
+                <li>Confirma tocando <strong>"Instalar"</strong></li>
             </ol>
 
-            <div class="url-box">
-                <p style="color: #64748b;">Copia esta URL para PWABuilder:</p>
-                <code>https://atalaya-timer.preview.emergentagent.com</code>
+            <div class="visual-guide">
+                <div class="icon">📱</div>
+                <div class="text">
+                    <strong>¡Listo!</strong>
+                    <span>Encontrarás el ícono de "Atalaya Timer" en tu pantalla de inicio</span>
+                </div>
             </div>
 
-            <div class="buttons">
-                <a href="https://www.pwabuilder.com/" class="btn btn-secondary" target="_blank">
-                    🔧 Ir a PWABuilder
-                </a>
-                <a href="https://atalaya-timer.preview.emergentagent.com/manifest.json" class="btn btn-outline" target="_blank">
-                    📄 Ver Manifest
-                </a>
+            <div class="note info">
+                <p>💡 <strong>Alternativa:</strong> Si prefieres un archivo APK, visita la <a href="/guia-apk.html" style="color: #1e40af; font-weight: 600;">Guía para generar APK</a></p>
+            </div>
+        </div>
+
+        <!-- iPhone/iPad -->
+        <div class="card">
+            <h2>🍎 Instalar en iPhone / iPad <span class="badge" style="background: #000;">Safari</span></h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Instala la app usando Safari en tu dispositivo iOS.</p>
+            
+            <ol class="steps ios">
+                <li>Abre <strong>Safari</strong> en tu iPhone o iPad (¡debe ser Safari!)</li>
+                <li>Visita la URL: <strong>https://atalaya-timer.preview.emergentagent.com</strong></li>
+                <li>Toca el botón <strong>Compartir</strong> <span style="display: inline-block; width: 24px; height: 24px; background: #007AFF; color: white; border-radius: 6px; text-align: center; line-height: 24px; font-size: 14px;">↑</span> (cuadrado con flecha hacia arriba)</li>
+                <li>Desplázate y selecciona <strong>"Agregar a pantalla de inicio"</strong></li>
+                <li>Toca <strong>"Agregar"</strong> en la esquina superior derecha</li>
+            </ol>
+
+            <div class="visual-guide">
+                <div class="icon">📲</div>
+                <div class="text">
+                    <strong>¡Instalado!</strong>
+                    <span>La app aparecerá en tu pantalla de inicio como cualquier otra aplicación</span>
+                </div>
             </div>
 
             <div class="note">
-                <p><strong>💡 Nota:</strong> PWABuilder es un servicio gratuito de Microsoft que convierte aplicaciones web progresivas (PWA) en archivos APK nativos para Android.</p>
+                <p>⚠️ <strong>Importante:</strong> Debes usar <strong>Safari</strong>. Chrome y otros navegadores en iOS no permiten instalar PWAs en la pantalla de inicio.</p>
             </div>
         </div>
 
         <!-- Características -->
         <div class="card">
-            <h2>✨ Características de la App</h2>
+            <h2>✨ Características de la App Instalada</h2>
             <div class="features">
                 <div class="feature">
-                    <div class="feature-icon">📊</div>
-                    <span>Análisis de PDF</span>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">⏱️</div>
-                    <span>Cronómetro integrado</span>
-                </div>
-                <div class="feature">
                     <div class="feature-icon">📱</div>
-                    <span>Funciona offline</span>
+                    <span>Pantalla completa</span>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🚀</div>
+                    <span>Inicio rápido</span>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">🔔</div>
                     <span>Alertas sonoras</span>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🖥️</div>
-                    <span>Modo presentación</span>
+                    <div class="feature-icon">📴</div>
+                    <span>Funciona offline</span>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">📤</div>
-                    <span>Exportar a PDF</span>
+                    <div class="feature-icon">🔄</div>
+                    <span>Siempre actualizada</span>
                 </div>
+                <div class="feature">
+                    <div class="feature-icon">💾</div>
+                    <span>Poco espacio</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recursos -->
+        <div class="card">
+            <h2>📚 Recursos Adicionales</h2>
+            <div class="buttons">
+                <a href="/" class="btn btn-primary">📱 Abrir App</a>
+                <a href="/manual.html" class="btn btn-outline">📖 Manual de Usuario</a>
+                <a href="/guia-apk.html" class="btn btn-outline">📦 Generar APK</a>
             </div>
         </div>
     </div>
