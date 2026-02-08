@@ -235,6 +235,34 @@ export default function HomePage() {
     toast.info(`Volviendo al párrafo #${prevIndex + 1}`);
   }, [currentManualParagraph]);
 
+  // Check for low question time alert
+  const [lowTimeAlertShown, setLowTimeAlertShown] = useState(false);
+  
+  useEffect(() => {
+    if (!isTimerRunning || !analysisResult) return;
+    
+    const adjustedTimes = getAdjustedFinalQuestionsTime();
+    if (!adjustedTimes.perQuestion) return;
+    
+    const timePerQuestion = adjustedTimes.perQuestion;
+    
+    // Alert when time per question is less than 20 seconds
+    if (timePerQuestion < 20 && !lowTimeAlertShown) {
+      setLowTimeAlertShown(true);
+      if (soundEnabled) playNotificationSound('urgent');
+      triggerVibration([300, 100, 300, 100, 300]);
+      toast.error(`⚠️ ¡Alerta! Solo ${Math.round(timePerQuestion)} seg por pregunta. ¡Acelera la lectura!`, { 
+        duration: 10000,
+        important: true
+      });
+    }
+    
+    // Reset alert if time goes back above 25 seconds
+    if (timePerQuestion >= 25 && lowTimeAlertShown) {
+      setLowTimeAlertShown(false);
+    }
+  }, [isTimerRunning, analysisResult, getAdjustedFinalQuestionsTime, lowTimeAlertShown, soundEnabled, playNotificationSound, triggerVibration]);
+
   // Calculate adjusted time for final questions based on manual progress
   // READING time is FIXED, QUESTION time ADJUSTS based on remaining time
   const getAdjustedFinalQuestionsTime = useCallback(() => {
