@@ -518,13 +518,16 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     - Questions: Size ~9.0, number in medium/bold font, text in regular font
     - Question format: "1, 2." or "14, 15." for multiple paragraphs
     - Questions may span multiple lines at size 9.0
-    - Final questions: After "¿QUÉ RESPONDERÍA?" marker
+    - Final questions: After horizontal line separator at the bottom
     """
     lines = extract_text_with_sizes(pdf_bytes)
     
     if not lines:
         text = extract_text_from_pdf(pdf_bytes)
         return analyze_pdf_content(text, filename)
+    
+    # Detect horizontal line position for final questions section
+    horizontal_line_info = detect_horizontal_line_separator(pdf_bytes)
     
     # Identify font sizes used in document
     size_counts = {}
