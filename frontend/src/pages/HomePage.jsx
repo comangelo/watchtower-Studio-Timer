@@ -442,49 +442,56 @@ export default function HomePage() {
 
               {/* Paragraph Progress Indicator */}
               {isTimerRunning && (
-                <Card className="border-green-200 bg-green-50/50 shadow-sm">
-                  <CardContent className="p-4">
+                <Card className="border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-white shadow-md rounded-2xl">
+                  <CardContent className="p-5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                          <Check className="w-4 h-4 text-white" />
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200">
+                          <span className="text-white font-bold text-lg">{currentManualParagraph + 1}</span>
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-green-800">
-                            Párrafo actual: <span className="font-bold">#{currentManualParagraph + 1}</span> de {analysisResult.total_paragraphs}
+                          <p className="text-base font-bold text-slate-800">
+                            Párrafo {currentManualParagraph + 1} <span className="text-slate-400 font-normal">de {analysisResult.total_paragraphs}</span>
                           </p>
-                          <p className="text-xs text-green-600">
-                            Usa los botones para avanzar manualmente
+                          <p className="text-sm text-slate-500">
+                            Usa los botones para navegar
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button size="sm" variant="outline" onClick={goToPreviousParagraph} disabled={currentManualParagraph <= 0} className="text-green-700 border-green-300" data-testid="prev-paragraph-btn">
-                          <ChevronLeft className="w-4 h-4" />
+                        <Button 
+                          variant="outline" 
+                          onClick={goToPreviousParagraph} 
+                          disabled={currentManualParagraph <= 0} 
+                          className="rounded-full w-12 h-12 border-2 border-slate-300 hover:border-orange-400 hover:bg-orange-50 disabled:opacity-40" 
+                          data-testid="prev-paragraph-btn"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={goToNextParagraph} disabled={currentManualParagraph >= analysisResult.paragraphs.length - 1} className="text-green-700 border-green-300" data-testid="next-paragraph-btn">
-                          <ChevronRight className="w-4 h-4" />
+                        <Button 
+                          onClick={goToNextParagraph} 
+                          disabled={currentManualParagraph >= analysisResult.paragraphs.length - 1} 
+                          className="rounded-full w-12 h-12 bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-200 disabled:opacity-40" 
+                          data-testid="next-paragraph-btn"
+                        >
+                          <ChevronRight className="w-5 h-5" />
                         </Button>
                       </div>
                     </div>
                     
                     {/* Adjusted Times Summary */}
                     {adjustedFinalTimes.perQuestion && adjustedFinalTimes.perQuestion !== 35 && (
-                      <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Clock className="w-4 h-4 text-green-600" />
-                          <span className="text-sm font-medium text-green-800">Tiempos ajustados</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-green-600">Tiempo por pregunta:</span>
-                            <span className={`ml-2 font-mono font-bold ${adjustedFinalTimes.perQuestion < 20 ? 'text-orange-600' : 'text-green-800'}`}>
+                      <div className={`mt-4 p-4 rounded-xl border-2 ${adjustedFinalTimes.perQuestion < 20 ? 'bg-orange-100 border-orange-300' : 'bg-slate-50 border-slate-200'}`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Clock className={`w-4 h-4 ${adjustedFinalTimes.perQuestion < 20 ? 'text-orange-600' : 'text-slate-600'}`} />
+                            <span className="text-sm font-medium text-slate-700">Tiempo por pregunta:</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className={`font-mono text-xl font-bold ${adjustedFinalTimes.perQuestion < 20 ? 'text-orange-600' : 'text-slate-800'}`}>
                               {Math.round(adjustedFinalTimes.perQuestion)} seg
                             </span>
-                          </div>
-                          <div>
-                            <span className="text-green-600">Original:</span>
-                            <span className="ml-2 font-mono text-green-700">35 seg</span>
+                            <span className="text-sm text-slate-400">(orig: 35s)</span>
                           </div>
                         </div>
                       </div>
@@ -495,14 +502,14 @@ export default function HomePage() {
 
               {/* Final Questions Alert */}
               {analysisResult.final_questions?.length > 0 && !isTimerRunning && (
-                <Card className="border-orange-300 bg-orange-50 shadow-sm" data-testid="final-questions-alert">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
-                        <AlertCircle className="w-5 h-5 text-white" />
+                <Card className="border-2 border-orange-300 bg-orange-50 shadow-md rounded-2xl" data-testid="final-questions-alert">
+                  <CardContent className="p-5">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200">
+                        <AlertCircle className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <p className="font-medium text-orange-800">
+                        <p className="font-bold text-slate-800">
                           Este documento tiene {analysisResult.final_questions.length} preguntas de repaso
                         </p>
                         <p className="text-sm text-orange-600">
