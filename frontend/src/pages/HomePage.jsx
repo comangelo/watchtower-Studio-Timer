@@ -810,6 +810,8 @@ export default function HomePage() {
                         index={index}
                         startTime={startTime}
                         paragraphTimes={getParagraphTimes(index)}
+                        onStartFromHere={() => startFromParagraph(index)}
+                        isTimerRunning={isTimerRunning}
                       />
                     ))}
                   </div>
