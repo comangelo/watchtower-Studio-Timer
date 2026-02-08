@@ -14,83 +14,77 @@ export function TimerDisplay({
   onReset,
 }) {
   return (
-    <Card className="border-2 border-slate-200 shadow-lg rounded-2xl overflow-hidden" data-testid="main-timer-card">
-      <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-900 pb-4 pt-5">
-        <CardTitle className="font-heading text-sm uppercase tracking-widest text-slate-300 text-center">
+    <Card className="border border-slate-200 shadow-sm rounded-2xl overflow-hidden" data-testid="main-timer-card">
+      <CardHeader className="bg-slate-800 pb-3 pt-4">
+        <CardTitle className="text-sm text-slate-300 text-center font-medium">
           Cronómetro de Lectura
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6 text-center bg-white">
         {/* Current Time Display */}
         {startTime && (
-          <div className="mb-5 p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <div className="flex items-center justify-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-green-600" />
-                </div>
-                <div className="text-left">
-                  <span className="text-slate-500 text-xs block">Inicio</span>
-                  <span className="font-mono font-bold text-slate-800">{formatClockTime(startTime)}</span>
-                </div>
-              </div>
-              <div className="text-slate-300">→</div>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                  <Clock className="w-4 h-4 text-red-600" />
-                </div>
-                <div className="text-left">
-                  <span className="text-slate-500 text-xs block">Fin</span>
-                  <span className="font-mono font-bold text-slate-800">{formatClockTime(endTime)}</span>
-                </div>
-              </div>
+          <div className="mb-5 flex items-center justify-center gap-6 text-sm">
+            <div className="text-center">
+              <span className="text-slate-400 text-xs block mb-1">Inicio</span>
+              <span className="text-lg font-light text-slate-700" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{formatClockTime(startTime)}</span>
+            </div>
+            <div className="text-slate-300">—</div>
+            <div className="text-center">
+              <span className="text-slate-400 text-xs block mb-1">Fin</span>
+              <span className="text-lg font-light text-slate-700" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>{formatClockTime(endTime)}</span>
             </div>
           </div>
         )}
         
         {/* Main Timer */}
         <div className="py-4">
-          <p className="font-mono text-6xl lg:text-7xl font-bold text-slate-800 tracking-tighter tabular-nums" data-testid="elapsed-time">
+          <p 
+            className="text-6xl lg:text-7xl font-light text-slate-800 tracking-tight" 
+            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            data-testid="elapsed-time"
+          >
             {formatTime(elapsedTime)}
           </p>
-          <p className="text-slate-500 mt-2 text-sm">Tiempo transcurrido</p>
+          <p className="text-slate-400 mt-3 text-sm">Transcurrido</p>
         </div>
         
         {/* Progress Bar */}
         <div className="mt-4 mb-6">
-          <Progress value={progressPercentage} className="h-3 rounded-full" />
-          <p className="text-xs text-slate-400 mt-2 font-medium">{Math.round(progressPercentage)}% completado</p>
+          <Progress value={progressPercentage} className="h-2 rounded-full" />
+          <p className="text-xs text-slate-400 mt-2">{Math.round(progressPercentage)}%</p>
         </div>
 
-        {/* Timer Controls - Large and Visible */}
+        {/* Timer Controls */}
         <div className="flex items-center justify-center gap-4">
           <Button 
             onClick={onToggle}
-            className={`rounded-full w-20 h-20 shadow-xl transition-all active:scale-95 ${
+            className={`rounded-full shadow-lg transition-all active:scale-95 ${
               isTimerRunning 
-                ? 'bg-slate-700 hover:bg-slate-800 shadow-slate-300' 
-                : 'bg-orange-500 hover:bg-orange-600 shadow-orange-300'
+                ? 'bg-slate-700 hover:bg-slate-800' 
+                : 'bg-orange-500 hover:bg-orange-600'
             }`}
+            style={{ width: '72px', height: '72px' }}
             data-testid="timer-toggle-btn"
           >
             {isTimerRunning ? (
-              <Pause className="w-8 h-8" />
+              <Pause className="w-7 h-7" />
             ) : (
-              <Play className="w-8 h-8 ml-1" />
+              <Play className="w-7 h-7 ml-0.5" />
             )}
           </Button>
           <Button 
             variant="outline"
             onClick={onReset}
-            className="rounded-full w-16 h-16 border-2 border-slate-300 hover:border-slate-400 hover:bg-slate-50"
+            className="rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+            style={{ width: '52px', height: '52px' }}
             data-testid="timer-reset-btn"
           >
-            <RotateCcw className="w-6 h-6 text-slate-600" />
+            <RotateCcw className="w-5 h-5 text-slate-500" />
           </Button>
         </div>
         
         {!startTime && (
-          <p className="text-sm text-slate-400 mt-5 bg-slate-50 py-2 px-4 rounded-full inline-block">
+          <p className="text-sm text-slate-400 mt-5">
             Presiona ▶ para iniciar
           </p>
         )}
