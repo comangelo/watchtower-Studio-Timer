@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+import { Upload, Clock, MessageCircleQuestion } from "lucide-react";
 
 export function UploadZone({ 
   onFileSelect, 
@@ -17,26 +17,29 @@ export function UploadZone({
   };
 
   return (
-    <div className="animate-in max-w-2xl mx-auto">
-      <div className="text-center mb-12">
-        <h2 className="font-heading font-bold text-4xl md:text-5xl text-zinc-900 tracking-tight mb-4">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-10">
+        <h2 className="font-heading font-extrabold text-4xl md:text-5xl text-slate-900 tracking-tight mb-4">
           Analiza tu PDF
         </h2>
-        <p className="text-lg text-zinc-500 max-w-md mx-auto">
+        <p className="text-lg text-slate-500 max-w-md mx-auto leading-relaxed">
           Sube un artículo y calcula el tiempo necesario para leerlo en voz alta
         </p>
       </div>
 
+      {/* Upload Zone */}
       <div
         onClick={handleClick}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         className={`
-          upload-zone cursor-pointer border-2 border-dashed rounded-2xl p-16 text-center
+          cursor-pointer border-2 border-dashed rounded-3xl p-12 md:p-16 text-center
+          transition-all duration-300 ease-out
           ${isDragging 
-            ? 'border-orange-500 bg-orange-50/30' 
-            : 'border-zinc-200 hover:border-orange-500 hover:bg-orange-50/10'
+            ? 'border-orange-500 bg-orange-50 scale-[1.02] shadow-xl shadow-orange-100' 
+            : 'border-slate-300 bg-slate-50/50 hover:border-orange-400 hover:bg-white hover:shadow-lg'
           }
           ${isLoading ? 'opacity-50 pointer-events-none' : ''}
         `}
@@ -51,32 +54,32 @@ export function UploadZone({
           data-testid="file-input"
         />
         
+        {/* Icon */}
         <div className={`
-          w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center
-          ${isDragging ? 'bg-orange-100' : 'bg-zinc-100'}
+          w-24 h-24 mx-auto mb-8 rounded-2xl flex items-center justify-center
+          transition-all duration-300
+          ${isDragging ? 'bg-orange-500 rotate-6' : 'bg-slate-200'}
         `}>
-          <Upload className={`w-10 h-10 ${isDragging ? 'text-orange-500' : 'text-zinc-400'}`} />
+          <Upload className={`w-12 h-12 transition-colors ${isDragging ? 'text-white' : 'text-slate-500'}`} />
         </div>
         
-        <p className="font-heading font-semibold text-xl text-zinc-900 mb-2">
-          {isLoading ? 'Analizando...' : 'Arrastra tu PDF aquí'}
+        {/* Text */}
+        <p className="font-heading font-bold text-2xl text-slate-800 mb-2">
+          {isLoading ? 'Analizando documento...' : 'Arrastra tu PDF aquí'}
         </p>
-        <p className="text-zinc-500">
+        <p className="text-slate-500 text-lg">
           o haz clic para seleccionar un archivo
         </p>
         
-        <div className="flex items-center justify-center gap-6 mt-8 text-sm text-zinc-400">
-          <div className="flex items-center gap-2">
-            <span className="w-5 h-5 bg-zinc-100 rounded-full flex items-center justify-center">
-              <span className="w-2 h-2 bg-zinc-400 rounded-full" />
-            </span>
-            180 palabras/min
+        {/* Features Pills */}
+        <div className="flex flex-wrap items-center justify-center gap-4 mt-10">
+          <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
+            <Clock className="w-4 h-4 text-orange-500" />
+            <span className="text-sm text-slate-600 font-medium">180 palabras/min</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-5 h-5 bg-zinc-100 rounded-full flex items-center justify-center">
-              <span className="w-2 h-2 bg-zinc-400 rounded-full" />
-            </span>
-            35 seg/respuesta
+          <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
+            <MessageCircleQuestion className="w-4 h-4 text-orange-500" />
+            <span className="text-sm text-slate-600 font-medium">35 seg/respuesta</span>
           </div>
         </div>
       </div>
