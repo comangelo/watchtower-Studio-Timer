@@ -356,7 +356,7 @@ export default function PresentationMode({
         {/* Controls */}
         <div className="flex items-center gap-6">
           <Button
-            onClick={toggleTimer}
+            onClick={onToggleTimer}
             size="lg"
             className={`
               rounded-full w-20 h-20 p-0 text-white
@@ -373,7 +373,7 @@ export default function PresentationMode({
             }
           </Button>
           <Button
-            onClick={resetTimer}
+            onClick={onResetTimer}
             variant="outline"
             size="lg"
             className={`rounded-full w-14 h-14 p-0 ${t.buttonOutline}`}
