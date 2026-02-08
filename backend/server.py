@@ -51,7 +51,8 @@ class PDFAnalysisResult(BaseModel):
     total_questions: int
     total_reading_time_seconds: float
     total_question_time_seconds: float
-    total_time_seconds: float
+    total_time_seconds: float = 3600  # Always 60 minutes (3600 seconds)
+    fixed_duration: bool = True  # Indicates duration is fixed at 60 min
     paragraphs: List[ParagraphAnalysis]
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -99,29 +100,43 @@ def detect_questions(text: str, paragraph_number: int) -> List[QuestionInfo]:
     """
     Detect questions in paragraph that start with the paragraph number.
     Questions are identified by their paragraph number at the beginning.
-    Example: paragraph 5 has questions starting with "5." or "5)"
+    Format: "6 ¿Cómo podría...?" or "6. ¿Cuál es...?"
     """
     questions = []
     
-    # Pattern to match questions starting with paragraph number
-    # Matches patterns like "5.", "5)", "5-", "5:" followed by text ending with "?"
-    pattern = rf'(?:^|\n)\s*{paragraph_number}[\.\)\-:]\s*([^\n]*\?)'
-    matches = re.findall(pattern, text, re.MULTILINE | re.IGNORECASE)
+    # Split text into lines to find question lines
+    lines = text.split('\n')
     
-    for match in matches:
-        questions.append(QuestionInfo(
-            text=match.strip(),
-            answer_time=QUESTION_ANSWER_TIME
-        ))
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+            
+        # Pattern 1: "6 ¿pregunta?" - number followed by space and question with ¿?
+        pattern1 = rf'^{paragraph_number}\s+([¿\?].*\?|.*\?)$'
+        # Pattern 2: "6. ¿pregunta?" or "6) ¿pregunta?" - number with punctuation
+        pattern2 = rf'^{paragraph_number}[\.\)\-:\s]+([¿\?].*\?|.*\?)$'
+        
+        match = re.match(pattern1, line, re.IGNORECASE)
+        if not match:
+            match = re.match(pattern2, line, re.IGNORECASE)
+        
+        if match:
+            question_text = match.group(1).strip()
+            if len(question_text) > 5:
+                questions.append(QuestionInfo(
+                    text=question_text,
+                    answer_time=QUESTION_ANSWER_TIME
+                ))
     
-    # Also detect questions that just end with "?" within the paragraph
-    # if they're on their own line or clearly separated
+    # If no questions found with paragraph number, look for standalone questions
+    # that contain ¿ and ? in the text
     if not questions:
-        # Look for any question marks in the text
-        question_sentences = re.findall(r'([^.!?\n]+\?)', text)
-        for q in question_sentences:
+        # Find all text between ¿ and ?
+        question_matches = re.findall(r'(¿[^?]+\?)', text)
+        for q in question_matches:
             q = q.strip()
-            if len(q) > 10:  # Filter out very short matches
+            if len(q) > 10:
                 questions.append(QuestionInfo(
                     text=q,
                     answer_time=QUESTION_ANSWER_TIME
@@ -160,6 +175,9 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
             total_time_seconds=round(reading_time + question_time, 2)
         ))
     
+    # Total time is ALWAYS 60 minutes (3600 seconds)
+    FIXED_TOTAL_TIME = 3600  # 60 minutes in seconds
+    
     return PDFAnalysisResult(
         filename=filename,
         total_words=total_words,
@@ -167,7 +185,8 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
         total_questions=total_questions,
         total_reading_time_seconds=round(total_reading_time, 2),
         total_question_time_seconds=round(total_question_time, 2),
-        total_time_seconds=round(total_reading_time + total_question_time, 2),
+        total_time_seconds=FIXED_TOTAL_TIME,
+        fixed_duration=True,
         paragraphs=analyzed_paragraphs
     )
 
