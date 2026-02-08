@@ -905,6 +905,37 @@ export default function HomePage() {
                 </Card>
               )}
 
+              {/* Final Questions Section */}
+              {analysisResult.final_questions && analysisResult.final_questions.length > 0 && (
+                <Card className="border-red-300 bg-red-50/30 shadow-sm" data-testid="final-questions-section">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="font-heading text-lg text-red-700 flex items-center gap-2">
+                      <AlertCircle className="w-5 h-5" />
+                      Preguntas Finales
+                      <Badge variant="destructive" className="ml-2">{analysisResult.final_questions.length}</Badge>
+                    </CardTitle>
+                    <p className="text-sm text-red-600">
+                      Preguntas después de "¿QUÉ RESPONDERÍAS?" - {analysisResult.final_questions.length * 35} seg total
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {analysisResult.final_questions.map((q, idx) => (
+                      <div 
+                        key={idx}
+                        className="bg-red-100 border-l-4 border-red-500 rounded-lg py-3 px-4 text-sm text-red-800"
+                        data-testid={`final-question-${idx}`}
+                      >
+                        <MessageCircleQuestion className="w-4 h-4 inline mr-2 text-red-500" />
+                        {q.text}
+                        <span className="ml-2 text-xs text-red-500 font-mono">
+                          (+{q.answer_time} seg)
+                        </span>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Paragraphs List */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
