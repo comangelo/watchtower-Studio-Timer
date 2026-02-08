@@ -192,17 +192,17 @@ export default function PresentationMode({
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        exitPresentationMode();
+        onExit();
       }
       if (e.key === ' ' || e.key === 'Space') {
         e.preventDefault();
-        toggleTimer();
+        onToggleTimer();
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [exitPresentationMode, toggleTimer]);
+  }, [onExit, onToggleTimer]);
 
   return (
     <div 
