@@ -89,6 +89,63 @@ export default function HomePage() {
   
   const timerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const exportRef = useRef(null);
+
+  // Export functions
+  const exportToImage = async () => {
+    if (!exportRef.current) return;
+    
+    toast.loading("Generando imagen...");
+    try {
+      const canvas = await html2canvas(exportRef.current, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+      });
+      
+      const link = document.createElement('a');
+      link.download = `cronograma-${analysisResult.filename.replace('.pdf', '')}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      toast.dismiss();
+      toast.success("Imagen exportada correctamente");
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Error al exportar imagen");
+      console.error(error);
+    }
+  };
+
+  const exportToPDF = async () => {
+    if (!exportRef.current) return;
+    
+    toast.loading("Generando PDF...");
+    try {
+      const canvas = await html2canvas(exportRef.current, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`cronograma-${analysisResult.filename.replace('.pdf', '')}.pdf`);
+      
+      toast.dismiss();
+      toast.success("PDF exportado correctamente");
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Error al exportar PDF");
+      console.error(error);
+    }
+  };
 
   // Calculate paragraph times based on start time
   const getParagraphTimes = useCallback((paragraphIndex) => {
