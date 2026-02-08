@@ -442,11 +442,11 @@ export default function HomePage() {
 
               {/* Paragraph Progress Indicator */}
               {isTimerRunning && (
-                <Card className="border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-white shadow-md rounded-2xl">
+                <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-white shadow-md rounded-2xl">
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-200">
                           <span className="text-white font-bold text-lg">{currentManualParagraph + 1}</span>
                         </div>
                         <div>
@@ -463,7 +463,7 @@ export default function HomePage() {
                           variant="outline" 
                           onClick={goToPreviousParagraph} 
                           disabled={currentManualParagraph <= 0} 
-                          className="rounded-full w-12 h-12 border-2 border-slate-300 hover:border-orange-400 hover:bg-orange-50 disabled:opacity-40" 
+                          className="rounded-full w-12 h-12 border-2 border-slate-300 hover:border-green-400 hover:bg-green-50 disabled:opacity-40" 
                           data-testid="prev-paragraph-btn"
                         >
                           <ChevronLeft className="w-5 h-5" />
@@ -471,7 +471,7 @@ export default function HomePage() {
                         <Button 
                           onClick={goToNextParagraph} 
                           disabled={currentManualParagraph >= analysisResult.paragraphs.length - 1} 
-                          className="rounded-full w-12 h-12 bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-200 disabled:opacity-40" 
+                          className="rounded-full w-12 h-12 bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 disabled:opacity-40" 
                           data-testid="next-paragraph-btn"
                         >
                           <ChevronRight className="w-5 h-5" />
