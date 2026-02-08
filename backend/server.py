@@ -332,6 +332,10 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
     """
     Extract questions that appear after the horizontal line separator.
     These are the final discussion questions (Preguntas de Repaso).
+    
+    The format can be:
+    1. Traditional: "1. ¿Pregunta?" numbered questions
+    2. Bullet points: A main question followed by bullet points (˛)
     """
     final_questions = []
     
@@ -343,7 +347,7 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
         line_page = line_info["page"]
         line_y = line_info["y_position"]
         
-        text_after_line = []
+        text_items = []  # List of (y_pos, font_size, text)
         
         # Get text from the page with the line, below the line
         if line_page >= 0 and line_page < len(doc):
@@ -352,35 +356,54 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
             
             for block in blocks:
                 if 'lines' in block:
-                    block_top = block.get('bbox', [0, 0, 0, 0])[1]
-                    # Only include text that starts below the line
-                    if block_top > line_y + 5:
-                        for line in block['lines']:
-                            line_text = ''
-                            for span in line['spans']:
-                                line_text += span['text']
-                            if line_text.strip():
-                                text_after_line.append(line_text.strip())
+                    for line in block['lines']:
+                        for span in line['spans']:
+                            text = span['text'].strip()
+                            font_size = span['size']
+                            y_pos = span['bbox'][1]
+                            # Only include text that starts below the line
+                            if y_pos > line_y + 5 and text:
+                                text_items.append((y_pos, font_size, text))
         
         # Also get text from pages after the line page
         for page_num in range(line_page + 1, len(doc)):
             page = doc[page_num]
-            page_text = page.get_text()
-            for line in page_text.split('\n'):
-                line = line.strip()
-                if line:
-                    # Skip song references
-                    if line.upper().startswith("CANCIÓN") or line.upper().startswith("CANCION"):
-                        continue
-                    text_after_line.append(line)
+            blocks = page.get_text('dict')['blocks']
+            for block in blocks:
+                if 'lines' in block:
+                    for line in block['lines']:
+                        for span in line['spans']:
+                            text = span['text'].strip()
+                            font_size = span['size']
+                            y_pos = span['bbox'][1]
+                            if text:
+                                text_items.append((y_pos + (page_num - line_page) * 1000, font_size, text))
         
         doc.close()
         
-        # Parse questions from text after the line
-        for line in text_after_line:
-            # Pattern: "número. pregunta?" - one or two digits, period, then question
-            match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', line, re.IGNORECASE)
-            if match:
+        # Sort by position
+        text_items.sort(key=lambda x: x[0])
+        
+        # Parse the questions
+        main_question = None
+        bullet_points = []
+        
+        for y_pos, font_size, text in text_items:
+            # Skip song references at the end
+            text_upper = text.upper()
+            if text_upper.startswith("CANCIÓN") or text_upper.startswith("CANCION"):
+                break
+            
+            # Skip bullet character alone
+            if text == '˛':
+                continue
+            
+            # Check if this is a main question (contains ?)
+            if '?' in text and not main_question:
+                main_question = text
+            # Check for traditional numbered format: "1. ¿Pregunta?"
+            elif re.match(r'^(\d{1,2})\.\s*(.+\?)$', text):
+                match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', text)
                 question_text = match.group(2).strip()
                 if len(question_text) > 5:
                     final_questions.append(QuestionInfo(
@@ -388,6 +411,28 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
                         answer_time=QUESTION_ANSWER_TIME,
                         is_final_question=True
                     ))
+            # Bullet point items (short phrases that follow the main question)
+            elif main_question and len(text) > 3 and len(text) < 100:
+                # This is likely a bullet point answer option
+                bullet_points.append(text)
+        
+        # If we have a main question with bullet points, create questions for each
+        if main_question and bullet_points:
+            for point in bullet_points:
+                # Combine main question context with bullet point
+                question_text = f"{main_question} → {point}"
+                final_questions.append(QuestionInfo(
+                    text=question_text,
+                    answer_time=QUESTION_ANSWER_TIME,
+                    is_final_question=True
+                ))
+        # If just a main question without bullets, add it directly
+        elif main_question and not final_questions:
+            final_questions.append(QuestionInfo(
+                text=main_question,
+                answer_time=QUESTION_ANSWER_TIME,
+                is_final_question=True
+            ))
         
         return final_questions
         
