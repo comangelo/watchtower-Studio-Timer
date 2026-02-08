@@ -195,27 +195,51 @@ export function ParagraphCard({
           {hasQuestions && (
             <CollapsibleContent>
               <div className="mt-4 space-y-2 pl-2 border-l-2 border-orange-200">
-                {paragraph.questions.map((q, qIndex) => (
-                  <div 
-                    key={qIndex}
-                    className={`rounded-xl py-3 px-4 text-sm ${
-                      q.is_final_question 
-                        ? 'bg-red-50 text-red-800 border border-red-200' 
-                        : 'bg-orange-50 text-orange-800 border border-orange-100'
-                    }`}
-                    data-testid={`question-${paragraph.number}-${qIndex}`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`} />
-                      <div className="flex-1">
-                        <span>{q.text}</span>
-                        <span className={`ml-2 text-xs font-mono ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`}>
-                          +{q.answer_time}s
-                        </span>
+                {paragraph.questions.map((q, qIndex) => {
+                  const displayTime = isTimerRunning && adjustedQuestionTime ? Math.round(adjustedQuestionTime) : q.answer_time;
+                  const isAdjusted = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime !== 35;
+                  const timeDiff = adjustedQuestionTime ? adjustedQuestionTime - 35 : 0;
+                  const isLowTime = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime < 20;
+                  
+                  return (
+                    <div 
+                      key={qIndex}
+                      className={`rounded-xl py-3 px-4 text-sm ${
+                        q.is_final_question 
+                          ? 'bg-red-50 text-red-800 border border-red-200' 
+                          : isLowTime
+                            ? 'bg-orange-100 text-orange-900 border border-orange-300'
+                            : 'bg-orange-50 text-orange-800 border border-orange-100'
+                      }`}
+                      data-testid={`question-${paragraph.number}-${qIndex}`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`} />
+                        <div className="flex-1 flex items-start justify-between">
+                          <span>{q.text}</span>
+                          <div className="flex items-center gap-1 ml-2 shrink-0">
+                            <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-full ${
+                              isLowTime 
+                                ? 'bg-orange-200 text-orange-700' 
+                                : q.is_final_question 
+                                  ? 'text-red-500' 
+                                  : isAdjusted
+                                    ? timeDiff > 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                                    : 'text-orange-500'
+                            }`}>
+                              +{displayTime}s
+                            </span>
+                            {isAdjusted && (
+                              <span className={`text-[10px] ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                                ({timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)})
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CollapsibleContent>
           )}
