@@ -147,26 +147,30 @@ def calculate_reading_time(word_count: int) -> float:
     return (word_count / WORDS_PER_MINUTE) * 60
 
 
-def detect_questions(text: str, paragraph_number: int, is_before_que_responderias: bool = False) -> List[QuestionInfo]:
+def detect_questions(text: str, paragraph_number: int, is_final_question: bool = False) -> List[QuestionInfo]:
     """
-    Detect questions in paragraph that start with the paragraph number.
-    Questions are identified by their paragraph number at the beginning.
-    Format: "6 ¿Cómo podría...?" or "6. ¿Cuál es...?"
+    Detect questions in paragraph that start with the paragraph number followed by a period.
+    Format: "6. ¿Cómo podría...?" or "6. ¿Cuál es...?"
+    Ignores "¿QUÉ RESPONDERÍAS?"
     """
     questions = []
     
     # Questions to ignore (case-insensitive)
-    IGNORED_QUESTIONS = [
-        "¿qué responderías?",
-        "que responderias",
+    IGNORED_PATTERNS = [
         "qué responderías",
+        "que responderias",
+        "qué responderías?",
+        "que responderias?",
     ]
     
     def is_ignored_question(q_text: str) -> bool:
         """Check if question should be ignored"""
         q_lower = q_text.lower().strip()
-        for ignored in IGNORED_QUESTIONS:
-            if ignored in q_lower or q_lower in ignored:
+        # Remove ¿ and ? for comparison
+        q_clean = q_lower.replace('¿', '').replace('?', '').strip()
+        for ignored in IGNORED_PATTERNS:
+            ignored_clean = ignored.replace('¿', '').replace('?', '').strip()
+            if ignored_clean in q_clean or q_clean in ignored_clean:
                 return True
         return False
     
@@ -177,46 +181,95 @@ def detect_questions(text: str, paragraph_number: int, is_before_que_responderia
         line = line.strip()
         if not line:
             continue
-            
-        # Pattern 1: "6 ¿pregunta?" - number followed by space and question with ¿?
-        pattern1 = rf'^{paragraph_number}\s+([¿\?].*\?|.*\?)$'
-        # Pattern 2: "6. ¿pregunta?" or "6) ¿pregunta?" - number with punctuation
-        pattern2 = rf'^{paragraph_number}[\.\)\-:\s]+([¿\?].*\?|.*\?)$'
         
-        match = re.match(pattern1, line, re.IGNORECASE)
+        # Primary Pattern: "6. ¿pregunta?" - number followed by period and question
+        # This is the main format: número + punto + pregunta
+        pattern_with_period = rf'^{paragraph_number}\.\s*([¿].*\?|.*\?)$'
+        
+        # Secondary patterns for flexibility
+        pattern_with_space = rf'^{paragraph_number}\s+([¿].*\?)$'
+        pattern_with_other = rf'^{paragraph_number}[\)\-:\s]+([¿].*\?)$'
+        
+        match = re.match(pattern_with_period, line, re.IGNORECASE)
         if not match:
-            match = re.match(pattern2, line, re.IGNORECASE)
+            match = re.match(pattern_with_space, line, re.IGNORECASE)
+        if not match:
+            match = re.match(pattern_with_other, line, re.IGNORECASE)
         
         if match:
             question_text = match.group(1).strip()
-            # Skip ignored questions
+            # Skip ignored questions like "¿QUÉ RESPONDERÍAS?"
             if is_ignored_question(question_text):
                 continue
             if len(question_text) > 5:
                 questions.append(QuestionInfo(
                     text=question_text,
                     answer_time=QUESTION_ANSWER_TIME,
-                    is_final_question=is_before_que_responderias
-                ))
-    
-    # If no questions found with paragraph number, look for standalone questions
-    # that contain ¿ and ? in the text
-    if not questions:
-        # Find all text between ¿ and ?
-        question_matches = re.findall(r'(¿[^?]+\?)', text)
-        for q in question_matches:
-            q = q.strip()
-            # Skip ignored questions
-            if is_ignored_question(q):
-                continue
-            if len(q) > 10:
-                questions.append(QuestionInfo(
-                    text=q,
-                    answer_time=QUESTION_ANSWER_TIME,
-                    is_final_question=is_before_que_responderias
+                    is_final_question=is_final_question
                 ))
     
     return questions
+
+
+def extract_final_questions(text: str) -> List[QuestionInfo]:
+    """
+    Extract questions that appear AFTER "¿QUÉ RESPONDERÍAS?" in the text.
+    These are the final discussion questions.
+    """
+    final_questions = []
+    
+    # Find the position of "¿QUÉ RESPONDERÍAS?"
+    text_lower = text.lower()
+    marker_patterns = [
+        "¿qué responderías?",
+        "que responderias?",
+        "¿qué responderías",
+        "que responderias"
+    ]
+    
+    marker_pos = -1
+    for pattern in marker_patterns:
+        pos = text_lower.find(pattern)
+        if pos != -1:
+            marker_pos = pos
+            break
+    
+    if marker_pos == -1:
+        return final_questions
+    
+    # Get text after the marker
+    # Find the end of the "¿QUÉ RESPONDERÍAS?" line
+    after_marker = text[marker_pos:]
+    newline_pos = after_marker.find('\n')
+    if newline_pos != -1:
+        text_after = after_marker[newline_pos + 1:]
+    else:
+        text_after = ""
+    
+    if not text_after.strip():
+        return final_questions
+    
+    # Find all questions in the text after the marker
+    # Pattern: number followed by period and question
+    lines = text_after.split('\n')
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        
+        # Pattern: "número. ¿pregunta?" 
+        match = re.match(r'^(\d+)\.\s*([¿].*\?)$', line, re.IGNORECASE)
+        if match:
+            question_text = match.group(2).strip()
+            if len(question_text) > 5:
+                final_questions.append(QuestionInfo(
+                    text=question_text,
+                    answer_time=QUESTION_ANSWER_TIME,
+                    is_final_question=True
+                ))
+    
+    return final_questions
 
 
 def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
