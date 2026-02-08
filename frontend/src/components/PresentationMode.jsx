@@ -217,7 +217,7 @@ export default function PresentationMode({
           </div>
           <div>
             <h1 className="font-heading font-bold text-lg">{analysisResult.filename}</h1>
-            <p className={`text-sm ${t.textMuted}`}>Modo Presentación</p>
+            <p className={`text-sm ${t.textMuted}`}>ATALAYA DE ESTUDIO</p>
           </div>
         </div>
         
