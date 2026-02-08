@@ -196,6 +196,22 @@ export default function HomePage() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, [isPresentationMode]);
 
+  // Get current paragraph index based on elapsed time
+  const getCurrentParagraphIndex = useCallback(() => {
+    if (!analysisResult) return -1;
+    
+    let cumulativeTime = 0;
+    for (let i = 0; i < analysisResult.paragraphs.length; i++) {
+      cumulativeTime += analysisResult.paragraphs[i].total_time_seconds;
+      if (elapsedTime < cumulativeTime) {
+        return i;
+      }
+    }
+    return analysisResult.paragraphs.length - 1;
+  }, [analysisResult, elapsedTime]);
+
+  const currentParagraphIndex = getCurrentParagraphIndex();
+
   // Get current paragraph based on elapsed time
   const getCurrentParagraph = useCallback(() => {
     if (!analysisResult) return null;
