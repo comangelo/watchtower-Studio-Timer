@@ -436,6 +436,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     - Paragraphs: Start with number in bold (size ~6.8), text in size ~11.0
     - Questions: Size ~9.0, number in medium/bold font, text in regular font
     - Question format: "1, 2." or "14, 15." for multiple paragraphs
+    - Questions may span multiple lines at size 9.0
     - Final questions: After "¿QUÉ RESPONDERÍA?" marker
     """
     lines = extract_text_with_sizes(pdf_bytes)
@@ -454,19 +455,11 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         text = extract_text_from_pdf(pdf_bytes)
         return analyze_pdf_content(text, filename)
     
-    # In Watchtower articles:
-    # - Main text is ~11.0
-    # - Questions are ~9.0
-    # - Paragraph numbers are ~6.8
-    paragraph_font_size = 11.0  # Main paragraph text
-    question_font_size = 9.0    # Question text
-    
-    # Process lines to build paragraphs and detect questions
-    paragraphs_data = {}  # Dict: paragraph_number -> {text_lines, questions}
-    current_para_num = None
-    current_para_lines = []
-    final_questions = []
-    found_que_responderia = False
+    # First pass: Group consecutive question lines (size ~9.0)
+    # This handles questions that span multiple lines
+    grouped_lines = []
+    current_question_parts = []
+    current_question_nums = None
     
     for line in lines:
         text = line.text.strip()
@@ -474,78 +467,126 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         
         if not text:
             continue
-        
-        # Check for "¿QUÉ RESPONDERÍA?" marker (can be "RESPONDERÍA" or "RESPONDERÍAS")
-        text_upper = text.upper()
-        if "QUÉ RESPONDERÍA" in text_upper or "QUE RESPONDERIA" in text_upper:
-            found_que_responderia = True
-            # Save current paragraph
-            if current_para_num and current_para_lines:
-                if current_para_num not in paragraphs_data:
-                    paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
-                paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
-                current_para_lines = []
-            continue
-        
-        # Skip ornament symbols and page numbers
-        if text in ['˛', ''] or (len(text) <= 2 and text.isdigit()):
-            continue
-        
-        # Check if this is a question line (size ~9.0)
+            
         is_question_size = 8.5 <= font_size <= 9.5
         
-        # Check if this is paragraph text (size ~11.0)
-        is_paragraph_size = 10.5 <= font_size <= 11.5
+        if is_question_size:
+            # Check if this line starts with paragraph numbers (e.g., "4." or "1, 2.")
+            num_match = re.match(r'^([\d,\s]+)\.\s*$', text)
+            if num_match:
+                # Save previous question if exists
+                if current_question_parts and current_question_nums:
+                    full_question = ' '.join(current_question_parts)
+                    grouped_lines.append(('question', current_question_nums, full_question))
+                
+                # Start new question
+                numbers_str = num_match.group(1)
+                current_question_nums = [int(n.strip()) for n in numbers_str.split(',') if n.strip().isdigit()]
+                current_question_parts = []
+            elif current_question_nums is not None:
+                # Continue current question
+                current_question_parts.append(text)
+            else:
+                # Question line without number prefix - could be continuation or standalone
+                # Check if it's a question (contains ?)
+                if '?' in text:
+                    grouped_lines.append(('question_text', None, text))
+                else:
+                    grouped_lines.append(('other', font_size, text))
+        else:
+            # Not a question line - save any pending question
+            if current_question_parts and current_question_nums:
+                full_question = ' '.join(current_question_parts)
+                grouped_lines.append(('question', current_question_nums, full_question))
+                current_question_parts = []
+                current_question_nums = None
+            
+            grouped_lines.append(('text', font_size, text))
+    
+    # Save last question if exists
+    if current_question_parts and current_question_nums:
+        full_question = ' '.join(current_question_parts)
+        grouped_lines.append(('question', current_question_nums, full_question))
+    
+    # Second pass: Build paragraphs and assign questions
+    paragraphs_data = {}  # Dict: paragraph_number -> {text_lines, questions}
+    current_para_num = None
+    current_para_lines = []
+    final_questions = []
+    found_que_responderia = False
+    
+    for item in grouped_lines:
+        item_type = item[0]
         
-        # Check if this is a paragraph number (size ~6.8, just a number)
-        is_para_number = 6.0 <= font_size <= 7.5 and text.isdigit()
-        
-        if found_que_responderia:
-            # After final questions marker - collect final questions
-            # Pattern: text that looks like a question (contains ?)
-            if '?' in text and not text.upper().startswith("CANCIÓN"):
-                # Extract questions, might be multiple
-                questions = extract_multiple_questions(text)
+        if item_type == 'question':
+            para_nums, question_text = item[1], item[2]
+            
+            if found_que_responderia:
+                # Final questions
+                questions = extract_multiple_questions(question_text)
                 for q in questions:
                     final_questions.append(QuestionInfo(
                         text=q,
                         answer_time=QUESTION_ANSWER_TIME,
                         is_final_question=True
                     ))
-        elif is_para_number:
-            # New paragraph number detected
-            # Save previous paragraph
-            if current_para_num and current_para_lines:
-                if current_para_num not in paragraphs_data:
-                    paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
-                paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
-            
-            current_para_num = int(text)
-            current_para_lines = []
-            
-        elif is_question_size:
-            # This is a question line
-            # Parse the question format: "1, 2." or "14, 15." or just "5."
-            para_nums, questions = parse_question_line_watchtower(text)
-            
-            if para_nums and questions:
-                # Question belongs to the LAST paragraph number
+            elif para_nums:
+                # Regular question - assign to last paragraph number
                 target_para = para_nums[-1]
+                questions = extract_multiple_questions(question_text)
                 
                 for q in questions:
-                    question = QuestionInfo(
+                    if target_para not in paragraphs_data:
+                        paragraphs_data[target_para] = {"text_lines": [], "questions": []}
+                    paragraphs_data[target_para]["questions"].append(QuestionInfo(
                         text=q,
                         answer_time=QUESTION_ANSWER_TIME,
                         is_final_question=False
-                    )
+                    ))
                     
-                    if target_para not in paragraphs_data:
-                        paragraphs_data[target_para] = {"text_lines": [], "questions": []}
-                    paragraphs_data[target_para]["questions"].append(question)
+        elif item_type == 'question_text':
+            # Question text without number (possibly final questions)
+            question_text = item[2]
+            if found_que_responderia and '?' in question_text:
+                questions = extract_multiple_questions(question_text)
+                for q in questions:
+                    final_questions.append(QuestionInfo(
+                        text=q,
+                        answer_time=QUESTION_ANSWER_TIME,
+                        is_final_question=True
+                    ))
                     
-        elif is_paragraph_size:
-            # Regular paragraph text
-            if current_para_num:
+        elif item_type == 'text':
+            font_size, text = item[1], item[2]
+            
+            # Check for "¿QUÉ RESPONDERÍA?" marker
+            text_upper = text.upper()
+            if "QUÉ RESPONDERÍA" in text_upper or "QUE RESPONDERIA" in text_upper:
+                found_que_responderia = True
+                # Save current paragraph
+                if current_para_num and current_para_lines:
+                    if current_para_num not in paragraphs_data:
+                        paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+                    paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
+                    current_para_lines = []
+                continue
+            
+            # Check if this is a paragraph number (size ~6.8, just a number)
+            is_para_number = 6.0 <= font_size <= 7.5 and text.isdigit()
+            is_paragraph_size = 10.5 <= font_size <= 11.5
+            
+            if is_para_number:
+                # New paragraph number detected
+                if current_para_num and current_para_lines:
+                    if current_para_num not in paragraphs_data:
+                        paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+                    paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
+                
+                current_para_num = int(text)
+                current_para_lines = []
+                
+            elif is_paragraph_size and current_para_num:
+                # Regular paragraph text
                 current_para_lines.append(text)
     
     # Save last paragraph
