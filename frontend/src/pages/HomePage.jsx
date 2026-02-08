@@ -256,27 +256,56 @@ export default function HomePage() {
     return { start: paragraphStart, end: paragraphEnd };
   }, [startTime, analysisResult]);
 
-  // Get final questions time
-  const getFinalQuestionsTime = useCallback(() => {
-    if (!startTime || !analysisResult) return null;
+  // Get final questions time in seconds from start
+  const getFinalQuestionsTimeSeconds = useCallback(() => {
+    if (!analysisResult) return 0;
     
-    // Find the paragraph with final questions
     let cumulativeTime = 0;
     for (const para of analysisResult.paragraphs) {
       cumulativeTime += para.reading_time_seconds;
       if (para.questions.some(q => q.is_final_question)) {
-        return addSecondsToDate(startTime, cumulativeTime);
+        return cumulativeTime;
       }
-      cumulativeTime += para.questions.length * 35; // Add question time
+      cumulativeTime += para.questions.length * 35;
     }
     
-    // If no final questions found, use the stored value
     if (analysisResult.final_questions_start_time > 0) {
-      return addSecondsToDate(startTime, analysisResult.final_questions_start_time);
+      return analysisResult.final_questions_start_time;
     }
     
-    return null;
-  }, [startTime, analysisResult]);
+    return 0;
+  }, [analysisResult]);
+
+  // Check for notification triggers
+  useEffect(() => {
+    if (!isTimerRunning || !analysisResult) return;
+    
+    const finalQuestionsSeconds = getFinalQuestionsTimeSeconds();
+    if (finalQuestionsSeconds <= 0) return;
+    
+    const timeUntilFinalQuestions = finalQuestionsSeconds - elapsedTime;
+    
+    // 5 minutes warning (300 seconds)
+    if (timeUntilFinalQuestions <= 300 && timeUntilFinalQuestions > 295 && !notificationPlayed.fiveMin) {
+      playNotificationSound('warning');
+      setNotificationPlayed(prev => ({ ...prev, fiveMin: true }));
+      toast.warning("⏰ 5 minutos para las preguntas finales", { duration: 5000 });
+    }
+    
+    // 1 minute warning (60 seconds)
+    if (timeUntilFinalQuestions <= 60 && timeUntilFinalQuestions > 55 && !notificationPlayed.oneMin) {
+      playNotificationSound('urgent');
+      setNotificationPlayed(prev => ({ ...prev, oneMin: true }));
+      toast.warning("⚠️ 1 minuto para las preguntas finales", { duration: 5000 });
+    }
+    
+    // Final questions NOW
+    if (timeUntilFinalQuestions <= 0 && timeUntilFinalQuestions > -5 && !notificationPlayed.now) {
+      playNotificationSound('final');
+      setNotificationPlayed(prev => ({ ...prev, now: true }));
+      toast.success("🎯 ¡Es hora de las preguntas finales!", { duration: 8000 });
+    }
+  }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds]);
 
   // Initialize remaining time when analysis is complete
   useEffect(() => {
