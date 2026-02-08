@@ -104,6 +104,13 @@ export default function HomePage() {
     oneMin: false,
     now: false
   });
+  
+  // Sound and notification settings
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [alertTimes, setAlertTimes] = useState({
+    firstAlert: 5,  // minutes before final questions
+    secondAlert: 1  // minutes before final questions
+  });
 
   // Play notification sound
   const playNotificationSound = useCallback((type = 'alert') => {
