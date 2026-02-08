@@ -185,9 +185,9 @@ export default function HomePage() {
     setRemainingTime(0);
   };
 
-  // Calculate progress percentage
+  // Calculate progress percentage based on 60 minutes (3600 seconds)
   const progressPercentage = analysisResult 
-    ? Math.min(100, (elapsedTime / analysisResult.total_time_seconds) * 100)
+    ? Math.min(100, (elapsedTime / 3600) * 100)
     : 0;
 
   return (
@@ -323,9 +323,9 @@ export default function HomePage() {
                     </div>
                     <div className="text-center p-4 bg-zinc-900 rounded-xl">
                       <p className="text-2xl font-mono font-bold text-white" data-testid="total-time">
-                        {formatTimeText(analysisResult.total_time_seconds)}
+                        60 min
                       </p>
-                      <p className="text-xs text-zinc-400 mt-1">Tiempo total</p>
+                      <p className="text-xs text-zinc-400 mt-1">Tiempo total (fijo)</p>
                     </div>
                   </div>
                 </CardContent>
