@@ -807,6 +807,87 @@ export default function HomePage() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Notification Settings */}
+                <Card className="border-zinc-100 shadow-sm" data-testid="notification-settings-card">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="font-heading text-sm text-zinc-700 flex items-center gap-2">
+                      <Bell className="w-4 h-4" />
+                      Configuración de Alertas
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <div className="space-y-4">
+                      {/* Sound Toggle */}
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="sound-toggle" className="text-sm text-zinc-600 flex items-center gap-2">
+                          {soundEnabled ? <Volume2 className="w-4 h-4 text-green-600" /> : <VolumeX className="w-4 h-4 text-zinc-400" />}
+                          Sonido
+                        </Label>
+                        <Switch
+                          id="sound-toggle"
+                          checked={soundEnabled}
+                          onCheckedChange={setSoundEnabled}
+                          data-testid="sound-toggle"
+                        />
+                      </div>
+                      
+                      <Separator />
+                      
+                      {/* Alert Times */}
+                      <div className="space-y-3">
+                        <Label className="text-xs text-zinc-500 uppercase tracking-wide">Tiempos de aviso</Label>
+                        
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-zinc-600 w-20">1er aviso:</span>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="30"
+                            value={alertTimes.firstAlert}
+                            onChange={(e) => setAlertTimes(prev => ({ ...prev, firstAlert: Math.max(1, Math.min(30, parseInt(e.target.value) || 5)) }))}
+                            className="w-16 h-8 text-center font-mono"
+                            data-testid="first-alert-input"
+                          />
+                          <span className="text-sm text-zinc-500">min antes</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-zinc-600 w-20">2do aviso:</span>
+                          <Input
+                            type="number"
+                            min="1"
+                            max="15"
+                            value={alertTimes.secondAlert}
+                            onChange={(e) => setAlertTimes(prev => ({ ...prev, secondAlert: Math.max(1, Math.min(15, parseInt(e.target.value) || 1)) }))}
+                            className="w-16 h-8 text-center font-mono"
+                            data-testid="second-alert-input"
+                          />
+                          <span className="text-sm text-zinc-500">min antes</span>
+                        </div>
+                      </div>
+                      
+                      {/* Test Sound Button */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full mt-2"
+                        onClick={() => {
+                          if (soundEnabled) {
+                            playNotificationSound('warning');
+                            toast.info("🔊 Prueba de sonido");
+                          } else {
+                            toast.info("🔇 Sonido desactivado");
+                          }
+                        }}
+                        data-testid="test-sound-btn"
+                      >
+                        <Volume2 className="w-4 h-4 mr-2" />
+                        Probar sonido
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
