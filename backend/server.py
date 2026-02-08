@@ -276,6 +276,58 @@ def process_pdf_with_font_sizes(pdf_bytes: bytes) -> dict:
     }
 
 
+def detect_horizontal_line_separator(pdf_bytes: bytes) -> dict:
+    """
+    Detect horizontal line separator in PDF that marks the start of final questions section.
+    Returns information about the line position.
+    """
+    try:
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        
+        last_line_page = -1
+        last_line_y = -1
+        
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            page_height = page.rect.height
+            drawings = page.get_drawings()
+            
+            for drawing in drawings:
+                rect = drawing.get('rect')
+                if rect:
+                    width = rect.width
+                    height = rect.height
+                    # Horizontal line: wide (>200) and short (<5)
+                    if width > 200 and height < 5:
+                        # Check if it's in the lower portion of the page
+                        if rect.y0 > page_height * 0.3:
+                            last_line_page = page_num
+                            last_line_y = rect.y0
+                
+                # Also check line paths
+                items = drawing.get('items', [])
+                for item in items:
+                    if item[0] == 'l':  # Line
+                        start = item[1]
+                        end = item[2]
+                        if abs(start.y - end.y) < 2:  # Horizontal
+                            line_width = abs(end.x - start.x)
+                            if line_width > 200 and start.y > page_height * 0.3:
+                                last_line_page = page_num
+                                last_line_y = start.y
+        
+        doc.close()
+        
+        return {
+            "found": last_line_page >= 0,
+            "page": last_line_page,
+            "y_position": last_line_y
+        }
+    except Exception as e:
+        logging.warning(f"Error detecting horizontal line: {e}")
+        return {"found": False, "page": -1, "y_position": -1}
+
+
 def count_words(text: str) -> int:
     """Count words in text"""
     words = re.findall(r'\b\w+\b', text)
