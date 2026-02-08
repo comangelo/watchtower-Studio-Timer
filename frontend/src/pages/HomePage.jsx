@@ -1032,6 +1032,26 @@ export default function HomePage() {
           </div>
         )}
       </main>
+      
+      {/* Presentation Mode Overlay */}
+      {isPresentationMode && analysisResult && (
+        <PresentationMode
+          analysisResult={analysisResult}
+          elapsedTime={elapsedTime}
+          remainingTime={remainingTime}
+          startTime={startTime}
+          endTime={endTime}
+          isTimerRunning={isTimerRunning}
+          toggleTimer={toggleTimer}
+          resetTimer={resetTimer}
+          exitPresentationMode={exitPresentationMode}
+          getCurrentParagraph={getCurrentParagraph}
+          finalQuestionsTime={getFinalQuestionsTime()}
+          formatTime={formatTime}
+          formatClockTime={formatClockTime}
+          progressPercentage={progressPercentage}
+        />
+      )}
     </div>
   );
 }
