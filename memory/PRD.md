@@ -20,7 +20,7 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - Ajuste dinámico: tiempo de lectura FIJO, tiempo de preguntas VARIABLE
 - Interfaz completamente en español
 
-## Lo Implementado (Febrero 2026)
+## Lo Implementado (Diciembre 2025)
 ### Backend (FastAPI)
 - ✅ Endpoint POST /api/analyze-pdf para subir y analizar PDFs
 - ✅ Extracción de texto con PyMuPDF
@@ -48,6 +48,7 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ Alertas sonoras y vibración configurables
 - ✅ Alerta cuando tiempo por pregunta < 20 segundos
 - ✅ Persistencia de preferencias en localStorage
+- ✅ **Tiempo dinámico en tarjetas de párrafo**: Las preguntas dentro de cada párrafo ahora muestran el tiempo ajustado dinámicamente (+Xs) con indicador de diferencial respecto al tiempo original
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
@@ -112,5 +113,7 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 
 ## Archivos Clave
 - `/app/backend/server.py` - API y lógica de análisis PDF
-- `/app/frontend/src/pages/HomePage.jsx` - Componente principal (616 líneas)
-- `/app/test_reports/iteration_4.json` - Último reporte de tests (100% passed)
+- `/app/frontend/src/pages/HomePage.jsx` - Componente principal (638 líneas)
+- `/app/frontend/src/components/ParagraphCard.jsx` - Tarjetas de párrafo con tiempo dinámico
+- `/app/frontend/src/components/FinalQuestionsSection.jsx` - Sección preguntas de repaso
+- `/app/test_reports/iteration_5.json` - Último reporte de tests (100% passed)
