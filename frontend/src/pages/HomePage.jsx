@@ -182,7 +182,7 @@ export default function HomePage() {
       playNotificationSound('warning');
       triggerVibration([200, 100, 200]);
       setNotificationPlayed(prev => ({ ...prev, fiveMin: true }));
-      toast.warning(`⏰ ${alertTimes.firstAlert} minuto${alertTimes.firstAlert > 1 ? 's' : ''} para las preguntas finales`, { duration: 5000 });
+      toast.warning(`⏰ ${alertTimes.firstAlert} minuto${alertTimes.firstAlert > 1 ? 's' : ''} para las preguntas de repaso`, { duration: 5000 });
     }
     
     const secondAlertSeconds = alertTimes.secondAlert * 60;
@@ -190,14 +190,14 @@ export default function HomePage() {
       playNotificationSound('urgent');
       triggerVibration([200, 100, 200, 100, 200]);
       setNotificationPlayed(prev => ({ ...prev, oneMin: true }));
-      toast.warning(`⚠️ ${alertTimes.secondAlert} minuto${alertTimes.secondAlert > 1 ? 's' : ''} para las preguntas finales`, { duration: 5000 });
+      toast.warning(`⚠️ ${alertTimes.secondAlert} minuto${alertTimes.secondAlert > 1 ? 's' : ''} para las preguntas de repaso`, { duration: 5000 });
     }
     
     if (timeUntilFinalQuestions <= 0 && timeUntilFinalQuestions > -5 && !notificationPlayed.now) {
       playNotificationSound('final');
       triggerVibration([500, 200, 500, 200, 500]);
       setNotificationPlayed(prev => ({ ...prev, now: true }));
-      toast.success("🎯 ¡Es hora de las preguntas finales!", { duration: 8000 });
+      toast.success("🎯 ¡Es hora de las preguntas de repaso!", { duration: 8000 });
     }
   }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds, alertTimes, triggerVibration]);
 
@@ -373,7 +373,7 @@ export default function HomePage() {
               <h1 className="font-heading font-bold text-xl text-zinc-900" data-testid="app-title">
                 Calculadora de Tiempo
               </h1>
-              <p className="text-xs text-zinc-500">Lectura en voz alta</p>
+              <p className="text-xs text-zinc-500">ATALAYA DE ESTUDIO</p>
             </div>
           </div>
           {analysisResult && (
@@ -489,7 +489,7 @@ export default function HomePage() {
                       </div>
                       <div>
                         <p className="font-medium text-orange-800">
-                          Este documento tiene {analysisResult.final_questions.length} preguntas finales
+                          Este documento tiene {analysisResult.final_questions.length} preguntas de repaso
                         </p>
                         <p className="text-sm text-orange-600">
                           Aparecen después de "¿QUÉ RESPONDERÍAS?"
