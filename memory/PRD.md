@@ -76,13 +76,41 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - [ ] Modo "solo lectura" sin controles UI
 - [ ] Editor de colores / más temas para presentación
 
-### Refactorización Pendiente
-- [ ] Dividir HomePage.jsx (+1300 líneas) en componentes más pequeños
-  - TimerControls, SettingsPopover, ParagraphCard, FinalQuestionsSection
-  - Custom hooks: useTimer, useScheduleCalculator, useSettings
+### Refactorización - ✅ COMPLETADA (Febrero 2026)
+- [x] Dividir HomePage.jsx de 1700 a 616 líneas
+- [x] 8 componentes nuevos creados
+- [x] 4 custom hooks creados
+- [x] 1 archivo de utilidades
+
+## Arquitectura de Componentes
+
+### Componentes (`/frontend/src/components/`)
+| Componente | Descripción |
+|------------|-------------|
+| UploadZone.jsx | Zona drag-and-drop para subir PDFs |
+| AnalysisSummary.jsx | Resumen del análisis (tiempos totales) |
+| TimerDisplay.jsx | Cronómetro principal con controles |
+| CountdownTimer.jsx | Timer de cuenta regresiva |
+| QuickStats.jsx | Estadísticas rápidas |
+| NotificationSettings.jsx | Configuración de alertas |
+| ParagraphCard.jsx | Tarjeta de párrafo individual |
+| FinalQuestionsSection.jsx | Sección preguntas finales |
+| PresentationMode.jsx | Modo pantalla completa |
+
+### Custom Hooks (`/frontend/src/hooks/`)
+| Hook | Descripción |
+|------|-------------|
+| useLocalStorage.js | Persistencia en localStorage |
+| useTimer.js | Lógica del cronómetro |
+| useNotifications.js | Sonidos y vibración |
+| useScheduleCalculator.js | Cálculos de tiempos ajustados |
+
+### Utilidades (`/frontend/src/utils/`)
+| Archivo | Funciones |
+|---------|-----------|
+| timeFormatters.js | formatTime, formatTimeText, formatClockTime, addSecondsToDate |
 
 ## Archivos Clave
 - `/app/backend/server.py` - API y lógica de análisis PDF
-- `/app/frontend/src/pages/HomePage.jsx` - Componente principal (monolítico)
-- `/app/frontend/src/components/PresentationMode.jsx` - Modo pantalla completa
-- `/app/test_reports/iteration_3.json` - Último reporte de tests (100% passed)
+- `/app/frontend/src/pages/HomePage.jsx` - Componente principal (616 líneas)
+- `/app/test_reports/iteration_4.json` - Último reporte de tests (100% passed)
