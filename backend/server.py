@@ -611,30 +611,6 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
                 current_para["text_lines"].append(text)
             elif text.strip():
                 current_para["text_lines"] = [text]
-                            text=q_text,
-                            answer_time=QUESTION_ANSWER_TIME,
-                            is_final_question=False
-                        ))
-        elif paragraph_match and not is_smaller_font:
-            # This is a new paragraph start (larger font + "número " format)
-            para_num = int(paragraph_match.group(1))
-            
-            # Save previous paragraph
-            if current_para["text_lines"]:
-                paragraphs_data.append(current_para.copy())
-            
-            # Start new paragraph
-            current_para = {
-                "number": para_num,
-                "text_lines": [text],
-                "questions": []
-            }
-        else:
-            # Continue current paragraph
-            if current_para["text_lines"]:
-                current_para["text_lines"].append(text)
-            elif text.strip():
-                current_para["text_lines"] = [text]
     
     # Save last paragraph
     if current_para["text_lines"]:
