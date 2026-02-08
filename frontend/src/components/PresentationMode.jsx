@@ -241,7 +241,7 @@ export default function PresentationMode({
               {Object.entries(THEMES).map(([key, value]) => (
                 <DropdownMenuItem
                   key={key}
-                  onClick={() => setTheme(key)}
+                  onClick={() => onThemeChange(key)}
                   className={theme === key ? 'bg-accent' : ''}
                   data-testid={`theme-${key}`}
                 >
@@ -258,7 +258,7 @@ export default function PresentationMode({
           <Button
             variant="ghost"
             size="sm"
-            onClick={exitPresentationMode}
+            onClick={onExit}
             className={`${t.textMuted} hover:${t.text}`}
             data-testid="exit-presentation-btn"
           >
