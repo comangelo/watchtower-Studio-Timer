@@ -589,7 +589,13 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
             is_paragraph_size = 10.5 <= font_size <= 11.5
             
             if is_para_number:
-                # New paragraph number detected
+                # First numbered paragraph found - save initial text as paragraph 1
+                if not found_first_para_number:
+                    found_first_para_number = True
+                    if initial_para_lines:
+                        paragraphs_data[1] = {"text_lines": initial_para_lines.copy(), "questions": []}
+                
+                # Save previous paragraph
                 if current_para_num and current_para_lines:
                     if current_para_num not in paragraphs_data:
                         paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
@@ -598,15 +604,23 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
                 current_para_num = int(text)
                 current_para_lines = []
                 
-            elif is_paragraph_size and current_para_num:
-                # Regular paragraph text
-                current_para_lines.append(text)
+            elif is_paragraph_size:
+                if current_para_num:
+                    # Regular paragraph text
+                    current_para_lines.append(text)
+                elif not found_first_para_number:
+                    # Text before first paragraph number - this is paragraph 1
+                    initial_para_lines.append(text)
     
     # Save last paragraph
     if current_para_num and current_para_lines:
         if current_para_num not in paragraphs_data:
             paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
         paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
+    
+    # If no numbered paragraphs were found but we have initial text, create paragraph 1
+    if not found_first_para_number and initial_para_lines:
+        paragraphs_data[1] = {"text_lines": initial_para_lines, "questions": []}
     
     # Build the analysis result
     analyzed_paragraphs = []
