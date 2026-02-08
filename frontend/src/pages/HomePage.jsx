@@ -235,6 +235,50 @@ export default function HomePage() {
     toast.info(`Volviendo al párrafo #${prevIndex + 1}`);
   }, [currentManualParagraph]);
 
+  // Calculate adjusted time for final questions based on manual progress
+  const getAdjustedFinalQuestionsTime = useCallback(() => {
+    if (!startTime || !analysisResult) return { start: null, end: null };
+    
+    // Calculate when final questions will start based on remaining time
+    const remainingParagraphs = analysisResult.paragraphs.slice(currentManualParagraph);
+    const totalRemainingOriginalTime = remainingParagraphs.reduce((sum, p) => sum + p.total_time_seconds, 0);
+    
+    // Time available for remaining content (paragraphs + final questions)
+    const finalQuestionsOriginalTime = (analysisResult.final_questions?.length || 0) * 35;
+    const totalOriginalRemaining = totalRemainingOriginalTime + finalQuestionsOriginalTime;
+    
+    // Proportion of time for paragraphs vs final questions
+    const paragraphsProportion = totalRemainingOriginalTime / totalOriginalRemaining;
+    const finalQuestionsProportion = finalQuestionsOriginalTime / totalOriginalRemaining;
+    
+    // Adjusted times based on remaining time
+    const adjustedParagraphsTime = remainingTime * paragraphsProportion;
+    const adjustedFinalQuestionsTime = remainingTime * finalQuestionsProportion;
+    
+    // Final questions start after remaining paragraphs
+    const now = new Date();
+    const adjustedStart = addSecondsToDate(now, adjustedParagraphsTime);
+    const adjustedEnd = addSecondsToDate(adjustedStart, adjustedFinalQuestionsTime);
+    
+    return { 
+      start: adjustedStart, 
+      end: adjustedEnd,
+      totalTime: Math.round(adjustedFinalQuestionsTime),
+      perQuestion: Math.round(adjustedFinalQuestionsTime / (analysisResult.final_questions?.length || 1))
+    };
+  }, [startTime, analysisResult, currentManualParagraph, remainingTime]);
+
+  // Get adjusted time for each individual final question
+  const getAdjustedFinalQuestionTime = useCallback((questionIndex) => {
+    if (!startTime || !analysisResult) return null;
+    
+    const adjusted = getAdjustedFinalQuestionsTime();
+    if (!adjusted.start) return null;
+    
+    const timePerQuestion = adjusted.perQuestion;
+    return addSecondsToDate(adjusted.start, questionIndex * timePerQuestion);
+  }, [startTime, analysisResult, getAdjustedFinalQuestionsTime]);
+
   // Calculate adjusted paragraph times based on remaining time
   const getAdjustedParagraphTimes = useCallback((paragraphIndex) => {
     if (!startTime || !analysisResult) return { start: null, end: null, adjustedDuration: 0 };
