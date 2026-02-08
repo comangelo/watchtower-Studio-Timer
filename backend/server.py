@@ -651,7 +651,16 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     initial_para_lines = []  # Text before first numbered paragraph (paragraph 1)
     found_first_para_number = False
     final_questions = []
-    found_que_responderia = False
+    found_final_section = False  # True when we're after the horizontal line
+    
+    # Use horizontal line detection if available
+    if horizontal_line_info and horizontal_line_info.get("found"):
+        # We'll extract final questions separately using PDF position data
+        final_questions = extract_questions_after_horizontal_line(pdf_bytes, horizontal_line_info)
+        # Mark that we should not collect more final questions during parsing
+        skip_final_detection = len(final_questions) > 0
+    else:
+        skip_final_detection = False
     
     for item in grouped_lines:
         item_type = item[0]
@@ -659,8 +668,8 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         if item_type == 'question':
             para_nums, question_text = item[1], item[2]
             
-            if found_que_responderia:
-                # Final questions
+            if found_final_section and not skip_final_detection:
+                # Final questions (fallback if horizontal line detection didn't work)
                 questions = extract_multiple_questions(question_text)
                 for q in questions:
                     final_questions.append(QuestionInfo(
@@ -685,7 +694,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         elif item_type == 'question_text':
             # Question text without number (possibly final questions)
             question_text = item[2]
-            if found_que_responderia and '?' in question_text:
+            if found_final_section and not skip_final_detection and '?' in question_text:
                 questions = extract_multiple_questions(question_text)
                 for q in questions:
                     final_questions.append(QuestionInfo(
