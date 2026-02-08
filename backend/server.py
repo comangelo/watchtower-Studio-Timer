@@ -149,8 +149,11 @@ def calculate_reading_time(word_count: int) -> float:
 
 def detect_questions(text: str, paragraph_number: int, is_final_question: bool = False) -> List[QuestionInfo]:
     """
-    Detect questions in paragraph that start with the paragraph number followed by a period.
-    Format: "6. ¿Cómo podría...?" or "6. ¿Cuál es...?"
+    Detect questions in paragraph that start with the paragraph number.
+    Formats supported:
+    - "6 ¿Cómo podría...?" (number + space + question)
+    - "6. ¿Cómo podría...?" (number + period + question)
+    - "6) ¿Cómo podría...?" (number + parenthesis + question)
     Ignores "¿QUÉ RESPONDERÍAS?"
     """
     questions = []
@@ -182,19 +185,21 @@ def detect_questions(text: str, paragraph_number: int, is_final_question: bool =
         if not line:
             continue
         
-        # Primary Pattern: "6. ¿pregunta?" - number followed by period and question
-        # This is the main format: número + punto + pregunta
-        pattern_with_period = rf'^{paragraph_number}\.\s*([¿].*\?|.*\?)$'
+        # Pattern 1: "6 ¿pregunta?" - number followed by space and question (most common)
+        pattern_space = rf'^{paragraph_number}\s+([¿].*\?|.*\?)$'
         
-        # Secondary patterns for flexibility
-        pattern_with_space = rf'^{paragraph_number}\s+([¿].*\?)$'
-        pattern_with_other = rf'^{paragraph_number}[\)\-:\s]+([¿].*\?)$'
+        # Pattern 2: "6. ¿pregunta?" - number followed by period
+        pattern_period = rf'^{paragraph_number}\.\s*([¿].*\?|.*\?)$'
         
-        match = re.match(pattern_with_period, line, re.IGNORECASE)
+        # Pattern 3: "6) ¿pregunta?" or "6- ¿pregunta?" 
+        pattern_other = rf'^{paragraph_number}[\)\-:\s]+([¿].*\?)$'
+        
+        # Try patterns in order of likelihood
+        match = re.match(pattern_space, line, re.IGNORECASE)
         if not match:
-            match = re.match(pattern_with_space, line, re.IGNORECASE)
+            match = re.match(pattern_period, line, re.IGNORECASE)
         if not match:
-            match = re.match(pattern_with_other, line, re.IGNORECASE)
+            match = re.match(pattern_other, line, re.IGNORECASE)
         
         if match:
             question_text = match.group(1).strip()
