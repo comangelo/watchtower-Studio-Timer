@@ -361,48 +361,62 @@ export default function HomePage() {
   const adjustedFinalTimes = getAdjustedFinalQuestionsTime();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-stone-50">
       {/* Header */}
-      <header className="border-b border-zinc-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center">
+            <div className="w-11 h-11 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl flex items-center justify-center shadow-lg">
               <Timer className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-heading font-bold text-xl text-zinc-900" data-testid="app-title">
+              <h1 className="font-heading font-bold text-xl text-slate-900" data-testid="app-title">
                 Calculadora de Tiempo
               </h1>
-              <p className="text-xs text-zinc-500">ATALAYA DE ESTUDIO</p>
+              <p className="text-xs text-orange-600 font-semibold tracking-wide">ATALAYA DE ESTUDIO</p>
             </div>
           </div>
           {analysisResult && (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={enterPresentationMode} className="text-zinc-700 hover:text-zinc-900" data-testid="presentation-mode-btn">
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="outline" 
+                onClick={enterPresentationMode} 
+                className="rounded-full px-5 py-2 border-2 border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 font-medium transition-all" 
+                data-testid="presentation-mode-btn"
+              >
                 <Maximize className="w-4 h-4 mr-2" />
                 Presentación
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="text-zinc-700 hover:text-zinc-900" data-testid="export-btn">
+                  <Button 
+                    variant="outline" 
+                    className="rounded-full px-5 py-2 border-2 border-slate-300 text-slate-700 hover:border-slate-400 font-medium" 
+                    data-testid="export-btn"
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Exportar
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={exportToImage} data-testid="export-image-btn">
+                <DropdownMenuContent align="end" className="rounded-xl">
+                  <DropdownMenuItem onClick={exportToImage} data-testid="export-image-btn" className="cursor-pointer">
                     <FileImage className="w-4 h-4 mr-2" />
                     Exportar como Imagen (PNG)
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-btn">
+                  <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-btn" className="cursor-pointer">
                     <File className="w-4 h-4 mr-2" />
                     Exportar como PDF
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="ghost" onClick={resetAll} className="text-zinc-500 hover:text-zinc-900" data-testid="new-analysis-btn">
+              <Button 
+                variant="ghost" 
+                onClick={resetAll} 
+                className="rounded-full px-4 py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 font-medium" 
+                data-testid="new-analysis-btn"
+              >
                 <RotateCcw className="w-4 h-4 mr-2" />
-                Nuevo análisis
+                Nuevo
               </Button>
             </div>
           )}
