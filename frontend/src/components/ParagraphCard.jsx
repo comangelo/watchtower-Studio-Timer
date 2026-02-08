@@ -74,8 +74,8 @@ export function ParagraphCard({
         )}
 
         {/* Paragraph Number Badge */}
-        <span className={`absolute ${isCurrentParagraph || isCompletedParagraph ? 'top-10' : 'top-3'} left-3 text-xs font-bold ${isCompletedParagraph ? 'text-zinc-400' : isCurrentParagraph ? 'text-green-600' : 'text-zinc-300'}`}>
-          #{paragraph.number}
+        <span className={`absolute ${isCurrentParagraph || isCompletedParagraph ? 'top-10' : 'top-3'} left-3 text-xs ${isCompletedParagraph ? 'text-zinc-400' : isCurrentParagraph ? 'text-green-600' : 'text-zinc-500'}`}>
+          <span className="font-bold">Párrafo {paragraph.number}</span>
         </span>
 
         {/* Time Badge */}
