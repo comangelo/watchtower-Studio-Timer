@@ -75,16 +75,92 @@ class PDFReadingTimerTester:
             self.log_test("PDF Validation", False, f"Error: {str(e)}")
 
     def test_pdf_analysis_basic(self):
-        """Test basic PDF analysis functionality - skip for now due to PDF creation complexity"""
-        self.log_test("PDF Analysis Basic", True, "Skipped - requires actual PDF file")
+        """Test basic PDF analysis functionality with real PDF"""
+        try:
+            with open('/app/test_document.pdf', 'rb') as f:
+                files = {'file': ('test_document.pdf', f, 'application/pdf')}
+                response = requests.post(f"{self.api_url}/analyze-pdf", files=files, timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check required fields
+                required_fields = ['filename', 'total_words', 'total_paragraphs', 'total_questions', 
+                                 'total_reading_time_seconds', 'total_question_time_seconds', 
+                                 'total_time_seconds', 'fixed_duration', 'paragraphs']
+                
+                missing_fields = [field for field in required_fields if field not in data]
+                if not missing_fields:
+                    # Check fixed duration is 3600 seconds (60 minutes)
+                    if data['total_time_seconds'] == 3600 and data['fixed_duration']:
+                        self.log_test("PDF Analysis Basic", True, f"Analysis successful: {data['total_paragraphs']} paragraphs, {data['total_questions']} questions, 60min fixed duration")
+                    else:
+                        self.log_test("PDF Analysis Basic", False, f"Fixed duration not 60min: {data['total_time_seconds']}s, fixed: {data['fixed_duration']}")
+                else:
+                    self.log_test("PDF Analysis Basic", False, f"Missing fields: {missing_fields}")
+            else:
+                self.log_test("PDF Analysis Basic", False, f"Status: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("PDF Analysis Basic", False, f"Error: {str(e)}")
 
     def test_question_detection_specific(self):
-        """Test specific question detection patterns - skip for now"""
-        self.log_test("Specific Question Detection", True, "Skipped - requires actual PDF file")
+        """Test specific question detection patterns with QUE RESPONDERIAS"""
+        try:
+            with open('/app/test_que_responderias.pdf', 'rb') as f:
+                files = {'file': ('test_que_responderias.pdf', f, 'application/pdf')}
+                response = requests.post(f"{self.api_url}/analyze-pdf", files=files, timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Should have 3 questions (ignoring QUE RESPONDERIAS)
+                expected_questions = 3
+                if data['total_questions'] == expected_questions:
+                    # Check for final questions
+                    final_questions_found = False
+                    for paragraph in data['paragraphs']:
+                        for question in paragraph['questions']:
+                            if question.get('is_final_question', False):
+                                final_questions_found = True
+                                break
+                    
+                    if final_questions_found:
+                        self.log_test("Specific Question Detection", True, f"Correctly detected {data['total_questions']} questions (ignoring QUE RESPONDERIAS) with final questions marked")
+                    else:
+                        self.log_test("Specific Question Detection", False, "Final questions not marked correctly")
+                else:
+                    self.log_test("Specific Question Detection", False, f"Expected {expected_questions} questions, got {data['total_questions']}")
+            else:
+                self.log_test("Specific Question Detection", False, f"Status: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("Specific Question Detection", False, f"Error: {str(e)}")
 
     def test_reading_speed_calculation(self):
-        """Test 180 WPM reading speed calculation - skip for now"""
-        self.log_test("180 WPM Calculation", True, "Skipped - requires actual PDF file")
+        """Test 180 WPM reading speed calculation"""
+        try:
+            with open('/app/test_document.pdf', 'rb') as f:
+                files = {'file': ('test_document.pdf', f, 'application/pdf')}
+                response = requests.post(f"{self.api_url}/analyze-pdf", files=files, timeout=30)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Calculate expected reading time: words / 180 WPM * 60 seconds
+                expected_reading_time = (data['total_words'] / 180) * 60
+                actual_reading_time = data['total_reading_time_seconds']
+                
+                # Allow 1 second tolerance
+                if abs(expected_reading_time - actual_reading_time) <= 1:
+                    self.log_test("180 WPM Calculation", True, f"Correct calculation: {data['total_words']} words = {actual_reading_time:.1f}s at 180 WPM")
+                else:
+                    self.log_test("180 WPM Calculation", False, f"Calculation error: expected {expected_reading_time:.1f}s, got {actual_reading_time}s")
+            else:
+                self.log_test("180 WPM Calculation", False, f"Status: {response.status_code}")
+                
+        except Exception as e:
+            self.log_test("180 WPM Calculation", False, f"Error: {str(e)}")
 
     def test_get_analyses(self):
         """Test getting all analyses"""
