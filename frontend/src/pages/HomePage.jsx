@@ -1060,6 +1060,8 @@ export default function HomePage() {
           formatTime={formatTime}
           formatClockTime={formatClockTime}
           progressPercentage={progressPercentage}
+          theme={presentationTheme}
+          setTheme={setPresentationTheme}
         />
       )}
     </div>
