@@ -25,7 +25,9 @@ import {
   Vibrate,
   Maximize,
   Minimize,
-  X
+  X,
+  ArrowRight,
+  Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
