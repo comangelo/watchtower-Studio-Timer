@@ -40,23 +40,23 @@ export function AnalysisSummary({ analysisResult }) {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-zinc-50 rounded-xl p-4 text-center">
-            <p className="font-mono text-2xl font-bold text-zinc-900" data-testid="reading-time">
+          <div className="bg-zinc-50 rounded-xl p-5 text-center">
+            <p className="text-sm text-zinc-500 mb-2">Lectura</p>
+            <p className="text-3xl font-light text-zinc-900" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="reading-time">
               {formatTimeText(analysisResult.total_reading_time_seconds)}
             </p>
-            <p className="text-xs text-zinc-500 mt-1">Tiempo de lectura</p>
           </div>
-          <div className="bg-orange-50 rounded-xl p-4 text-center">
-            <p className="font-mono text-2xl font-bold text-orange-600" data-testid="question-time">
+          <div className="bg-orange-50 rounded-xl p-5 text-center">
+            <p className="text-sm text-orange-600 mb-2">Respuestas</p>
+            <p className="text-3xl font-light text-orange-600" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="question-time">
               {formatTimeText(analysisResult.total_question_time_seconds)}
             </p>
-            <p className="text-xs text-zinc-500 mt-1">Tiempo de respuestas</p>
           </div>
-          <div className="bg-zinc-900 rounded-xl p-4 text-center">
-            <p className="font-mono text-2xl font-bold text-white" data-testid="total-time">
+          <div className="bg-zinc-900 rounded-xl p-5 text-center">
+            <p className="text-sm text-zinc-400 mb-2">Total</p>
+            <p className="text-3xl font-light text-white" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="total-time">
               60 min
             </p>
-            <p className="text-xs text-zinc-400 mt-1">Tiempo total (fijo)</p>
           </div>
         </div>
       </CardContent>
