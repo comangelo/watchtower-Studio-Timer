@@ -270,37 +270,38 @@ export default function PresentationMode({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
-        {/* Time Schedule */}
+        {/* Time Schedule - Simplified */}
         {startTime && (
-          <div className={`flex items-center gap-12 mb-8 ${t.textMuted}`}>
+          <div className={`flex items-center gap-8 mb-10 ${t.textMuted}`}>
             <div className="text-center">
-              <p className="text-xs uppercase tracking-wider mb-1">Inicio</p>
-              <p className={`font-mono text-2xl ${t.success}`}>{formatClockTime(startTime)}</p>
+              <p className={`text-sm font-medium mb-1 ${t.textDimmed}`}>Inicio</p>
+              <p className={`text-3xl font-semibold ${t.success}`}>{formatClockTime(startTime)}</p>
             </div>
-            <div className={`text-4xl ${t.textDimmed}`}>→</div>
+            <div className={`text-2xl ${t.textDimmed}`}>—</div>
             <div className="text-center">
-              <p className="text-xs uppercase tracking-wider mb-1">Fin (60 min)</p>
-              <p className={`font-mono text-2xl ${t.warning}`}>{formatClockTime(endTime)}</p>
+              <p className={`text-sm font-medium mb-1 ${t.textDimmed}`}>Fin</p>
+              <p className={`text-3xl font-semibold ${t.warning}`}>{formatClockTime(endTime)}</p>
             </div>
             {finalQuestionsTime && (
               <>
-                <div className={`text-4xl ${t.textDimmed}`}>|</div>
+                <div className={`text-2xl ${t.textDimmed}`}>|</div>
                 <div className="text-center">
-                  <p className="text-xs uppercase tracking-wider mb-1">Preguntas de Repaso</p>
-                  <p className={`font-mono text-2xl ${t.danger}`}>{formatClockTime(finalQuestionsTime)}</p>
+                  <p className={`text-sm font-medium mb-1 ${t.textDimmed}`}>Repaso</p>
+                  <p className={`text-3xl font-semibold ${t.danger}`}>{formatClockTime(finalQuestionsTime)}</p>
                 </div>
               </>
             )}
           </div>
         )}
 
-        {/* Main Timers */}
-        <div className="flex items-center gap-16 mb-12">
+        {/* Main Timers - Clean and Minimal */}
+        <div className="flex items-center gap-20 mb-12">
           {/* Elapsed Time */}
           <div className="text-center">
-            <p className={`text-sm uppercase tracking-widest ${t.textDimmed} mb-2`}>Tiempo Transcurrido</p>
+            <p className={`text-base font-medium ${t.textDimmed} mb-3`}>Transcurrido</p>
             <div 
-              className={`font-mono text-8xl md:text-9xl font-bold tracking-tighter tabular-nums ${isTimerRunning ? t.accent : t.text}`}
+              className={`text-[120px] md:text-[150px] font-light tracking-tight leading-none ${isTimerRunning ? t.accent : t.text}`}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               data-testid="presentation-elapsed-time"
             >
               {formatTime(elapsedTime)}
@@ -308,13 +309,14 @@ export default function PresentationMode({
           </div>
 
           {/* Divider */}
-          <div className={`w-px h-32 ${t.border.replace('border-', 'bg-')}`} />
+          <div className={`w-px h-28 ${t.border.replace('border-', 'bg-')} opacity-30`} />
 
           {/* Remaining Time */}
           <div className="text-center">
-            <p className={`text-sm uppercase tracking-widest ${t.textDimmed} mb-2`}>Tiempo Restante</p>
+            <p className={`text-base font-medium ${t.textDimmed} mb-3`}>Restante</p>
             <div 
-              className={`font-mono text-8xl md:text-9xl font-bold tracking-tighter tabular-nums ${remainingTime <= 300 ? t.danger : t.textMuted}`}
+              className={`text-[120px] md:text-[150px] font-light tracking-tight leading-none ${remainingTime <= 300 ? t.danger : t.textMuted}`}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               data-testid="presentation-remaining-time"
             >
               {formatTime(remainingTime)}
@@ -322,69 +324,68 @@ export default function PresentationMode({
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full max-w-4xl mb-8">
-          <Progress value={progressPercentage} className={`h-3 ${t.progressBg}`} />
-          <p className={`text-center text-sm ${t.textDimmed} mt-2`}>
-            {progressPercentage.toFixed(0)}% completado
+        {/* Progress Bar - Thinner and Cleaner */}
+        <div className="w-full max-w-3xl mb-10">
+          <Progress value={progressPercentage} className={`h-2 ${t.progressBg}`} />
+          <p className={`text-center text-sm ${t.textDimmed} mt-3`}>
+            {progressPercentage.toFixed(0)}%
           </p>
         </div>
 
-        {/* Current Paragraph Info */}
+        {/* Current Paragraph Info - Simplified */}
         {currentParagraph && (
-          <div className={`w-full max-w-4xl ${t.card} rounded-2xl p-6 mb-8`}>
-            <div className="flex items-center justify-between mb-4">
+          <div className={`w-full max-w-3xl ${t.card} rounded-xl p-5 mb-10`}>
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className={`text-2xl font-bold ${t.accent}`}>#{currentParagraph.number}</span>
-                <span className={t.textMuted}>Párrafo actual</span>
+                <span className={`text-xl font-semibold ${t.accent}`}>Párrafo {currentParagraph.number}</span>
+                <span className={`text-sm ${t.textDimmed}`}>· {currentParagraph.word_count} palabras</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className={`text-sm ${t.textDimmed}`}>{currentParagraph.word_count} palabras</span>
-                <span className={`font-mono text-lg ${t.warning}`}>{Math.round(currentParagraph.total_time_seconds)} seg</span>
+                <span className={`text-lg font-medium ${t.warning}`}>{Math.round(currentParagraph.total_time_seconds)}s</span>
+                {currentParagraph.questions.length > 0 && (
+                  <span className={`text-sm ${t.warning}`}>
+                    {currentParagraph.questions.length} pregunta{currentParagraph.questions.length > 1 ? 's' : ''}
+                  </span>
+                )}
               </div>
             </div>
-            
-            {currentParagraph.questions.length > 0 && (
-              <div className={`flex items-center gap-2 ${t.warning}`}>
-                <MessageCircleQuestion className="w-5 h-5" />
-                <span>{currentParagraph.questions.length} pregunta{currentParagraph.questions.length > 1 ? 's' : ''} en este párrafo</span>
-              </div>
-            )}
           </div>
         )}
 
-        {/* Controls */}
-        <div className="flex items-center gap-6">
+        {/* Controls - Cleaner */}
+        <div className="flex items-center gap-5">
           <Button
             onClick={onToggleTimer}
             size="lg"
             className={`
-              rounded-full w-20 h-20 p-0 text-white
+              rounded-full w-18 h-18 p-0 text-white shadow-lg
               ${isTimerRunning 
                 ? t.accentBg + ' hover:opacity-90' 
                 : 'bg-green-600 hover:bg-green-700'
               }
             `}
+            style={{ width: '72px', height: '72px' }}
             data-testid="presentation-toggle-btn"
           >
             {isTimerRunning 
-              ? <Pause className="w-8 h-8" /> 
-              : <Play className="w-8 h-8 ml-1" />
+              ? <Pause className="w-7 h-7" /> 
+              : <Play className="w-7 h-7 ml-0.5" />
             }
           </Button>
           <Button
             onClick={onResetTimer}
             variant="outline"
             size="lg"
-            className={`rounded-full w-14 h-14 p-0 ${t.buttonOutline}`}
+            className={`rounded-full p-0 ${t.buttonOutline}`}
+            style={{ width: '52px', height: '52px' }}
             data-testid="presentation-reset-btn"
           >
-            <RotateCcw className="w-6 h-6" />
+            <RotateCcw className="w-5 h-5" />
           </Button>
         </div>
 
-        <p className={`text-sm ${t.textDimmed} mt-6`}>
-          Presiona <kbd className={`px-2 py-1 ${t.kbd} rounded`}>Espacio</kbd> para iniciar/pausar · <kbd className={`px-2 py-1 ${t.kbd} rounded`}>ESC</kbd> para salir
+        <p className={`text-sm ${t.textDimmed} mt-8`}>
+          <kbd className={`px-2 py-1 ${t.kbd} rounded text-xs`}>Espacio</kbd> iniciar/pausar · <kbd className={`px-2 py-1 ${t.kbd} rounded text-xs`}>ESC</kbd> salir
         </p>
       </div>
 
