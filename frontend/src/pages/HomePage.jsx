@@ -1243,7 +1243,7 @@ export default function HomePage() {
 }
 
 // Paragraph Card Component
-function ParagraphCard({ paragraph, index, startTime, paragraphTimes, onStartFromHere, isTimerRunning, isCurrentParagraph, elapsedTime }) {
+function ParagraphCard({ paragraph, index, startTime, paragraphTimes, onStartFromHere, isTimerRunning, isCurrentParagraph, isCompletedParagraph, elapsedTime, onGoToNext, isLastParagraph }) {
   const [isOpen, setIsOpen] = useState(false);
   const cardRef = useRef(null);
   const hasQuestions = paragraph.questions.length > 0;
@@ -1262,18 +1262,28 @@ function ParagraphCard({ paragraph, index, startTime, paragraphTimes, onStartFro
         ref={cardRef}
         className={`
           paragraph-card rounded-xl border p-4 relative overflow-hidden transition-all duration-300
-          ${isCurrentParagraph 
-            ? 'border-green-500 bg-green-50 ring-2 ring-green-500 ring-offset-2 shadow-lg scale-[1.02]' 
-            : hasFinalQuestions 
-              ? 'border-red-300 bg-red-50/30' 
-              : hasQuestions 
-                ? 'border-orange-200 bg-orange-50/20' 
-                : 'border-zinc-100 bg-white hover:shadow-md'
+          ${isCompletedParagraph
+            ? 'border-zinc-200 bg-zinc-50 opacity-60'
+            : isCurrentParagraph 
+              ? 'border-green-500 bg-green-50 ring-2 ring-green-500 ring-offset-2 shadow-lg scale-[1.02]' 
+              : hasFinalQuestions 
+                ? 'border-red-300 bg-red-50/30' 
+                : hasQuestions 
+                  ? 'border-orange-200 bg-orange-50/20' 
+                  : 'border-zinc-100 bg-white hover:shadow-md'
           }
         `}
         style={{ animationDelay: `${index * 50}ms` }}
         data-testid={`paragraph-card-${paragraph.number}`}
       >
+        {/* Completed Indicator */}
+        {isCompletedParagraph && (
+          <div className="absolute top-0 left-0 right-0 bg-zinc-400 text-white text-xs font-bold py-1 px-3 flex items-center justify-center gap-2">
+            <Check className="w-3 h-3" />
+            COMPLETADO
+          </div>
+        )}
+
         {/* Current Paragraph Indicator */}
         {isCurrentParagraph && (
           <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-xs font-bold py-1 px-3 flex items-center justify-center gap-2">
@@ -1286,23 +1296,23 @@ function ParagraphCard({ paragraph, index, startTime, paragraphTimes, onStartFro
         )}
 
         {/* Paragraph Number Badge */}
-        <span className={`absolute ${isCurrentParagraph ? 'top-10' : 'top-3'} left-3 text-xs font-bold ${isCurrentParagraph ? 'text-green-600' : 'text-zinc-300'}`}>
+        <span className={`absolute ${isCurrentParagraph || isCompletedParagraph ? 'top-10' : 'top-3'} left-3 text-xs font-bold ${isCompletedParagraph ? 'text-zinc-400' : isCurrentParagraph ? 'text-green-600' : 'text-zinc-300'}`}>
           #{paragraph.number}
         </span>
 
         {/* Time Badge */}
         <Badge 
-          variant={isCurrentParagraph ? "default" : hasFinalQuestions ? "destructive" : hasQuestions ? "default" : "secondary"}
-          className={`absolute ${isCurrentParagraph ? 'top-10' : 'top-3'} right-3 font-mono text-xs ${isCurrentParagraph ? 'bg-green-600' : hasQuestions && !hasFinalQuestions ? 'bg-orange-500' : ''}`}
+          variant={isCompletedParagraph ? "secondary" : isCurrentParagraph ? "default" : hasFinalQuestions ? "destructive" : hasQuestions ? "default" : "secondary"}
+          className={`absolute ${isCurrentParagraph || isCompletedParagraph ? 'top-10' : 'top-3'} right-3 font-mono text-xs ${isCompletedParagraph ? 'bg-zinc-300' : isCurrentParagraph ? 'bg-green-600' : hasQuestions && !hasFinalQuestions ? 'bg-orange-500' : ''}`}
           data-testid={`paragraph-time-${paragraph.number}`}
         >
-          {formatTimeText(paragraph.total_time_seconds)}
+          {paragraphTimes.adjustedDuration ? formatTimeText(paragraphTimes.adjustedDuration) : formatTimeText(paragraph.total_time_seconds)}
         </Badge>
 
         {/* Content */}
-        <div className={isCurrentParagraph ? 'mt-12' : 'mt-6'}>
+        <div className={isCurrentParagraph || isCompletedParagraph ? 'mt-12' : 'mt-6'}>
           {/* Time Schedule for paragraph */}
-          {startTime && paragraphTimes.start && (
+          {startTime && paragraphTimes.start && !isCompletedParagraph && (
             <div className="mb-3 flex items-center gap-4 text-xs">
               <div className={`flex items-center gap-1 px-2 py-1 rounded ${isCurrentParagraph ? 'bg-green-200' : 'bg-zinc-100'}`}>
                 <Clock className={`w-3 h-3 ${isCurrentParagraph ? 'text-green-700' : 'text-zinc-500'}`} />
@@ -1314,15 +1324,20 @@ function ParagraphCard({ paragraph, index, startTime, paragraphTimes, onStartFro
                 <span className={isCurrentParagraph ? 'text-green-700' : 'text-green-600'}>Fin:</span>
                 <span className={`font-mono font-bold ${isCurrentParagraph ? 'text-green-800' : 'text-green-700'}`}>{formatClockTime(paragraphTimes.end)}</span>
               </div>
+              {paragraphTimes.adjustedDuration !== paragraph.total_time_seconds && (
+                <span className="text-orange-500 text-xs font-medium">
+                  (ajustado)
+                </span>
+              )}
             </div>
           )}
           
-          <p className={`text-sm line-clamp-2 pr-20 ${isCurrentParagraph ? 'text-green-800 font-medium' : 'text-zinc-600'}`}>
+          <p className={`text-sm line-clamp-2 pr-20 ${isCompletedParagraph ? 'text-zinc-400' : isCurrentParagraph ? 'text-green-800 font-medium' : 'text-zinc-600'}`}>
             {paragraph.text}
           </p>
           
           {/* Stats Row */}
-          <div className={`flex items-center gap-4 mt-3 text-xs ${isCurrentParagraph ? 'text-green-600' : 'text-zinc-400'}`}>
+          <div className={`flex items-center gap-4 mt-3 text-xs ${isCompletedParagraph ? 'text-zinc-400' : isCurrentParagraph ? 'text-green-600' : 'text-zinc-400'}`}>
             <span>{paragraph.word_count} palabras</span>
             <span>·</span>
             <span>{formatTimeText(paragraph.reading_time_seconds)} lectura</span>
@@ -1337,21 +1352,41 @@ function ParagraphCard({ paragraph, index, startTime, paragraphTimes, onStartFro
             )}
           </div>
 
-          {/* Start from here button */}
+          {/* Action buttons */}
           <div className="mt-3 flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onStartFromHere();
-              }}
-              className={`text-xs ${isCurrentParagraph ? 'border-green-400 text-green-700 bg-green-100 hover:bg-green-200' : 'border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400'}`}
-              data-testid={`start-from-paragraph-${paragraph.number}`}
-            >
-              <Play className="w-3 h-3 mr-1" />
-              {isCurrentParagraph ? 'Reiniciar aquí' : 'Iniciar desde aquí'}
-            </Button>
+            {/* Next Paragraph Button - Only on current paragraph */}
+            {isCurrentParagraph && !isLastParagraph && (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onGoToNext();
+                }}
+                className="text-xs bg-green-600 hover:bg-green-700 text-white"
+                data-testid={`next-from-paragraph-${paragraph.number}`}
+              >
+                <ArrowRight className="w-3 h-3 mr-1" />
+                Pasar al siguiente párrafo
+              </Button>
+            )}
+
+            {/* Start from here - Only when not current and not completed */}
+            {!isCurrentParagraph && !isCompletedParagraph && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStartFromHere();
+                }}
+                className="text-xs border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400"
+                data-testid={`start-from-paragraph-${paragraph.number}`}
+              >
+                <Play className="w-3 h-3 mr-1" />
+                Iniciar desde aquí
+              </Button>
+            )}
             
             {hasQuestions && (
               <CollapsibleTrigger asChild>
