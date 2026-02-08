@@ -108,12 +108,44 @@ export default function HomePage() {
     now: false
   });
   
-  // Sound and notification settings
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [alertTimes, setAlertTimes] = useState({
-    firstAlert: 5,  // minutes before final questions
-    secondAlert: 1  // minutes before final questions
+  // Sound and notification settings - load from localStorage
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = localStorage.getItem('pdfTimer_soundEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
   });
+  const [vibrationEnabled, setVibrationEnabled] = useState(() => {
+    const saved = localStorage.getItem('pdfTimer_vibrationEnabled');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [alertTimes, setAlertTimes] = useState(() => {
+    const saved = localStorage.getItem('pdfTimer_alertTimes');
+    return saved !== null ? JSON.parse(saved) : { firstAlert: 5, secondAlert: 1 };
+  });
+
+  // Save preferences to localStorage
+  useEffect(() => {
+    localStorage.setItem('pdfTimer_soundEnabled', JSON.stringify(soundEnabled));
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('pdfTimer_vibrationEnabled', JSON.stringify(vibrationEnabled));
+  }, [vibrationEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('pdfTimer_alertTimes', JSON.stringify(alertTimes));
+  }, [alertTimes]);
+
+  // Vibration function
+  const triggerVibration = useCallback((pattern) => {
+    if (!vibrationEnabled) return;
+    if ('vibrate' in navigator) {
+      try {
+        navigator.vibrate(pattern);
+      } catch (error) {
+        console.log('Vibration not supported');
+      }
+    }
+  }, [vibrationEnabled]);
 
   // Play notification sound
   const playNotificationSound = useCallback((type = 'alert') => {
