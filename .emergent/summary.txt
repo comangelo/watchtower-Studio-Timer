@@ -1,0 +1,148 @@
+<analysis>**original_problem_statement:**
+Construye una aplicación en la le pueda introducir un articulo en pdf y determine o me indique cuanto tuempo se requiere para leerlo en voz alta con una velocidad promedio de pronunciación. Si el articulo o el pdf para leer tien parrafos quiero quebla aplicación ponga el tiempo de cada uno de ellos, tambien debe tomar en cuenta de que cada parrafo tiene preguntas el la que deberia tomar en cuenta de que esas preguntas seran respondidas por una persona y la respuestas deben durar wntre 30 y 40 segundos. Las preguntas estan identificadas con el numero que identifica cada parrafo. Por ejemolo el parrafo cinco tiene preguntas que en su inicio esta identificada con el numero cinco.
+La aplicación debe pedir que coloque el articulo pdf. La aplicación debe tener un contador o cronómetro en la que el usuario lo iniciará cuando comience a leer.
+Ademas debe tener un contador aparte en la que muestre cuanto tiempo falta hasta contestar las ultimas preguntas.
+
+**User's preferred language**: Español
+
+**what currently exists?**
+A full-stack application that analyzes a PDF file to create a structured 60-minute reading schedule. The backend (FastAPI, PyMuPDF) extracts text, identifies paragraphs, and detects two types of questions: those within paragraphs (format: number. question) and final questions that appear after the phrase ¿QUÉ RESPONDERÍAS?.
+
+The frontend (React) provides a comprehensive interface for users to upload a PDF and follow the generated schedule. Key features include:
+- A main timer and a detailed schedule with calculated start/end times for each paragraph and for a separate Final Questions section.
+- Manual paragraph navigation: Users click a button to advance, and the application recalculates the time allocation for upcoming items.
+- Dynamic time adjustment: The reading time for paragraphs is fixed, but the time allocated for answering questions is flexible. Time saved or lost during the reading portion is reallocated to the question-answering portion.
+- A visual indicator highlights the current paragraph being read.
+- A full-screen presentation mode with selectable color themes.
+- Configurable sound and vibration alerts for upcoming events.
+- An option to export the current view as a PNG or PDF.
+- User preferences (themes, alert settings) are saved in .
+
+**Last working item**:
+- Last item agent was working: Implementing a visual alert and a toast notification that triggers when the recalculated time available per question drops below a 20-second threshold.
+- Status: **BLOCKED**
+- Agent Testing Done: N
+- User Testing Done: N
+- Which testing method agent to use? screenshot tool
+
+**All Pending/In progress Issue list**:
+  - Issue 1: The application is not rendering, showing a blank white screen. This is a critical P0 bug.
+
+  Issues Detail:
+  - Issue 1:
+     - Attempted fixes: The agent identified a JavaScript reference error () in the browser console. This was caused by a  hook in  that was calling a function defined later in the file. The agent attempted to fix this by moving the  block after the function's definition. This change has been made but not yet verified.
+     - Next debug checklist:
+        1. Use the  to check if the UI renders after the last fix.
+        2. If it still fails, view the browser console logs using the screenshot tool with  to see if the error persists or has changed.
+        3. Examine . Carefully review the order of function declarations and  hooks. Ensure that any function used inside a  is defined before the hook that calls it.
+     - Why fix this issue and what will be achieved with the fix? The application is currently unusable. Fixing this will restore all functionality.
+     - Status: IN PROGRESS
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? frontend
+     - Blocked on other issue: None
+
+**In progress Task List**:
+  There are no in-progress tasks; the immediate focus is on the blocking bug fix.
+
+**Upcoming and Future Tasks**
+  Upcoming Tasks:
+    - P1: Implement an alert for when the recalculated time per question drops below 20 seconds. (This was the task that introduced the current bug).
+    - P2: Add statistics to compare the estimated vs. actual time spent on each paragraph.
+  
+  Future Tasks:
+    - P2: Implement a history of analyzed documents.
+    - P3: Add a read-only mode that hides UI controls for a cleaner reading experience.
+    - P3: Create a color editor or add more themes for the presentation mode.
+
+**Completed work in this session**
+- **Core Functionality**:
+  - PDF upload and text extraction using .
+  - Implemented complex text analysis to identify paragraphs, paragraph-specific questions (format número. pregunta), and final questions (appearing after ¿QUÉ RESPONDERÍAS?).
+  - Created a dynamic 60-minute schedule based on the analysis.
+
+- **User Interface & Experience**:
+  - Developed a full UI in React to display the schedule, timers, and analysis results.
+  - Implemented manual paragraph advancement with Next/Previous controls.
+  - Created a visual indicator with auto-scrolling for the currently active paragraph.
+  - Implemented a separate Final Questions section with distinct styling.
+  - Added a feature to start the timer from any paragraph, recalculating the schedule.
+  - Created a full-screen presentation mode with theme selection ( persistence).
+  - Added export functionality (PNG/PDF) using  and .
+
+- **Time Management & Alerts**:
+  - Implemented dynamic time reallocation: reading time is fixed, while time for questions adjusts based on the user's pace.
+  - The UI now displays the adjusted time per question versus the original 35 seconds.
+  - Added configurable sound and vibration alerts for upcoming sections, with preferences saved to .
+
+- **Bug Fixes & Refinements**:
+  - Fixed multiple bugs related to paragraph and question detection.
+  - Corrected the time adjustment logic based on user feedback.
+  - Synchronized the timing of the Final Questions section with the manual paragraph advancement.
+
+**Earlier issues found/mentioned but not fixed**
+   - None. The agent has been diligent in addressing user-reported issues.
+
+**Known issue recurrence from previous fork**
+  - None.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Backend**: FastAPI, PyMuPDF for PDF text extraction.
+- **Frontend**: React, ,  for icons,  for toasts.
+- **Styling**: Tailwind CSS.
+- **State Management**: React Hooks (, , , ). Client-side persistence with .
+- **Features**: Web Audio API (), Vibration API (), Exporting with  and .
+
+**key DB schema**
+  - **Note**: While the agent prepared the backend for MongoDB by adding logic to create indexes for a  collection, this database is **not currently used**. All PDF analysis and scheduling are performed in-memory for each session and are not persisted on the server.
+
+**All files of reference**
+- : The single file containing all backend logic, including the  endpoint, PDF parsing with PyMuPDF, and the core analysis algorithm for extracting paragraphs and questions.
+- : A very large monolithic component that manages almost the entire application's state and renders all UI elements except for the presentation mode view. It contains the timer logic, schedule recalculations, event handlers, and effects for alerts.
+- : A separate component for the full-screen presentation view, including its specific UI and theme-switching logic.
+
+**Areas that need refactoring**
+- ****: This file is over 1300 lines long and has become extremely difficult to maintain. It should be broken down into smaller, more focused components (e.g., , , , ) and custom hooks (e.g., , , ).
+
+**key api endpoints**
+- : Uploads a PDF file. The request is a  with a file field. It returns a JSON object with the analysis, including , , , etc.
+
+**Critical Info for New Agent**
+- The immediate priority is to fix the blank screen bug. The cause is a JavaScript reference error in  due to incorrect ordering of a hook and a function.
+- Be extremely cautious when editing . Due to its size and complexity, changes can have unintended side effects.
+- The database is not currently used. Do not attempt to write or read session data from MongoDB unless the user requests the history feature.
+- The core logic for time adjustment is now: reading time for paragraphs is **fixed**, while time for questions is **variable** and absorbs any time saved or lost during reading.
+
+**Last 10 User Messages and any pending HUMAN messages**
+10. : Separate questions after ¿QUÉ RESPONDERÍAS? and detect number. question format.
+9. : Synchronize final question times with manual paragraph advancement.
+8. : Add start/end time indicators to the final questions section.
+7. : The time for questions should be adjustable based on remaining time, but the paragraph reading time should be fixed.
+6. : Okay, I will fix it so reading time is fixed and question time is adjustable.
+5. : No, you have it backward. Reading time should be fixed, question time should adjust.
+4. : I understand, 35 seconds per question must be fixed. The reading time will be adjusted. (This was a misunderstanding).
+3. : Increase or decrease the 35 seconds for questions based on the time remaining.
+2. : Add an alert for when the time per question gets too low (less than 20 seconds).
+1. : (Acknowledges the request and starts implementing the alert, which leads to the current bug).
+
+**Project Health Check:**
+- **Broken**: The frontend is completely non-functional due to a critical JavaScript error, resulting in a blank screen.
+
+**3rd Party Integrations**
+- **PyMuPDF**: Used on the backend for PDF text extraction.
+- **html2canvas**: Used on the frontend for the export-to-image feature.
+- **jspdf**: Used on the frontend for the export-to-PDF feature.
+
+**Testing status**
+  - Testing agent used after significant changes: YES
+  - Troubleshoot agent used after agent stuck in loop: NO
+  - Test files created: , 
+  - Known regressions: The entire frontend is non-functional.
+
+**Credentials to test flow:**
+N/A
+
+**What agent forgot to execute**
+- The agent correctly identified the cause of the JavaScript error (function called before definition in a ) and attempted a fix by moving the code blocks. However, it failed to verify if the fix was successful before the session ended. The immediate next step is to verify this fix.</analysis>
