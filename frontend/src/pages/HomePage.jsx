@@ -298,60 +298,67 @@ export default function HomePage() {
   const getAdjustedParagraphTimes = useCallback((paragraphIndex) => {
     if (!startTime || !analysisResult) return { start: null, end: null, adjustedDuration: 0 };
     
-    // If paragraph is before current, use original times
+    const paragraph = analysisResult.paragraphs[paragraphIndex];
+    
+    // If paragraph is before current, it's completed - use original times
     if (paragraphIndex < currentManualParagraph) {
       let cumulativeTime = 0;
       for (let i = 0; i < paragraphIndex; i++) {
         cumulativeTime += analysisResult.paragraphs[i].total_time_seconds;
       }
       const paragraphStart = addSecondsToDate(startTime, cumulativeTime);
-      const paragraphEnd = addSecondsToDate(startTime, cumulativeTime + analysisResult.paragraphs[paragraphIndex].total_time_seconds);
+      const paragraphEnd = addSecondsToDate(startTime, cumulativeTime + paragraph.total_time_seconds);
       return { 
         start: paragraphStart, 
         end: paragraphEnd, 
-        adjustedDuration: analysisResult.paragraphs[paragraphIndex].total_time_seconds,
+        adjustedDuration: paragraph.total_time_seconds,
+        adjustedQuestionTime: 35,
         isCompleted: true
       };
     }
     
-    // Calculate remaining time and remaining paragraphs
+    // Calculate remaining content
     const remainingParagraphs = analysisResult.paragraphs.slice(currentManualParagraph);
-    const totalRemainingOriginalTime = remainingParagraphs.reduce((sum, p) => sum + p.total_time_seconds, 0);
+    const finalQuestionsCount = analysisResult.final_questions?.length || 0;
     
-    // Time available for remaining paragraphs
-    const timeAvailable = Math.max(0, remainingTime);
+    // FIXED: Total reading time for remaining paragraphs
+    const totalFixedReadingTime = remainingParagraphs.reduce((sum, p) => sum + p.reading_time_seconds, 0);
     
-    // Calculate proportional time for this paragraph
-    const thisParagraph = analysisResult.paragraphs[paragraphIndex];
-    const proportion = thisParagraph.total_time_seconds / totalRemainingOriginalTime;
-    const adjustedDuration = timeAvailable * proportion;
+    // Total question count (paragraphs + final questions)
+    const totalQuestionCount = remainingParagraphs.reduce((sum, p) => sum + p.questions.length, 0) + finalQuestionsCount;
+    
+    // Time available for ALL questions
+    const timeForAllQuestions = Math.max(0, remainingTime - totalFixedReadingTime);
+    
+    // Adjusted time per question
+    const adjustedTimePerQuestion = totalQuestionCount > 0 
+      ? timeForAllQuestions / totalQuestionCount
+      : 35;
     
     // Calculate start time for this paragraph
-    let adjustedStart;
-    if (paragraphIndex === currentManualParagraph) {
-      // Current paragraph starts now (or when it was started)
-      adjustedStart = paragraphStartTimes[paragraphIndex] || new Date();
-    } else {
-      // Future paragraphs - calculate based on adjusted times of previous paragraphs
-      let cumulativeAdjustedTime = 0;
-      for (let i = currentManualParagraph; i < paragraphIndex; i++) {
-        const p = analysisResult.paragraphs[i];
-        const pProportion = p.total_time_seconds / totalRemainingOriginalTime;
-        cumulativeAdjustedTime += timeAvailable * pProportion;
-      }
-      adjustedStart = addSecondsToDate(new Date(), cumulativeAdjustedTime);
+    let cumulativeTime = 0;
+    for (let i = currentManualParagraph; i < paragraphIndex; i++) {
+      const p = analysisResult.paragraphs[i];
+      // Fixed reading time + adjusted question time
+      cumulativeTime += p.reading_time_seconds + (p.questions.length * adjustedTimePerQuestion);
     }
     
-    const adjustedEnd = addSecondsToDate(adjustedStart, adjustedDuration);
+    const now = new Date();
+    const adjustedStart = addSecondsToDate(now, cumulativeTime);
+    
+    // This paragraph's duration: fixed reading + adjusted questions
+    const thisParaDuration = paragraph.reading_time_seconds + (paragraph.questions.length * adjustedTimePerQuestion);
+    const adjustedEnd = addSecondsToDate(adjustedStart, thisParaDuration);
     
     return { 
       start: adjustedStart, 
       end: adjustedEnd, 
-      adjustedDuration: Math.round(adjustedDuration),
+      adjustedDuration: Math.round(thisParaDuration),
+      adjustedQuestionTime: Math.round(adjustedTimePerQuestion),
       isCompleted: false,
       isCurrent: paragraphIndex === currentManualParagraph
     };
-  }, [startTime, analysisResult, currentManualParagraph, remainingTime, paragraphStartTimes]);
+  }, [startTime, analysisResult, currentManualParagraph, remainingTime]);
 
   // Get current paragraph index based on elapsed time (keeping for presentation mode)
   const getCurrentParagraphIndex = useCallback(() => {
