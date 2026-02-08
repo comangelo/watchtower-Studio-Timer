@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Calculadora de Tiempo Atalaya</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafaf9;
+            color: #1e293b;
+            line-height: 1.7;
+        }
+        .header {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .header-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header-icon svg {
+            width: 40px;
+            height: 40px;
+            stroke: #ea580c;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .header .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+        .nav {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .nav-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .nav a {
+            color: #64748b;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .nav a:hover {
+            background: #f1f5f9;
+            color: #ea580c;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .section h2 {
+            font-size: 1.5rem;
+            color: #1e293b;
+        }
+        .section h3 {
+            font-size: 1.2rem;
+            color: #ea580c;
+            margin: 25px 0 15px;
+        }
+        .section p {
+            color: #475569;
+            margin-bottom: 15px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        .feature-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .feature-card h4 {
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        .steps {
+            counter-reset: step;
+        }
+        .step-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .step-item:last-child {
+            border-bottom: none;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #ea580c;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-content h4 {
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .step-content p {
+            color: #64748b;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        .tip-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        .tip-box h4 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        .tip-box p {
+            color: #1e3a8a;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        .warning-box h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+        .warning-box p {
+            color: #a16207;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .info-table th, .info-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .info-table th {
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+        }
+        .info-table td {
+            color: #475569;
+        }
+        .info-table tr:hover {
+            background: #fafafa;
+        }
+        .icon-list {
+            list-style: none;
+        }
+        .icon-list li {
+            padding: 12px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .icon-list li:last-child {
+            border-bottom: none;
+        }
+        .icon-list .icon {
+            width: 32px;
+            height: 32px;
+            background: #fed7aa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .icon-list .text strong {
+            color: #1e293b;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .icon-list .text span {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        .color-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        .color-indicator .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .color-green { background: #dcfce7; }
+        .color-green .dot { background: #22c55e; }
+        .color-orange { background: #ffedd5; }
+        .color-orange .dot { background: #f97316; }
+        .color-red { background: #fee2e2; }
+        .color-red .dot { background: #ef4444; }
+        .keyboard-shortcut {
+            display: inline-block;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin: 2px;
+        }
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ea580c;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 10px 5px 10px 0;
+            transition: all 0.2s;
+        }
+        .btn-link:hover {
+            background: #c2410c;
+            transform: translateY(-2px);
+        }
+        .btn-link.secondary {
+            background: #475569;
+        }
+        .footer {
+            background: #1e293b;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .footer p {
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        .screenshot-box {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .screenshot-box .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .screenshot-box p {
+            color: #64748b;
+            margin: 0;
+        }
+        @media print {
+            .nav { display: none; }
+            .section { break-inside: avoid; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+        </div>
+        <h1>Manual de Usuario</h1>
+        <p>Calculadora de Tiempo - Atalaya de Estudio</p>
+        <span class="version">Versión 1.0</span>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="#introduccion">Introducción</a>
+            <a href="#cargar-pdf">Cargar PDF</a>
+            <a href="#cronometro">Cronómetro</a>
+            <a href="#parrafos">Párrafos</a>
+            <a href="#preguntas">Preguntas</a>
+            <a href="#presentacion">Presentación</a>
+            <a href="#exportar">Exportar</a>
+            <a href="#ajustes">Ajustes</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- INTRODUCCIÓN -->
+        <section class="section" id="introduccion">
+            <div class="section-header">
+                <div class="section-icon">📖</div>
+                <h2>Introducción</h2>
+            </div>
+            
+            <p>La <strong>Calculadora de Tiempo - Atalaya de Estudio</strong> es una herramienta diseñada para ayudarte a gestionar el tiempo necesario para conducir el artículo de estudio de La Atalaya en exactamente <strong>60 minutos</strong>.</p>
+            
+            <h3>¿Qué hace esta aplicación?</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>📄 Analiza el PDF</h4>
+                    <p>Extrae automáticamente los párrafos y preguntas del artículo</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⏱️ Calcula tiempos</h4>
+                    <p>Estima el tiempo de lectura basado en 180 palabras por minuto</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📊 Distribuye el tiempo</h4>
+                    <p>Ajusta dinámicamente el tiempo de las preguntas para completar en 60 minutos</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🎯 Guía la conducción</h4>
+                    <p>Muestra en tiempo real si vas adelantado o atrasado</p>
+                </div>
+            </div>
+
+            <h3>Conceptos clave</h3>
+            <table class="info-table">
+                <tr>
+                    <th>Concepto</th>
+                    <th>Descripción</th>
+                </tr>
+                <tr>
+                    <td><strong>Tiempo de lectura</strong></td>
+                    <td>Tiempo fijo calculado para leer todos los párrafos (no cambia)</td>
+                </tr>
+                <tr>
+                    <td><strong>Tiempo de respuestas</strong></td>
+                    <td>Tiempo variable asignado a las preguntas (se ajusta dinámicamente)</td>
+                </tr>
+                <tr>
+                    <td><strong>Preguntas de párrafos</strong></td>
+                    <td>Preguntas asociadas a cada párrafo del artículo</td>
+                </tr>
+                <tr>
+                    <td><strong>Preguntas de repaso</strong></td>
+                    <td>Preguntas que aparecen después de "¿QUÉ RESPONDERÍA?"</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- CARGAR PDF -->
+        <section class="section" id="cargar-pdf">
+            <div class="section-header">
+                <div class="section-icon">📤</div>
+                <h2>Cargar el Artículo PDF</h2>
+            </div>
+            
+            <p>El primer paso es cargar el archivo PDF del artículo de estudio.</p>
+            
+            <h3>Pasos para cargar el PDF</h3>
+            <div class="steps">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Localiza la zona de carga</h4>
+                        <p>Al abrir la aplicación, verás un área con el texto "Arrastra el artículo de estudio en PDF aquí"</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Arrastra o selecciona el archivo</h4>
+                        <p>Puedes arrastrar el PDF directamente sobre la zona, o hacer clic en "selecciona un archivo" para buscarlo en tu dispositivo</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Espera el análisis</h4>
+                        <p>La aplicación analizará el documento y extraerá los párrafos y preguntas automáticamente</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Consejo</h4>
+                <p>Usa el PDF oficial descargado de jw.org para obtener los mejores resultados en la detección de párrafos y preguntas.</p>
+            </div>
+
+            <h3>Información del análisis</h3>
+            <p>Después de cargar el PDF, verás un resumen con:</p>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">📄</div>
+                    <div class="text">
+                        <strong>Nombre del archivo</strong>
+                        <span>El nombre del PDF que cargaste</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">📝</div>
+                    <div class="text">
+                        <strong>Número de párrafos y palabras</strong>
+                        <span>Total de párrafos detectados y cantidad de palabras</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">❓</div>
+                    <div class="text">
+                        <strong>Cantidad de preguntas</strong>
+                        <span>Separadas entre preguntas de párrafos y preguntas de repaso</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">⏱️</div>
+                    <div class="text">
+                        <strong>Tiempos calculados</strong>
+                        <span>Lectura, Respuestas y Total (siempre 60 min)</span>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- CRONÓMETRO -->
+        <section class="section" id="cronometro">
+            <div class="section-header">
+                <div class="section-icon">⏱️</div>
+                <h2>Usar el Cronómetro</h2>
+            </div>
+            
+            <p>El cronómetro es el corazón de la aplicación. Te permite controlar el tiempo durante la conducción del estudio.</p>
+
+            <h3>Controles del cronómetro</h3>
+            <table class="info-table">
+                <tr>
+                    <th>Botón</th>
+                    <th>Función</th>
+                </tr>
+                <tr>
+                    <td>▶️ <strong>Iniciar</strong></td>
+                    <td>Comienza a contar el tiempo y activa el seguimiento de párrafos</td>
+                </tr>
+                <tr>
+                    <td>⏸️ <strong>Pausar</strong></td>
+                    <td>Detiene temporalmente el cronómetro (útil para interrupciones)</td>
+                </tr>
+                <tr>
+                    <td>🔄 <strong>Reiniciar</strong></td>
+                    <td>Vuelve el cronómetro a 00:00 y reinicia el seguimiento</td>
+                </tr>
+            </table>
+
+            <h3>Indicadores de tiempo</h3>
+            <p>Cuando el cronómetro está activo, verás dos indicadores principales:</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>⏱️ Tiempo Transcurrido</h4>
+                    <p>Muestra cuánto tiempo ha pasado desde que iniciaste. Formato: MM:SS</p>
+                </div>
+                <div class="feature-card">
+                    <h4>⏳ Tiempo Restante</h4>
+                    <p>Muestra cuánto tiempo queda de los 60 minutos. Se actualiza cada segundo.</p>
+                </div>
+            </div>
+
+            <h3>Horarios de inicio y fin</h3>
+            <p>Al iniciar el cronómetro, la aplicación calcula automáticamente:</p>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">🟢</div>
+                    <div class="text">
+                        <strong>Hora de inicio</strong>
+                        <span>La hora actual cuando presionaste iniciar</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🔴</div>
+                    <div class="text">
+                        <strong>Hora de fin</strong>
+                        <span>Hora de inicio + 60 minutos (cuando deberías terminar)</span>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="warning-box">
+                <h4>⚠️ Importante</h4>
+                <p>Si pausas el cronómetro, el tiempo sigue corriendo en el reloj real. La hora de fin programada no cambia.</p>
+            </div>
+        </section>
+
+        <!-- PÁRRAFOS -->
+        <section class="section" id="parrafos">
+            <div class="section-header">
+                <div class="section-icon">📋</div>
+                <h2>Navegación por Párrafos</h2>
+            </div>
+            
+            <p>La sección "Desglose por párrafo" muestra cada párrafo del artículo con su información de tiempo.</p>
+
+            <h3>Información de cada párrafo</h3>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">🔢</div>
+                    <div class="text">
+                        <strong>Número de párrafo</strong>
+                        <span>Identificador del párrafo (Párrafo 1, Párrafo 2, etc.)</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">📝</div>
+                    <div class="text">
+                        <strong>Cantidad de palabras</strong>
+                        <span>Número de palabras en el párrafo</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">⏱️</div>
+                    <div class="text">
+                        <strong>Tiempo asignado</strong>
+                        <span>Tiempo total para leer y responder preguntas del párrafo</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🕐</div>
+                    <div class="text">
+                        <strong>Hora programada</strong>
+                        <span>A qué hora deberías estar en este párrafo</span>
+                    </div>
+                </li>
+            </ul>
+
+            <h3>Controles de navegación</h3>
+            <p>Durante el estudio puedes navegar entre párrafos:</p>
+            <table class="info-table">
+                <tr>
+                    <th>Acción</th>
+                    <th>Descripción</th>
+                </tr>
+                <tr>
+                    <td><strong>Anterior / Siguiente</strong></td>
+                    <td>Botones para moverte al párrafo anterior o siguiente</td>
+                </tr>
+                <tr>
+                    <td><strong>Iniciar desde aquí</strong></td>
+                    <td>Permite comenzar el cronómetro desde cualquier párrafo específico</td>
+                </tr>
+                <tr>
+                    <td><strong>Ver preguntas</strong></td>
+                    <td>Expande o colapsa las preguntas asociadas al párrafo</td>
+                </tr>
+            </table>
+
+            <h3>Indicadores visuales</h3>
+            <p>Los párrafos cambian de color según el estado:</p>
+            <div style="margin: 20px 0;">
+                <span class="color-indicator color-green">
+                    <span class="dot"></span>
+                    <strong>Verde:</strong> Párrafo actual (LEYENDO AHORA)
+                </span>
+                <span class="color-indicator color-orange">
+                    <span class="dot"></span>
+                    <strong>Gris:</strong> Párrafos completados
+                </span>
+                <span class="color-indicator color-red">
+                    <span class="dot"></span>
+                    <strong>Blanco:</strong> Párrafos pendientes
+                </span>
+            </div>
+        </section>
+
+        <!-- PREGUNTAS -->
+        <section class="section" id="preguntas">
+            <div class="section-header">
+                <div class="section-icon">❓</div>
+                <h2>Sistema de Preguntas</h2>
+            </div>
+            
+            <p>La aplicación detecta dos tipos de preguntas en el artículo:</p>
+
+            <h3>Tipos de preguntas</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>📝 Preguntas de párrafos</h4>
+                    <p>Son las preguntas asociadas a cada párrafo. Aparecen con un número que indica a qué párrafo(s) corresponden.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📋 Preguntas de repaso</h4>
+                    <p>Son las preguntas que aparecen al final del artículo, después de "¿QUÉ RESPONDERÍA?". Se muestran en una sección especial.</p>
+                </div>
+            </div>
+
+            <h3>Tiempo por pregunta</h3>
+            <p>El tiempo asignado a cada pregunta se calcula dinámicamente:</p>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">📐</div>
+                    <div class="text">
+                        <strong>Cálculo inicial</strong>
+                        <span>Se estiman 35 segundos por pregunta como base</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🔄</div>
+                    <div class="text">
+                        <strong>Ajuste dinámico</strong>
+                        <span>El tiempo se recalcula según el tiempo restante disponible</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">📊</div>
+                    <div class="text">
+                        <strong>Distribución equitativa</strong>
+                        <span>Todas las preguntas reciben el mismo tiempo ajustado</span>
+                    </div>
+                </li>
+            </ul>
+
+            <h3>Indicadores de tiempo ajustado</h3>
+            <p>Cuando el cronómetro está activo, cada pregunta muestra:</p>
+            <div style="margin: 20px 0;">
+                <span class="color-indicator color-green">
+                    <span class="dot"></span>
+                    <strong>+Xs (+Y):</strong> Tiempo ajustado y diferencia con el original
+                </span>
+            </div>
+            <p>Ejemplo: <strong>+170s (+135)</strong> significa 170 segundos por pregunta, que son 135 segundos más que los 35 originales.</p>
+
+            <div class="warning-box">
+                <h4>⚠️ Alertas de tiempo bajo</h4>
+                <p>Si el tiempo por pregunta baja de 20 segundos, verás alertas en color naranja. Si baja de 10 segundos, las alertas serán rojas indicando tiempo crítico.</p>
+            </div>
+        </section>
+
+        <!-- MODO PRESENTACIÓN -->
+        <section class="section" id="presentacion">
+            <div class="section-header">
+                <div class="section-icon">🖥️</div>
+                <h2>Modo Presentación</h2>
+            </div>
+            
+            <p>El modo presentación ofrece una vista de pantalla completa optimizada para mostrar durante el estudio.</p>
+
+            <h3>Cómo activarlo</h3>
+            <div class="steps">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Busca el botón "Presentación"</h4>
+                        <p>Está ubicado en la parte superior de la aplicación, junto a los botones de exportar</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Haz clic para activar</h4>
+                        <p>La pantalla cambiará a modo completo con los cronómetros grandes y visibles</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Características del modo presentación</h3>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">🔢</div>
+                    <div class="text">
+                        <strong>Cronómetros grandes</strong>
+                        <span>Tiempo transcurrido y restante en formato fácil de leer</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">📊</div>
+                    <div class="text">
+                        <strong>Barra de progreso</strong>
+                        <span>Indicador visual del avance del estudio</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">📋</div>
+                    <div class="text">
+                        <strong>Párrafo actual</strong>
+                        <span>Información del párrafo que se está leyendo</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🎨</div>
+                    <div class="text">
+                        <strong>Temas de color</strong>
+                        <span>Varios esquemas de colores disponibles (claro, oscuro, etc.)</span>
+                    </div>
+                </li>
+            </ul>
+
+            <h3>Atajos de teclado</h3>
+            <p>En el modo presentación puedes usar estos atajos:</p>
+            <table class="info-table">
+                <tr>
+                    <th>Tecla</th>
+                    <th>Acción</th>
+                </tr>
+                <tr>
+                    <td><span class="keyboard-shortcut">Espacio</span></td>
+                    <td>Iniciar o pausar el cronómetro</td>
+                </tr>
+                <tr>
+                    <td><span class="keyboard-shortcut">ESC</span></td>
+                    <td>Salir del modo presentación</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- EXPORTAR -->
+        <section class="section" id="exportar">
+            <div class="section-header">
+                <div class="section-icon">📥</div>
+                <h2>Exportar el Programa</h2>
+            </div>
+            
+            <p>Puedes exportar el programa de tiempos para guardarlo o imprimirlo.</p>
+
+            <h3>Formatos disponibles</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🖼️ Exportar como imagen (PNG)</h4>
+                    <p>Genera una imagen del programa completo. Ideal para compartir por WhatsApp o redes sociales.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📄 Exportar como PDF</h4>
+                    <p>Crea un documento PDF del programa. Perfecto para imprimir o guardar como archivo.</p>
+                </div>
+            </div>
+
+            <h3>Cómo exportar</h3>
+            <div class="steps">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Carga y analiza el PDF</h4>
+                        <p>Primero debes tener un artículo cargado y analizado</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Busca los botones de exportar</h4>
+                        <p>Están en la parte superior: "PNG" y "PDF"</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Haz clic en el formato deseado</h4>
+                        <p>El archivo se descargará automáticamente a tu dispositivo</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Consejo</h4>
+                <p>Exporta el programa antes de iniciar el cronómetro si deseas tener una copia con los tiempos originales (35s por pregunta).</p>
+            </div>
+        </section>
+
+        <!-- AJUSTES -->
+        <section class="section" id="ajustes">
+            <div class="section-header">
+                <div class="section-icon">⚙️</div>
+                <h2>Ajustes y Preferencias</h2>
+            </div>
+            
+            <p>La aplicación guarda automáticamente tus preferencias.</p>
+
+            <h3>Alertas sonoras</h3>
+            <p>Puedes configurar alertas para que suenen cuando el tiempo por pregunta sea bajo:</p>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">🔔</div>
+                    <div class="text">
+                        <strong>Alerta de tiempo bajo</strong>
+                        <span>Suena cuando el tiempo por pregunta baja de 20 segundos</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">📳</div>
+                    <div class="text">
+                        <strong>Vibración</strong>
+                        <span>El dispositivo vibra junto con la alerta (en móviles compatibles)</span>
+                    </div>
+                </li>
+            </ul>
+
+            <h3>Datos guardados</h3>
+            <p>La aplicación guarda en tu navegador:</p>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">💾</div>
+                    <div class="text">
+                        <strong>Último análisis</strong>
+                        <span>El artículo analizado se mantiene al recargar la página</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">⚙️</div>
+                    <div class="text">
+                        <strong>Preferencias</strong>
+                        <span>Configuración de alertas y tema seleccionado</span>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="warning-box">
+                <h4>⚠️ Nota</h4>
+                <p>Si borras los datos del navegador o usas modo incógnito, las preferencias y el análisis guardado se perderán.</p>
+            </div>
+        </section>
+
+        <!-- ENLACES -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-icon">🔗</div>
+                <h2>Enlaces Útiles</h2>
+            </div>
+            
+            <p>Accede rápidamente a los recursos de la aplicación:</p>
+            
+            <div style="margin-top: 20px;">
+                <a href="/" class="btn-link">📱 Abrir Aplicación</a>
+                <a href="/descargar-app.html" class="btn-link secondary">📥 Instalar en Android</a>
+                <a href="/guia-apk.html" class="btn-link secondary">📦 Generar APK</a>
+                <a href="/resumen_sesion.pdf" class="btn-link secondary">📄 Resumen PDF</a>
+            </div>
+        </section>
+    </div>
+
+    <div class="footer">
+        <p>Manual de Usuario - Calculadora de Tiempo Atalaya de Estudio</p>
+        <a href="/" class="btn-link" style="margin: 0;">🚀 Ir a la Aplicación</a>
+    </div>
+</body>
+</html>
