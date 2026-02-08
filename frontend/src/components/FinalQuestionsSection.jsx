@@ -128,13 +128,20 @@ export function FinalQuestionsSection({
                 {q.text}
               </div>
               <div className="flex items-center gap-2 ml-3">
-                <span className={`text-xs font-mono whitespace-nowrap font-bold ${
-                  isCriticalTime ? 'text-red-700' :
-                  isLowTime ? 'text-orange-700' :
-                  isAdjusted ? (timeDiff > 0 ? 'text-green-600' : 'text-orange-600') : 'text-red-500'
+                {/* Show adjusted time with indicator */}
+                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-mono whitespace-nowrap font-bold ${
+                  isCriticalTime ? 'bg-red-300 text-red-800' :
+                  isLowTime ? 'bg-orange-300 text-orange-800' :
+                  isAdjusted ? (timeDiff > 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700') : 
+                  'bg-red-100 text-red-600'
                 }`}>
-                  +{Math.round(perQuestionTime)} seg
-                </span>
+                  <span>+{Math.round(perQuestionTime)} seg</span>
+                  {isAdjusted && (
+                    <span className={`text-[10px] ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                      ({timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)})
+                    </span>
+                  )}
+                </div>
                 {startTime && (
                   <span className={`text-xs px-2 py-1 rounded font-mono whitespace-nowrap ${
                     isCriticalTime ? 'bg-red-300 text-red-800' :
