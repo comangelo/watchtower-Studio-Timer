@@ -428,78 +428,23 @@ def extract_final_questions(text: str) -> List[QuestionInfo]:
     return final_questions
 
 
-def parse_question_line(text: str) -> tuple:
-    """
-    Parse a question line and extract paragraph numbers and question texts.
-    
-    Handles formats:
-    - "1. ¿Pregunta?" -> ([1], ["¿Pregunta?"])
-    - "1, 2. ¿Pregunta?" -> ([1, 2], ["¿Pregunta?"]) - question goes to paragraph 2
-    - "3. ¿Primera? ¿Segunda?" -> ([3], ["¿Primera?", "¿Segunda?"])
-    - "1, 2. ¿Primera? ¿Segunda?" -> ([1, 2], ["¿Primera?", "¿Segunda?"])
-    
-    Returns: (list of paragraph numbers, list of question texts)
-    """
-    # Pattern for multiple paragraphs: "1, 2." or "1,2." or "1, 2, 3."
-    multi_para_match = re.match(r'^([\d,\s]+)\.\s*(.+)$', text)
-    
-    if not multi_para_match:
-        return ([], [])
-    
-    # Extract paragraph numbers
-    numbers_str = multi_para_match.group(1)
-    numbers = [int(n.strip()) for n in numbers_str.split(',') if n.strip().isdigit()]
-    
-    if not numbers:
-        return ([], [])
-    
-    # Extract question text(s)
-    questions_text = multi_para_match.group(2).strip()
-    
-    if not questions_text:
-        return (numbers, [])
-    
-    # Split multiple questions in the same line
-    # Pattern: split by "?" but keep the "?" with each question
-    # Handle both "¿Pregunta?" and "Pregunta?" formats
-    questions = []
-    
-    # Find all questions (text ending with ?)
-    # This handles: "¿Primera? ¿Segunda?" or "Primera? Segunda?"
-    question_parts = re.findall(r'[¿]?[^?]+\?', questions_text)
-    
-    if question_parts:
-        for q in question_parts:
-            q = q.strip()
-            if q and len(q) > 3:
-                questions.append(q)
-    elif questions_text.endswith('?'):
-        # Single question without proper split
-        if len(questions_text) > 3:
-            questions.append(questions_text)
-    
-    return (numbers, questions)
-
-
 def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisResult:
     """
     Analyze PDF using font size information to detect questions.
-    Questions are identified by:
-    1. Smaller font size than paragraph text
-    2. Starting with number(s) followed by "." (e.g., "1.", "12.", "1, 2.")
     
-    Special cases handled:
-    - "1, 2. ¿Pregunta?" -> Question belongs to paragraph 2 (last number)
-    - "3. ¿Primera? ¿Segunda?" -> Two separate questions for paragraph 3
+    Format detected from Watchtower Study articles:
+    - Paragraphs: Start with number in bold (size ~6.8), text in size ~11.0
+    - Questions: Size ~9.0, number in medium/bold font, text in regular font
+    - Question format: "1, 2." or "14, 15." for multiple paragraphs
+    - Final questions: After "¿QUÉ RESPONDERÍA?" marker
     """
     lines = extract_text_with_sizes(pdf_bytes)
     
     if not lines:
-        # Fallback to text-only analysis
         text = extract_text_from_pdf(pdf_bytes)
         return analyze_pdf_content(text, filename)
     
-    # Calculate the most common font size (paragraph text)
+    # Identify font sizes used in document
     size_counts = {}
     for line in lines:
         size_key = round(line.font_size, 1)
@@ -509,112 +454,229 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         text = extract_text_from_pdf(pdf_bytes)
         return analyze_pdf_content(text, filename)
     
-    # Find the dominant font size (main paragraph text)
-    paragraph_font_size = max(size_counts.keys(), key=lambda k: size_counts[k])
-    
-    # Tolerance for smaller font detection
-    size_tolerance = 0.5
+    # In Watchtower articles:
+    # - Main text is ~11.0
+    # - Questions are ~9.0
+    # - Paragraph numbers are ~6.8
+    paragraph_font_size = 11.0  # Main paragraph text
+    question_font_size = 9.0    # Question text
     
     # Process lines to build paragraphs and detect questions
-    paragraphs_data = []  # List of {number, text_lines, questions}
-    current_para = {"number": None, "text_lines": [], "questions": []}
+    paragraphs_data = {}  # Dict: paragraph_number -> {text_lines, questions}
+    current_para_num = None
+    current_para_lines = []
     final_questions = []
-    found_que_responderias = False
+    found_que_responderia = False
     
     for line in lines:
-        text = line.text
-        font_size = line.font_size
+        text = line.text.strip()
+        font_size = round(line.font_size, 1)
         
         if not text:
             continue
         
-        # Check for "¿QUÉ RESPONDERÍAS?" marker
-        text_lower = text.lower()
-        if "qué responderías" in text_lower or "que responderias" in text_lower:
-            found_que_responderias = True
-            # Save current paragraph before marker
-            if current_para["text_lines"]:
-                paragraphs_data.append(current_para.copy())
-                current_para = {"number": None, "text_lines": [], "questions": []}
+        # Check for "¿QUÉ RESPONDERÍA?" marker (can be "RESPONDERÍA" or "RESPONDERÍAS")
+        text_upper = text.upper()
+        if "QUÉ RESPONDERÍA" in text_upper or "QUE RESPONDERIA" in text_upper:
+            found_que_responderia = True
+            # Save current paragraph
+            if current_para_num and current_para_lines:
+                if current_para_num not in paragraphs_data:
+                    paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+                paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
+                current_para_lines = []
             continue
         
-        # Is this smaller font? (likely a question)
-        is_smaller_font = font_size < (paragraph_font_size - size_tolerance)
+        # Skip ornament symbols and page numbers
+        if text in ['˛', ''] or (len(text) <= 2 and text.isdigit()):
+            continue
         
-        # Check if line looks like a question (has number(s) followed by period)
-        has_question_format = re.match(r'^[\d,\s]+\.\s*.+', text)
+        # Check if this is a question line (size ~9.0)
+        is_question_size = 8.5 <= font_size <= 9.5
         
-        # Check if line starts with "número " pattern (paragraph start)
-        paragraph_match = re.match(r'^(\d{1,2})\s+([^.,].*)$', text)
+        # Check if this is paragraph text (size ~11.0)
+        is_paragraph_size = 10.5 <= font_size <= 11.5
         
-        if found_que_responderias:
-            # After "¿QUÉ RESPONDERÍAS?" - these are final questions
-            para_nums, q_texts = parse_question_line(text)
-            for q_text in q_texts:
-                final_questions.append(QuestionInfo(
-                    text=q_text,
-                    answer_time=QUESTION_ANSWER_TIME,
-                    is_final_question=True
-                ))
-        elif has_question_format and is_smaller_font:
-            # This is a question line (smaller font + "número(s)." format)
-            para_nums, q_texts = parse_question_line(text)
+        # Check if this is a paragraph number (size ~6.8, just a number)
+        is_para_number = 6.0 <= font_size <= 7.5 and text.isdigit()
+        
+        if found_que_responderia:
+            # After final questions marker - collect final questions
+            # Pattern: text that looks like a question (contains ?)
+            if '?' in text and not text.upper().startswith("CANCIÓN"):
+                # Extract questions, might be multiple
+                questions = extract_multiple_questions(text)
+                for q in questions:
+                    final_questions.append(QuestionInfo(
+                        text=q,
+                        answer_time=QUESTION_ANSWER_TIME,
+                        is_final_question=True
+                    ))
+        elif is_para_number:
+            # New paragraph number detected
+            # Save previous paragraph
+            if current_para_num and current_para_lines:
+                if current_para_num not in paragraphs_data:
+                    paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+                paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
             
-            if para_nums and q_texts:
-                # The question belongs to the LAST paragraph number mentioned
-                # e.g., "1, 2. ¿Pregunta?" -> belongs to paragraph 2
-                target_para_num = para_nums[-1]
+            current_para_num = int(text)
+            current_para_lines = []
+            
+        elif is_question_size:
+            # This is a question line
+            # Parse the question format: "1, 2." or "14, 15." or just "5."
+            para_nums, questions = parse_question_line_watchtower(text)
+            
+            if para_nums and questions:
+                # Question belongs to the LAST paragraph number
+                target_para = para_nums[-1]
                 
-                for q_text in q_texts:
+                for q in questions:
                     question = QuestionInfo(
-                        text=q_text,
+                        text=q,
                         answer_time=QUESTION_ANSWER_TIME,
                         is_final_question=False
                     )
                     
-                    # Try to add to the target paragraph
-                    added = False
+                    if target_para not in paragraphs_data:
+                        paragraphs_data[target_para] = {"text_lines": [], "questions": []}
+                    paragraphs_data[target_para]["questions"].append(question)
                     
-                    # First check current paragraph
-                    if current_para["number"] == target_para_num:
-                        current_para["questions"].append(question)
-                        added = True
-                    else:
-                        # Find the paragraph with this number
-                        for para in paragraphs_data:
-                            if para["number"] == target_para_num:
-                                para["questions"].append(question)
-                                added = True
-                                break
-                    
-                    if not added and current_para["text_lines"]:
-                        # Add to current paragraph if no match found
-                        current_para["questions"].append(question)
-                        
-        elif paragraph_match and not is_smaller_font:
-            # This is a new paragraph start (larger font + "número " format)
-            para_num = int(paragraph_match.group(1))
-            
-            # Save previous paragraph
-            if current_para["text_lines"]:
-                paragraphs_data.append(current_para.copy())
-            
-            # Start new paragraph
-            current_para = {
-                "number": para_num,
-                "text_lines": [text],
-                "questions": []
-            }
-        else:
-            # Continue current paragraph
-            if current_para["text_lines"]:
-                current_para["text_lines"].append(text)
-            elif text.strip():
-                current_para["text_lines"] = [text]
+        elif is_paragraph_size:
+            # Regular paragraph text
+            if current_para_num:
+                current_para_lines.append(text)
     
     # Save last paragraph
-    if current_para["text_lines"]:
-        paragraphs_data.append(current_para)
+    if current_para_num and current_para_lines:
+        if current_para_num not in paragraphs_data:
+            paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+        paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
+    
+    # Build the analysis result
+    analyzed_paragraphs = []
+    total_words = 0
+    total_questions = 0
+    total_reading_time = 0.0
+    total_question_time = 0.0
+    cumulative_time = 0.0
+    
+    # Sort paragraphs by number
+    for para_num in sorted(paragraphs_data.keys()):
+        para_data = paragraphs_data[para_num]
+        para_text = ' '.join(para_data["text_lines"])
+        questions = para_data["questions"]
+        
+        word_count = count_words(para_text)
+        reading_time = calculate_reading_time(word_count)
+        question_time = len(questions) * QUESTION_ANSWER_TIME
+        
+        total_words += word_count
+        total_questions += len(questions)
+        total_reading_time += reading_time
+        total_question_time += question_time
+        cumulative_time += reading_time + question_time
+        
+        analyzed_paragraphs.append(ParagraphAnalysis(
+            number=para_num,
+            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
+            word_count=word_count,
+            reading_time_seconds=round(reading_time, 2),
+            questions=questions,
+            total_time_seconds=round(reading_time + question_time, 2),
+            cumulative_time_seconds=round(cumulative_time, 2)
+        ))
+    
+    # Add final questions
+    final_questions_start_time = cumulative_time
+    final_questions_time = len(final_questions) * QUESTION_ANSWER_TIME
+    total_questions += len(final_questions)
+    total_question_time += final_questions_time
+    
+    FIXED_TOTAL_TIME = 3600  # 60 minutes
+    
+    return PDFAnalysisResult(
+        filename=filename,
+        total_words=total_words,
+        total_paragraphs=len(analyzed_paragraphs),
+        total_questions=total_questions,
+        total_reading_time_seconds=round(total_reading_time, 2),
+        total_question_time_seconds=round(total_question_time, 2),
+        total_time_seconds=FIXED_TOTAL_TIME,
+        fixed_duration=True,
+        final_questions_start_time=round(final_questions_start_time, 2),
+        final_questions=final_questions,
+        paragraphs=analyzed_paragraphs
+    )
+
+
+def parse_question_line_watchtower(text: str) -> tuple:
+    """
+    Parse a Watchtower-style question line.
+    
+    Formats:
+    - "1, 2. ¿En qué situación...?" -> ([1, 2], ["¿En qué situación...?"])
+    - "5. ¿Qué consiguieron...?" -> ([5], ["¿Qué consiguieron...?"])
+    - "14, 15. ¿Cómo puede...?" -> ([14, 15], ["¿Cómo puede...?"])
+    - "3. ¿Primera? ¿Segunda?" -> ([3], ["¿Primera?", "¿Segunda?"])
+    
+    Returns: (list of paragraph numbers, list of question texts)
+    """
+    # Pattern: one or more numbers separated by commas, followed by period
+    match = re.match(r'^([\d,\s]+)\.\s*(.+)$', text)
+    
+    if not match:
+        return ([], [])
+    
+    # Extract paragraph numbers
+    numbers_str = match.group(1)
+    numbers = []
+    for n in numbers_str.split(','):
+        n = n.strip()
+        if n.isdigit():
+            numbers.append(int(n))
+    
+    if not numbers:
+        return ([], [])
+    
+    # Extract question text(s)
+    questions_text = match.group(2).strip()
+    
+    if not questions_text:
+        return (numbers, [])
+    
+    # Extract multiple questions from the text
+    questions = extract_multiple_questions(questions_text)
+    
+    return (numbers, questions)
+
+
+def extract_multiple_questions(text: str) -> list:
+    """
+    Extract multiple questions from a single text line.
+    
+    Examples:
+    - "¿Primera pregunta? ¿Segunda pregunta?" -> ["¿Primera pregunta?", "¿Segunda pregunta?"]
+    - "¿Única pregunta?" -> ["¿Única pregunta?"]
+    - "Pregunta sin signos?" -> ["Pregunta sin signos?"]
+    """
+    questions = []
+    
+    # Try to split by "?" keeping each question complete
+    # Pattern matches: ¿...? or text ending with ?
+    parts = re.findall(r'¿[^?]+\?|[^?]+\?', text)
+    
+    for part in parts:
+        part = part.strip()
+        if part and len(part) > 3:
+            questions.append(part)
+    
+    # If no questions found but text ends with ?, use whole text
+    if not questions and text.strip().endswith('?'):
+        questions.append(text.strip())
+    
+    return questions
     
     # Build the analysis result
     analyzed_paragraphs = []
