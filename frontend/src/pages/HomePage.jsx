@@ -564,6 +564,15 @@ export default function HomePage() {
           </div>
           {analysisResult && (
             <div className="flex items-center gap-2">
+              <Button 
+                variant="outline"
+                onClick={enterPresentationMode}
+                className="text-zinc-700 hover:text-zinc-900"
+                data-testid="presentation-mode-btn"
+              >
+                <Maximize className="w-4 h-4 mr-2" />
+                Presentación
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
