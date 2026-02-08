@@ -56,7 +56,8 @@ class PDFAnalysisResult(BaseModel):
     total_time_seconds: float = 3600  # Always 60 minutes (3600 seconds)
     fixed_duration: bool = True  # Indicates duration is fixed at 60 min
     final_questions_start_time: float = 0  # When final questions section starts
-    final_questions: List[QuestionInfo] = []  # Questions after "¿QUÉ RESPONDERÍAS?"
+    final_questions: List[QuestionInfo] = []  # Questions after horizontal line separator
+    final_questions_title: str = ""  # Bold title/question before the final questions
     paragraphs: List[ParagraphAnalysis]
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
