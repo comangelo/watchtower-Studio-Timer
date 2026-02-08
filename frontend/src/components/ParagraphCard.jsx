@@ -43,7 +43,7 @@ export function ParagraphCard({
           ${isCompletedParagraph
             ? 'border-slate-200 bg-slate-50/50 opacity-70'
             : isCurrentParagraph 
-              ? 'border-orange-400 bg-orange-50 shadow-lg shadow-orange-100 scale-[1.01]' 
+              ? 'border-green-400 bg-green-50 shadow-lg shadow-green-100 scale-[1.01]' 
               : hasFinalQuestions 
                 ? 'border-red-200 bg-red-50/30 hover:border-red-300' 
                 : hasQuestions 
@@ -64,7 +64,7 @@ export function ParagraphCard({
 
         {/* Current Paragraph Indicator */}
         {isCurrentParagraph && (
-          <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold py-2 px-4 flex items-center justify-center gap-2 rounded-t-xl">
+          <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-bold py-2 px-4 flex items-center justify-center gap-2 rounded-t-xl">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
@@ -77,13 +77,13 @@ export function ParagraphCard({
         <div className={isCurrentParagraph || isCompletedParagraph ? 'mt-8' : ''}>
           {/* Header Row */}
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-sm font-bold ${isCompletedParagraph ? 'text-slate-400' : isCurrentParagraph ? 'text-orange-700' : 'text-slate-700'}`}>
+            <span className={`text-sm font-bold ${isCompletedParagraph ? 'text-slate-400' : isCurrentParagraph ? 'text-green-700' : 'text-slate-700'}`}>
               Párrafo {paragraph.number}
             </span>
             <Badge 
               className={`font-mono text-sm px-3 py-1 ${
                 isCompletedParagraph ? 'bg-slate-200 text-slate-600' : 
-                isCurrentParagraph ? 'bg-orange-500 text-white' : 
+                isCurrentParagraph ? 'bg-green-500 text-white' : 
                 hasFinalQuestions ? 'bg-red-500 text-white' :
                 hasQuestions ? 'bg-orange-100 text-orange-700' : 
                 'bg-slate-100 text-slate-600'
@@ -97,9 +97,9 @@ export function ParagraphCard({
           {/* Time Schedule */}
           {startTime && paragraphTimes.start && !isCompletedParagraph && (
             <div className="mb-4 flex items-center gap-3 text-xs">
-              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${isCurrentParagraph ? 'bg-orange-100' : 'bg-slate-100'}`}>
-                <Clock className={`w-3.5 h-3.5 ${isCurrentParagraph ? 'text-orange-600' : 'text-slate-500'}`} />
-                <span className={isCurrentParagraph ? 'text-orange-700 font-medium' : 'text-slate-600'}>
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${isCurrentParagraph ? 'bg-green-100' : 'bg-slate-100'}`}>
+                <Clock className={`w-3.5 h-3.5 ${isCurrentParagraph ? 'text-green-600' : 'text-slate-500'}`} />
+                <span className={isCurrentParagraph ? 'text-green-700 font-medium' : 'text-slate-600'}>
                   {formatClockTime(paragraphTimes.start)} - {formatClockTime(paragraphTimes.end)}
                 </span>
               </div>
@@ -136,7 +136,7 @@ export function ParagraphCard({
                   e.stopPropagation();
                   onGoToNext();
                 }}
-                className="rounded-full px-6 py-5 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all active:scale-95"
+                className="rounded-full px-6 py-5 text-sm font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 hover:shadow-green-300 transition-all active:scale-95"
                 data-testid={`next-from-paragraph-${paragraph.number}`}
               >
                 <ArrowRight className="w-4 h-4 mr-2" />
@@ -169,7 +169,7 @@ export function ParagraphCard({
                     hasFinalQuestions 
                       ? 'text-red-600 hover:bg-red-50' 
                       : isCurrentParagraph 
-                        ? 'text-orange-600 hover:bg-orange-100' 
+                        ? 'text-green-600 hover:bg-green-100' 
                         : 'text-slate-600 hover:bg-slate-100'
                   }`}
                   data-testid={`toggle-questions-${paragraph.number}`}
