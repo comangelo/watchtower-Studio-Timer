@@ -81,7 +81,8 @@ class TextLine:
 
 
 def extract_text_with_sizes(pdf_bytes: bytes) -> List[TextLine]:
-    """Extract text from PDF with font size information using PyMuPDF"""
+    """Extract text from PDF with font size information using PyMuPDF.
+    Returns individual spans to preserve font size information."""
     doc = fitz.open(stream=pdf_bytes, filetype="pdf")
     lines = []
     
@@ -90,21 +91,11 @@ def extract_text_with_sizes(pdf_bytes: bytes) -> List[TextLine]:
         for block in blocks:
             if 'lines' in block:
                 for line in block['lines']:
-                    line_text = ""
-                    line_size = 0
-                    span_count = 0
-                    
                     for span in line['spans']:
-                        text = span['text']
+                        text = span['text'].strip()
                         size = span['size']
-                        if text.strip():
-                            line_text += text
-                            line_size += size
-                            span_count += 1
-                    
-                    if line_text.strip() and span_count > 0:
-                        avg_size = line_size / span_count
-                        lines.append(TextLine(line_text, avg_size))
+                        if text:
+                            lines.append(TextLine(text, round(size, 1)))
     
     doc.close()
     return lines
