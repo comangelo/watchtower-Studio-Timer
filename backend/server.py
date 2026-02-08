@@ -283,13 +283,6 @@ def process_pdf_with_font_sizes(pdf_bytes: bytes) -> dict:
         "paragraph_font_size": paragraph_font_size,
         "detected_sizes": dict(size_counts)
     }
-    
-    # If no numbered paragraphs found, fall back to double newline split
-    if len(paragraphs) <= 1 and '\n\n' in text:
-        paragraphs = re.split(r'\n\s*\n+', text.strip())
-        paragraphs = [p.strip() for p in paragraphs if p.strip()]
-    
-    return paragraphs if paragraphs else [text.strip()]
 
 
 def count_words(text: str) -> int:
