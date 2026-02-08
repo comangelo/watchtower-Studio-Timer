@@ -710,10 +710,10 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
             if text == '˛':
                 continue
             
-            # Check for "¿QUÉ RESPONDERÍA?" marker
+            # Check for "¿QUÉ RESPONDERÍA?" marker (fallback if horizontal line not found)
             text_upper = text.upper()
-            if "QUÉ RESPONDERÍA" in text_upper or "QUE RESPONDERIA" in text_upper:
-                found_que_responderia = True
+            if not skip_final_detection and ("QUÉ RESPONDERÍA" in text_upper or "QUE RESPONDERIA" in text_upper):
+                found_final_section = True
                 # Save current paragraph
                 if current_para_num and current_para_lines:
                     if current_para_num not in paragraphs_data:
@@ -722,8 +722,8 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
                     current_para_lines = []
                 continue
             
-            # If we're after the final questions marker, collect final questions
-            if found_que_responderia:
+            # If we're after the final questions marker (fallback), collect final questions
+            if found_final_section and not skip_final_detection:
                 # Skip song references
                 if text_upper.startswith("CANCIÓN") or text_upper.startswith("CANCION"):
                     continue
