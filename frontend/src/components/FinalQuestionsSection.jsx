@@ -44,7 +44,7 @@ export function FinalQuestionsSection({
       <CardHeader className="pb-3">
         <CardTitle className="font-heading text-lg text-red-700 flex items-center gap-2">
           <AlertCircle className="w-5 h-5" />
-          Preguntas Finales
+          Preguntas de Repaso
           <Badge variant="destructive" className="ml-2">{finalQuestions.length}</Badge>
         </CardTitle>
         <p className="text-sm text-red-600">

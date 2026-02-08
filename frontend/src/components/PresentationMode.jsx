@@ -286,7 +286,7 @@ export default function PresentationMode({
               <>
                 <div className={`text-4xl ${t.textDimmed}`}>|</div>
                 <div className="text-center">
-                  <p className="text-xs uppercase tracking-wider mb-1">Preguntas Finales</p>
+                  <p className="text-xs uppercase tracking-wider mb-1">Preguntas de Repaso</p>
                   <p className={`font-mono text-2xl ${t.danger}`}>{formatClockTime(finalQuestionsTime)}</p>
                 </div>
               </>

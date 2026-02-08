@@ -59,7 +59,7 @@ export function NotificationSettings({
 
           {/* Alert Times */}
           <div className="space-y-3">
-            <Label className="text-xs text-zinc-500">Alertas antes de preguntas finales</Label>
+            <Label className="text-xs text-zinc-500">Alertas antes de preguntas de repaso</Label>
             <div className="flex items-center gap-2">
               <Label className="text-xs w-20">1er aviso:</Label>
               <Input
