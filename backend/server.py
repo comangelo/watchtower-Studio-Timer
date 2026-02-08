@@ -405,7 +405,7 @@ def extract_final_questions(text: str) -> List[QuestionInfo]:
         return final_questions
     
     # Find all questions in the text after the marker
-    # Pattern: number followed by period and question
+    # Pattern: number(s) followed by period and question text ending with ?
     lines = text_after.split('\n')
     
     for line in lines:
@@ -413,8 +413,9 @@ def extract_final_questions(text: str) -> List[QuestionInfo]:
         if not line:
             continue
         
-        # Pattern: "número. ¿pregunta?" 
-        match = re.match(r'^(\d+)\.\s*([¿].*\?)$', line, re.IGNORECASE)
+        # Pattern: "número. pregunta?" - one or two digits, period, then question
+        # Matches: "1. ¿Cómo...?" or "12. ¿Por qué...?" or "1. Cómo...?"
+        match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', line, re.IGNORECASE)
         if match:
             question_text = match.group(2).strip()
             if len(question_text) > 5:
