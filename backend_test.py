@@ -3,8 +3,6 @@ import sys
 import json
 import io
 from datetime import datetime
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
 
 class PDFReadingTimerTester:
     def __init__(self, base_url="https://pdf-reading-timer.preview.emergentagent.com"):
