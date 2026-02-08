@@ -236,60 +236,65 @@ export default function HomePage() {
   }, [currentManualParagraph]);
 
   // Calculate adjusted time for final questions based on manual progress
-  // Questions ALWAYS have 35 seconds each - this is FIXED
+  // READING time is FIXED, QUESTION time ADJUSTS based on remaining time
   const getAdjustedFinalQuestionsTime = useCallback(() => {
     if (!startTime || !analysisResult) return { start: null, end: null };
     
     const finalQuestionsCount = analysisResult.final_questions?.length || 0;
-    const FIXED_QUESTION_TIME = 35; // Always 35 seconds per question - FIXED
-    const totalFinalQuestionsTime = finalQuestionsCount * FIXED_QUESTION_TIME;
+    if (finalQuestionsCount === 0) return { start: null, end: null };
     
-    // Calculate remaining paragraphs time (only reading time adjusts, not questions)
+    // Calculate remaining paragraphs
     const remainingParagraphs = analysisResult.paragraphs.slice(currentManualParagraph);
     
-    // Calculate fixed question time in remaining paragraphs
-    const remainingParagraphsQuestionTime = remainingParagraphs.reduce(
-      (sum, p) => sum + (p.questions.length * FIXED_QUESTION_TIME), 0
+    // FIXED: Reading time for remaining paragraphs (never changes)
+    const fixedReadingTime = remainingParagraphs.reduce((sum, p) => sum + p.reading_time_seconds, 0);
+    
+    // Count total questions (paragraphs + final questions)
+    const remainingParagraphsQuestionCount = remainingParagraphs.reduce(
+      (sum, p) => sum + p.questions.length, 0
     );
+    const totalQuestionCount = remainingParagraphsQuestionCount + finalQuestionsCount;
     
-    // Total fixed question time (paragraphs + final questions)
-    const totalFixedQuestionTime = remainingParagraphsQuestionTime + totalFinalQuestionsTime;
+    // Time available for ALL questions = remaining time - fixed reading time
+    const timeForAllQuestions = Math.max(0, remainingTime - fixedReadingTime);
     
-    // Time available for reading (total remaining - fixed question times)
-    const timeForReading = Math.max(0, remainingTime - totalFixedQuestionTime);
+    // Adjusted time per question (distributed equally among all remaining questions)
+    const adjustedTimePerQuestion = totalQuestionCount > 0 
+      ? Math.round(timeForAllQuestions / totalQuestionCount)
+      : 35;
     
-    // Original reading time for remaining paragraphs
-    const originalReadingTime = remainingParagraphs.reduce((sum, p) => sum + p.reading_time_seconds, 0);
+    // Time for final questions specifically
+    const totalFinalQuestionsTime = finalQuestionsCount * adjustedTimePerQuestion;
     
-    // Calculate when final questions start (after all remaining paragraphs)
-    // Adjusted reading time + fixed question time for paragraphs
-    const adjustedParagraphsTime = timeForReading + remainingParagraphsQuestionTime;
+    // Calculate when final questions start (after reading time + paragraph questions)
+    const paragraphsQuestionTime = remainingParagraphsQuestionCount * adjustedTimePerQuestion;
+    const timeUntilFinalQuestions = fixedReadingTime + paragraphsQuestionTime;
     
     const now = new Date();
-    const adjustedStart = addSecondsToDate(now, adjustedParagraphsTime);
+    const adjustedStart = addSecondsToDate(now, timeUntilFinalQuestions);
     const adjustedEnd = addSecondsToDate(adjustedStart, totalFinalQuestionsTime);
     
     return { 
       start: adjustedStart, 
       end: adjustedEnd,
-      totalTime: totalFinalQuestionsTime, // Always fixed
-      perQuestion: FIXED_QUESTION_TIME // Always 35 seconds
+      totalTime: totalFinalQuestionsTime,
+      perQuestion: adjustedTimePerQuestion,
+      originalPerQuestion: 35
     };
   }, [startTime, analysisResult, currentManualParagraph, remainingTime]);
 
-  // Get adjusted time for each individual final question (35 sec each - FIXED)
+  // Get adjusted time for each individual final question
   const getAdjustedFinalQuestionTime = useCallback((questionIndex) => {
     if (!startTime || !analysisResult) return null;
     
     const adjusted = getAdjustedFinalQuestionsTime();
     if (!adjusted.start) return null;
     
-    const FIXED_QUESTION_TIME = 35;
-    return addSecondsToDate(adjusted.start, questionIndex * FIXED_QUESTION_TIME);
+    return addSecondsToDate(adjusted.start, questionIndex * adjusted.perQuestion);
   }, [startTime, analysisResult, getAdjustedFinalQuestionsTime]);
 
   // Calculate adjusted paragraph times based on remaining time
-  // Only READING time adjusts, question time stays at 35 sec each
+  // READING time is FIXED, QUESTION time ADJUSTS
   const getAdjustedParagraphTimes = useCallback((paragraphIndex) => {
     if (!startTime || !analysisResult) return { start: null, end: null, adjustedDuration: 0 };
     
