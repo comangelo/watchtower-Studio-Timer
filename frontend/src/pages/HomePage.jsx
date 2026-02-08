@@ -300,27 +300,29 @@ export default function HomePage() {
     
     const timeUntilFinalQuestions = finalQuestionsSeconds - elapsedTime;
     
-    // 5 minutes warning (300 seconds)
-    if (timeUntilFinalQuestions <= 300 && timeUntilFinalQuestions > 295 && !notificationPlayed.fiveMin) {
-      playNotificationSound('warning');
+    // First alert (customizable, default 5 minutes)
+    const firstAlertSeconds = alertTimes.firstAlert * 60;
+    if (timeUntilFinalQuestions <= firstAlertSeconds && timeUntilFinalQuestions > firstAlertSeconds - 5 && !notificationPlayed.fiveMin) {
+      if (soundEnabled) playNotificationSound('warning');
       setNotificationPlayed(prev => ({ ...prev, fiveMin: true }));
-      toast.warning("⏰ 5 minutos para las preguntas finales", { duration: 5000 });
+      toast.warning(`⏰ ${alertTimes.firstAlert} minuto${alertTimes.firstAlert > 1 ? 's' : ''} para las preguntas finales`, { duration: 5000 });
     }
     
-    // 1 minute warning (60 seconds)
-    if (timeUntilFinalQuestions <= 60 && timeUntilFinalQuestions > 55 && !notificationPlayed.oneMin) {
-      playNotificationSound('urgent');
+    // Second alert (customizable, default 1 minute)
+    const secondAlertSeconds = alertTimes.secondAlert * 60;
+    if (timeUntilFinalQuestions <= secondAlertSeconds && timeUntilFinalQuestions > secondAlertSeconds - 5 && !notificationPlayed.oneMin) {
+      if (soundEnabled) playNotificationSound('urgent');
       setNotificationPlayed(prev => ({ ...prev, oneMin: true }));
-      toast.warning("⚠️ 1 minuto para las preguntas finales", { duration: 5000 });
+      toast.warning(`⚠️ ${alertTimes.secondAlert} minuto${alertTimes.secondAlert > 1 ? 's' : ''} para las preguntas finales`, { duration: 5000 });
     }
     
     // Final questions NOW
     if (timeUntilFinalQuestions <= 0 && timeUntilFinalQuestions > -5 && !notificationPlayed.now) {
-      playNotificationSound('final');
+      if (soundEnabled) playNotificationSound('final');
       setNotificationPlayed(prev => ({ ...prev, now: true }));
       toast.success("🎯 ¡Es hora de las preguntas finales!", { duration: 8000 });
     }
-  }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds]);
+  }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds, soundEnabled, alertTimes]);
 
   // Get final questions time as Date
   const getFinalQuestionsTime = useCallback(() => {
