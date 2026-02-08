@@ -17,7 +17,7 @@ export function QuickStats({ analysisResult, currentManualParagraph }) {
             <span className="font-mono text-sm font-medium">180 PPM</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-zinc-500">Total preguntas</span>
+            <span className="text-sm text-zinc-500">Total preguntas de repaso</span>
             <span className="font-mono text-sm font-medium">{totalQuestions}</span>
           </div>
           <div className="flex items-center justify-between">
