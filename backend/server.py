@@ -328,6 +328,74 @@ def detect_horizontal_line_separator(pdf_bytes: bytes) -> dict:
         return {"found": False, "page": -1, "y_position": -1}
 
 
+def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -> List[QuestionInfo]:
+    """
+    Extract questions that appear after the horizontal line separator.
+    These are the final discussion questions (Preguntas de Repaso).
+    """
+    final_questions = []
+    
+    if not line_info.get("found"):
+        return final_questions
+    
+    try:
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        line_page = line_info["page"]
+        line_y = line_info["y_position"]
+        
+        text_after_line = []
+        
+        # Get text from the page with the line, below the line
+        if line_page >= 0 and line_page < len(doc):
+            page = doc[line_page]
+            blocks = page.get_text('dict')['blocks']
+            
+            for block in blocks:
+                if 'lines' in block:
+                    block_top = block.get('bbox', [0, 0, 0, 0])[1]
+                    # Only include text that starts below the line
+                    if block_top > line_y + 5:
+                        for line in block['lines']:
+                            line_text = ''
+                            for span in line['spans']:
+                                line_text += span['text']
+                            if line_text.strip():
+                                text_after_line.append(line_text.strip())
+        
+        # Also get text from pages after the line page
+        for page_num in range(line_page + 1, len(doc)):
+            page = doc[page_num]
+            page_text = page.get_text()
+            for line in page_text.split('\n'):
+                line = line.strip()
+                if line:
+                    # Skip song references
+                    if line.upper().startswith("CANCIÓN") or line.upper().startswith("CANCION"):
+                        continue
+                    text_after_line.append(line)
+        
+        doc.close()
+        
+        # Parse questions from text after the line
+        for line in text_after_line:
+            # Pattern: "número. pregunta?" - one or two digits, period, then question
+            match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', line, re.IGNORECASE)
+            if match:
+                question_text = match.group(2).strip()
+                if len(question_text) > 5:
+                    final_questions.append(QuestionInfo(
+                        text=question_text,
+                        answer_time=QUESTION_ANSWER_TIME,
+                        is_final_question=True
+                    ))
+        
+        return final_questions
+        
+    except Exception as e:
+        logging.warning(f"Error extracting questions after horizontal line: {e}")
+        return final_questions
+
+
 def count_words(text: str) -> int:
     """Count words in text"""
     words = re.findall(r'\b\w+\b', text)
