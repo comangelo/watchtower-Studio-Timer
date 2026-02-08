@@ -21,10 +21,10 @@ export function UploadZone({
       {/* Header */}
       <div className="text-center mb-10">
         <h2 className="font-heading font-extrabold text-4xl md:text-5xl text-slate-900 tracking-tight mb-4">
-          Analiza tu PDF
+          ARTÍCULO DE ESTUDIO
         </h2>
         <p className="text-lg text-slate-500 max-w-md mx-auto leading-relaxed">
-          Sube un artículo y calcula el tiempo necesario para leerlo en voz alta
+          Sube el artículo de estudio para gestionar el tiempo necesario para conducirlo
         </p>
       </div>
 
@@ -65,7 +65,7 @@ export function UploadZone({
         
         {/* Text */}
         <p className="font-heading font-bold text-2xl text-slate-800 mb-2">
-          {isLoading ? 'Analizando documento...' : 'Arrastra tu PDF aquí'}
+          {isLoading ? 'Analizando documento...' : 'Arrastra el artículo de estudio en PDF aquí'}
         </p>
         <p className="text-slate-500 text-lg">
           o haz clic para seleccionar un archivo
