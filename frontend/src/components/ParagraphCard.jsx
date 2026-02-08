@@ -39,16 +39,16 @@ export function ParagraphCard({
       <div 
         ref={cardRef}
         className={`
-          paragraph-card rounded-xl border p-4 relative overflow-hidden transition-all duration-300
+          group relative p-5 rounded-2xl border-2 transition-all duration-300 hover:shadow-md
           ${isCompletedParagraph
-            ? 'border-zinc-200 bg-zinc-50 opacity-60'
+            ? 'border-slate-200 bg-slate-50/50 opacity-70'
             : isCurrentParagraph 
-              ? 'border-green-500 bg-green-50 ring-2 ring-green-500 ring-offset-2 shadow-lg scale-[1.02]' 
+              ? 'border-orange-400 bg-orange-50 shadow-lg shadow-orange-100 scale-[1.01]' 
               : hasFinalQuestions 
-                ? 'border-red-300 bg-red-50/30' 
+                ? 'border-red-200 bg-red-50/30 hover:border-red-300' 
                 : hasQuestions 
-                  ? 'border-orange-200 bg-orange-50/20' 
-                  : 'border-zinc-100 bg-white hover:shadow-md'
+                  ? 'border-orange-100 bg-white hover:border-orange-300' 
+                  : 'border-slate-100 bg-white hover:border-slate-300'
           }
         `}
         style={{ animationDelay: `${index * 50}ms` }}
@@ -56,133 +56,133 @@ export function ParagraphCard({
       >
         {/* Completed Indicator */}
         {isCompletedParagraph && (
-          <div className="absolute top-0 left-0 right-0 bg-zinc-400 text-white text-xs font-bold py-1 px-3 flex items-center justify-center gap-2">
-            <Check className="w-3 h-3" />
+          <div className="absolute top-0 left-0 right-0 bg-slate-500 text-white text-xs font-bold py-1.5 px-4 flex items-center justify-center gap-2 rounded-t-xl">
+            <Check className="w-3.5 h-3.5" />
             COMPLETADO
           </div>
         )}
 
         {/* Current Paragraph Indicator */}
         {isCurrentParagraph && (
-          <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-xs font-bold py-1 px-3 flex items-center justify-center gap-2">
-            <span className="relative flex h-2 w-2">
+          <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs font-bold py-2 px-4 flex items-center justify-center gap-2 rounded-t-xl">
+            <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
             </span>
             LEYENDO AHORA
           </div>
         )}
 
-        {/* Paragraph Number Badge */}
-        <span className={`absolute ${isCurrentParagraph || isCompletedParagraph ? 'top-10' : 'top-3'} left-3 text-xs ${isCompletedParagraph ? 'text-zinc-400' : isCurrentParagraph ? 'text-green-600' : 'text-zinc-500'}`}>
-          <span className="font-bold">Párrafo {paragraph.number}</span>
-        </span>
+        {/* Content Container */}
+        <div className={isCurrentParagraph || isCompletedParagraph ? 'mt-8' : ''}>
+          {/* Header Row */}
+          <div className="flex items-center justify-between mb-3">
+            <span className={`text-sm font-bold ${isCompletedParagraph ? 'text-slate-400' : isCurrentParagraph ? 'text-orange-700' : 'text-slate-700'}`}>
+              Párrafo {paragraph.number}
+            </span>
+            <Badge 
+              className={`font-mono text-sm px-3 py-1 ${
+                isCompletedParagraph ? 'bg-slate-200 text-slate-600' : 
+                isCurrentParagraph ? 'bg-orange-500 text-white' : 
+                hasFinalQuestions ? 'bg-red-500 text-white' :
+                hasQuestions ? 'bg-orange-100 text-orange-700' : 
+                'bg-slate-100 text-slate-600'
+              }`}
+              data-testid={`paragraph-time-${paragraph.number}`}
+            >
+              {paragraphTimes.adjustedDuration ? formatTimeText(paragraphTimes.adjustedDuration) : formatTimeText(paragraph.total_time_seconds)}
+            </Badge>
+          </div>
 
-        {/* Time Badge */}
-        <Badge 
-          variant={isCompletedParagraph ? "secondary" : isCurrentParagraph ? "default" : hasFinalQuestions ? "destructive" : hasQuestions ? "default" : "secondary"}
-          className={`absolute ${isCurrentParagraph || isCompletedParagraph ? 'top-10' : 'top-3'} right-3 font-mono text-xs ${isCompletedParagraph ? 'bg-zinc-300' : isCurrentParagraph ? 'bg-green-600' : hasQuestions && !hasFinalQuestions ? 'bg-orange-500' : ''}`}
-          data-testid={`paragraph-time-${paragraph.number}`}
-        >
-          {paragraphTimes.adjustedDuration ? formatTimeText(paragraphTimes.adjustedDuration) : formatTimeText(paragraph.total_time_seconds)}
-        </Badge>
-
-        {/* Content */}
-        <div className={isCurrentParagraph || isCompletedParagraph ? 'mt-12' : 'mt-6'}>
-          {/* Time Schedule for paragraph */}
+          {/* Time Schedule */}
           {startTime && paragraphTimes.start && !isCompletedParagraph && (
-            <div className="mb-3 flex items-center gap-4 text-xs">
-              <div className={`flex items-center gap-1 px-2 py-1 rounded ${isCurrentParagraph ? 'bg-green-200' : 'bg-zinc-100'}`}>
-                <Clock className={`w-3 h-3 ${isCurrentParagraph ? 'text-green-700' : 'text-zinc-500'}`} />
-                <span className={isCurrentParagraph ? 'text-green-700' : 'text-zinc-600'}>Inicio:</span>
-                <span className={`font-mono font-bold ${isCurrentParagraph ? 'text-green-800' : 'text-zinc-800'}`}>{formatClockTime(paragraphTimes.start)}</span>
-              </div>
-              <div className={`flex items-center gap-1 px-2 py-1 rounded ${isCurrentParagraph ? 'bg-green-200' : 'bg-green-100'}`}>
-                <Clock className={`w-3 h-3 ${isCurrentParagraph ? 'text-green-700' : 'text-green-600'}`} />
-                <span className={isCurrentParagraph ? 'text-green-700' : 'text-green-600'}>Fin:</span>
-                <span className={`font-mono font-bold ${isCurrentParagraph ? 'text-green-800' : 'text-green-700'}`}>{formatClockTime(paragraphTimes.end)}</span>
+            <div className="mb-4 flex items-center gap-3 text-xs">
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${isCurrentParagraph ? 'bg-orange-100' : 'bg-slate-100'}`}>
+                <Clock className={`w-3.5 h-3.5 ${isCurrentParagraph ? 'text-orange-600' : 'text-slate-500'}`} />
+                <span className={isCurrentParagraph ? 'text-orange-700 font-medium' : 'text-slate-600'}>
+                  {formatClockTime(paragraphTimes.start)} - {formatClockTime(paragraphTimes.end)}
+                </span>
               </div>
               {paragraphTimes.adjustedDuration !== paragraph.total_time_seconds && (
-                <span className="text-orange-500 text-xs font-medium">
-                  (ajustado)
+                <span className="text-orange-500 text-xs font-semibold px-2 py-1 bg-orange-50 rounded-full">
+                  ajustado
                 </span>
               )}
             </div>
           )}
           
-          <p className={`text-sm line-clamp-2 pr-20 ${isCompletedParagraph ? 'text-zinc-400' : isCurrentParagraph ? 'text-green-800 font-medium' : 'text-zinc-600'}`}>
+          {/* Paragraph Text */}
+          <p className={`text-sm leading-relaxed ${isCompletedParagraph ? 'text-slate-400' : isCurrentParagraph ? 'text-slate-800' : 'text-slate-600'}`}>
             {paragraph.text}
           </p>
           
           {/* Stats Row */}
-          <div className={`flex items-center gap-4 mt-3 text-xs ${isCompletedParagraph ? 'text-zinc-400' : isCurrentParagraph ? 'text-green-600' : 'text-zinc-400'}`}>
-            <span>{paragraph.word_count} palabras</span>
-            <span>·</span>
-            <span>{formatTimeText(paragraph.reading_time_seconds)} lectura</span>
+          <div className={`flex items-center gap-3 mt-4 text-xs ${isCompletedParagraph ? 'text-slate-400' : 'text-slate-500'}`}>
+            <span className="px-2 py-1 bg-slate-50 rounded-full">{paragraph.word_count} palabras</span>
+            <span className="px-2 py-1 bg-slate-50 rounded-full">{formatTimeText(paragraph.reading_time_seconds)} lectura</span>
             {hasQuestions && (
-              <>
-                <span>·</span>
-                <span className={`font-medium ${hasFinalQuestions ? 'text-red-500' : isCurrentParagraph ? 'text-green-700' : 'text-orange-500'}`}>
-                  {paragraph.questions.length} pregunta{paragraph.questions.length > 1 ? 's' : ''}
-                  {hasFinalQuestions && ' (FINAL)'}
-                </span>
-              </>
+              <span className={`px-2 py-1 rounded-full font-medium ${hasFinalQuestions ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
+                {paragraph.questions.length} pregunta{paragraph.questions.length > 1 ? 's' : ''}
+              </span>
             )}
           </div>
 
-          {/* Action buttons */}
-          <div className="mt-3 flex items-center gap-2">
-            {/* Next Paragraph Button - Only on current paragraph */}
+          {/* Action Buttons - Improved Visibility */}
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            {/* Next Paragraph Button - Primary Action */}
             {isCurrentParagraph && !isLastParagraph && (
               <Button
-                variant="default"
-                size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   onGoToNext();
                 }}
-                className="text-xs bg-green-600 hover:bg-green-700 text-white"
+                className="rounded-full px-6 py-5 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all active:scale-95"
                 data-testid={`next-from-paragraph-${paragraph.number}`}
               >
-                <ArrowRight className="w-3 h-3 mr-1" />
-                Pasar al siguiente párrafo
+                <ArrowRight className="w-4 h-4 mr-2" />
+                Siguiente Párrafo
               </Button>
             )}
 
-            {/* Start from here - Only when not current and not completed */}
+            {/* Start from here Button - Secondary Action */}
             {!isCurrentParagraph && !isCompletedParagraph && (
               <Button
                 variant="outline"
-                size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   onStartFromHere();
                 }}
-                className="text-xs border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400"
+                className="rounded-full px-5 py-4 text-sm font-semibold border-2 border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 transition-all"
                 data-testid={`start-from-paragraph-${paragraph.number}`}
               >
-                <Play className="w-3 h-3 mr-1" />
+                <Play className="w-4 h-4 mr-2" />
                 Iniciar desde aquí
               </Button>
             )}
             
+            {/* Questions Toggle */}
             {hasQuestions && (
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  size="sm" 
-                  className={`text-xs ${hasFinalQuestions ? 'text-red-600 hover:text-red-700 hover:bg-red-100' : isCurrentParagraph ? 'text-green-700 hover:bg-green-200' : 'text-orange-600 hover:text-orange-700 hover:bg-orange-100'}`}
+                  className={`rounded-full px-4 py-3 text-sm font-medium transition-all ${
+                    hasFinalQuestions 
+                      ? 'text-red-600 hover:bg-red-50' 
+                      : isCurrentParagraph 
+                        ? 'text-orange-600 hover:bg-orange-100' 
+                        : 'text-slate-600 hover:bg-slate-100'
+                  }`}
                   data-testid={`toggle-questions-${paragraph.number}`}
                 >
                   {isOpen ? (
                     <>
-                      <ChevronUp className="w-3 h-3 mr-1" />
-                      Ocultar
+                      <ChevronUp className="w-4 h-4 mr-1" />
+                      Ocultar preguntas
                     </>
                   ) : (
                     <>
-                      <ChevronDown className="w-3 h-3 mr-1" />
-                      Ver preguntas ({paragraph.questions.length})
+                      <ChevronDown className="w-4 h-4 mr-1" />
+                      Ver {paragraph.questions.length} pregunta{paragraph.questions.length > 1 ? 's' : ''}
                     </>
                   )}
                 </Button>
@@ -193,21 +193,26 @@ export function ParagraphCard({
           {/* Questions Section */}
           {hasQuestions && (
             <CollapsibleContent>
-              <div className="mt-3 space-y-2">
+              <div className="mt-4 space-y-2 pl-2 border-l-2 border-orange-200">
                 {paragraph.questions.map((q, qIndex) => (
                   <div 
                     key={qIndex}
-                    className={`rounded-lg py-2 text-sm ${q.is_final_question ? 'bg-red-50 border-l-3 border-red-500 pl-3 text-red-800' : isCurrentParagraph ? 'bg-green-100 border-l-3 border-green-500 pl-3 text-green-800' : 'question-highlight text-orange-800'}`}
+                    className={`rounded-xl py-3 px-4 text-sm ${
+                      q.is_final_question 
+                        ? 'bg-red-50 text-red-800 border border-red-200' 
+                        : 'bg-orange-50 text-orange-800 border border-orange-100'
+                    }`}
                     data-testid={`question-${paragraph.number}-${qIndex}`}
                   >
-                    <MessageCircleQuestion className={`w-4 h-4 inline mr-2 ${q.is_final_question ? 'text-red-500' : isCurrentParagraph ? 'text-green-600' : 'text-orange-500'}`} />
-                    {q.text}
-                    <span className={`ml-2 text-xs ${q.is_final_question ? 'text-red-500' : isCurrentParagraph ? 'text-green-600' : 'text-orange-500'}`}>
-                      (+{q.answer_time} seg)
-                    </span>
-                    {q.is_final_question && (
-                      <Badge variant="destructive" className="ml-2 text-xs">FINAL</Badge>
-                    )}
+                    <div className="flex items-start gap-2">
+                      <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`} />
+                      <div className="flex-1">
+                        <span>{q.text}</span>
+                        <span className={`ml-2 text-xs font-mono ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`}>
+                          +{q.answer_time}s
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
