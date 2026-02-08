@@ -148,21 +148,44 @@ export default function PresentationMode({
   analysisResult,
   elapsedTime,
   remainingTime,
-  startTime,
-  endTime,
   isTimerRunning,
-  toggleTimer,
-  resetTimer,
-  exitPresentationMode,
-  getCurrentParagraph,
-  finalQuestionsTime,
-  formatTime,
-  formatClockTime,
-  progressPercentage,
+  onToggleTimer,
+  onResetTimer,
+  onExit,
+  currentParagraphIndex = 0,
   theme = 'dark',
-  setTheme
+  onThemeChange
 }) {
-  const currentParagraph = getCurrentParagraph();
+  // Calculate derived values
+  const currentParagraph = useMemo(() => {
+    if (!analysisResult || !analysisResult.paragraphs) return null;
+    return analysisResult.paragraphs[currentParagraphIndex] || null;
+  }, [analysisResult, currentParagraphIndex]);
+  
+  const progressPercentage = useMemo(() => {
+    return Math.min(100, (elapsedTime / 3600) * 100);
+  }, [elapsedTime]);
+  
+  // Calculate start and end times based on elapsed time
+  const startTime = useMemo(() => {
+    if (elapsedTime === 0 && !isTimerRunning) return null;
+    return new Date(Date.now() - elapsedTime * 1000);
+  }, [elapsedTime, isTimerRunning]);
+  
+  const endTime = useMemo(() => {
+    if (!startTime) return null;
+    return addSecondsToDate(startTime, 3600);
+  }, [startTime]);
+  
+  // Calculate final questions time
+  const finalQuestionsTime = useMemo(() => {
+    if (!startTime || !analysisResult) return null;
+    if (analysisResult.final_questions_start_time > 0) {
+      return addSecondsToDate(startTime, analysisResult.final_questions_start_time);
+    }
+    return null;
+  }, [startTime, analysisResult]);
+  
   const t = THEMES[theme] || THEMES.dark;
   
   // Handle ESC key to exit
