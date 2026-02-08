@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía: Generar APK con PWABuilder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px 25px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 30px;
+        }
+        .info-box h3 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .info-box p {
+            color: #1e3a8a;
+        }
+        .url-copy {
+            background: #1e293b;
+            color: #4ade80;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1rem;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .url-copy code {
+            word-break: break-all;
+        }
+        .copy-btn {
+            background: #4ade80;
+            color: #1e293b;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .copy-btn:hover {
+            background: #22c55e;
+        }
+        .step {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background: #ea580c;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
+        }
+        .step h2 {
+            color: #1e293b;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            padding-left: 40px;
+        }
+        .step-content {
+            padding-left: 10px;
+        }
+        .step-content p {
+            color: #475569;
+            margin-bottom: 15px;
+        }
+        .step-content ul {
+            list-style: none;
+            margin: 15px 0;
+        }
+        .step-content ul li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            color: #475569;
+        }
+        .step-content ul li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-weight: bold;
+        }
+        .screenshot-placeholder {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .screenshot-placeholder .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .screenshot-placeholder p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #92400e;
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #3b82f6;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 10px 5px 10px 0;
+            transition: all 0.2s;
+        }
+        .btn-action:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+        .btn-action.orange {
+            background: #ea580c;
+        }
+        .btn-action.orange:hover {
+            background: #c2410c;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px 25px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        .warning-box h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+        .warning-box p {
+            color: #a16207;
+            font-size: 0.95rem;
+        }
+        .success-box {
+            background: #dcfce7;
+            border-left: 4px solid #22c55e;
+            padding: 20px 25px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        .success-box h4 {
+            color: #166534;
+            margin-bottom: 8px;
+        }
+        .success-box p {
+            color: #15803d;
+            font-size: 0.95rem;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .option-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .option-card.recommended {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        .option-card h4 {
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .option-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        .option-card .badge {
+            display: inline-block;
+            background: #22c55e;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+        }
+        .final-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        .final-section h2 {
+            margin-bottom: 15px;
+        }
+        .final-section p {
+            color: #94a3b8;
+            margin-bottom: 25px;
+        }
+        .checklist {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .checklist h4 {
+            color: #166534;
+            margin-bottom: 15px;
+        }
+        .checklist ul {
+            list-style: none;
+        }
+        .checklist ul li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #15803d;
+        }
+        .checklist ul li::before {
+            content: "☐";
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📱 Guía: Generar APK con PWABuilder</h1>
+        <p>Instrucciones paso a paso para crear el archivo APK de la aplicación</p>
+    </div>
+
+    <div class="container">
+        <!-- Info inicial -->
+        <div class="info-box">
+            <h3>ℹ️ Antes de comenzar</h3>
+            <p>Necesitarás copiar esta URL de la aplicación:</p>
+            <div class="url-copy">
+                <code id="app-url">https://atalaya-timer.preview.emergentagent.com</code>
+                <button class="copy-btn" onclick="copyUrl()">📋 Copiar</button>
+            </div>
+        </div>
+
+        <!-- PASO 1 -->
+        <div class="step">
+            <div class="step-number">1</div>
+            <h2>Ir a PWABuilder</h2>
+            <div class="step-content">
+                <p>Abre tu navegador y ve al sitio web de PWABuilder:</p>
+                <a href="https://www.pwabuilder.com/" target="_blank" class="btn-action">
+                    🌐 Abrir PWABuilder.com
+                </a>
+                <div class="screenshot-placeholder">
+                    <div class="icon">🌐</div>
+                    <p>Verás la página principal de PWABuilder con un campo para ingresar URL</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 2 -->
+        <div class="step">
+            <div class="step-number">2</div>
+            <h2>Ingresar la URL de la aplicación</h2>
+            <div class="step-content">
+                <p>En el campo de texto que dice <span class="highlight">"Enter the URL to your PWA"</span>:</p>
+                <ul>
+                    <li>Pega la URL: <strong>https://atalaya-timer.preview.emergentagent.com</strong></li>
+                    <li>Haz clic en el botón <span class="highlight">"Start"</span></li>
+                </ul>
+                <div class="screenshot-placeholder">
+                    <div class="icon">📝</div>
+                    <p>PWABuilder analizará la aplicación (esto toma unos segundos)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 3 -->
+        <div class="step">
+            <div class="step-number">3</div>
+            <h2>Esperar el análisis</h2>
+            <div class="step-content">
+                <p>PWABuilder verificará que la aplicación sea una PWA válida. Verás:</p>
+                <ul>
+                    <li>Una puntuación de la PWA</li>
+                    <li>Información del manifest.json</li>
+                    <li>Estado del Service Worker</li>
+                    <li>Iconos detectados</li>
+                </ul>
+                <div class="warning-box">
+                    <h4>⏳ Tiempo de espera</h4>
+                    <p>El análisis puede tardar entre 10-30 segundos. No cierres la página.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 4 -->
+        <div class="step">
+            <div class="step-number">4</div>
+            <h2>Seleccionar "Package for stores"</h2>
+            <div class="step-content">
+                <p>Una vez completado el análisis:</p>
+                <ul>
+                    <li>Busca el botón <span class="highlight">"Package for stores"</span> (generalmente es un botón morado/azul grande)</li>
+                    <li>También puede aparecer como <span class="highlight">"Build My PWA"</span></li>
+                    <li>Haz clic en él</li>
+                </ul>
+                <div class="screenshot-placeholder">
+                    <div class="icon">📦</div>
+                    <p>Se abrirá un panel con opciones de plataformas</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 5 -->
+        <div class="step">
+            <div class="step-number">5</div>
+            <h2>Seleccionar Android</h2>
+            <div class="step-content">
+                <p>Verás varias opciones de plataformas. Selecciona:</p>
+                <div class="options-grid">
+                    <div class="option-card recommended">
+                        <span class="badge">✓ Seleccionar</span>
+                        <h4>🤖 Android</h4>
+                        <p>Genera un APK para dispositivos Android</p>
+                    </div>
+                    <div class="option-card">
+                        <h4>🪟 Windows</h4>
+                        <p>Para Microsoft Store</p>
+                    </div>
+                    <div class="option-card">
+                        <h4>🍎 iOS</h4>
+                        <p>Para App Store</p>
+                    </div>
+                </div>
+                <p>Haz clic en el botón de <span class="highlight">Android</span> y luego en <span class="highlight">"Generate"</span> o <span class="highlight">"Download"</span></p>
+            </div>
+        </div>
+
+        <!-- PASO 6 -->
+        <div class="step">
+            <div class="step-number">6</div>
+            <h2>Configurar opciones (Opcional)</h2>
+            <div class="step-content">
+                <p>PWABuilder puede mostrarte algunas opciones de configuración:</p>
+                <ul>
+                    <li><strong>Package ID:</strong> Déjalo como está o personalízalo (ej: com.atalaya.timer)</li>
+                    <li><strong>App name:</strong> "Calculadora de Tiempo" o "Atalaya Timer"</li>
+                    <li><strong>Signing:</strong> Selecciona "None" para pruebas o genera una firma</li>
+                </ul>
+                <div class="warning-box">
+                    <h4>💡 Recomendación</h4>
+                    <p>Para uso personal, puedes dejar todas las opciones por defecto. Solo haz clic en "Generate" o "Download".</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 7 -->
+        <div class="step">
+            <div class="step-number">7</div>
+            <h2>Descargar el APK</h2>
+            <div class="step-content">
+                <p>Después de unos segundos, se generará el archivo:</p>
+                <ul>
+                    <li>Se descargará un archivo <strong>.zip</strong></li>
+                    <li>Dentro del ZIP encontrarás el archivo <strong>.apk</strong></li>
+                    <li>Extrae el ZIP para obtener el APK</li>
+                </ul>
+                <div class="success-box">
+                    <h4>✅ ¡Archivo listo!</h4>
+                    <p>El archivo APK estará en la carpeta de descargas de tu computadora.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASO 8 -->
+        <div class="step">
+            <div class="step-number">8</div>
+            <h2>Instalar en tu dispositivo Android</h2>
+            <div class="step-content">
+                <p>Para instalar el APK en tu móvil o tablet:</p>
+                <ul>
+                    <li>Transfiere el archivo APK a tu dispositivo (USB, email, Google Drive, etc.)</li>
+                    <li>En tu dispositivo, ve a <strong>Configuración → Seguridad</strong></li>
+                    <li>Activa <span class="highlight">"Orígenes desconocidos"</span> o <span class="highlight">"Instalar apps desconocidas"</span></li>
+                    <li>Abre el archivo APK y toca <strong>"Instalar"</strong></li>
+                </ul>
+                <div class="warning-box">
+                    <h4>🔒 Nota de seguridad</h4>
+                    <p>Android pedirá permiso porque el APK no viene de Google Play. Es seguro instalarlo ya que tú mismo lo generaste.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist -->
+        <div class="checklist">
+            <h4>📋 Lista de verificación</h4>
+            <ul>
+                <li>Ir a pwabuilder.com</li>
+                <li>Pegar la URL de la app</li>
+                <li>Hacer clic en "Start"</li>
+                <li>Seleccionar "Package for stores"</li>
+                <li>Elegir "Android"</li>
+                <li>Descargar el ZIP</li>
+                <li>Extraer el APK</li>
+                <li>Transferir al dispositivo</li>
+                <li>Instalar el APK</li>
+            </ul>
+        </div>
+
+        <!-- Final -->
+        <div class="final-section">
+            <h2>🎉 ¡Listo para comenzar!</h2>
+            <p>Haz clic en el botón para ir a PWABuilder y generar tu APK</p>
+            <a href="https://www.pwabuilder.com/" target="_blank" class="btn-action orange" style="font-size: 1.1rem; padding: 18px 35px;">
+                🚀 Ir a PWABuilder ahora
+            </a>
+            <br><br>
+            <a href="/" class="btn-action" style="background: #475569;">
+                ← Volver a la aplicación
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function copyUrl() {
+            const url = document.getElementById('app-url').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✓ Copiado!';
+                btn.style.background = '#22c55e';
+                setTimeout(() => {
+                    btn.textContent = '📋 Copiar';
+                    btn.style.background = '#4ade80';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
