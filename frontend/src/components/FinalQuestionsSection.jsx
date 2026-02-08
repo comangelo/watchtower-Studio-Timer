@@ -1,7 +1,7 @@
 import { Clock, Timer, MessageCircleQuestion, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatClockTime, addSecondsToDate } from "../utils/timeFormatters";
+import { formatClockTime, addSecondsToDate, formatTimeCompact } from "../utils/timeFormatters";
 
 export function FinalQuestionsSection({ 
   finalQuestions, 
@@ -119,7 +119,7 @@ export function FinalQuestionsSection({
                   isAdjusted ? (timeDiff > 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700') : 
                   'bg-red-200 text-red-600'
                 }`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-                  +{Math.round(perQuestionTime)}s
+                  +{formatTimeCompact(perQuestionTime)}
                 </span>
                 {startTime && (
                   <span className="text-xs text-red-500" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
