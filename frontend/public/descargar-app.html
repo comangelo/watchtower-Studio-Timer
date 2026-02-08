@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargar APK - Atalaya Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fafaf9 0%, #f5f5f4 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #ea580c;
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+        h1 {
+            color: #1e293b;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #ea580c;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #1e293b;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card h2 .badge {
+            background: #22c55e;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        .card h2 .badge.blue {
+            background: #3b82f6;
+        }
+        .steps {
+            list-style: none;
+            counter-reset: step;
+        }
+        .steps li {
+            counter-increment: step;
+            padding: 15px 0 15px 50px;
+            position: relative;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .steps li:last-child {
+            border-bottom: none;
+        }
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            background: #ea580c;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .steps li strong {
+            color: #1e293b;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            background: #ea580c;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #c2410c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
+        }
+        .btn-secondary {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #2563eb;
+        }
+        .btn-outline {
+            background: white;
+            color: #1e293b;
+            border: 2px solid #e2e8f0;
+        }
+        .btn-outline:hover {
+            border-color: #ea580c;
+            color: #ea580c;
+        }
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .url-box {
+            background: #f8fafc;
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .url-box code {
+            display: block;
+            background: #1e293b;
+            color: #22c55e;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+        .note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+        }
+        .note p {
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            background: #dcfce7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #16a34a;
+            font-size: 1.2rem;
+        }
+        .feature span {
+            color: #475569;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+            </div>
+            <h1>Calculadora de Tiempo</h1>
+            <p class="subtitle">ATALAYA DE ESTUDIO</p>
+        </div>
+
+        <!-- Opción 1: PWA -->
+        <div class="card">
+            <h2>📱 Opción 1: Instalar como App <span class="badge">Recomendado</span></h2>
+            <p style="color: #64748b; margin-bottom: 20px;">La forma más rápida. Instala directamente desde tu navegador Chrome.</p>
+            
+            <ol class="steps">
+                <li><strong>Abre Chrome</strong> en tu dispositivo Android</li>
+                <li>Visita la URL de la aplicación (ver abajo)</li>
+                <li>Toca el menú <strong>⋮</strong> (tres puntos)</li>
+                <li>Selecciona <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla de inicio"</strong></li>
+                <li>¡Listo! Tendrás el ícono en tu pantalla</li>
+            </ol>
+
+            <div class="url-box">
+                <p style="color: #64748b;">URL de la aplicación:</p>
+                <code>https://atalaya-timer.preview.emergentagent.com</code>
+            </div>
+
+            <div class="buttons">
+                <a href="https://atalaya-timer.preview.emergentagent.com" class="btn btn-primary" target="_blank">
+                    🚀 Abrir Aplicación
+                </a>
+            </div>
+        </div>
+
+        <!-- Opción 2: PWABuilder -->
+        <div class="card">
+            <h2>📦 Opción 2: Descargar APK <span class="badge blue">Avanzado</span></h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Genera un archivo APK usando PWABuilder de Microsoft (gratis).</p>
+            
+            <ol class="steps">
+                <li>Haz clic en <strong>"Ir a PWABuilder"</strong></li>
+                <li>Pega la URL de la app y haz clic en <strong>"Start"</strong></li>
+                <li>Espera el análisis y haz clic en <strong>"Package for stores"</strong></li>
+                <li>Selecciona <strong>"Android"</strong> → <strong>"Download"</strong></li>
+                <li>Descarga el archivo <strong>.apk</strong> en tu dispositivo</li>
+                <li>Abre el APK para instalar (habilita "Orígenes desconocidos" si es necesario)</li>
+            </ol>
+
+            <div class="url-box">
+                <p style="color: #64748b;">Copia esta URL para PWABuilder:</p>
+                <code>https://atalaya-timer.preview.emergentagent.com</code>
+            </div>
+
+            <div class="buttons">
+                <a href="https://www.pwabuilder.com/" class="btn btn-secondary" target="_blank">
+                    🔧 Ir a PWABuilder
+                </a>
+                <a href="https://atalaya-timer.preview.emergentagent.com/manifest.json" class="btn btn-outline" target="_blank">
+                    📄 Ver Manifest
+                </a>
+            </div>
+
+            <div class="note">
+                <p><strong>💡 Nota:</strong> PWABuilder es un servicio gratuito de Microsoft que convierte aplicaciones web progresivas (PWA) en archivos APK nativos para Android.</p>
+            </div>
+        </div>
+
+        <!-- Características -->
+        <div class="card">
+            <h2>✨ Características de la App</h2>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <span>Análisis de PDF</span>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⏱️</div>
+                    <span>Cronómetro integrado</span>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <span>Funciona offline</span>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔔</div>
+                    <span>Alertas sonoras</span>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🖥️</div>
+                    <span>Modo presentación</span>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📤</div>
+                    <span>Exportar a PDF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
