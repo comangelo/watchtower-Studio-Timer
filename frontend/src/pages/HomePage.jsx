@@ -155,6 +155,51 @@ export default function HomePage() {
     }
   }, [vibrationEnabled]);
 
+  // Presentation mode functions
+  const enterPresentationMode = useCallback(() => {
+    setIsPresentationMode(true);
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen not supported:', err);
+      });
+    }
+  }, []);
+
+  const exitPresentationMode = useCallback(() => {
+    setIsPresentationMode(false);
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(err => {
+        console.log('Exit fullscreen error:', err);
+      });
+    }
+  }, []);
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && isPresentationMode) {
+        setIsPresentationMode(false);
+      }
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [isPresentationMode]);
+
+  // Get current paragraph based on elapsed time
+  const getCurrentParagraph = useCallback(() => {
+    if (!analysisResult) return null;
+    
+    let cumulativeTime = 0;
+    for (const para of analysisResult.paragraphs) {
+      cumulativeTime += para.total_time_seconds;
+      if (elapsedTime < cumulativeTime) {
+        return para;
+      }
+    }
+    return analysisResult.paragraphs[analysisResult.paragraphs.length - 1];
+  }, [analysisResult, elapsedTime]);
+
   // Play notification sound
   const playNotificationSound = useCallback((type = 'alert') => {
     try {
