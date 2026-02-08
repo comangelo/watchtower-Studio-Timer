@@ -248,7 +248,8 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
         reading_time = calculate_reading_time(word_count)
         
         # Check if this paragraph's questions are final questions (precede ¿QUÉ RESPONDERÍAS?)
-        is_before_que_responderias = (que_responderias_position > 0 and i == que_responderias_position - 1)
+        # Convert to 0-based indexing for comparison
+        is_before_que_responderias = (que_responderias_position > 0 and (i - 1) == que_responderias_position - 1)
         
         questions = detect_questions(para_text, i, is_before_que_responderias)
         question_time = len(questions) * QUESTION_ANSWER_TIME
