@@ -428,6 +428,191 @@ def extract_final_questions(text: str) -> List[QuestionInfo]:
     return final_questions
 
 
+def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisResult:
+    """
+    Analyze PDF using font size information to detect questions.
+    Questions are identified by:
+    1. Smaller font size than paragraph text
+    2. Starting with number(s) followed by "." (e.g., "1.", "12.")
+    """
+    lines = extract_text_with_sizes(pdf_bytes)
+    
+    if not lines:
+        # Fallback to text-only analysis
+        text = extract_text_from_pdf(pdf_bytes)
+        return analyze_pdf_content(text, filename)
+    
+    # Calculate the most common font size (paragraph text)
+    size_counts = {}
+    for line in lines:
+        size_key = round(line.font_size, 1)
+        size_counts[size_key] = size_counts.get(size_key, 0) + 1
+    
+    if not size_counts:
+        text = extract_text_from_pdf(pdf_bytes)
+        return analyze_pdf_content(text, filename)
+    
+    # Find the dominant font size (main paragraph text)
+    paragraph_font_size = max(size_counts.keys(), key=lambda k: size_counts[k])
+    
+    # Tolerance for smaller font detection
+    size_tolerance = 0.5
+    
+    # Process lines to build paragraphs and detect questions
+    paragraphs_data = []  # List of {number, text_lines, questions}
+    current_para = {"number": None, "text_lines": [], "questions": []}
+    final_questions = []
+    found_que_responderias = False
+    
+    for line in lines:
+        text = line.text
+        font_size = line.font_size
+        
+        if not text:
+            continue
+        
+        # Check for "¿QUÉ RESPONDERÍAS?" marker
+        text_lower = text.lower()
+        if "qué responderías" in text_lower or "que responderias" in text_lower:
+            found_que_responderias = True
+            # Save current paragraph before marker
+            if current_para["text_lines"]:
+                paragraphs_data.append(current_para.copy())
+                current_para = {"number": None, "text_lines": [], "questions": []}
+            continue
+        
+        # Is this smaller font? (likely a question)
+        is_smaller_font = font_size < (paragraph_font_size - size_tolerance)
+        
+        # Check if line starts with "número." pattern (question format)
+        question_match = re.match(r'^(\d{1,2})\.\s*(.+)$', text)
+        
+        # Check if line starts with "número " pattern (paragraph start)
+        paragraph_match = re.match(r'^(\d{1,2})\s+([^.].*)$', text)
+        
+        if found_que_responderias:
+            # After "¿QUÉ RESPONDERÍAS?" - these are final questions
+            if question_match:
+                q_text = question_match.group(2).strip()
+                if q_text and len(q_text) > 3:
+                    final_questions.append(QuestionInfo(
+                        text=q_text,
+                        answer_time=QUESTION_ANSWER_TIME,
+                        is_final_question=True
+                    ))
+        elif question_match and is_smaller_font:
+            # This is a question (smaller font + "número." format)
+            q_num = int(question_match.group(1))
+            q_text = question_match.group(2).strip()
+            
+            if q_text and len(q_text) > 3:
+                # Add question to current paragraph if numbers match, or to the matching paragraph
+                if current_para["number"] == q_num:
+                    current_para["questions"].append(QuestionInfo(
+                        text=q_text,
+                        answer_time=QUESTION_ANSWER_TIME,
+                        is_final_question=False
+                    ))
+                else:
+                    # Find the paragraph with this number and add question
+                    added = False
+                    for para in paragraphs_data:
+                        if para["number"] == q_num:
+                            para["questions"].append(QuestionInfo(
+                                text=q_text,
+                                answer_time=QUESTION_ANSWER_TIME,
+                                is_final_question=False
+                            ))
+                            added = True
+                            break
+                    if not added and current_para["text_lines"]:
+                        # Add to current paragraph anyway
+                        current_para["questions"].append(QuestionInfo(
+                            text=q_text,
+                            answer_time=QUESTION_ANSWER_TIME,
+                            is_final_question=False
+                        ))
+        elif paragraph_match and not is_smaller_font:
+            # This is a new paragraph start (larger font + "número " format)
+            para_num = int(paragraph_match.group(1))
+            
+            # Save previous paragraph
+            if current_para["text_lines"]:
+                paragraphs_data.append(current_para.copy())
+            
+            # Start new paragraph
+            current_para = {
+                "number": para_num,
+                "text_lines": [text],
+                "questions": []
+            }
+        else:
+            # Continue current paragraph
+            if current_para["text_lines"]:
+                current_para["text_lines"].append(text)
+            elif text.strip():
+                current_para["text_lines"] = [text]
+    
+    # Save last paragraph
+    if current_para["text_lines"]:
+        paragraphs_data.append(current_para)
+    
+    # Build the analysis result
+    analyzed_paragraphs = []
+    total_words = 0
+    total_questions = 0
+    total_reading_time = 0.0
+    total_question_time = 0.0
+    cumulative_time = 0.0
+    
+    for i, para_data in enumerate(paragraphs_data):
+        para_text = '\n'.join(para_data["text_lines"])
+        para_number = para_data["number"] if para_data["number"] else i + 1
+        questions = para_data["questions"]
+        
+        word_count = count_words(para_text)
+        reading_time = calculate_reading_time(word_count)
+        question_time = len(questions) * QUESTION_ANSWER_TIME
+        
+        total_words += word_count
+        total_questions += len(questions)
+        total_reading_time += reading_time
+        total_question_time += question_time
+        cumulative_time += reading_time + question_time
+        
+        analyzed_paragraphs.append(ParagraphAnalysis(
+            number=para_number,
+            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
+            word_count=word_count,
+            reading_time_seconds=round(reading_time, 2),
+            questions=questions,
+            total_time_seconds=round(reading_time + question_time, 2),
+            cumulative_time_seconds=round(cumulative_time, 2)
+        ))
+    
+    # Add final questions
+    final_questions_start_time = cumulative_time
+    final_questions_time = len(final_questions) * QUESTION_ANSWER_TIME
+    total_questions += len(final_questions)
+    total_question_time += final_questions_time
+    
+    FIXED_TOTAL_TIME = 3600  # 60 minutes
+    
+    return PDFAnalysisResult(
+        filename=filename,
+        total_words=total_words,
+        total_paragraphs=len(analyzed_paragraphs),
+        total_questions=total_questions,
+        total_reading_time_seconds=round(total_reading_time, 2),
+        total_question_time_seconds=round(total_question_time, 2),
+        total_time_seconds=FIXED_TOTAL_TIME,
+        fixed_duration=True,
+        final_questions_start_time=round(final_questions_start_time, 2),
+        final_questions=final_questions,
+        paragraphs=analyzed_paragraphs
+    )
+
+
 def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
     """Analyze PDF content and return structured analysis"""
     paragraphs = split_into_paragraphs(text)
