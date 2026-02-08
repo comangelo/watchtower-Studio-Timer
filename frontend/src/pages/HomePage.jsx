@@ -1097,7 +1097,7 @@ export default function HomePage() {
 }
 
 // Paragraph Card Component
-function ParagraphCard({ paragraph, index, startTime, paragraphTimes }) {
+function ParagraphCard({ paragraph, index, startTime, paragraphTimes, onStartFromHere, isTimerRunning }) {
   const [isOpen, setIsOpen] = useState(false);
   const hasQuestions = paragraph.questions.length > 0;
   const hasFinalQuestions = paragraph.questions.some(q => q.is_final_question);
@@ -1169,51 +1169,68 @@ function ParagraphCard({ paragraph, index, startTime, paragraphTimes }) {
             )}
           </div>
 
-          {/* Questions Section */}
-          {hasQuestions && (
-            <>
+          {/* Start from here button */}
+          <div className="mt-3 flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onStartFromHere();
+              }}
+              className="text-xs border-green-300 text-green-700 hover:bg-green-50 hover:border-green-400"
+              data-testid={`start-from-paragraph-${paragraph.number}`}
+            >
+              <Play className="w-3 h-3 mr-1" />
+              Iniciar desde aquí
+            </Button>
+            
+            {hasQuestions && (
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className={`w-full mt-3 ${hasFinalQuestions ? 'text-red-600 hover:text-red-700 hover:bg-red-100' : 'text-orange-600 hover:text-orange-700 hover:bg-orange-100'}`}
+                  className={`text-xs ${hasFinalQuestions ? 'text-red-600 hover:text-red-700 hover:bg-red-100' : 'text-orange-600 hover:text-orange-700 hover:bg-orange-100'}`}
                   data-testid={`toggle-questions-${paragraph.number}`}
                 >
                   {isOpen ? (
                     <>
-                      <ChevronUp className="w-4 h-4 mr-2" />
-                      Ocultar preguntas
+                      <ChevronUp className="w-3 h-3 mr-1" />
+                      Ocultar
                     </>
                   ) : (
                     <>
-                      <ChevronDown className="w-4 h-4 mr-2" />
+                      <ChevronDown className="w-3 h-3 mr-1" />
                       Ver preguntas ({paragraph.questions.length})
                     </>
                   )}
                 </Button>
               </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <div className="mt-3 space-y-2">
-                  {paragraph.questions.map((q, qIndex) => (
-                    <div 
-                      key={qIndex}
-                      className={`rounded-lg py-2 text-sm ${q.is_final_question ? 'bg-red-50 border-l-3 border-red-500 pl-3 text-red-800' : 'question-highlight text-orange-800'}`}
-                      data-testid={`question-${paragraph.number}-${qIndex}`}
-                    >
-                      <MessageCircleQuestion className={`w-4 h-4 inline mr-2 ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`} />
-                      {q.text}
-                      <span className={`ml-2 text-xs ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`}>
-                        (+{q.answer_time} seg)
-                      </span>
-                      {q.is_final_question && (
-                        <Badge variant="destructive" className="ml-2 text-xs">FINAL</Badge>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </>
+            )}
+          </div>
+
+          {/* Questions Section */}
+          {hasQuestions && (
+            <CollapsibleContent>
+              <div className="mt-3 space-y-2">
+                {paragraph.questions.map((q, qIndex) => (
+                  <div 
+                    key={qIndex}
+                    className={`rounded-lg py-2 text-sm ${q.is_final_question ? 'bg-red-50 border-l-3 border-red-500 pl-3 text-red-800' : 'question-highlight text-orange-800'}`}
+                    data-testid={`question-${paragraph.number}-${qIndex}`}
+                  >
+                    <MessageCircleQuestion className={`w-4 h-4 inline mr-2 ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`} />
+                    {q.text}
+                    <span className={`ml-2 text-xs ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`}>
+                      (+{q.answer_time} seg)
+                    </span>
+                    {q.is_final_question && (
+                      <Badge variant="destructive" className="ml-2 text-xs">FINAL</Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
           )}
         </div>
       </div>
