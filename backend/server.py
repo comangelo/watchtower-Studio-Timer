@@ -357,20 +357,114 @@ def detect_questions(text: str, paragraph_number: int, is_final_question: bool =
     return questions
 
 
-def extract_final_questions(text: str) -> List[QuestionInfo]:
+def extract_final_questions(text: str, pdf_bytes: bytes = None) -> List[QuestionInfo]:
     """
-    Extract questions that appear AFTER "¿QUÉ RESPONDERÍAS?" in the text.
-    These are the final discussion questions.
+    Extract questions that appear AFTER the horizontal line separator at the bottom.
+    These are the final discussion questions (Preguntas de Repaso).
+    
+    The function first tries to detect a horizontal line in the PDF graphics.
+    If pdf_bytes is provided, it uses the line position to find questions after it.
+    Otherwise, falls back to text-based detection.
     """
     final_questions = []
     
-    # Find the position of "¿QUÉ RESPONDERÍAS?"
+    # Try to find horizontal line separator using PDF graphics
+    if pdf_bytes:
+        try:
+            doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+            
+            # Find the last significant horizontal line in the document
+            last_line_page = -1
+            last_line_y = -1
+            
+            for page_num in range(len(doc)):
+                page = doc[page_num]
+                page_height = page.rect.height
+                drawings = page.get_drawings()
+                
+                for drawing in drawings:
+                    rect = drawing.get('rect')
+                    if rect:
+                        width = rect.width
+                        height = rect.height
+                        # Horizontal line: wide (>200) and short (<5)
+                        if width > 200 and height < 5:
+                            # Check if it's in the lower half of the page (likely separator)
+                            if rect.y0 > page_height * 0.3:
+                                last_line_page = page_num
+                                last_line_y = rect.y0
+                    
+                    # Also check line paths
+                    items = drawing.get('items', [])
+                    for item in items:
+                        if item[0] == 'l':  # Line
+                            start = item[1]
+                            end = item[2]
+                            if abs(start.y - end.y) < 2:  # Horizontal
+                                line_width = abs(end.x - start.x)
+                                if line_width > 200 and start.y > page_height * 0.3:
+                                    last_line_page = page_num
+                                    last_line_y = start.y
+            
+            # If we found a horizontal line, extract text after it
+            if last_line_page >= 0 and last_line_y > 0:
+                # Get all text from the page with the line, below the line
+                page = doc[last_line_page]
+                
+                # Get text blocks with position info
+                blocks = page.get_text('dict')['blocks']
+                text_after_line = []
+                
+                for block in blocks:
+                    if 'lines' in block:
+                        block_top = block.get('bbox', [0, 0, 0, 0])[1]
+                        # Only include text that starts below the line
+                        if block_top > last_line_y + 5:
+                            for line in block['lines']:
+                                line_text = ''
+                                for span in line['spans']:
+                                    line_text += span['text']
+                                if line_text.strip():
+                                    text_after_line.append(line_text.strip())
+                
+                # Also get text from pages after the line page
+                for page_num in range(last_line_page + 1, len(doc)):
+                    page_text = doc[page_num].get_text()
+                    for line in page_text.split('\n'):
+                        if line.strip():
+                            text_after_line.append(line.strip())
+                
+                doc.close()
+                
+                # Parse questions from text after the line
+                for line in text_after_line:
+                    # Pattern: "número. pregunta?" - one or two digits, period, then question
+                    match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', line, re.IGNORECASE)
+                    if match:
+                        question_text = match.group(2).strip()
+                        if len(question_text) > 5:
+                            final_questions.append(QuestionInfo(
+                                text=question_text,
+                                answer_time=QUESTION_ANSWER_TIME,
+                                is_final_question=True
+                            ))
+                
+                if final_questions:
+                    return final_questions
+            else:
+                doc.close()
+        except Exception as e:
+            logging.warning(f"Error detecting horizontal line: {e}")
+    
+    # Fallback: Try to find questions after "¿QUÉ RESPONDERÍAS?" marker
     text_lower = text.lower()
     marker_patterns = [
         "¿qué responderías?",
         "que responderias?",
         "¿qué responderías",
-        "que responderias"
+        "que responderias",
+        "¿qué respondería?",
+        "que responderia?"
     ]
     
     marker_pos = -1
@@ -384,7 +478,6 @@ def extract_final_questions(text: str) -> List[QuestionInfo]:
         return final_questions
     
     # Get text after the marker
-    # Find the end of the "¿QUÉ RESPONDERÍAS?" line
     after_marker = text[marker_pos:]
     newline_pos = after_marker.find('\n')
     if newline_pos != -1:
@@ -396,7 +489,6 @@ def extract_final_questions(text: str) -> List[QuestionInfo]:
         return final_questions
     
     # Find all questions in the text after the marker
-    # Pattern: number(s) followed by period and question text ending with ?
     lines = text_after.split('\n')
     
     for line in lines:
@@ -404,8 +496,6 @@ def extract_final_questions(text: str) -> List[QuestionInfo]:
         if not line:
             continue
         
-        # Pattern: "número. pregunta?" - one or two digits, period, then question
-        # Matches: "1. ¿Cómo...?" or "12. ¿Por qué...?" or "1. Cómo...?"
         match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', line, re.IGNORECASE)
         if match:
             question_text = match.group(2).strip()
