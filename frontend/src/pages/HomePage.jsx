@@ -196,19 +196,106 @@ export default function HomePage() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, [isPresentationMode]);
 
-  // Get current paragraph index based on elapsed time
-  const getCurrentParagraphIndex = useCallback(() => {
-    if (!analysisResult) return -1;
+  // Manual paragraph control
+  const [currentManualParagraph, setCurrentManualParagraph] = useState(0);
+  const [paragraphStartTimes, setParagraphStartTimes] = useState({}); // Track when each paragraph actually started
+
+  // Go to next paragraph and recalculate times
+  const goToNextParagraph = useCallback(() => {
+    if (!analysisResult) return;
     
-    let cumulativeTime = 0;
-    for (let i = 0; i < analysisResult.paragraphs.length; i++) {
-      cumulativeTime += analysisResult.paragraphs[i].total_time_seconds;
-      if (elapsedTime < cumulativeTime) {
-        return i;
-      }
+    const nextIndex = currentManualParagraph + 1;
+    if (nextIndex >= analysisResult.paragraphs.length) {
+      toast.info("¡Has llegado al último párrafo!");
+      return;
     }
-    return analysisResult.paragraphs.length - 1;
-  }, [analysisResult, elapsedTime]);
+    
+    // Record when this paragraph ended / next started
+    const now = new Date();
+    setParagraphStartTimes(prev => ({
+      ...prev,
+      [nextIndex]: now
+    }));
+    
+    setCurrentManualParagraph(nextIndex);
+    toast.success(`Avanzando al párrafo #${nextIndex + 1}`);
+  }, [analysisResult, currentManualParagraph]);
+
+  // Go to previous paragraph
+  const goToPreviousParagraph = useCallback(() => {
+    if (currentManualParagraph <= 0) {
+      toast.info("Ya estás en el primer párrafo");
+      return;
+    }
+    
+    const prevIndex = currentManualParagraph - 1;
+    setCurrentManualParagraph(prevIndex);
+    toast.info(`Volviendo al párrafo #${prevIndex + 1}`);
+  }, [currentManualParagraph]);
+
+  // Calculate adjusted paragraph times based on remaining time
+  const getAdjustedParagraphTimes = useCallback((paragraphIndex) => {
+    if (!startTime || !analysisResult) return { start: null, end: null, adjustedDuration: 0 };
+    
+    // If paragraph is before current, use original times
+    if (paragraphIndex < currentManualParagraph) {
+      let cumulativeTime = 0;
+      for (let i = 0; i < paragraphIndex; i++) {
+        cumulativeTime += analysisResult.paragraphs[i].total_time_seconds;
+      }
+      const paragraphStart = addSecondsToDate(startTime, cumulativeTime);
+      const paragraphEnd = addSecondsToDate(startTime, cumulativeTime + analysisResult.paragraphs[paragraphIndex].total_time_seconds);
+      return { 
+        start: paragraphStart, 
+        end: paragraphEnd, 
+        adjustedDuration: analysisResult.paragraphs[paragraphIndex].total_time_seconds,
+        isCompleted: true
+      };
+    }
+    
+    // Calculate remaining time and remaining paragraphs
+    const remainingParagraphs = analysisResult.paragraphs.slice(currentManualParagraph);
+    const totalRemainingOriginalTime = remainingParagraphs.reduce((sum, p) => sum + p.total_time_seconds, 0);
+    
+    // Time available for remaining paragraphs
+    const timeAvailable = Math.max(0, remainingTime);
+    
+    // Calculate proportional time for this paragraph
+    const thisParagraph = analysisResult.paragraphs[paragraphIndex];
+    const proportion = thisParagraph.total_time_seconds / totalRemainingOriginalTime;
+    const adjustedDuration = timeAvailable * proportion;
+    
+    // Calculate start time for this paragraph
+    let adjustedStart;
+    if (paragraphIndex === currentManualParagraph) {
+      // Current paragraph starts now (or when it was started)
+      adjustedStart = paragraphStartTimes[paragraphIndex] || new Date();
+    } else {
+      // Future paragraphs - calculate based on adjusted times of previous paragraphs
+      let cumulativeAdjustedTime = 0;
+      for (let i = currentManualParagraph; i < paragraphIndex; i++) {
+        const p = analysisResult.paragraphs[i];
+        const pProportion = p.total_time_seconds / totalRemainingOriginalTime;
+        cumulativeAdjustedTime += timeAvailable * pProportion;
+      }
+      adjustedStart = addSecondsToDate(new Date(), cumulativeAdjustedTime);
+    }
+    
+    const adjustedEnd = addSecondsToDate(adjustedStart, adjustedDuration);
+    
+    return { 
+      start: adjustedStart, 
+      end: adjustedEnd, 
+      adjustedDuration: Math.round(adjustedDuration),
+      isCompleted: false,
+      isCurrent: paragraphIndex === currentManualParagraph
+    };
+  }, [startTime, analysisResult, currentManualParagraph, remainingTime, paragraphStartTimes]);
+
+  // Get current paragraph index based on elapsed time (keeping for presentation mode)
+  const getCurrentParagraphIndex = useCallback(() => {
+    return currentManualParagraph;
+  }, [currentManualParagraph]);
 
   const currentParagraphIndex = getCurrentParagraphIndex();
 
