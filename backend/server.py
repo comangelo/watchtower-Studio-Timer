@@ -231,7 +231,8 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
     if has_que_responderias:
         for idx, para in enumerate(paragraphs):
             para_lower = para.lower()
-            if "qué responderías" in para_lower or "que responderias" in para_lower:
+            # Look for the actual question format, not just the text anywhere
+            if "¿qué responderías?" in para_lower or "¿que responderias?" in para_lower:
                 que_responderias_position = idx
                 break
     
