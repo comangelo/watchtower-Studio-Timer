@@ -354,6 +354,32 @@ export default function HomePage() {
     }
   };
 
+  // Start from specific paragraph
+  const startFromParagraph = useCallback((paragraphIndex) => {
+    // Calculate cumulative time up to this paragraph
+    let cumulativeTime = 0;
+    for (let i = 0; i < paragraphIndex; i++) {
+      cumulativeTime += analysisResult.paragraphs[i].total_time_seconds;
+    }
+    
+    // Set the elapsed time as if we already read previous paragraphs
+    setElapsedTime(Math.floor(cumulativeTime));
+    setRemainingTime(3600 - Math.floor(cumulativeTime));
+    
+    // Capture current time as start time, but adjusted
+    const now = new Date();
+    // The "virtual" start time is now minus the cumulative time of previous paragraphs
+    const virtualStartTime = new Date(now.getTime() - cumulativeTime * 1000);
+    setStartTime(virtualStartTime);
+    setEndTime(addSecondsToDate(virtualStartTime, 3600));
+    
+    // Start the timer
+    setIsTimerRunning(true);
+    setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
+    
+    toast.success(`Iniciando desde párrafo #${paragraphIndex + 1}`);
+  }, [analysisResult]);
+
   // Calculate paragraph times based on start time
   const getParagraphTimes = useCallback((paragraphIndex) => {
     if (!startTime || !analysisResult) return { start: null, end: null };
