@@ -299,10 +299,10 @@ def calculate_reading_time(word_count: int) -> float:
 def detect_questions(text: str, paragraph_number: int, is_final_question: bool = False) -> List[QuestionInfo]:
     """
     Detect questions in paragraph that start with the paragraph number.
-    Formats supported:
+    Formats supported (in order of priority):
+    - "6. ¿Cómo podría...?" (number + period + question) - PRIMARY FORMAT
+    - "6. Cómo podría...?" (number + period + question without ¿)
     - "6 ¿Cómo podría...?" (number + space + question)
-    - "6. ¿Cómo podría...?" (number + period + question)
-    - "6) ¿Cómo podría...?" (number + parenthesis + question)
     Ignores "¿QUÉ RESPONDERÍAS?"
     """
     questions = []
@@ -334,19 +334,20 @@ def detect_questions(text: str, paragraph_number: int, is_final_question: bool =
         if not line:
             continue
         
-        # Pattern 1: "6 ¿pregunta?" - number followed by space and question (most common)
+        # Pattern 1 (PRIMARY): "6. pregunta?" - number followed by period (with or without ¿)
+        # This matches: "6. ¿Cómo...?" or "6. Cómo...?"
+        pattern_period = rf'^{paragraph_number}\.\s*(.+\?)$'
+        
+        # Pattern 2: "6 ¿pregunta?" - number followed by space and question mark
         pattern_space = rf'^{paragraph_number}\s+([¿].*\?|.*\?)$'
         
-        # Pattern 2: "6. ¿pregunta?" - number followed by period
-        pattern_period = rf'^{paragraph_number}\.\s*([¿].*\?|.*\?)$'
+        # Pattern 3: "6) pregunta?" or "6- pregunta?" 
+        pattern_other = rf'^{paragraph_number}[\)\-:]\s*(.+\?)$'
         
-        # Pattern 3: "6) ¿pregunta?" or "6- ¿pregunta?" 
-        pattern_other = rf'^{paragraph_number}[\)\-:\s]+([¿].*\?)$'
-        
-        # Try patterns in order of likelihood
-        match = re.match(pattern_space, line, re.IGNORECASE)
+        # Try patterns in order of priority (period first as per user's format)
+        match = re.match(pattern_period, line, re.IGNORECASE)
         if not match:
-            match = re.match(pattern_period, line, re.IGNORECASE)
+            match = re.match(pattern_space, line, re.IGNORECASE)
         if not match:
             match = re.match(pattern_other, line, re.IGNORECASE)
         
