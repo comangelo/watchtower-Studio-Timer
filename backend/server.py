@@ -77,12 +77,59 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
 
 
 def split_into_paragraphs(text: str) -> List[str]:
-    """Split text into paragraphs"""
-    # Split by double newlines or multiple newlines
-    paragraphs = re.split(r'\n\s*\n+', text.strip())
-    # Clean up each paragraph
-    paragraphs = [p.strip() for p in paragraphs if p.strip()]
-    return paragraphs
+    """
+    Split text into paragraphs based on paragraph numbers at the start of lines.
+    Paragraphs are identified by a number at the beginning (e.g., "1 Texto..." or "2 Texto...")
+    """
+    paragraphs = []
+    
+    # First, try to split by paragraph numbers at the start of lines
+    # Pattern: number followed by space and text (not a question mark immediately)
+    lines = text.split('\n')
+    current_paragraph = []
+    current_number = None
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        
+        # Check if line starts with a number followed by space (paragraph marker)
+        match = re.match(r'^(\d+)\s+(.+)$', line)
+        if match:
+            num = int(match.group(1))
+            content = match.group(2)
+            
+            # Check if this is a question line (contains ¿ or ends with ?)
+            is_question = '¿' in content or content.endswith('?')
+            
+            if is_question:
+                # This is a question, add to current paragraph
+                if current_paragraph:
+                    current_paragraph.append(line)
+            else:
+                # This is a new paragraph
+                if current_paragraph:
+                    paragraphs.append('\n'.join(current_paragraph))
+                current_paragraph = [line]
+                current_number = num
+        else:
+            # Continue current paragraph
+            if current_paragraph:
+                current_paragraph.append(line)
+            else:
+                current_paragraph = [line]
+    
+    # Add the last paragraph
+    if current_paragraph:
+        paragraphs.append('\n'.join(current_paragraph))
+    
+    # If no numbered paragraphs found, fall back to double newline split
+    if len(paragraphs) <= 1 and '\n\n' in text:
+        paragraphs = re.split(r'\n\s*\n+', text.strip())
+        paragraphs = [p.strip() for p in paragraphs if p.strip()]
+    
+    return paragraphs if paragraphs else [text.strip()]
 
 
 def count_words(text: str) -> int:
