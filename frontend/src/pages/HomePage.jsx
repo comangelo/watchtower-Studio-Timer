@@ -320,15 +320,39 @@ export default function HomePage() {
             </div>
           </div>
           {analysisResult && (
-            <Button 
-              variant="ghost" 
-              onClick={resetAll}
-              className="text-zinc-500 hover:text-zinc-900"
-              data-testid="new-analysis-btn"
-            >
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Nuevo análisis
-            </Button>
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline"
+                    className="text-zinc-700 hover:text-zinc-900"
+                    data-testid="export-btn"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Exportar
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={exportToImage} data-testid="export-image-btn">
+                    <FileImage className="w-4 h-4 mr-2" />
+                    Exportar como Imagen (PNG)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-btn">
+                    <File className="w-4 h-4 mr-2" />
+                    Exportar como PDF
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button 
+                variant="ghost" 
+                onClick={resetAll}
+                className="text-zinc-500 hover:text-zinc-900"
+                data-testid="new-analysis-btn"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Nuevo análisis
+              </Button>
+            </div>
           )}
         </div>
       </header>
