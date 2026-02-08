@@ -11,7 +11,8 @@ import {
   MessageCircleQuestion,
   Timer,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,6 +50,18 @@ const formatTimeText = (seconds) => {
   return `${mins} min ${secs} seg`;
 };
 
+// Format time as HH:MM (clock format)
+const formatClockTime = (date) => {
+  if (!date) return "--:--";
+  return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+};
+
+// Add seconds to a date and return new date
+const addSecondsToDate = (date, seconds) => {
+  if (!date) return null;
+  return new Date(date.getTime() + seconds * 1000);
+};
+
 export default function HomePage() {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,40 +70,58 @@ export default function HomePage() {
   // Timer states
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [remainingTime, setRemainingTime] = useState(0);
+  const [remainingTime, setRemainingTime] = useState(3600); // 60 minutes
+  
+  // Real time tracking
+  const [startTime, setStartTime] = useState(null); // When reading started
+  const [endTime, setEndTime] = useState(null); // When 60 min will end
   
   const timerRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Calculate time until last questions
-  const calculateTimeUntilLastQuestions = useCallback(() => {
-    if (!analysisResult) return 0;
+  // Calculate paragraph times based on start time
+  const getParagraphTimes = useCallback((paragraphIndex) => {
+    if (!startTime || !analysisResult) return { start: null, end: null };
     
-    // Find the last paragraph with questions
-    let timeUntilLastQuestion = 0;
-    let foundLastQuestion = false;
-    
-    for (let i = analysisResult.paragraphs.length - 1; i >= 0; i--) {
-      const para = analysisResult.paragraphs[i];
-      if (para.questions.length > 0 && !foundLastQuestion) {
-        foundLastQuestion = true;
-        // Time is the sum of all paragraphs up to and including this one (reading only)
-        for (let j = 0; j <= i; j++) {
-          timeUntilLastQuestion += analysisResult.paragraphs[j].reading_time_seconds;
-        }
-        break;
-      }
+    let cumulativeTime = 0;
+    for (let i = 0; i < paragraphIndex; i++) {
+      cumulativeTime += analysisResult.paragraphs[i].total_time_seconds;
     }
     
-    return timeUntilLastQuestion || analysisResult.total_reading_time_seconds;
-  }, [analysisResult]);
+    const paragraphStart = addSecondsToDate(startTime, cumulativeTime);
+    const paragraphEnd = addSecondsToDate(startTime, cumulativeTime + analysisResult.paragraphs[paragraphIndex].total_time_seconds);
+    
+    return { start: paragraphStart, end: paragraphEnd };
+  }, [startTime, analysisResult]);
+
+  // Get final questions time
+  const getFinalQuestionsTime = useCallback(() => {
+    if (!startTime || !analysisResult) return null;
+    
+    // Find the paragraph with final questions
+    let cumulativeTime = 0;
+    for (const para of analysisResult.paragraphs) {
+      cumulativeTime += para.reading_time_seconds;
+      if (para.questions.some(q => q.is_final_question)) {
+        return addSecondsToDate(startTime, cumulativeTime);
+      }
+      cumulativeTime += para.questions.length * 35; // Add question time
+    }
+    
+    // If no final questions found, use the stored value
+    if (analysisResult.final_questions_start_time > 0) {
+      return addSecondsToDate(startTime, analysisResult.final_questions_start_time);
+    }
+    
+    return null;
+  }, [startTime, analysisResult]);
 
   // Initialize remaining time when analysis is complete
   useEffect(() => {
     if (analysisResult) {
-      setRemainingTime(calculateTimeUntilLastQuestions());
+      setRemainingTime(3600); // Always 60 minutes
     }
-  }, [analysisResult, calculateTimeUntilLastQuestions]);
+  }, [analysisResult]);
 
   // Timer effect
   useEffect(() => {
@@ -133,6 +164,8 @@ export default function HomePage() {
       setAnalysisResult(response.data);
       setElapsedTime(0);
       setIsTimerRunning(false);
+      setStartTime(null);
+      setEndTime(null);
       toast.success("PDF analizado correctamente");
     } catch (error) {
       console.error("Error uploading PDF:", error);
@@ -167,28 +200,40 @@ export default function HomePage() {
 
   // Timer controls
   const toggleTimer = () => {
+    if (!isTimerRunning) {
+      // Starting the timer - capture current time
+      const now = new Date();
+      if (!startTime) {
+        setStartTime(now);
+        setEndTime(addSecondsToDate(now, 3600)); // 60 minutes from now
+      }
+    }
     setIsTimerRunning(!isTimerRunning);
   };
 
   const resetTimer = () => {
     setIsTimerRunning(false);
     setElapsedTime(0);
-    if (analysisResult) {
-      setRemainingTime(calculateTimeUntilLastQuestions());
-    }
+    setRemainingTime(3600);
+    setStartTime(null);
+    setEndTime(null);
   };
 
   const resetAll = () => {
     setAnalysisResult(null);
     setIsTimerRunning(false);
     setElapsedTime(0);
-    setRemainingTime(0);
+    setRemainingTime(3600);
+    setStartTime(null);
+    setEndTime(null);
   };
 
   // Calculate progress percentage based on 60 minutes (3600 seconds)
   const progressPercentage = analysisResult 
     ? Math.min(100, (elapsedTime / 3600) * 100)
     : 0;
+
+  const finalQuestionsTime = getFinalQuestionsTime();
 
   return (
     <div className="min-h-screen bg-white">
@@ -328,8 +373,48 @@ export default function HomePage() {
                       <p className="text-xs text-zinc-400 mt-1">Tiempo total (fijo)</p>
                     </div>
                   </div>
+                  
+                  {/* Time Schedule Info */}
+                  {startTime && (
+                    <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Clock className="w-4 h-4 text-green-600" />
+                        <span className="font-semibold text-green-800">Horario de Lectura</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-green-600">Inicio:</span>
+                          <span className="ml-2 font-mono font-bold text-green-800">{formatClockTime(startTime)}</span>
+                        </div>
+                        <div>
+                          <span className="text-green-600">Fin (60 min):</span>
+                          <span className="ml-2 font-mono font-bold text-green-800">{formatClockTime(endTime)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
+
+              {/* Final Questions Alert */}
+              {finalQuestionsTime && startTime && (
+                <Card className="border-orange-300 bg-orange-50 shadow-sm" data-testid="final-questions-alert">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                        <AlertCircle className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-orange-800">Preguntas Finales</p>
+                        <p className="text-sm text-orange-600">
+                          Las preguntas finales comienzan a las{' '}
+                          <span className="font-mono font-bold">{formatClockTime(finalQuestionsTime)}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Paragraphs List */}
               <div className="space-y-4">
@@ -339,7 +424,13 @@ export default function HomePage() {
                 <ScrollArea className="h-[500px] pr-4 custom-scrollbar">
                   <div className="space-y-3">
                     {analysisResult.paragraphs.map((para, index) => (
-                      <ParagraphCard key={para.number} paragraph={para} index={index} />
+                      <ParagraphCard 
+                        key={para.number} 
+                        paragraph={para} 
+                        index={index}
+                        startTime={startTime}
+                        paragraphTimes={getParagraphTimes(index)}
+                      />
                     ))}
                   </div>
                 </ScrollArea>
@@ -357,6 +448,14 @@ export default function HomePage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-8 text-center">
+                    {/* Current Time Display */}
+                    {startTime && (
+                      <div className="mb-4 p-3 bg-green-50 rounded-lg">
+                        <p className="text-xs text-green-600 uppercase tracking-wide">Hora de inicio</p>
+                        <p className="font-mono text-2xl font-bold text-green-700">{formatClockTime(startTime)}</p>
+                      </div>
+                    )}
+                    
                     <div 
                       className={`font-mono text-6xl md:text-7xl font-bold tracking-tighter tabular-nums ${isTimerRunning ? 'text-orange-500 timer-active' : 'text-zinc-900'}`}
                       role="timer"
@@ -404,6 +503,12 @@ export default function HomePage() {
                         <RotateCcw className="w-5 h-5" />
                       </Button>
                     </div>
+                    
+                    {!startTime && (
+                      <p className="text-xs text-zinc-400 mt-4">
+                        Presiona play para iniciar con la hora actual
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -411,10 +516,16 @@ export default function HomePage() {
                 <Card className="border-orange-200 bg-orange-50/30 shadow-sm" data-testid="countdown-timer-card">
                   <CardHeader className="pb-3">
                     <CardTitle className="font-heading text-sm uppercase tracking-widest text-orange-600 text-center">
-                      Tiempo hasta las últimas preguntas
+                      Tiempo restante (60 min)
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 text-center">
+                    {endTime && (
+                      <div className="mb-3 p-2 bg-orange-100 rounded-lg">
+                        <p className="text-xs text-orange-600">Finaliza a las</p>
+                        <p className="font-mono text-xl font-bold text-orange-700">{formatClockTime(endTime)}</p>
+                      </div>
+                    )}
                     <div 
                       className={`font-mono text-5xl font-bold tracking-tighter tabular-nums ${remainingTime <= 60 ? 'text-red-500' : 'text-orange-600'}`}
                       role="timer"
@@ -424,7 +535,7 @@ export default function HomePage() {
                       {formatTime(remainingTime)}
                     </div>
                     <p className="text-xs text-orange-600/70 mt-2">
-                      {remainingTime <= 0 ? '¡Es hora de las preguntas!' : 'Tiempo restante'}
+                      {remainingTime <= 0 ? '¡Tiempo completado!' : 'Tiempo restante'}
                     </p>
                   </CardContent>
                 </Card>
@@ -462,18 +573,21 @@ export default function HomePage() {
 }
 
 // Paragraph Card Component
-function ParagraphCard({ paragraph, index }) {
+function ParagraphCard({ paragraph, index, startTime, paragraphTimes }) {
   const [isOpen, setIsOpen] = useState(false);
   const hasQuestions = paragraph.questions.length > 0;
+  const hasFinalQuestions = paragraph.questions.some(q => q.is_final_question);
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <div 
         className={`
           paragraph-card rounded-xl border p-4 relative overflow-hidden
-          ${hasQuestions 
-            ? 'border-orange-200 bg-orange-50/20' 
-            : 'border-zinc-100 bg-white hover:shadow-md'
+          ${hasFinalQuestions 
+            ? 'border-red-300 bg-red-50/30' 
+            : hasQuestions 
+              ? 'border-orange-200 bg-orange-50/20' 
+              : 'border-zinc-100 bg-white hover:shadow-md'
           }
         `}
         style={{ animationDelay: `${index * 50}ms` }}
@@ -486,8 +600,8 @@ function ParagraphCard({ paragraph, index }) {
 
         {/* Time Badge */}
         <Badge 
-          variant={hasQuestions ? "default" : "secondary"}
-          className={`absolute top-3 right-3 font-mono text-xs ${hasQuestions ? 'bg-orange-500' : ''}`}
+          variant={hasFinalQuestions ? "destructive" : hasQuestions ? "default" : "secondary"}
+          className={`absolute top-3 right-3 font-mono text-xs ${hasQuestions && !hasFinalQuestions ? 'bg-orange-500' : ''}`}
           data-testid={`paragraph-time-${paragraph.number}`}
         >
           {formatTimeText(paragraph.total_time_seconds)}
@@ -495,6 +609,22 @@ function ParagraphCard({ paragraph, index }) {
 
         {/* Content */}
         <div className="mt-6">
+          {/* Time Schedule for paragraph */}
+          {startTime && paragraphTimes.start && (
+            <div className="mb-3 flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-1 px-2 py-1 bg-zinc-100 rounded">
+                <Clock className="w-3 h-3 text-zinc-500" />
+                <span className="text-zinc-600">Inicio:</span>
+                <span className="font-mono font-bold text-zinc-800">{formatClockTime(paragraphTimes.start)}</span>
+              </div>
+              <div className="flex items-center gap-1 px-2 py-1 bg-green-100 rounded">
+                <Clock className="w-3 h-3 text-green-600" />
+                <span className="text-green-600">Fin:</span>
+                <span className="font-mono font-bold text-green-700">{formatClockTime(paragraphTimes.end)}</span>
+              </div>
+            </div>
+          )}
+          
           <p className="text-sm text-zinc-600 line-clamp-2 pr-20">
             {paragraph.text}
           </p>
@@ -507,8 +637,9 @@ function ParagraphCard({ paragraph, index }) {
             {hasQuestions && (
               <>
                 <span>·</span>
-                <span className="text-orange-500 font-medium">
+                <span className={`font-medium ${hasFinalQuestions ? 'text-red-500' : 'text-orange-500'}`}>
                   {paragraph.questions.length} pregunta{paragraph.questions.length > 1 ? 's' : ''}
+                  {hasFinalQuestions && ' (FINAL)'}
                 </span>
               </>
             )}
@@ -521,7 +652,7 @@ function ParagraphCard({ paragraph, index }) {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="w-full mt-3 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+                  className={`w-full mt-3 ${hasFinalQuestions ? 'text-red-600 hover:text-red-700 hover:bg-red-100' : 'text-orange-600 hover:text-orange-700 hover:bg-orange-100'}`}
                   data-testid={`toggle-questions-${paragraph.number}`}
                 >
                   {isOpen ? (
@@ -543,14 +674,17 @@ function ParagraphCard({ paragraph, index }) {
                   {paragraph.questions.map((q, qIndex) => (
                     <div 
                       key={qIndex}
-                      className="question-highlight rounded-lg py-2 text-sm text-orange-800"
+                      className={`rounded-lg py-2 text-sm ${q.is_final_question ? 'bg-red-50 border-l-3 border-red-500 pl-3 text-red-800' : 'question-highlight text-orange-800'}`}
                       data-testid={`question-${paragraph.number}-${qIndex}`}
                     >
-                      <MessageCircleQuestion className="w-4 h-4 inline mr-2 text-orange-500" />
+                      <MessageCircleQuestion className={`w-4 h-4 inline mr-2 ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`} />
                       {q.text}
-                      <span className="ml-2 text-xs text-orange-500">
+                      <span className={`ml-2 text-xs ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`}>
                         (+{q.answer_time} seg)
                       </span>
+                      {q.is_final_question && (
+                        <Badge variant="destructive" className="ml-2 text-xs">FINAL</Badge>
+                      )}
                     </div>
                   ))}
                 </div>
