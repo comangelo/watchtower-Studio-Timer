@@ -385,8 +385,8 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
         text_items.sort(key=lambda x: x[0])
         
         # Parse the questions
-        main_question = None
         bullet_points = []
+        numbered_questions = []
         
         for y_pos, font_size, text in text_items:
             # Skip song references at the end
@@ -394,45 +394,42 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
             if text_upper.startswith("CANCIÓN") or text_upper.startswith("CANCION"):
                 break
             
-            # Skip bullet character alone
+            # Skip bullet character alone and main question headers
             if text == '˛':
                 continue
             
-            # Check if this is a main question (contains ?)
-            if '?' in text and not main_question:
-                main_question = text
+            # Skip the main question header (all caps with ?)
+            if text.isupper() and '?' in text:
+                continue
+            
             # Check for traditional numbered format: "1. ¿Pregunta?"
-            elif re.match(r'^(\d{1,2})\.\s*(.+\?)$', text):
-                match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', text)
+            match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', text)
+            if match:
                 question_text = match.group(2).strip()
                 if len(question_text) > 5:
-                    final_questions.append(QuestionInfo(
-                        text=question_text,
-                        answer_time=QUESTION_ANSWER_TIME,
-                        is_final_question=True
-                    ))
-            # Bullet point items (short phrases that follow the main question)
-            elif main_question and len(text) > 3 and len(text) < 100:
-                # This is likely a bullet point answer option
-                bullet_points.append(text)
+                    numbered_questions.append(question_text)
+            # Bullet point items (short phrases, not numbered)
+            elif len(text) > 3 and len(text) < 150 and not text[0].isdigit():
+                # Check if it looks like a question or topic
+                if '?' in text or (len(text) > 5 and text[0].isupper()):
+                    bullet_points.append(text)
         
-        # If we have a main question with bullet points, create questions for each
-        if main_question and bullet_points:
-            for point in bullet_points:
-                # Combine main question context with bullet point
-                question_text = f"{main_question} → {point}"
+        # Prefer numbered questions if found
+        if numbered_questions:
+            for q in numbered_questions:
                 final_questions.append(QuestionInfo(
-                    text=question_text,
+                    text=q,
                     answer_time=QUESTION_ANSWER_TIME,
                     is_final_question=True
                 ))
-        # If just a main question without bullets, add it directly
-        elif main_question and not final_questions:
-            final_questions.append(QuestionInfo(
-                text=main_question,
-                answer_time=QUESTION_ANSWER_TIME,
-                is_final_question=True
-            ))
+        # Otherwise use bullet points
+        elif bullet_points:
+            for point in bullet_points:
+                final_questions.append(QuestionInfo(
+                    text=point,
+                    answer_time=QUESTION_ANSWER_TIME,
+                    is_final_question=True
+                ))
         
         return final_questions
         
