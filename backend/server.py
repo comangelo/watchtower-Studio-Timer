@@ -550,6 +550,10 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         elif item_type == 'text':
             font_size, text = item[1], item[2]
             
+            # Skip ornament symbols
+            if text == '˛':
+                continue
+            
             # Check for "¿QUÉ RESPONDERÍA?" marker
             text_upper = text.upper()
             if "QUÉ RESPONDERÍA" in text_upper or "QUE RESPONDERIA" in text_upper:
@@ -560,6 +564,22 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
                         paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
                     paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
                     current_para_lines = []
+                continue
+            
+            # If we're after the final questions marker, collect final questions
+            if found_que_responderia:
+                # Skip song references
+                if text_upper.startswith("CANCIÓN") or text_upper.startswith("CANCION"):
+                    continue
+                # Questions contain "?" 
+                if '?' in text:
+                    questions = extract_multiple_questions(text)
+                    for q in questions:
+                        final_questions.append(QuestionInfo(
+                            text=q,
+                            answer_time=QUESTION_ANSWER_TIME,
+                            is_final_question=True
+                        ))
                 continue
             
             # Check if this is a paragraph number (size ~6.8, just a number)
