@@ -45,7 +45,7 @@ export function FinalQuestionsSection({
           <Badge variant="destructive" className="ml-2 text-xs">{finalQuestions.length}</Badge>
         </CardTitle>
         <p className="text-sm text-red-600">
-          Después de "¿QUÉ RESPONDERÍA?"
+          Preguntas de repaso al final del artículo
         </p>
         
         {/* Time indicators - Minimalist */}
