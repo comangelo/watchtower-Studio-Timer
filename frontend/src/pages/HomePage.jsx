@@ -92,6 +92,10 @@ export default function HomePage() {
   const [currentManualParagraph, setCurrentManualParagraph] = useState(0);
   const [paragraphStartTimes, setParagraphStartTimes] = useState({});
   const [lowTimeAlertShown, setLowTimeAlertShown] = useState(false);
+  
+  // Statistics tracking - stores actual time spent on each paragraph
+  const [paragraphStats, setParagraphStats] = useState({});
+  const [paragraphStartTime, setParagraphStartTime] = useState(null);
 
   // Custom hooks
   const { playNotificationSound, triggerVibration } = useNotifications(soundEnabled, vibrationEnabled);
