@@ -29,6 +29,7 @@ import PresentationMode from "@/components/PresentationMode";
 
 // Import refactored components
 import { UploadZone } from "@/components/UploadZone";
+import { SettingsPanel } from "@/components/SettingsPanel";
 import { AnalysisSummary } from "@/components/AnalysisSummary";
 import { TimerDisplay } from "@/components/TimerDisplay";
 import { CountdownTimer } from "@/components/CountdownTimer";
