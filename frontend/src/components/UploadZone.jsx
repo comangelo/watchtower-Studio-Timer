@@ -20,7 +20,7 @@ export function UploadZone({
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">
       {/* Header */}
       <div className="text-center mb-10">
-        <h2 className="font-heading font-extrabold text-4xl md:text-5xl text-purple-700 tracking-tight mb-4">
+        <h2 className="font-heading font-extrabold text-4xl md:text-5xl text-orange-500 tracking-tight mb-4">
           ATALAYA DE ESTUDIO
         </h2>
         <p className="text-lg text-slate-700 max-w-md mx-auto leading-relaxed">

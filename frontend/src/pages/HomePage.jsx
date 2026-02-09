@@ -370,7 +370,7 @@ export default function HomePage() {
               <Timer className="w-7 h-7 text-orange-500" strokeWidth={2.5} />
             </div>
             <div>
-              <h1 className="font-heading font-bold text-xl text-purple-700" data-testid="app-title">
+              <h1 className="font-heading font-bold text-xl text-orange-500" data-testid="app-title">
                 ATALAYA DE ESTUDIO
               </h1>
               <p className="text-xs text-slate-700 font-semibold tracking-wide">Calculadora de Tiempo</p>
