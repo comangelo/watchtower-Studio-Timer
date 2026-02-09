@@ -1414,6 +1414,97 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
     )
 
 
+def analyze_pdf_content_configurable(
+    text: str, 
+    filename: str, 
+    wpm: int = WORDS_PER_MINUTE, 
+    answer_time: int = QUESTION_ANSWER_TIME
+) -> PDFAnalysisResult:
+    """Analyze PDF content with configurable reading speed and answer time"""
+    paragraphs = split_into_paragraphs(text)
+    
+    # Extract final questions (those after "¿QUÉ RESPONDERÍAS?")
+    final_questions_raw = extract_final_questions(text)
+    # Update answer_time for final questions
+    final_questions = [
+        QuestionInfo(text=q.text, answer_time=answer_time, is_final_question=True)
+        for q in final_questions_raw
+    ]
+    final_questions_title = ""
+    
+    text_lower = text.lower()
+    has_que_responderias = "qué responderías" in text_lower or "que responderias" in text_lower
+    
+    que_responderias_paragraph = -1
+    if has_que_responderias:
+        for idx, para in enumerate(paragraphs):
+            para_lower = para.lower()
+            if "qué responderías" in para_lower or "que responderias" in para_lower:
+                que_responderias_paragraph = idx
+                break
+    
+    analyzed_paragraphs = []
+    total_words = 0
+    total_questions = 0
+    total_reading_time = 0.0
+    total_question_time = 0.0
+    cumulative_time = 0.0
+    final_questions_start_time = 0.0
+    
+    for i, para_text in enumerate(paragraphs, 1):
+        if que_responderias_paragraph >= 0 and (i - 1) > que_responderias_paragraph:
+            continue
+            
+        word_count = count_words(para_text)
+        reading_time = calculate_reading_time(word_count, wpm)
+        
+        questions_raw = detect_questions(para_text, i, False)
+        # Update answer_time for questions
+        questions = [
+            QuestionInfo(text=q.text, answer_time=answer_time, is_final_question=False)
+            for q in questions_raw
+        ]
+        question_time = len(questions) * answer_time
+        
+        total_words += word_count
+        total_questions += len(questions)
+        total_reading_time += reading_time
+        total_question_time += question_time
+        cumulative_time += reading_time + question_time
+        
+        analyzed_paragraphs.append(ParagraphAnalysis(
+            number=i,
+            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
+            word_count=word_count,
+            reading_time_seconds=round(reading_time, 2),
+            questions=questions,
+            total_time_seconds=round(reading_time + question_time, 2),
+            cumulative_time_seconds=round(cumulative_time, 2)
+        ))
+    
+    final_questions_start_time = cumulative_time
+    final_questions_time = len(final_questions) * answer_time
+    total_questions += len(final_questions)
+    total_question_time += final_questions_time
+    
+    FIXED_TOTAL_TIME = 3600
+    
+    return PDFAnalysisResult(
+        filename=filename,
+        total_words=total_words,
+        total_paragraphs=len(analyzed_paragraphs),
+        total_questions=total_questions,
+        total_reading_time_seconds=round(total_reading_time, 2),
+        total_question_time_seconds=round(total_question_time, 2),
+        total_time_seconds=FIXED_TOTAL_TIME,
+        fixed_duration=True,
+        final_questions_start_time=round(final_questions_start_time, 2),
+        final_questions=final_questions,
+        final_questions_title=final_questions_title,
+        paragraphs=analyzed_paragraphs
+    )
+
+
 # Routes
 @api_router.get("/")
 async def root():
