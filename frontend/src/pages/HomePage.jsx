@@ -351,6 +351,7 @@ export default function HomePage() {
     setCurrentManualParagraph(paragraphIndex);
     setIsTimerRunning(true);
     setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
+    setParagraphStartTime(Date.now()); // Start timing this paragraph
     
     toast.success(`Iniciando desde Párrafo ${paragraphIndex + 1}`);
   }, [analysisResult]);
