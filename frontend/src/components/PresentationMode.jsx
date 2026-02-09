@@ -296,7 +296,7 @@ export default function PresentationMode({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
-        {/* Time Schedule - Simplified */}
+        {/* Time Schedule - Only Start and End */}
         {startTime && (
           <div className={`flex items-center gap-8 mb-10 ${t.textMuted}`}>
             <div className="text-center">
@@ -306,17 +306,8 @@ export default function PresentationMode({
             <div className={`text-2xl ${t.textDimmed}`}>—</div>
             <div className="text-center">
               <p className={`text-sm font-medium mb-1 ${t.textDimmed}`}>Fin</p>
-              <p className={`text-3xl font-semibold ${t.warning}`}>{formatClockTime(endTime)}</p>
+              <p className={`text-3xl font-semibold ${isLowTime ? t.danger : t.warning}`}>{formatClockTime(endTime)}</p>
             </div>
-            {finalQuestionsTime && (
-              <>
-                <div className={`text-2xl ${t.textDimmed}`}>|</div>
-                <div className="text-center">
-                  <p className={`text-sm font-medium mb-1 ${t.textDimmed}`}>Repaso</p>
-                  <p className={`text-3xl font-semibold ${t.danger}`}>{formatClockTime(finalQuestionsTime)}</p>
-                </div>
-              </>
-            )}
           </div>
         )}
 
