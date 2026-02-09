@@ -1082,12 +1082,23 @@ def analyze_pdf_with_font_info_configurable(
                         is_final_question=True
                     ))
             elif para_nums:
-                target_para = para_nums[-1]
+                # Regular question - check if it spans multiple paragraphs
+                if len(para_nums) > 1:
+                    # Question spans multiple paragraphs (e.g., "1, 2.")
+                    for pn in para_nums:
+                        if pn not in paragraphs_data:
+                            paragraphs_data[pn] = {"text_lines": [], "questions": [], "grouped_with": para_nums.copy()}
+                        else:
+                            paragraphs_data[pn]["grouped_with"] = para_nums.copy()
+                    target_para = para_nums[-1]
+                else:
+                    target_para = para_nums[0]
+                
                 questions = extract_multiple_questions(question_text)
                 
                 for q in questions:
                     if target_para not in paragraphs_data:
-                        paragraphs_data[target_para] = {"text_lines": [], "questions": []}
+                        paragraphs_data[target_para] = {"text_lines": [], "questions": [], "grouped_with": []}
                     paragraphs_data[target_para]["questions"].append(QuestionInfo(
                         text=q,
                         answer_time=answer_time,
