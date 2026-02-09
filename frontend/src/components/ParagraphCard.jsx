@@ -292,6 +292,21 @@ export function ParagraphCard({
               </Button>
             )}
 
+            {/* Go to Review Questions Button - For Last Paragraph */}
+            {isCurrentParagraph && isLastParagraph && hasReviewQuestions && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStartReview?.();
+                }}
+                className="rounded-full px-6 py-5 text-sm font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-200 hover:shadow-red-300 transition-all active:scale-95"
+                data-testid="start-review-questions"
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                Pasar a Preguntas de Repaso
+              </Button>
+            )}
+
             {/* Start from here Button - Secondary Action */}
             {!isCurrentParagraph && !isCompletedParagraph && (
               <Button
