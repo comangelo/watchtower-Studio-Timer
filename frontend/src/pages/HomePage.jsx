@@ -725,6 +725,16 @@ export default function HomePage() {
                   adjustedTimes={adjustedFinalTimes}
                   getQuestionTime={getAdjustedFinalQuestionTime}
                   originalStartTime={getFinalQuestionsTimeSeconds()}
+                  isInReviewMode={isInReviewMode}
+                  currentReviewQuestion={currentReviewQuestion}
+                  onStartReview={startReviewMode}
+                  onNextReviewQuestion={goToNextReviewQuestion}
+                  onFinishStudy={finishStudy}
+                  overtimeAlertEnabled={overtimeAlertEnabled}
+                  soundEnabled={soundEnabled}
+                  vibrationEnabled={vibrationEnabled}
+                  playNotificationSound={playNotificationSound}
+                  triggerVibration={triggerVibration}
                 />
               )}
             </div>
