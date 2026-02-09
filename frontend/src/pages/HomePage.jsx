@@ -97,6 +97,11 @@ export default function HomePage() {
   // Statistics tracking - stores actual time spent on each paragraph
   const [paragraphStats, setParagraphStats] = useState({});
   const [paragraphStartTime, setParagraphStartTime] = useState(null);
+  
+  // Review questions navigation
+  const [isInReviewMode, setIsInReviewMode] = useState(false);
+  const [currentReviewQuestion, setCurrentReviewQuestion] = useState(0);
+  const [reviewQuestionStartTime, setReviewQuestionStartTime] = useState(null);
 
   // Custom hooks
   const { playNotificationSound, triggerVibration } = useNotifications(soundEnabled, vibrationEnabled);
