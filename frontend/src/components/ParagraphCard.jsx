@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check } from "lucide-react";
+import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,9 +24,15 @@ export function ParagraphCard({
   adjustedQuestionTime 
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [paragraphElapsed, setParagraphElapsed] = useState(0);
   const cardRef = useRef(null);
+  const paragraphTimerRef = useRef(null);
   const hasQuestions = paragraph.questions.length > 0;
   const hasFinalQuestions = paragraph.questions.some(q => q.is_final_question);
+
+  // Get estimated time for this paragraph
+  const estimatedTime = paragraphTimes.adjustedDuration || paragraph.total_time_seconds;
+  const isOverTime = paragraphElapsed > estimatedTime;
 
   // Auto-scroll to current paragraph
   useEffect(() => {
@@ -34,6 +40,42 @@ export function ParagraphCard({
       cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [isCurrentParagraph]);
+
+  // Paragraph timer - starts when this becomes the current paragraph
+  useEffect(() => {
+    if (isCurrentParagraph && isTimerRunning) {
+      // Reset timer when this paragraph becomes active
+      setParagraphElapsed(0);
+      
+      // Start counting
+      paragraphTimerRef.current = setInterval(() => {
+        setParagraphElapsed(prev => prev + 1);
+      }, 1000);
+    } else {
+      // Stop timer when not current or not running
+      if (paragraphTimerRef.current) {
+        clearInterval(paragraphTimerRef.current);
+        paragraphTimerRef.current = null;
+      }
+      // Reset when no longer current
+      if (!isCurrentParagraph) {
+        setParagraphElapsed(0);
+      }
+    }
+
+    return () => {
+      if (paragraphTimerRef.current) {
+        clearInterval(paragraphTimerRef.current);
+      }
+    };
+  }, [isCurrentParagraph, isTimerRunning]);
+
+  // Format paragraph elapsed time as MM:SS
+  const formatParagraphTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
