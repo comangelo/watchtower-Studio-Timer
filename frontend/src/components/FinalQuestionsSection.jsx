@@ -5,6 +5,7 @@ import { formatClockTime, addSecondsToDate, formatTimeCompact } from "../utils/t
 
 export function FinalQuestionsSection({ 
   finalQuestions, 
+  finalQuestionsTitle,
   startTime, 
   isTimerRunning, 
   adjustedTimes, 
@@ -45,7 +46,7 @@ export function FinalQuestionsSection({
           <Badge variant="destructive" className="ml-2 text-xs">{finalQuestions.length}</Badge>
         </CardTitle>
         <p className="text-sm text-red-600">
-          Preguntas de repaso al final del artículo
+          Preguntas de repaso al final del artículo{finalQuestionsTitle ? `: ${finalQuestionsTitle}` : ''}
         </p>
         
         {/* Time indicators - Minimalist */}
