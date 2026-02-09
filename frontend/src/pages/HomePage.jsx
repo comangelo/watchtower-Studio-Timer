@@ -623,28 +623,59 @@ export default function HomePage() {
                 </div>
                 
                 <div className="space-y-3">
-                  {analysisResult.paragraphs.map((paragraph, index) => (
-                    <ParagraphCard
-                      key={paragraph.number}
-                      paragraph={paragraph}
-                      index={index}
-                      startTime={startTime}
-                      paragraphTimes={getAdjustedParagraphTimes(index)}
-                      onStartFromHere={() => startFromParagraph(index)}
-                      isTimerRunning={isTimerRunning}
-                      isCurrentParagraph={isTimerRunning && index === currentManualParagraph}
-                      isCompletedParagraph={isTimerRunning && index < currentManualParagraph}
-                      elapsedTime={elapsedTime}
-                      onGoToNext={goToNextParagraph}
-                      isLastParagraph={index === analysisResult.paragraphs.length - 1}
-                      adjustedQuestionTime={adjustedFinalTimes.perQuestion}
-                      overtimeAlertEnabled={overtimeAlertEnabled}
-                      soundEnabled={soundEnabled}
-                      vibrationEnabled={vibrationEnabled}
-                      playNotificationSound={playNotificationSound}
-                      triggerVibration={triggerVibration}
-                    />
-                  ))}
+                  {groupedParagraphs.map((group, groupIndex) => {
+                    const firstIndex = group.indices[0];
+                    const lastIndex = group.indices[group.indices.length - 1];
+                    const isCurrentGroup = isTimerRunning && group.indices.includes(currentManualParagraph);
+                    const isCompletedGroup = isTimerRunning && lastIndex < currentManualParagraph;
+                    
+                    return (
+                      <ParagraphCard
+                        key={`group-${group.firstParagraph.number}`}
+                        paragraph={group.firstParagraph}
+                        groupedParagraphs={group.paragraphs}
+                        index={firstIndex}
+                        startTime={startTime}
+                        paragraphTimes={getAdjustedParagraphTimes(firstIndex)}
+                        onStartFromHere={() => startFromParagraph(firstIndex)}
+                        isTimerRunning={isTimerRunning}
+                        isCurrentParagraph={isCurrentGroup}
+                        isCompletedParagraph={isCompletedGroup}
+                        elapsedTime={elapsedTime}
+                        onGoToNext={() => {
+                          // Skip to the paragraph after the last one in the group
+                          if (lastIndex < analysisResult.paragraphs.length - 1) {
+                            setCurrentManualParagraph(lastIndex + 1);
+                            setParagraphStartTime(Date.now());
+                            // Save stats for all paragraphs in group
+                            if (paragraphStartTime) {
+                              const actualTimeSpent = Math.round((Date.now() - paragraphStartTime) / 1000);
+                              const totalEstimated = group.paragraphs.reduce((sum, p) => sum + p.total_time_seconds, 0);
+                              setParagraphStats(prev => ({
+                                ...prev,
+                                [firstIndex]: {
+                                  paragraphNumber: group.paragraphs.map(p => p.number).join(', '),
+                                  estimatedTime: Math.round(totalEstimated),
+                                  actualTime: actualTimeSpent,
+                                  difference: actualTimeSpent - Math.round(totalEstimated),
+                                  wordCount: group.paragraphs.reduce((sum, p) => sum + p.word_count, 0),
+                                  questionsCount: group.paragraphs.reduce((sum, p) => sum + p.questions.length, 0)
+                                }
+                              }));
+                            }
+                            toast.success(`Avanzando al Párrafo ${analysisResult.paragraphs[lastIndex + 1].number}`);
+                          }
+                        }}
+                        isLastParagraph={lastIndex === analysisResult.paragraphs.length - 1}
+                        adjustedQuestionTime={adjustedFinalTimes.perQuestion}
+                        overtimeAlertEnabled={overtimeAlertEnabled}
+                        soundEnabled={soundEnabled}
+                        vibrationEnabled={vibrationEnabled}
+                        playNotificationSound={playNotificationSound}
+                        triggerVibration={triggerVibration}
+                      />
+                    );
+                  })}
                 </div>
               </div>
 
