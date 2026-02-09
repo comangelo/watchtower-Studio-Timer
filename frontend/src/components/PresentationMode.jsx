@@ -358,21 +358,27 @@ export default function PresentationMode({
           </p>
         </div>
 
-        {/* Current Paragraph Info - Simplified */}
+        {/* Current Paragraph Info - Simplified with remaining counts */}
         {currentParagraph && (
-          <div className={`w-full max-w-3xl ${t.card} rounded-xl p-5 mb-10`}>
+          <div className={`w-full max-w-3xl ${t.card} rounded-2xl p-8 mb-10`}>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className={`text-xl font-semibold ${t.accent}`}>Párrafo {currentParagraph.number}</span>
-                <span className={`text-sm ${t.textDimmed}`}>· {currentParagraph.word_count} palabras</span>
-              </div>
+              {/* Current Paragraph */}
               <div className="flex items-center gap-4">
-                <span className={`text-lg font-medium ${t.warning}`}>{Math.round(currentParagraph.total_time_seconds)}s</span>
-                {currentParagraph.questions.length > 0 && (
-                  <span className={`text-sm ${t.warning}`}>
-                    {currentParagraph.questions.length} pregunta{currentParagraph.questions.length > 1 ? 's' : ''}
-                  </span>
-                )}
+                <span className={`text-4xl font-bold ${t.accent}`}>Párrafo {currentParagraph.number}</span>
+                <span className={`text-xl ${t.textMuted}`}>de {analysisResult.total_paragraphs}</span>
+              </div>
+              
+              {/* Remaining Stats */}
+              <div className="flex items-center gap-6">
+                <div className="text-center">
+                  <p className={`text-sm ${t.textDimmed} mb-1`}>Párrafos restantes</p>
+                  <p className={`text-3xl font-bold ${t.warning}`}>{remainingStats.paragraphs}</p>
+                </div>
+                <div className={`w-px h-12 ${t.border.replace('border-', 'bg-')} opacity-30`} />
+                <div className="text-center">
+                  <p className={`text-sm ${t.textDimmed} mb-1`}>Preguntas de repaso</p>
+                  <p className={`text-3xl font-bold ${t.danger}`}>{remainingStats.reviewQuestions}</p>
+                </div>
               </div>
             </div>
           </div>
