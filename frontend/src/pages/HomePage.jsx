@@ -382,12 +382,41 @@ export default function HomePage() {
     setLowTimeAlertShown(false);
     setParagraphStats({});
     setParagraphStartTime(null);
+    setIsInReviewMode(false);
+    setCurrentReviewQuestion(0);
+    setReviewQuestionStartTime(null);
   };
 
   const resetAll = () => {
     setAnalysisResult(null);
     resetTimer();
   };
+
+  // Start review questions mode
+  const startReviewMode = useCallback(() => {
+    setIsInReviewMode(true);
+    setCurrentReviewQuestion(0);
+    setReviewQuestionStartTime(Date.now());
+    toast.success("Iniciando Preguntas de Repaso");
+  }, []);
+
+  // Navigate to next review question
+  const goToNextReviewQuestion = useCallback(() => {
+    if (!analysisResult?.final_questions) return;
+    
+    const nextQuestion = currentReviewQuestion + 1;
+    if (nextQuestion < analysisResult.final_questions.length) {
+      setCurrentReviewQuestion(nextQuestion);
+      setReviewQuestionStartTime(Date.now());
+      toast.success(`Pregunta de repaso ${nextQuestion + 1}`);
+    }
+  }, [currentReviewQuestion, analysisResult]);
+
+  // Finish study
+  const finishStudy = useCallback(() => {
+    setIsTimerRunning(false);
+    toast.success("¡Estudio finalizado! 🎉");
+  }, []);
 
   // Start from specific paragraph
   const startFromParagraph = useCallback((paragraphIndex) => {
