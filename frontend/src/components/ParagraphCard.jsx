@@ -328,7 +328,7 @@ export function ParagraphCard({
                   ) : (
                     <>
                       <ChevronDown className="w-4 h-4 mr-1" />
-                      Ver {paragraph.questions.length} pregunta{paragraph.questions.length > 1 ? 's' : ''}
+                      Ver {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
                     </>
                   )}
                 </Button>
@@ -340,7 +340,7 @@ export function ParagraphCard({
           {hasQuestions && (
             <CollapsibleContent>
               <div className="mt-4 space-y-2 pl-2 border-l-2 border-orange-200">
-                {paragraph.questions.map((q, qIndex) => {
+                {allQuestions.map((q, qIndex) => {
                   const displayTime = isTimerRunning && adjustedQuestionTime ? adjustedQuestionTime : q.answer_time;
                   const isAdjusted = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime !== 35;
                   const timeDiff = adjustedQuestionTime ? adjustedQuestionTime - 35 : 0;
