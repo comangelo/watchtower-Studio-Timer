@@ -612,6 +612,8 @@ export default function HomePage() {
                   setAlertTimes={setAlertTimes}
                   onTestSound={() => playNotificationSound('warning')}
                   onTestVibration={() => triggerVibration([200, 100, 200])}
+                  overtimeAlertEnabled={overtimeAlertEnabled}
+                  setOvertimeAlertEnabled={setOvertimeAlertEnabled}
                 />
               </div>
             </div>
