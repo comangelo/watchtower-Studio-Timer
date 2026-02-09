@@ -108,6 +108,55 @@ export default function HomePage() {
     getFinalQuestionsTime,
   } = useScheduleCalculator(analysisResult, startTime, remainingTime, currentManualParagraph);
 
+  // Group paragraphs that belong together based on "grouped_with" field
+  const groupedParagraphs = React.useMemo(() => {
+    if (!analysisResult?.paragraphs) return [];
+    
+    const paragraphs = analysisResult.paragraphs;
+    const groups = [];
+    const processedIndices = new Set();
+    
+    paragraphs.forEach((para, index) => {
+      if (processedIndices.has(index)) return;
+      
+      const groupedWith = para.grouped_with || [];
+      
+      if (groupedWith.length > 1) {
+        // This paragraph is part of a group
+        const groupParagraphs = groupedWith
+          .map(num => paragraphs.find(p => p.number === num))
+          .filter(Boolean);
+        
+        // Mark all paragraphs in this group as processed
+        groupParagraphs.forEach(gp => {
+          const gIndex = paragraphs.findIndex(p => p.number === gp.number);
+          processedIndices.add(gIndex);
+        });
+        
+        // Only add the group once (when we encounter the first paragraph of the group)
+        if (para.number === Math.min(...groupedWith)) {
+          groups.push({
+            type: 'group',
+            paragraphs: groupParagraphs,
+            firstParagraph: groupParagraphs[0],
+            indices: groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number))
+          });
+        }
+      } else {
+        // Single paragraph
+        processedIndices.add(index);
+        groups.push({
+          type: 'single',
+          paragraphs: [para],
+          firstParagraph: para,
+          indices: [index]
+        });
+      }
+    });
+    
+    return groups;
+  }, [analysisResult?.paragraphs]);
+
   // Presentation mode functions
   const enterPresentationMode = useCallback(() => {
     setIsPresentationMode(true);
