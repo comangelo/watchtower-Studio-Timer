@@ -366,8 +366,8 @@ export default function HomePage() {
       <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Timer className="w-5 h-5 text-slate-800" />
+            <div className="w-11 h-11 bg-slate-200 rounded-xl flex items-center justify-center shadow-lg">
+              <Timer className="w-5 h-5 text-orange-500" />
             </div>
             <div>
               <h1 className="font-heading font-bold text-xl text-purple-700" data-testid="app-title">
