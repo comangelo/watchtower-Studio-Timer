@@ -958,6 +958,253 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     )
 
 
+def analyze_pdf_with_font_info_configurable(
+    pdf_bytes: bytes, 
+    filename: str, 
+    wpm: int = WORDS_PER_MINUTE, 
+    answer_time: int = QUESTION_ANSWER_TIME
+) -> PDFAnalysisResult:
+    """
+    Analyze PDF using font size information with configurable reading speed and answer time.
+    """
+    lines = extract_text_with_sizes(pdf_bytes)
+    
+    if not lines:
+        text = extract_text_from_pdf(pdf_bytes)
+        return analyze_pdf_content_configurable(text, filename, wpm, answer_time)
+    
+    # Detect horizontal line position for final questions section
+    horizontal_line_info = detect_horizontal_line_separator(pdf_bytes)
+    
+    # Identify font sizes used in document
+    size_counts = {}
+    for line in lines:
+        size_key = round(line.font_size, 1)
+        size_counts[size_key] = size_counts.get(size_key, 0) + 1
+    
+    if not size_counts:
+        text = extract_text_from_pdf(pdf_bytes)
+        return analyze_pdf_content_configurable(text, filename, wpm, answer_time)
+    
+    # First pass: Group consecutive question lines (size ~9.0)
+    grouped_lines = []
+    current_question_parts = []
+    current_question_nums = None
+    
+    for line in lines:
+        text = line.text.strip()
+        font_size = round(line.font_size, 1)
+        
+        if not text:
+            continue
+            
+        is_question_size = 8.5 <= font_size <= 9.5
+        
+        if is_question_size:
+            num_match = re.match(r'^([\d,\s]+)\.\s*$', text)
+            if num_match:
+                if current_question_parts and current_question_nums:
+                    full_question = ' '.join(current_question_parts)
+                    grouped_lines.append(('question', current_question_nums, full_question))
+                
+                numbers_str = num_match.group(1)
+                current_question_nums = [int(n.strip()) for n in numbers_str.split(',') if n.strip().isdigit()]
+                current_question_parts = []
+            elif current_question_nums is not None:
+                current_question_parts.append(text)
+            else:
+                if '?' in text:
+                    grouped_lines.append(('question_text', None, text))
+                else:
+                    grouped_lines.append(('other', font_size, text))
+        else:
+            if current_question_parts and current_question_nums:
+                full_question = ' '.join(current_question_parts)
+                grouped_lines.append(('question', current_question_nums, full_question))
+                current_question_parts = []
+                current_question_nums = None
+            
+            grouped_lines.append(('text', font_size, text))
+    
+    if current_question_parts and current_question_nums:
+        full_question = ' '.join(current_question_parts)
+        grouped_lines.append(('question', current_question_nums, full_question))
+    
+    # Second pass: Build paragraphs and assign questions
+    paragraphs_data = {}
+    current_para_num = None
+    current_para_lines = []
+    initial_para_lines = []
+    found_first_para_number = False
+    final_questions = []
+    final_questions_title = ""
+    found_final_section = False
+    
+    if horizontal_line_info and horizontal_line_info.get("found"):
+        final_questions_raw, final_questions_title = extract_questions_after_horizontal_line(pdf_bytes, horizontal_line_info)
+        # Update answer_time for final questions with configurable value
+        final_questions = [
+            QuestionInfo(text=q.text, answer_time=answer_time, is_final_question=True)
+            for q in final_questions_raw
+        ]
+        skip_final_detection = len(final_questions) > 0
+    else:
+        skip_final_detection = False
+    
+    for item in grouped_lines:
+        item_type = item[0]
+        
+        if item_type == 'question':
+            para_nums, question_text = item[1], item[2]
+            
+            if found_final_section and not skip_final_detection:
+                questions = extract_multiple_questions(question_text)
+                for q in questions:
+                    final_questions.append(QuestionInfo(
+                        text=q,
+                        answer_time=answer_time,
+                        is_final_question=True
+                    ))
+            elif para_nums:
+                target_para = para_nums[-1]
+                questions = extract_multiple_questions(question_text)
+                
+                for q in questions:
+                    if target_para not in paragraphs_data:
+                        paragraphs_data[target_para] = {"text_lines": [], "questions": []}
+                    paragraphs_data[target_para]["questions"].append(QuestionInfo(
+                        text=q,
+                        answer_time=answer_time,
+                        is_final_question=False
+                    ))
+                    
+        elif item_type == 'question_text':
+            question_text = item[2]
+            if found_final_section and not skip_final_detection and '?' in question_text:
+                questions = extract_multiple_questions(question_text)
+                for q in questions:
+                    final_questions.append(QuestionInfo(
+                        text=q,
+                        answer_time=answer_time,
+                        is_final_question=True
+                    ))
+                    
+        elif item_type == 'text':
+            font_size, text = item[1], item[2]
+            
+            if text == '˛':
+                continue
+            
+            text_upper = text.upper()
+            if not skip_final_detection and ("QUÉ RESPONDERÍA" in text_upper or "QUE RESPONDERIA" in text_upper):
+                found_final_section = True
+                if current_para_num and current_para_lines:
+                    if current_para_num not in paragraphs_data:
+                        paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+                    paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
+                    current_para_lines = []
+                continue
+            
+            if found_final_section and not skip_final_detection:
+                if text_upper.startswith("CANCIÓN") or text_upper.startswith("CANCION"):
+                    continue
+                if '?' in text:
+                    questions = extract_multiple_questions(text)
+                    for q in questions:
+                        final_questions.append(QuestionInfo(
+                            text=q,
+                            answer_time=answer_time,
+                            is_final_question=True
+                        ))
+                continue
+            
+            is_para_number = 6.0 <= font_size <= 7.5 and text.isdigit()
+            is_paragraph_size = 10.5 <= font_size <= 11.5
+            
+            if is_para_number:
+                if not found_first_para_number:
+                    found_first_para_number = True
+                    if initial_para_lines:
+                        paragraphs_data[1] = {"text_lines": initial_para_lines.copy(), "questions": []}
+                
+                if current_para_num and current_para_lines:
+                    if current_para_num not in paragraphs_data:
+                        paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+                    paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
+                
+                current_para_num = int(text)
+                current_para_lines = []
+                
+            elif is_paragraph_size:
+                if current_para_num:
+                    current_para_lines.append(text)
+                elif not found_first_para_number:
+                    initial_para_lines.append(text)
+    
+    if current_para_num and current_para_lines:
+        if current_para_num not in paragraphs_data:
+            paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+        paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
+    
+    if not found_first_para_number and initial_para_lines:
+        paragraphs_data[1] = {"text_lines": initial_para_lines, "questions": []}
+    
+    # Build the analysis result with configurable times
+    analyzed_paragraphs = []
+    total_words = 0
+    total_questions = 0
+    total_reading_time = 0.0
+    total_question_time = 0.0
+    cumulative_time = 0.0
+    
+    for para_num in sorted(paragraphs_data.keys()):
+        para_data = paragraphs_data[para_num]
+        para_text = ' '.join(para_data["text_lines"])
+        questions = para_data["questions"]
+        
+        word_count = count_words(para_text)
+        reading_time = calculate_reading_time(word_count, wpm)
+        question_time = len(questions) * answer_time
+        
+        total_words += word_count
+        total_questions += len(questions)
+        total_reading_time += reading_time
+        total_question_time += question_time
+        cumulative_time += reading_time + question_time
+        
+        analyzed_paragraphs.append(ParagraphAnalysis(
+            number=para_num,
+            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
+            word_count=word_count,
+            reading_time_seconds=round(reading_time, 2),
+            questions=questions,
+            total_time_seconds=round(reading_time + question_time, 2),
+            cumulative_time_seconds=round(cumulative_time, 2)
+        ))
+    
+    final_questions_start_time = cumulative_time
+    final_questions_time = len(final_questions) * answer_time
+    total_questions += len(final_questions)
+    total_question_time += final_questions_time
+    
+    FIXED_TOTAL_TIME = 3600
+    
+    return PDFAnalysisResult(
+        filename=filename,
+        total_words=total_words,
+        total_paragraphs=len(analyzed_paragraphs),
+        total_questions=total_questions,
+        total_reading_time_seconds=round(total_reading_time, 2),
+        total_question_time_seconds=round(total_question_time, 2),
+        total_time_seconds=FIXED_TOTAL_TIME,
+        fixed_duration=True,
+        final_questions_start_time=round(final_questions_start_time, 2),
+        final_questions=final_questions,
+        final_questions_title=final_questions_title,
+        paragraphs=analyzed_paragraphs
+    )
+
+
 def parse_question_line_watchtower(text: str) -> tuple:
     """
     Parse a Watchtower-style question line.
