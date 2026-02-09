@@ -37,6 +37,7 @@ import { QuickStats } from "@/components/QuickStats";
 import { NotificationSettings } from "@/components/NotificationSettings";
 import { ParagraphCard } from "@/components/ParagraphCard";
 import { FinalQuestionsSection } from "@/components/FinalQuestionsSection";
+import { ParagraphStatsPanel } from "@/components/ParagraphStatsPanel";
 
 // Import hooks
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
