@@ -166,6 +166,27 @@ export default function PresentationMode({
     return Math.min(100, (elapsedTime / 3600) * 100);
   }, [elapsedTime]);
   
+  // Check if less than 5 minutes remaining (or overtime)
+  const isLowTime = remainingTime <= 300;
+  const isOvertime = remainingTime <= 0;
+  
+  // Calculate remaining paragraphs and questions
+  const remainingStats = useMemo(() => {
+    if (!analysisResult) return { paragraphs: 0, questions: 0, reviewQuestions: 0 };
+    
+    const remainingParagraphs = analysisResult.paragraphs.length - currentParagraphIndex - 1;
+    const remainingQuestions = analysisResult.paragraphs
+      .slice(currentParagraphIndex)
+      .reduce((sum, p) => sum + p.questions.length, 0);
+    const reviewQuestions = analysisResult.final_questions?.length || 0;
+    
+    return {
+      paragraphs: Math.max(0, remainingParagraphs),
+      questions: remainingQuestions,
+      reviewQuestions: reviewQuestions
+    };
+  }, [analysisResult, currentParagraphIndex]);
+  
   // Calculate start and end times based on elapsed time
   const startTime = useMemo(() => {
     if (elapsedTime === 0 && !isTimerRunning) return null;
@@ -176,15 +197,6 @@ export default function PresentationMode({
     if (!startTime) return null;
     return addSecondsToDate(startTime, 3600);
   }, [startTime]);
-  
-  // Calculate final questions time
-  const finalQuestionsTime = useMemo(() => {
-    if (!startTime || !analysisResult) return null;
-    if (analysisResult.final_questions_start_time > 0) {
-      return addSecondsToDate(startTime, analysisResult.final_questions_start_time);
-    }
-    return null;
-  }, [startTime, analysisResult]);
   
   const t = THEMES[theme] || THEMES.dark;
   
@@ -203,6 +215,20 @@ export default function PresentationMode({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onExit, onToggleTimer]);
+
+  // Format remaining time (allow negative for overtime)
+  const formatRemainingTime = (seconds) => {
+    const isNegative = seconds < 0;
+    const absSeconds = Math.abs(seconds);
+    const hours = Math.floor(absSeconds / 3600);
+    const mins = Math.floor((absSeconds % 3600) / 60);
+    const secs = absSeconds % 60;
+    
+    if (hours > 0) {
+      return `${isNegative ? '-' : ''}${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${isNegative ? '-' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div 
