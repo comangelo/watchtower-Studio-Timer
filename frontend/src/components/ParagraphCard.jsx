@@ -105,14 +105,35 @@ export function ParagraphCard({
           </div>
         )}
 
-        {/* Current Paragraph Indicator */}
+        {/* Current Paragraph Indicator with Timer */}
         {isCurrentParagraph && (
-          <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-bold py-2 px-4 flex items-center justify-center gap-2 rounded-t-xl">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
-            </span>
-            LEYENDO AHORA
+          <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-bold py-2 px-4 flex items-center justify-between rounded-t-xl">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+              </span>
+              LEYENDO AHORA
+            </div>
+            {/* Paragraph Stopwatch */}
+            {isTimerRunning && (
+              <div className={`flex items-center gap-2 px-3 py-1 rounded-full transition-colors ${
+                isOverTime ? 'bg-red-500/30' : 'bg-white/20'
+              }`}>
+                <Timer className={`w-3.5 h-3.5 ${isOverTime ? 'text-red-200' : 'text-white/80'}`} />
+                <span 
+                  className={`font-mono text-sm tracking-wider ${
+                    isOverTime ? 'text-red-200 font-bold' : 'text-white'
+                  }`}
+                  data-testid={`paragraph-stopwatch-${paragraph.number}`}
+                >
+                  {formatParagraphTime(paragraphElapsed)}
+                </span>
+                <span className="text-white/60 text-[10px]">
+                  / {formatParagraphTime(Math.round(estimatedTime))}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
