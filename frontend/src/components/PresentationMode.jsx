@@ -328,23 +328,32 @@ export default function PresentationMode({
           {/* Divider */}
           <div className={`w-px h-28 ${t.border.replace('border-', 'bg-')} opacity-30`} />
 
-          {/* Remaining Time */}
+          {/* Remaining Time - Green by default, Red when < 5 min */}
           <div className="text-center">
             <p className={`text-base font-medium ${t.textDimmed} mb-3`}>Restante</p>
             <div 
-              className={`text-[120px] md:text-[150px] font-light tracking-tight leading-none ${remainingTime <= 300 ? t.danger : t.textMuted}`}
+              className={`text-[120px] md:text-[150px] font-light tracking-tight leading-none ${
+                isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.success
+              }`}
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               data-testid="presentation-remaining-time"
             >
-              {formatTime(remainingTime)}
+              {formatRemainingTime(remainingTime)}
             </div>
           </div>
         </div>
 
-        {/* Progress Bar - Thinner and Cleaner */}
+        {/* Progress Bar - Green, Red when < 5 min */}
         <div className="w-full max-w-3xl mb-10">
-          <Progress value={progressPercentage} className={`h-2 ${t.progressBg}`} />
-          <p className={`text-center text-sm ${t.textDimmed} mt-3`}>
+          <div className={`h-4 rounded-full ${t.progressBg} overflow-hidden`}>
+            <div 
+              className={`h-full rounded-full transition-all duration-500 ${
+                isLowTime ? 'bg-red-500' : 'bg-green-500'
+              }`}
+              style={{ width: `${Math.min(100, progressPercentage)}%` }}
+            />
+          </div>
+          <p className={`text-center text-2xl font-bold mt-4 ${isLowTime ? t.danger : t.success}`}>
             {progressPercentage.toFixed(0)}%
           </p>
         </div>
