@@ -559,6 +559,11 @@ export default function HomePage() {
                       onGoToNext={goToNextParagraph}
                       isLastParagraph={index === analysisResult.paragraphs.length - 1}
                       adjustedQuestionTime={adjustedFinalTimes.perQuestion}
+                      overtimeAlertEnabled={overtimeAlertEnabled}
+                      soundEnabled={soundEnabled}
+                      vibrationEnabled={vibrationEnabled}
+                      playNotificationSound={playNotificationSound}
+                      triggerVibration={triggerVibration}
                     />
                   ))}
                 </div>
