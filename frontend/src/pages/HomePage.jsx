@@ -434,15 +434,25 @@ export default function HomePage() {
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {!analysisResult ? (
-          <UploadZone
-            onFileSelect={handleFileUpload}
-            isDragging={isDragging}
-            isLoading={isLoading}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            fileInputRef={fileInputRef}
-          />
+          <div className="space-y-8">
+            <SettingsPanel
+              readingSpeed={readingSpeed}
+              setReadingSpeed={setReadingSpeed}
+              answerTime={answerTime}
+              setAnswerTime={setAnswerTime}
+            />
+            <UploadZone
+              onFileSelect={handleFileUpload}
+              isDragging={isDragging}
+              isLoading={isLoading}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              fileInputRef={fileInputRef}
+              readingSpeed={readingSpeed}
+              answerTime={answerTime}
+            />
+          </div>
         ) : (
           <div ref={exportRef} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column - Analysis */}
