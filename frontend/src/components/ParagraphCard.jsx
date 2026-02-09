@@ -32,7 +32,9 @@ export function ParagraphCard({
 
   // Get estimated time for this paragraph
   const estimatedTime = paragraphTimes.adjustedDuration || paragraph.total_time_seconds;
-  const isOverTime = paragraphElapsed > estimatedTime;
+  // TESTING: Use 3 seconds for overtime testing
+  const testEstimatedTime = 3; // Remove this line after testing
+  const isOverTime = paragraphElapsed > testEstimatedTime; // Change back to estimatedTime after testing
 
   // Auto-scroll to current paragraph
   useEffect(() => {
