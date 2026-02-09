@@ -21,10 +21,16 @@ export function ParagraphCard({
   elapsedTime, 
   onGoToNext, 
   isLastParagraph,
-  adjustedQuestionTime 
+  adjustedQuestionTime,
+  overtimeAlertEnabled,
+  soundEnabled,
+  vibrationEnabled,
+  playNotificationSound,
+  triggerVibration
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [paragraphElapsed, setParagraphElapsed] = useState(0);
+  const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
   const cardRef = useRef(null);
   const paragraphTimerRef = useRef(null);
   const hasQuestions = paragraph.questions.length > 0;
@@ -41,11 +47,36 @@ export function ParagraphCard({
     }
   }, [isCurrentParagraph]);
 
+  // Overtime alert - trigger once when time is exceeded
+  useEffect(() => {
+    if (isOverTime && !overtimeAlertTriggered && overtimeAlertEnabled && isCurrentParagraph) {
+      setOvertimeAlertTriggered(true);
+      
+      // Play sound if enabled
+      if (soundEnabled && playNotificationSound) {
+        playNotificationSound('urgent');
+      }
+      
+      // Trigger vibration if enabled
+      if (vibrationEnabled && triggerVibration) {
+        triggerVibration([200, 100, 200, 100, 200]);
+      }
+    }
+  }, [isOverTime, overtimeAlertTriggered, overtimeAlertEnabled, isCurrentParagraph, soundEnabled, vibrationEnabled, playNotificationSound, triggerVibration]);
+
+  // Reset overtime alert when paragraph changes
+  useEffect(() => {
+    if (!isCurrentParagraph) {
+      setOvertimeAlertTriggered(false);
+    }
+  }, [isCurrentParagraph]);
+
   // Paragraph timer - starts when this becomes the current paragraph
   useEffect(() => {
     if (isCurrentParagraph && isTimerRunning) {
       // Reset timer when this paragraph becomes active
       setParagraphElapsed(0);
+      setOvertimeAlertTriggered(false);
       
       // Start counting
       paragraphTimerRef.current = setInterval(() => {
