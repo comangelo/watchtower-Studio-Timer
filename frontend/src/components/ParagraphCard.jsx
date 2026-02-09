@@ -117,7 +117,9 @@ export function ParagraphCard({
           ${isCompletedParagraph
             ? 'border-slate-200 bg-slate-50/50 opacity-70'
             : isCurrentParagraph 
-              ? 'border-green-400 bg-green-50 shadow-lg shadow-green-100 scale-[1.01]' 
+              ? isOverTime
+                ? 'border-red-400 bg-red-50 shadow-lg shadow-red-100 scale-[1.01]'
+                : 'border-green-400 bg-green-50 shadow-lg shadow-green-100 scale-[1.01]' 
               : hasFinalQuestions 
                 ? 'border-red-200 bg-red-50/30 hover:border-red-300' 
                 : hasQuestions 
