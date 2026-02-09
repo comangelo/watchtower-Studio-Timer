@@ -1087,6 +1087,7 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
     
     # Extract final questions (those after "¿QUÉ RESPONDERÍAS?")
     final_questions = extract_final_questions(text)
+    final_questions_title = ""  # Default empty title for text-only analysis
     
     # Check if text contains "¿QUÉ RESPONDERÍAS?" 
     text_lower = text.lower()
