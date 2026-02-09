@@ -371,9 +371,9 @@ export default function HomePage() {
             </div>
             <div>
               <h1 className="font-heading font-bold text-xl text-slate-900" data-testid="app-title">
-                Calculadora de Tiempo
+                ATALAYA DE ESTUDIO
               </h1>
-              <p className="text-xs text-orange-600 font-semibold tracking-wide">ATALAYA DE ESTUDIO</p>
+              <p className="text-xs text-orange-600 font-semibold tracking-wide">Calculadora de Tiempo</p>
             </div>
           </div>
           {analysisResult && (
