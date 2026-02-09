@@ -1,7 +1,7 @@
 import { formatTimeText } from "../utils/timeFormatters";
 import { Card, CardContent } from "@/components/ui/card";
 
-export function QuickStats({ analysisResult, currentManualParagraph }) {
+export function QuickStats({ analysisResult, currentManualParagraph, readingSpeed = 180 }) {
   if (!analysisResult) return null;
 
   const totalQuestions = analysisResult.paragraphs.reduce(
@@ -14,7 +14,7 @@ export function QuickStats({ analysisResult, currentManualParagraph }) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-zinc-500">Velocidad de lectura</span>
-            <span className="font-mono text-sm font-medium">180 PPM</span>
+            <span className="font-mono text-sm font-medium">{readingSpeed} PPM</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-zinc-500">Total preguntas de repaso</span>
