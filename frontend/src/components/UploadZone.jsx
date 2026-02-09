@@ -21,10 +21,10 @@ export function UploadZone({
       {/* Header */}
       <div className="text-center mb-10">
         <h2 className="font-heading font-extrabold text-4xl md:text-5xl text-slate-900 tracking-tight mb-4">
-          ARTÍCULO DE ESTUDIO
+          ATALAYA DE ESTUDIO
         </h2>
         <p className="text-lg text-slate-500 max-w-md mx-auto leading-relaxed">
-          Sube el artículo de estudio para gestionar el tiempo necesario para conducirlo
+          Calculadora de Tiempo de conducción
         </p>
       </div>
 
