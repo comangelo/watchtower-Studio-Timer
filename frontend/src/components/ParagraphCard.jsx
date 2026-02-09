@@ -237,18 +237,38 @@ export function ParagraphCard({
             </div>
           )}
           
-          {/* Paragraph Text */}
-          <p className={`text-sm leading-relaxed ${isCompletedParagraph ? 'text-slate-400' : isCurrentParagraph ? 'text-slate-800' : 'text-slate-600'}`}>
-            {paragraph.text}
-          </p>
+          {/* Paragraph Text - Show all paragraphs if grouped */}
+          {isGrouped ? (
+            <div className="space-y-4">
+              {allParagraphs.map((p, idx) => (
+                <div key={p.number} className={idx > 0 ? 'pt-4 border-t border-slate-200' : ''}>
+                  <p className={`text-xs font-semibold mb-1 ${isCompletedParagraph ? 'text-slate-400' : 'text-slate-500'}`}>
+                    Párrafo {p.number}:
+                  </p>
+                  <p className={`text-sm leading-relaxed ${isCompletedParagraph ? 'text-slate-400' : isCurrentParagraph ? 'text-slate-800' : 'text-slate-600'}`}>
+                    {p.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={`text-sm leading-relaxed ${isCompletedParagraph ? 'text-slate-400' : isCurrentParagraph ? 'text-slate-800' : 'text-slate-600'}`}>
+              {paragraph.text}
+            </p>
+          )}
           
           {/* Stats Row */}
           <div className={`flex items-center gap-3 mt-4 text-xs ${isCompletedParagraph ? 'text-slate-400' : 'text-slate-500'}`}>
-            <span className="px-2 py-1 bg-slate-50 rounded-full">{paragraph.word_count} palabras</span>
-            <span className="px-2 py-1 bg-slate-50 rounded-full">{formatTimeText(paragraph.reading_time_seconds)} lectura</span>
+            <span className="px-2 py-1 bg-slate-50 rounded-full">{totalWordCount} palabras</span>
+            <span className="px-2 py-1 bg-slate-50 rounded-full">{formatTimeText(totalReadingTime)} lectura</span>
             {hasQuestions && (
               <span className={`px-2 py-1 rounded-full font-medium ${hasFinalQuestions ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
-                {paragraph.questions.length} pregunta{paragraph.questions.length > 1 ? 's' : ''}
+                {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
+              </span>
+            )}
+            {isGrouped && (
+              <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full font-medium">
+                {allParagraphs.length} párrafos agrupados
               </span>
             )}
           </div>
