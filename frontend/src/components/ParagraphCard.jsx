@@ -140,13 +140,17 @@ export function ParagraphCard({
 
         {/* Current Paragraph Indicator with Timer */}
         {isCurrentParagraph && (
-          <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-bold py-2 px-4 flex items-center justify-between rounded-t-xl">
+          <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold py-2 px-4 flex items-center justify-between rounded-t-xl transition-colors ${
+            isOverTime 
+              ? 'bg-gradient-to-r from-red-500 to-red-600' 
+              : 'bg-gradient-to-r from-green-500 to-green-600'
+          }`}>
             <div className="flex items-center gap-2">
               <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
+                <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
               </span>
-              LEYENDO AHORA
+              {isOverTime ? '⚠️ TIEMPO EXCEDIDO' : 'LEYENDO AHORA'}
               {/* Overtime Badge */}
               {isOverTime && (
                 <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full animate-pulse">
