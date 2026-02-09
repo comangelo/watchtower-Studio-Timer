@@ -1271,61 +1271,6 @@ def extract_multiple_questions(text: str) -> list:
         questions.append(text.strip())
     
     return questions
-    
-    # Build the analysis result
-    analyzed_paragraphs = []
-    total_words = 0
-    total_questions = 0
-    total_reading_time = 0.0
-    total_question_time = 0.0
-    cumulative_time = 0.0
-    
-    for i, para_data in enumerate(paragraphs_data):
-        para_text = '\n'.join(para_data["text_lines"])
-        para_number = para_data["number"] if para_data["number"] else i + 1
-        questions = para_data["questions"]
-        
-        word_count = count_words(para_text)
-        reading_time = calculate_reading_time(word_count)
-        question_time = len(questions) * QUESTION_ANSWER_TIME
-        
-        total_words += word_count
-        total_questions += len(questions)
-        total_reading_time += reading_time
-        total_question_time += question_time
-        cumulative_time += reading_time + question_time
-        
-        analyzed_paragraphs.append(ParagraphAnalysis(
-            number=para_number,
-            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
-            word_count=word_count,
-            reading_time_seconds=round(reading_time, 2),
-            questions=questions,
-            total_time_seconds=round(reading_time + question_time, 2),
-            cumulative_time_seconds=round(cumulative_time, 2)
-        ))
-    
-    # Add final questions
-    final_questions_start_time = cumulative_time
-    final_questions_time = len(final_questions) * QUESTION_ANSWER_TIME
-    total_questions += len(final_questions)
-    total_question_time += final_questions_time
-    
-    FIXED_TOTAL_TIME = 3600  # 60 minutes
-    
-    return PDFAnalysisResult(
-        filename=filename,
-        total_words=total_words,
-        total_paragraphs=len(analyzed_paragraphs),
-        total_questions=total_questions,
-        total_reading_time_seconds=round(total_reading_time, 2),
-        total_question_time_seconds=round(total_question_time, 2),
-        total_time_seconds=FIXED_TOTAL_TIME,
-        fixed_duration=True,
-        final_questions_start_time=round(final_questions_start_time, 2),
-        final_questions=final_questions,
-        paragraphs=analyzed_paragraphs
-    )
 
 
 def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
