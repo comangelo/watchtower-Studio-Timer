@@ -1,27 +1,63 @@
 {
+  "id": "/",
   "short_name": "Atalaya Timer",
   "name": "Calculadora de Tiempo - Atalaya de Estudio",
-  "description": "Gestiona el tiempo necesario para conducir el artículo de estudio",
+  "description": "Gestiona el tiempo necesario para conducir el artículo de estudio de La Atalaya en exactamente 60 minutos. Analiza PDFs, calcula tiempos de lectura y distribuye el tiempo entre párrafos y preguntas.",
   "icons": [
     {
       "src": "icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
     },
     {
       "src": "icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#ea580c",
   "background_color": "#fafaf9",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "scope": "/",
   "lang": "es",
-  "categories": ["utilities", "productivity"]
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "education"],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Vista principal de la aplicación"
+    },
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Vista móvil de la aplicación"
+    }
+  ],
+  "display_override": ["standalone", "minimal-ui"],
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }
