@@ -650,6 +650,12 @@ export default function HomePage() {
                   overtimeAlertEnabled={overtimeAlertEnabled}
                   setOvertimeAlertEnabled={setOvertimeAlertEnabled}
                 />
+
+                {/* Statistics Panel - shows after at least one paragraph is completed */}
+                <ParagraphStatsPanel
+                  paragraphStats={paragraphStats}
+                  totalParagraphs={analysisResult.paragraphs.length}
+                />
               </div>
             </div>
           </div>
