@@ -27,7 +27,9 @@ export function ParagraphCard({
   soundEnabled,
   vibrationEnabled,
   playNotificationSound,
-  triggerVibration
+  triggerVibration,
+  onStartReview,
+  hasReviewQuestions
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [paragraphElapsed, setParagraphElapsed] = useState(0);
