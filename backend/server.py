@@ -1162,6 +1162,7 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
         fixed_duration=True,
         final_questions_start_time=round(final_questions_start_time, 2),
         final_questions=final_questions,
+        final_questions_title=final_questions_title,
         paragraphs=analyzed_paragraphs
     )
 
