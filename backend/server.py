@@ -44,6 +44,7 @@ class ParagraphAnalysis(BaseModel):
     questions: List[QuestionInfo] = []
     total_time_seconds: float
     cumulative_time_seconds: float = 0  # Time from start to end of this paragraph
+    grouped_with: List[int] = []  # List of paragraph numbers grouped together (e.g., [1, 2] for "1, 2." questions)
 
 class PDFAnalysisResult(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
