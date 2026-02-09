@@ -140,12 +140,33 @@ export default function HomePage() {
   // Paragraph navigation
   const goToNextParagraph = useCallback(() => {
     if (!analysisResult || currentManualParagraph >= analysisResult.paragraphs.length - 1) return;
+    
+    // Save actual time spent on current paragraph
+    if (paragraphStartTime) {
+      const actualTimeSpent = Math.round((Date.now() - paragraphStartTime) / 1000);
+      const currentParagraph = analysisResult.paragraphs[currentManualParagraph];
+      const estimatedTime = currentParagraph.total_time_seconds;
+      
+      setParagraphStats(prev => ({
+        ...prev,
+        [currentManualParagraph]: {
+          paragraphNumber: currentParagraph.number,
+          estimatedTime: Math.round(estimatedTime),
+          actualTime: actualTimeSpent,
+          difference: actualTimeSpent - Math.round(estimatedTime),
+          wordCount: currentParagraph.word_count,
+          questionsCount: currentParagraph.questions.length
+        }
+      }));
+    }
+    
     const nextIndex = currentManualParagraph + 1;
     setCurrentManualParagraph(nextIndex);
+    setParagraphStartTime(Date.now()); // Start timing the next paragraph
     const now = new Date();
     setParagraphStartTimes(prev => ({ ...prev, [nextIndex]: now }));
     toast.success(`Avanzando al Párrafo ${nextIndex + 1}`);
-  }, [currentManualParagraph, analysisResult]);
+  }, [currentManualParagraph, analysisResult, paragraphStartTime]);
 
   const goToPreviousParagraph = useCallback(() => {
     if (currentManualParagraph <= 0) return;
