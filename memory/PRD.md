@@ -53,6 +53,9 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ **Badge "+X:XX excedido" cuando se pasa del tiempo**
 - ✅ **Texto "⚠️ TIEMPO EXCEDIDO" reemplaza "LEYENDO AHORA" en overtime**
 - ✅ **Alerta sonora/vibración al exceder tiempo del párrafo (configurable on/off)**
+- ✅ **Panel de Estadísticas de Tiempo con comparativa estimado vs real**
+- ✅ **Resumen: tiempo total estimado, real y diferencia**
+- ✅ **Desglose por párrafo con indicadores visuales (verde=más rápido, rojo=más lento)**
 - ✅ Sección separada para "Preguntas de Repaso" con tiempos ajustados
 - ✅ Ajuste dinámico de tiempos: lectura FIJA, preguntas VARIABLES
 - ✅ Modo presentación pantalla completa con temas de color
