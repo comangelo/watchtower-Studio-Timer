@@ -548,6 +548,7 @@ export default function HomePage() {
               {analysisResult.final_questions?.length > 0 && (
                 <FinalQuestionsSection
                   finalQuestions={analysisResult.final_questions}
+                  finalQuestionsTitle={analysisResult.final_questions_title}
                   startTime={startTime}
                   isTimerRunning={isTimerRunning}
                   adjustedTimes={adjustedFinalTimes}
