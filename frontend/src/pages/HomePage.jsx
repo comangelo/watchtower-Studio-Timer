@@ -674,7 +674,7 @@ export default function HomePage() {
                         onStartFromHere={() => startFromParagraph(firstIndex)}
                         isTimerRunning={isTimerRunning}
                         isCurrentParagraph={isCurrentGroup}
-                        isCompletedParagraph={isCompletedGroup}
+                        isCompletedParagraph={isCompletedGroup || isInReviewMode}
                         elapsedTime={elapsedTime}
                         onGoToNext={() => {
                           // Skip to the paragraph after the last one in the group
@@ -707,6 +707,8 @@ export default function HomePage() {
                         vibrationEnabled={vibrationEnabled}
                         playNotificationSound={playNotificationSound}
                         triggerVibration={triggerVibration}
+                        onStartReview={startReviewMode}
+                        hasReviewQuestions={analysisResult.final_questions?.length > 0}
                       />
                     );
                   })}
