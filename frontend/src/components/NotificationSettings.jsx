@@ -1,4 +1,4 @@
-import { Volume2, VolumeX, Vibrate, Bell } from "lucide-react";
+import { Volume2, VolumeX, Vibrate, Bell, Timer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,8 @@ export function NotificationSettings({
   setAlertTimes,
   onTestSound,
   onTestVibration,
+  overtimeAlertEnabled,
+  setOvertimeAlertEnabled,
 }) {
   return (
     <Card className="border-zinc-100 shadow-sm" data-testid="notification-settings-card">
@@ -54,6 +56,23 @@ export function NotificationSettings({
               checked={vibrationEnabled}
               onCheckedChange={setVibrationEnabled}
               data-testid="vibration-toggle"
+            />
+          </div>
+
+          {/* Overtime Alert Toggle */}
+          <div className="flex items-center justify-between p-2 rounded-lg bg-orange-50 border border-orange-100">
+            <div className="flex items-center gap-2">
+              <Timer className={`w-4 h-4 ${overtimeAlertEnabled ? 'text-orange-600' : 'text-zinc-400'}`} />
+              <div>
+                <Label htmlFor="overtime" className="text-sm">Alerta exceso de tiempo</Label>
+                <p className="text-[10px] text-zinc-500">Avisa si excedes el tiempo del párrafo</p>
+              </div>
+            </div>
+            <Switch
+              id="overtime"
+              checked={overtimeAlertEnabled}
+              onCheckedChange={setOvertimeAlertEnabled}
+              data-testid="overtime-alert-toggle"
             />
           </div>
 
