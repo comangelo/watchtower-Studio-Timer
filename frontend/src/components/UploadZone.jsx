@@ -7,13 +7,21 @@ export function UploadZone({
   onDragOver, 
   onDragLeave, 
   onDrop,
-  fileInputRef 
+  fileInputRef,
+  readingSpeed = 180,
+  answerTime = 35
 }) {
   const handleClick = () => fileInputRef.current?.click();
   
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) onFileSelect(file);
+  };
+
+  const getSpeedLabel = (speed) => {
+    if (speed <= 150) return "Lento";
+    if (speed >= 210) return "Rápido";
+    return "Normal";
   };
 
   return (
@@ -75,11 +83,11 @@ export function UploadZone({
         <div className="flex flex-wrap items-center justify-center gap-4 mt-10">
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
             <Clock className="w-4 h-4 text-orange-500" />
-            <span className="text-sm text-slate-600 font-medium">180 palabras/min</span>
+            <span className="text-sm text-slate-600 font-medium">{readingSpeed} palabras/min ({getSpeedLabel(readingSpeed)})</span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
             <MessageCircleQuestion className="w-4 h-4 text-orange-500" />
-            <span className="text-sm text-slate-600 font-medium">35 seg/respuesta</span>
+            <span className="text-sm text-slate-600 font-medium">{answerTime} seg/respuesta</span>
           </div>
         </div>
       </div>
