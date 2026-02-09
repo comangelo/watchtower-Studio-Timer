@@ -244,9 +244,13 @@ export default function HomePage() {
     formData.append('file', file);
 
     try {
-      const response = await axios.post(`${API}/analyze-pdf`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const response = await axios.post(
+        `${API}/analyze-pdf?wpm=${readingSpeed}&answer_time_seconds=${answerTime}`, 
+        formData, 
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }
+      );
       
       setAnalysisResult(response.data);
       setElapsedTime(0);
