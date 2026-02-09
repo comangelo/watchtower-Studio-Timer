@@ -1152,11 +1152,11 @@ def analyze_pdf_with_font_info_configurable(
                 if not found_first_para_number:
                     found_first_para_number = True
                     if initial_para_lines:
-                        paragraphs_data[1] = {"text_lines": initial_para_lines.copy(), "questions": []}
+                        paragraphs_data[1] = {"text_lines": initial_para_lines.copy(), "questions": [], "grouped_with": []}
                 
                 if current_para_num and current_para_lines:
                     if current_para_num not in paragraphs_data:
-                        paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+                        paragraphs_data[current_para_num] = {"text_lines": [], "questions": [], "grouped_with": []}
                     paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
                 
                 current_para_num = int(text)
@@ -1170,11 +1170,11 @@ def analyze_pdf_with_font_info_configurable(
     
     if current_para_num and current_para_lines:
         if current_para_num not in paragraphs_data:
-            paragraphs_data[current_para_num] = {"text_lines": [], "questions": []}
+            paragraphs_data[current_para_num] = {"text_lines": [], "questions": [], "grouped_with": []}
         paragraphs_data[current_para_num]["text_lines"].extend(current_para_lines)
     
     if not found_first_para_number and initial_para_lines:
-        paragraphs_data[1] = {"text_lines": initial_para_lines, "questions": []}
+        paragraphs_data[1] = {"text_lines": initial_para_lines, "questions": [], "grouped_with": []}
     
     # Build the analysis result with configurable times
     analyzed_paragraphs = []
@@ -1188,6 +1188,7 @@ def analyze_pdf_with_font_info_configurable(
         para_data = paragraphs_data[para_num]
         para_text = ' '.join(para_data["text_lines"])
         questions = para_data["questions"]
+        grouped_with = para_data.get("grouped_with", [])
         
         word_count = count_words(para_text)
         reading_time = calculate_reading_time(word_count, wpm)
@@ -1206,7 +1207,8 @@ def analyze_pdf_with_font_info_configurable(
             reading_time_seconds=round(reading_time, 2),
             questions=questions,
             total_time_seconds=round(reading_time + question_time, 2),
-            cumulative_time_seconds=round(cumulative_time, 2)
+            cumulative_time_seconds=round(cumulative_time, 2),
+            grouped_with=grouped_with
         ))
     
     final_questions_start_time = cumulative_time
