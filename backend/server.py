@@ -457,9 +457,9 @@ def count_words(text: str) -> int:
     return len(words)
 
 
-def calculate_reading_time(word_count: int) -> float:
-    """Calculate reading time in seconds based on 180 words per minute"""
-    return (word_count / WORDS_PER_MINUTE) * 60
+def calculate_reading_time(word_count: int, wpm: int = WORDS_PER_MINUTE) -> float:
+    """Calculate reading time in seconds based on configurable words per minute"""
+    return (word_count / wpm) * 60
 
 
 def detect_questions(text: str, paragraph_number: int, is_final_question: bool = False) -> List[QuestionInfo]:
@@ -1174,27 +1174,44 @@ async def root():
 
 
 @api_router.post("/analyze-pdf", response_model=PDFAnalysisResult)
-async def analyze_pdf(file: UploadFile = File(...)):
-    """Upload and analyze a PDF file for reading time"""
+async def analyze_pdf(
+    file: UploadFile = File(...),
+    wpm: int = WORDS_PER_MINUTE,
+    answer_time_seconds: int = QUESTION_ANSWER_TIME
+):
+    """Upload and analyze a PDF file for reading time
+    
+    Args:
+        file: PDF file to analyze
+        wpm: Words per minute for reading speed (default: 180)
+        answer_time_seconds: Seconds allocated for each question answer (default: 35)
+    """
     if not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
+    
+    # Validate parameters
+    if wpm < 100 or wpm > 300:
+        raise HTTPException(status_code=400, detail="WPM debe estar entre 100 y 300")
+    if answer_time_seconds < 10 or answer_time_seconds > 120:
+        raise HTTPException(status_code=400, detail="El tiempo de respuesta debe estar entre 10 y 120 segundos")
     
     try:
         pdf_bytes = await file.read()
         
         # Try to analyze with font size information first
         try:
-            result = analyze_pdf_with_font_info(pdf_bytes, file.filename)
+            result = analyze_pdf_with_font_info_configurable(pdf_bytes, file.filename, wpm, answer_time_seconds)
         except Exception as font_error:
             logging.warning(f"Font analysis failed, falling back to text-only: {font_error}")
             text = extract_text_from_pdf(pdf_bytes)
             if not text.strip():
                 raise HTTPException(status_code=400, detail="No se pudo extraer texto del PDF")
-            result = analyze_pdf_content(text, file.filename)
+            result = analyze_pdf_content_configurable(text, file.filename, wpm, answer_time_seconds)
         
         # Save to database
         doc = result.model_dump()
         doc['timestamp'] = doc['timestamp'].isoformat()
+        doc['settings'] = {'wpm': wpm, 'answer_time_seconds': answer_time_seconds}
         await db.pdf_analyses.insert_one(doc)
         
         return result
