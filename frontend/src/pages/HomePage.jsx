@@ -309,6 +309,7 @@ export default function HomePage() {
       if (!startTime) {
         setStartTime(now);
         setEndTime(addSecondsToDate(now, 3600));
+        setParagraphStartTime(Date.now()); // Start timing first paragraph
       }
     }
     setIsTimerRunning(!isTimerRunning);
@@ -324,6 +325,8 @@ export default function HomePage() {
     setCurrentManualParagraph(0);
     setParagraphStartTimes({});
     setLowTimeAlertShown(false);
+    setParagraphStats({});
+    setParagraphStartTime(null);
   };
 
   const resetAll = () => {
