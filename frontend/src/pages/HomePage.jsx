@@ -80,6 +80,10 @@ export default function HomePage() {
   const [alertTimes, setAlertTimes] = useLocalStorage('pdfTimer_alertTimes', { firstAlert: 5, secondAlert: 1 });
   const [presentationTheme, setPresentationTheme] = useLocalStorageString('pdfTimer_presentationTheme', 'dark');
   
+  // Configurable reading settings
+  const [readingSpeed, setReadingSpeed] = useLocalStorage('pdfTimer_readingSpeed', 180);
+  const [answerTime, setAnswerTime] = useLocalStorage('pdfTimer_answerTime', 35);
+  
   // Presentation mode
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   
