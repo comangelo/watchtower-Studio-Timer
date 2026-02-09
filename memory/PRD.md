@@ -50,6 +50,7 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ **Cronómetro individual por párrafo que se reinicia al cambiar de párrafo**
 - ✅ **Cronómetro muestra tiempo transcurrido vs estimado (ej: 0:45 / 2:30)**
 - ✅ **Cronómetro cambia a ROJO cuando excede el tiempo estimado**
+- ✅ **Alerta sonora/vibración al exceder tiempo del párrafo (configurable on/off)**
 - ✅ Sección separada para "Preguntas de Repaso" con tiempos ajustados
 - ✅ Ajuste dinámico de tiempos: lectura FIJA, preguntas VARIABLES
 - ✅ Modo presentación pantalla completa con temas de color
