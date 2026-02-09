@@ -197,7 +197,11 @@ export function ParagraphCard({
           {/* Header Row */}
           <div className="flex items-center justify-between mb-3">
             <span className={`text-sm font-bold ${isCompletedParagraph ? 'text-slate-400' : isCurrentParagraph ? 'text-green-700' : 'text-slate-700'}`}>
-              Párrafo {paragraph.number}
+              {isGrouped ? (
+                <>Párrafos {allParagraphs.map(p => p.number).join(', ')}</>
+              ) : (
+                <>Párrafo {paragraph.number}</>
+              )}
             </span>
             <Badge 
               className={`font-mono text-sm px-3 py-1 ${
@@ -209,7 +213,10 @@ export function ParagraphCard({
               }`}
               data-testid={`paragraph-time-${paragraph.number}`}
             >
-              {paragraphTimes.adjustedDuration ? formatTimeText(paragraphTimes.adjustedDuration) : formatTimeText(paragraph.total_time_seconds)}
+              {isGrouped 
+                ? formatTimeText(estimatedTime)
+                : (paragraphTimes.adjustedDuration ? formatTimeText(paragraphTimes.adjustedDuration) : formatTimeText(paragraph.total_time_seconds))
+              }
             </Badge>
           </div>
 
