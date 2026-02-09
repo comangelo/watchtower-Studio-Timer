@@ -145,6 +145,12 @@ export function ParagraphCard({
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
               </span>
               LEYENDO AHORA
+              {/* Overtime Badge */}
+              {isOverTime && (
+                <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full animate-pulse">
+                  +{formatParagraphTime(paragraphElapsed - Math.round(estimatedTime))} excedido
+                </span>
+              )}
             </div>
             {/* Paragraph Stopwatch */}
             {isTimerRunning && (
