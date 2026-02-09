@@ -123,6 +123,6 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - `/app/backend/server.py` - API y lógica de análisis PDF (con funciones configurables)
 - `/app/frontend/src/pages/HomePage.jsx` - Componente principal
 - `/app/frontend/src/components/SettingsPanel.jsx` - **Configuración de tiempos**
-- `/app/frontend/src/components/ParagraphCard.jsx` - Tarjetas de párrafo
+- `/app/frontend/src/components/ParagraphCard.jsx` - Tarjetas de párrafo **con cronómetro individual**
 - `/app/frontend/src/components/FinalQuestionsSection.jsx` - Preguntas de repaso
-- `/app/test_reports/iteration_6.json` - Último reporte de tests (100% passed)
+- `/app/test_reports/iteration_7.json` - Último reporte de tests (100% passed)
