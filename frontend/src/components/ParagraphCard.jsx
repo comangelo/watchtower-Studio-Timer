@@ -11,6 +11,7 @@ import { formatTimeText, formatClockTime, formatTimeCompact } from "../utils/tim
 
 export function ParagraphCard({ 
   paragraph, 
+  groupedParagraphs = [], // Array of paragraphs that are grouped together
   index, 
   startTime, 
   paragraphTimes, 
@@ -33,11 +34,22 @@ export function ParagraphCard({
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
   const cardRef = useRef(null);
   const paragraphTimerRef = useRef(null);
-  const hasQuestions = paragraph.questions.length > 0;
-  const hasFinalQuestions = paragraph.questions.some(q => q.is_final_question);
+  
+  // If grouped, use all paragraphs; otherwise just this one
+  const allParagraphs = groupedParagraphs.length > 0 ? groupedParagraphs : [paragraph];
+  const isGrouped = groupedParagraphs.length > 1;
+  
+  // Calculate totals for grouped paragraphs
+  const totalWordCount = allParagraphs.reduce((sum, p) => sum + p.word_count, 0);
+  const totalReadingTime = allParagraphs.reduce((sum, p) => sum + p.reading_time_seconds, 0);
+  const allQuestions = allParagraphs.flatMap(p => p.questions);
+  const hasQuestions = allQuestions.length > 0;
+  const hasFinalQuestions = allQuestions.some(q => q.is_final_question);
 
-  // Get estimated time for this paragraph
-  const estimatedTime = paragraphTimes.adjustedDuration || paragraph.total_time_seconds;
+  // Get estimated time for this paragraph group
+  const estimatedTime = isGrouped 
+    ? allParagraphs.reduce((sum, p) => sum + (p.total_time_seconds || 0), 0)
+    : (paragraphTimes.adjustedDuration || paragraph.total_time_seconds);
   const isOverTime = paragraphElapsed > estimatedTime;
 
   // Auto-scroll to current paragraph
