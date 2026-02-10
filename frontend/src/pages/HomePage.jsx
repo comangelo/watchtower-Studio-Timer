@@ -487,64 +487,66 @@ export default function HomePage() {
     <div className="min-h-screen bg-stone-50">
       {/* Header */}
       <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img 
-              src="/logo-icon.png" 
-              alt="Atalaya Timer" 
-              className="w-11 h-11 rounded-xl shadow-lg"
-            />
-            <div>
-              <h1 className="font-heading font-bold text-xl text-orange-500" data-testid="app-title">
-                ATALAYA DE ESTUDIO
-              </h1>
-              <p className="text-xs text-slate-700 font-semibold tracking-wide">Calculadora de Tiempo</p>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <img 
+                src="/logo-icon.png" 
+                alt="Atalaya Timer" 
+                className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl shadow-lg"
+              />
+              <div>
+                <h1 className="font-heading font-bold text-base sm:text-xl text-orange-500" data-testid="app-title">
+                  ATALAYA DE ESTUDIO
+                </h1>
+                <p className="text-xs text-slate-700 font-semibold tracking-wide hidden sm:block">Calculadora de Tiempo</p>
+              </div>
             </div>
+            {analysisResult && (
+              <div className="flex items-center gap-1 sm:gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={enterPresentationMode} 
+                  className="rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 font-medium transition-all text-xs sm:text-sm" 
+                  data-testid="presentation-mode-btn"
+                >
+                  <Maximize className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Presentación</span>
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className="rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 border-slate-300 text-slate-700 hover:border-slate-400 font-medium text-xs sm:text-sm" 
+                      data-testid="export-btn"
+                    >
+                      <Download className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Exportar</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="rounded-xl">
+                    <DropdownMenuItem onClick={exportToImage} data-testid="export-image-btn" className="cursor-pointer">
+                      <FileImage className="w-4 h-4 mr-2" />
+                      Exportar como Imagen (PNG)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-btn" className="cursor-pointer">
+                      <File className="w-4 h-4 mr-2" />
+                      Exportar como PDF
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <Button 
+                  variant="ghost" 
+                  onClick={resetAll} 
+                  className="rounded-full px-2 sm:px-4 py-1.5 sm:py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 font-medium text-xs sm:text-sm" 
+                  data-testid="new-analysis-btn"
+                >
+                  <RotateCcw className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Nuevo</span>
+                </Button>
+              </div>
+            )}
           </div>
-          {analysisResult && (
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                onClick={enterPresentationMode} 
-                className="rounded-full px-5 py-2 border-2 border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 font-medium transition-all" 
-                data-testid="presentation-mode-btn"
-              >
-                <Maximize className="w-4 h-4 mr-2" />
-                Presentación
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    className="rounded-full px-5 py-2 border-2 border-slate-300 text-slate-700 hover:border-slate-400 font-medium" 
-                    data-testid="export-btn"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Exportar
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="rounded-xl">
-                  <DropdownMenuItem onClick={exportToImage} data-testid="export-image-btn" className="cursor-pointer">
-                    <FileImage className="w-4 h-4 mr-2" />
-                    Exportar como Imagen (PNG)
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-btn" className="cursor-pointer">
-                    <File className="w-4 h-4 mr-2" />
-                    Exportar como PDF
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button 
-                variant="ghost" 
-                onClick={resetAll} 
-                className="rounded-full px-4 py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 font-medium" 
-                data-testid="new-analysis-btn"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Nuevo
-              </Button>
-            </div>
-          )}
         </div>
       </header>
 
