@@ -750,6 +750,7 @@ export default function HomePage() {
                   progressPercentage={progressPercentage}
                   onToggle={toggleTimer}
                   onReset={resetTimer}
+                  remainingTime={remainingTime}
                 />
 
                 <CountdownTimer
