@@ -296,18 +296,33 @@ export default function PresentationMode({
         variant="ghost"
         size="sm"
         onClick={onExit}
-        className={`sm:hidden absolute top-2 right-2 z-10 ${t.textMuted} hover:${t.text} px-2 h-8 rounded-full ${t.card} border ${t.border}`}
+        className={`sm:hidden absolute top-1 right-1 z-10 ${t.textMuted} hover:${t.text} px-1.5 h-6 rounded-full ${t.card} border ${t.border}`}
         data-testid="exit-presentation-btn-mobile"
       >
-        <X className="w-4 h-4 mr-1" />
-        <span className="text-xs">Salir</span>
+        <X className="w-3 h-3 mr-0.5" />
+        <span className="text-[10px]">Salir</span>
       </Button>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-1 sm:py-4 md:py-8 overflow-auto min-h-0">
-        {/* Time Schedule - Very Visible */}
+      {/* Main Content - Landscape optimized */}
+      <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-6 overflow-auto min-h-0">
+        
+        {/* Combined Time Display for Mobile Landscape - Horizontal layout */}
+        <div className="sm:hidden w-full flex items-center justify-center gap-2 mb-1">
+          {/* Start/End Times - Compact inline */}
+          {startTime && (
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-cyan-400 font-semibold">{formatClockTime(startTime)}</span>
+              <span className={t.textDimmed}>→</span>
+              <span className={`font-semibold ${isOvertime ? 'text-rose-500' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>
+                {formatClockTime(endTime)}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Time Schedule - Hidden on mobile, visible on larger screens */}
         {startTime && (
-          <div className={`${t.card} rounded-lg sm:rounded-xl md:rounded-2xl px-3 sm:px-6 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
+          <div className={`hidden sm:block ${t.card} rounded-lg sm:rounded-xl md:rounded-2xl px-3 sm:px-6 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
             <div className="flex items-center justify-center gap-3 sm:gap-6 md:gap-12">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-0.5 sm:mb-1 md:mb-2">
@@ -338,6 +353,8 @@ export default function PresentationMode({
                 <p 
                   className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                  data-testid="presentation-end-time"
+                >
                   data-testid="presentation-end-time"
                 >
                   {formatClockTime(endTime)}
