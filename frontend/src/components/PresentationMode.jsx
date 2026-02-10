@@ -355,8 +355,6 @@ export default function PresentationMode({
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-end-time"
                 >
-                  data-testid="presentation-end-time"
-                >
                   {formatClockTime(endTime)}
                 </p>
               </div>
