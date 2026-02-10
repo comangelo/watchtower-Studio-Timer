@@ -489,9 +489,11 @@ export default function HomePage() {
       <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-slate-700 rounded-xl flex items-center justify-center shadow-lg">
-              <Timer className="w-7 h-7 text-orange-500" strokeWidth={2.5} />
-            </div>
+            <img 
+              src="/logo-icon.png" 
+              alt="Atalaya Timer" 
+              className="w-11 h-11 rounded-xl shadow-lg"
+            />
             <div>
               <h1 className="font-heading font-bold text-xl text-orange-500" data-testid="app-title">
                 ATALAYA DE ESTUDIO
