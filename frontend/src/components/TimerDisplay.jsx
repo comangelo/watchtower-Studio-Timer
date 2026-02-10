@@ -22,15 +22,15 @@ export function TimerDisplay({
       {/* Start/End Time Display - Very Visible */}
       {startTime && (
         <Card className="border-2 border-orange-200 shadow-md rounded-2xl overflow-hidden bg-gradient-to-r from-orange-50 to-amber-50" data-testid="time-schedule-card">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-center gap-10">
+          <CardContent className="p-5">
+            <div className="flex items-center justify-center gap-8">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="w-4 h-4 rounded-full bg-cyan-500"></div>
-                  <span className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Inicio</span>
+                  <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+                  <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Inicio</span>
                 </div>
                 <span 
-                  className="text-5xl md:text-6xl font-bold text-cyan-600" 
+                  className="text-4xl md:text-5xl font-bold text-cyan-600" 
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="start-time-display"
                 >
@@ -39,19 +39,19 @@ export function TimerDisplay({
               </div>
               
               <div className="flex flex-col items-center">
-                <div className="w-16 h-0.5 bg-slate-300 mb-2"></div>
-                <Clock className="w-8 h-8 text-orange-500" />
-                <span className="text-sm text-slate-500 mt-1 font-medium">60 min</span>
-                <div className="w-16 h-0.5 bg-slate-300 mt-2"></div>
+                <div className="w-12 h-0.5 bg-slate-300 mb-1"></div>
+                <Clock className="w-6 h-6 text-orange-500" />
+                <span className="text-xs text-slate-500 mt-1">60 min</span>
+                <div className="w-12 h-0.5 bg-slate-300 mt-1"></div>
               </div>
               
               <div className="text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className={`w-4 h-4 rounded-full ${isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-500'}`}></div>
-                  <span className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Fin</span>
+                  <div className={`w-3 h-3 rounded-full ${isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-500'}`}></div>
+                  <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Fin</span>
                 </div>
                 <span 
-                  className={`text-5xl md:text-6xl font-bold ${isOvertime ? 'text-rose-600 animate-pulse' : isLowTime ? 'text-rose-600' : 'text-amber-600'}`}
+                  className={`text-4xl md:text-5xl font-bold ${isOvertime ? 'text-rose-600 animate-pulse' : isLowTime ? 'text-rose-600' : 'text-amber-600'}`}
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="end-time-display"
                 >
