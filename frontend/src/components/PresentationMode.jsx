@@ -233,29 +233,29 @@ export default function PresentationMode({
       data-testid="presentation-mode"
     >
       {/* Top Bar */}
-      <div className={`flex items-center justify-between px-8 py-4 border-b ${t.border}`}>
-        <div className="flex items-center gap-4">
-          <div className={`w-10 h-10 ${t.accentBg} rounded-xl flex items-center justify-center`}>
-            <Timer className="w-5 h-5 text-white" />
+      <div className={`flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 border-b ${t.border}`}>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className={`w-8 h-8 sm:w-10 sm:h-10 ${t.accentBg} rounded-xl flex items-center justify-center`}>
+            <Timer className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-heading font-bold text-lg">{analysisResult.filename}</h1>
-            <p className={`text-sm ${t.textMuted}`}>ATALAYA DE ESTUDIO</p>
+            <h1 className="font-heading font-bold text-sm sm:text-lg truncate max-w-[150px] sm:max-w-none">{analysisResult.filename}</h1>
+            <p className={`text-xs sm:text-sm ${t.textMuted} hidden sm:block`}>ATALAYA DE ESTUDIO</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           {/* Theme Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`${t.textMuted} hover:${t.text}`}
+                className={`${t.textMuted} hover:${t.text} px-2 sm:px-3`}
                 data-testid="theme-selector-btn"
               >
-                <Palette className="w-5 h-5 mr-2" />
-                Tema
+                <Palette className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+                <span className="hidden sm:inline">Tema</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -282,28 +282,28 @@ export default function PresentationMode({
             variant="ghost"
             size="sm"
             onClick={onExit}
-            className={`${t.textMuted} hover:${t.text}`}
+            className={`${t.textMuted} hover:${t.text} px-2 sm:px-3`}
             data-testid="exit-presentation-btn"
           >
-            <X className="w-5 h-5 mr-2" />
-            Salir (ESC)
+            <X className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
+            <span className="hidden sm:inline">Salir (ESC)</span>
           </Button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-4 sm:py-8 overflow-auto">
         {/* Time Schedule - Very Visible */}
         {startTime && (
-          <div className={`${t.card} rounded-2xl px-12 py-6 mb-10 border ${t.border}`}>
-            <div className="flex items-center gap-12">
+          <div className={`${t.card} rounded-xl sm:rounded-2xl px-4 sm:px-8 md:px-12 py-4 sm:py-6 mb-4 sm:mb-8 border ${t.border} w-full max-w-xl`}>
+            <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-12">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-                  <span className={`text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
+                <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-cyan-500"></div>
+                  <span className={`text-xs sm:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
                 </div>
                 <p 
-                  className="text-3xl sm:text-4xl md:text-5xl font-semibold text-cyan-400"
+                  className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-cyan-400"
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-start-time"
                 >
@@ -312,19 +312,19 @@ export default function PresentationMode({
               </div>
               
               <div className="flex flex-col items-center">
-                <div className={`w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mb-2`}></div>
-                <Timer className={`w-6 h-6 ${t.textDimmed}`} />
+                <div className={`w-6 sm:w-10 md:w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mb-1 sm:mb-2`}></div>
+                <Timer className={`w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 ${t.textDimmed}`} />
                 <span className={`text-xs ${t.textDimmed} mt-1`}>60 min</span>
-                <div className={`w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mt-2`}></div>
+                <div className={`w-6 sm:w-10 md:w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mt-1 sm:mt-2`}></div>
               </div>
               
               <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className={`w-3 h-3 rounded-full ${isOvertime || isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-400'}`}></div>
-                  <span className={`text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
+                <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                  <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${isOvertime || isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-400'}`}></div>
+                  <span className={`text-xs sm:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
                 </div>
                 <p 
-                  className={`text-3xl sm:text-4xl md:text-5xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
+                  className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-end-time"
                 >
@@ -336,12 +336,12 @@ export default function PresentationMode({
         )}
 
         {/* Main Timers - Clean and Minimal */}
-        <div className="flex items-center gap-20 mb-12">
+        <div className="flex items-center justify-center gap-4 sm:gap-10 md:gap-16 lg:gap-20 mb-6 sm:mb-10 md:mb-12 w-full">
           {/* Elapsed Time */}
-          <div className="text-center">
-            <p className={`text-base font-medium ${t.textDimmed} mb-3`}>Transcurrido</p>
+          <div className="text-center flex-1 max-w-xs">
+            <p className={`text-xs sm:text-sm md:text-base font-medium ${t.textDimmed} mb-1 sm:mb-2 md:mb-3`}>Transcurrido</p>
             <div 
-              className={`text-[120px] md:text-[150px] font-light tracking-tight leading-none ${isTimerRunning ? t.accent : t.text}`}
+              className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[100px] font-light tracking-tight leading-none ${isTimerRunning ? t.accent : t.text}`}
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               data-testid="presentation-elapsed-time"
             >
@@ -350,13 +350,13 @@ export default function PresentationMode({
           </div>
 
           {/* Divider */}
-          <div className={`w-px h-28 ${t.border.replace('border-', 'bg-')} opacity-30`} />
+          <div className={`w-px h-12 sm:h-16 md:h-20 lg:h-28 ${t.border.replace('border-', 'bg-')} opacity-30 hidden sm:block`} />
 
           {/* Remaining Time - Green by default, Red when < 5 min */}
-          <div className="text-center">
-            <p className={`text-base font-medium ${t.textDimmed} mb-3`}>Restante</p>
+          <div className="text-center flex-1 max-w-xs">
+            <p className={`text-xs sm:text-sm md:text-base font-medium ${t.textDimmed} mb-1 sm:mb-2 md:mb-3`}>Restante</p>
             <div 
-              className={`text-[120px] md:text-[150px] font-light tracking-tight leading-none ${
+              className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[100px] font-light tracking-tight leading-none ${
                 isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.success
               }`}
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
