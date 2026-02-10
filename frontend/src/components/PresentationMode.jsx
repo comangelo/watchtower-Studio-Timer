@@ -232,10 +232,10 @@ export default function PresentationMode({
       className={`fixed inset-0 z-[9999] ${t.bg} ${t.text} flex flex-col`}
       data-testid="presentation-mode"
     >
-      {/* Top Bar - Compact in landscape */}
-      <div className={`flex items-center justify-between px-2 sm:px-4 md:px-8 py-1 landscape:py-1 sm:py-2 md:py-4 border-b ${t.border} shrink-0`}>
+      {/* Top Bar - Hidden in landscape mobile, minimal otherwise */}
+      <div className={`hidden landscape:hidden sm:flex items-center justify-between px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-3 border-b ${t.border} shrink-0`}>
         <div className="flex items-center gap-2 sm:gap-4">
-          <div className={`w-6 h-6 landscape:w-6 landscape:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 ${t.accentBg} rounded-lg sm:rounded-xl flex items-center justify-center`}>
+          <div className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 ${t.accentBg} rounded-lg sm:rounded-xl flex items-center justify-center`}>
             <Timer className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
@@ -291,8 +291,20 @@ export default function PresentationMode({
         </div>
       </div>
 
+      {/* Floating Exit Button - Only visible on mobile (portrait and landscape) */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onExit}
+        className={`sm:hidden absolute top-2 right-2 z-10 ${t.textMuted} hover:${t.text} px-2 h-8 rounded-full ${t.card} border ${t.border}`}
+        data-testid="exit-presentation-btn-mobile"
+      >
+        <X className="w-4 h-4 mr-1" />
+        <span className="text-xs">Salir</span>
+      </Button>
+
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-2 sm:py-4 md:py-8 overflow-auto min-h-0">
+      <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-1 sm:py-4 md:py-8 overflow-auto min-h-0">
         {/* Time Schedule - Very Visible */}
         {startTime && (
           <div className={`${t.card} rounded-lg sm:rounded-xl md:rounded-2xl px-3 sm:px-6 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
