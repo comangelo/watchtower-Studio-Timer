@@ -65,6 +65,9 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ Alerta cuando tiempo por pregunta < 20 segundos
 - ✅ Persistencia de preferencias en localStorage
 - ✅ PWA instalable (manifest.json, service worker)
+- ✅ **Tamaño responsivo de horas inicio/fin (10-Feb-2025)**
+- ✅ **Nuevo ícono de app: fondo naranja con reloj blanco minimalista (10-Feb-2025)**
+- ✅ **Ícono actualizado en encabezado de la aplicación (10-Feb-2025)**
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
