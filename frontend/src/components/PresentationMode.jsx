@@ -368,8 +368,8 @@ export default function PresentationMode({
         </div>
 
         {/* Progress Bar - Green, Red when < 5 min */}
-        <div className="w-full max-w-3xl mb-10">
-          <div className={`h-4 rounded-full ${t.progressBg} overflow-hidden`}>
+        <div className="w-full max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl mb-4 sm:mb-6 md:mb-10 px-2">
+          <div className={`h-2 sm:h-3 md:h-4 rounded-full ${t.progressBg} overflow-hidden`}>
             <div 
               className={`h-full rounded-full transition-all duration-500 ${
                 isLowTime ? 'bg-red-500' : 'bg-green-500'
@@ -377,31 +377,31 @@ export default function PresentationMode({
               style={{ width: `${Math.min(100, progressPercentage)}%` }}
             />
           </div>
-          <p className={`text-center text-2xl font-bold mt-4 ${isLowTime ? t.danger : t.success}`}>
+          <p className={`text-center text-lg sm:text-xl md:text-2xl font-bold mt-2 sm:mt-3 md:mt-4 ${isLowTime ? t.danger : t.success}`}>
             {progressPercentage.toFixed(0)}%
           </p>
         </div>
 
         {/* Current Paragraph Info - Simplified with remaining counts */}
         {currentParagraph && (
-          <div className={`w-full max-w-3xl ${t.card} rounded-2xl p-8 mb-10`}>
-            <div className="flex items-center justify-between">
+          <div className={`w-full max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl ${t.card} rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-4 sm:mb-6 md:mb-10 mx-2`}>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               {/* Current Paragraph */}
-              <div className="flex items-center gap-4">
-                <span className={`text-4xl font-bold ${t.accent}`}>Párrafo {currentParagraph.number}</span>
-                <span className={`text-xl ${t.textMuted}`}>de {analysisResult.total_paragraphs}</span>
+              <div className="flex items-center gap-2 sm:gap-4">
+                <span className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold ${t.accent}`}>Párrafo {currentParagraph.number}</span>
+                <span className={`text-sm sm:text-base md:text-lg lg:text-xl ${t.textMuted}`}>de {analysisResult.total_paragraphs}</span>
               </div>
               
               {/* Remaining Stats */}
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-4 sm:gap-6">
                 <div className="text-center">
-                  <p className={`text-sm ${t.textDimmed} mb-1`}>Párrafos restantes</p>
-                  <p className={`text-3xl font-bold ${t.warning}`}>{remainingStats.paragraphs}</p>
+                  <p className={`text-xs sm:text-sm ${t.textDimmed} mb-1`}>Párrafos</p>
+                  <p className={`text-xl sm:text-2xl md:text-3xl font-bold ${t.warning}`}>{remainingStats.paragraphs}</p>
                 </div>
-                <div className={`w-px h-12 ${t.border.replace('border-', 'bg-')} opacity-30`} />
+                <div className={`w-px h-8 sm:h-10 md:h-12 ${t.border.replace('border-', 'bg-')} opacity-30`} />
                 <div className="text-center">
-                  <p className={`text-sm ${t.textDimmed} mb-1`}>Preguntas de repaso</p>
-                  <p className={`text-3xl font-bold ${t.danger}`}>{remainingStats.reviewQuestions}</p>
+                  <p className={`text-xs sm:text-sm ${t.textDimmed} mb-1`}>Repaso</p>
+                  <p className={`text-xl sm:text-2xl md:text-3xl font-bold ${t.danger}`}>{remainingStats.reviewQuestions}</p>
                 </div>
               </div>
             </div>
@@ -409,23 +409,23 @@ export default function PresentationMode({
         )}
 
         {/* Controls - Cleaner */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3 sm:gap-5">
           <Button
             onClick={onToggleTimer}
             size="lg"
             className={`
-              rounded-full w-18 h-18 p-0 text-white shadow-lg
+              rounded-full p-0 text-white shadow-lg
               ${isTimerRunning 
                 ? t.accentBg + ' hover:opacity-90' 
                 : 'bg-green-600 hover:bg-green-700'
               }
             `}
-            style={{ width: '72px', height: '72px' }}
+            style={{ width: '56px', height: '56px' }}
             data-testid="presentation-toggle-btn"
           >
             {isTimerRunning 
-              ? <Pause className="w-7 h-7" /> 
-              : <Play className="w-7 h-7 ml-0.5" />
+              ? <Pause className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" /> 
+              : <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 ml-0.5" />
             }
           </Button>
           <Button
@@ -433,27 +433,25 @@ export default function PresentationMode({
             variant="outline"
             size="lg"
             className={`rounded-full p-0 ${t.buttonOutline}`}
-            style={{ width: '52px', height: '52px' }}
+            style={{ width: '44px', height: '44px' }}
             data-testid="presentation-reset-btn"
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
 
-        <p className={`text-sm ${t.textDimmed} mt-8`}>
+        <p className={`text-xs sm:text-sm ${t.textDimmed} mt-4 sm:mt-6 md:mt-8 hidden sm:block`}>
           <kbd className={`px-2 py-1 ${t.kbd} rounded text-xs`}>Espacio</kbd> iniciar/pausar · <kbd className={`px-2 py-1 ${t.kbd} rounded text-xs`}>ESC</kbd> salir
         </p>
       </div>
 
       {/* Bottom Stats */}
-      <div className={`flex items-center justify-center gap-8 px-8 py-4 border-t ${t.border} text-sm ${t.textDimmed}`}>
+      <div className={`flex items-center justify-center gap-2 sm:gap-4 md:gap-8 px-4 sm:px-8 py-2 sm:py-3 md:py-4 border-t ${t.border} text-xs sm:text-sm ${t.textDimmed} flex-wrap`}>
         <span>{analysisResult.total_paragraphs} párrafos</span>
-        <span>·</span>
+        <span className="hidden sm:inline">·</span>
         <span>{analysisResult.total_words} palabras</span>
-        <span>·</span>
+        <span className="hidden sm:inline">·</span>
         <span>{analysisResult.total_questions} preguntas</span>
-        <span>·</span>
-        <span>180 PPM</span>
       </div>
     </div>
   );
