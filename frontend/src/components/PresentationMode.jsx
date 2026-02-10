@@ -232,30 +232,30 @@ export default function PresentationMode({
       className={`fixed inset-0 z-[9999] ${t.bg} ${t.text} flex flex-col`}
       data-testid="presentation-mode"
     >
-      {/* Top Bar */}
-      <div className={`flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 border-b ${t.border}`}>
+      {/* Top Bar - Compact in landscape */}
+      <div className={`flex items-center justify-between px-2 sm:px-4 md:px-8 py-1 landscape:py-1 sm:py-2 md:py-4 border-b ${t.border} shrink-0`}>
         <div className="flex items-center gap-2 sm:gap-4">
-          <div className={`w-8 h-8 sm:w-10 sm:h-10 ${t.accentBg} rounded-xl flex items-center justify-center`}>
-            <Timer className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+          <div className={`w-6 h-6 landscape:w-6 landscape:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 ${t.accentBg} rounded-lg sm:rounded-xl flex items-center justify-center`}>
+            <Timer className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-heading font-bold text-sm sm:text-lg truncate max-w-[150px] sm:max-w-none">{analysisResult.filename}</h1>
-            <p className={`text-xs sm:text-sm ${t.textMuted} hidden sm:block`}>ATALAYA DE ESTUDIO</p>
+            <h1 className="font-heading font-bold text-xs sm:text-sm md:text-lg truncate max-w-[100px] sm:max-w-[150px] md:max-w-none">{analysisResult.filename}</h1>
+            <p className={`text-xs ${t.textMuted} hidden md:block`}>ATALAYA DE ESTUDIO</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1">
           {/* Theme Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`${t.textMuted} hover:${t.text} px-2 sm:px-3`}
+                className={`${t.textMuted} hover:${t.text} px-1.5 sm:px-2 md:px-3 h-7 sm:h-8 md:h-9`}
                 data-testid="theme-selector-btn"
               >
-                <Palette className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
-                <span className="hidden sm:inline">Tema</span>
+                <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 md:mr-2" />
+                <span className="hidden md:inline">Tema</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -282,21 +282,21 @@ export default function PresentationMode({
             variant="ghost"
             size="sm"
             onClick={onExit}
-            className={`${t.textMuted} hover:${t.text} px-2 sm:px-3`}
+            className={`${t.textMuted} hover:${t.text} px-1.5 sm:px-2 md:px-3 h-7 sm:h-8 md:h-9`}
             data-testid="exit-presentation-btn"
           >
-            <X className="w-4 h-4 sm:w-5 sm:h-5 sm:mr-2" />
-            <span className="hidden sm:inline">Salir (ESC)</span>
+            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 md:mr-2" />
+            <span className="hidden md:inline">Salir (ESC)</span>
           </Button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-4 sm:py-8 overflow-auto">
+      <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-2 sm:py-4 md:py-8 overflow-auto min-h-0">
         {/* Time Schedule - Very Visible */}
         {startTime && (
-          <div className={`${t.card} rounded-xl sm:rounded-2xl px-4 sm:px-8 md:px-12 py-4 sm:py-6 mb-4 sm:mb-8 border ${t.border} w-full max-w-xl`}>
-            <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-12">
+          <div className={`${t.card} rounded-lg sm:rounded-xl md:rounded-2xl px-3 sm:px-6 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
+            <div className="flex items-center justify-center gap-3 sm:gap-6 md:gap-12">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
                   <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-cyan-500"></div>
