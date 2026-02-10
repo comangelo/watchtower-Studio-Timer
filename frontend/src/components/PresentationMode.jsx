@@ -303,7 +303,7 @@ export default function PresentationMode({
                   <span className={`text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
                 </div>
                 <p 
-                  className="text-5xl md:text-6xl font-semibold text-cyan-400"
+                  className="text-3xl sm:text-4xl md:text-5xl font-semibold text-cyan-400"
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-start-time"
                 >
@@ -324,7 +324,7 @@ export default function PresentationMode({
                   <span className={`text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
                 </div>
                 <p 
-                  className={`text-5xl md:text-6xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
+                  className={`text-3xl sm:text-4xl md:text-5xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-end-time"
                 >

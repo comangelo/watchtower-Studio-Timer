@@ -30,7 +30,7 @@ export function TimerDisplay({
                   <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Inicio</span>
                 </div>
                 <span 
-                  className="text-4xl md:text-5xl font-bold text-cyan-600" 
+                  className="text-2xl sm:text-3xl md:text-4xl font-bold text-cyan-600" 
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="start-time-display"
                 >
@@ -51,7 +51,7 @@ export function TimerDisplay({
                   <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Fin</span>
                 </div>
                 <span 
-                  className={`text-4xl md:text-5xl font-bold ${isOvertime ? 'text-rose-600 animate-pulse' : isLowTime ? 'text-rose-600' : 'text-amber-600'}`}
+                  className={`text-2xl sm:text-3xl md:text-4xl font-bold ${isOvertime ? 'text-rose-600 animate-pulse' : isLowTime ? 'text-rose-600' : 'text-amber-600'}`}
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="end-time-display"
                 >
