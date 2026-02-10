@@ -298,12 +298,12 @@ export default function PresentationMode({
           <div className={`${t.card} rounded-lg sm:rounded-xl md:rounded-2xl px-3 sm:px-6 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
             <div className="flex items-center justify-center gap-3 sm:gap-6 md:gap-12">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
-                  <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-cyan-500"></div>
-                  <span className={`text-xs sm:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
+                <div className="flex items-center justify-center gap-1 mb-0.5 sm:mb-1 md:mb-2">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full bg-cyan-500"></div>
+                  <span className={`text-[10px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
                 </div>
                 <p 
-                  className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-cyan-400"
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-cyan-400"
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-start-time"
                 >
@@ -312,19 +312,19 @@ export default function PresentationMode({
               </div>
               
               <div className="flex flex-col items-center">
-                <div className={`w-6 sm:w-10 md:w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mb-1 sm:mb-2`}></div>
-                <Timer className={`w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 ${t.textDimmed}`} />
-                <span className={`text-xs ${t.textDimmed} mt-1`}>60 min</span>
-                <div className={`w-6 sm:w-10 md:w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mt-1 sm:mt-2`}></div>
+                <div className={`w-4 sm:w-8 md:w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mb-0.5 sm:mb-1`}></div>
+                <Timer className={`w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 ${t.textDimmed}`} />
+                <span className={`text-[10px] sm:text-xs ${t.textDimmed} mt-0.5`}>60 min</span>
+                <div className={`w-4 sm:w-8 md:w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mt-0.5 sm:mt-1`}></div>
               </div>
               
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
-                  <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${isOvertime || isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-400'}`}></div>
-                  <span className={`text-xs sm:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
+                <div className="flex items-center justify-center gap-1 mb-0.5 sm:mb-1 md:mb-2">
+                  <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full ${isOvertime || isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-400'}`}></div>
+                  <span className={`text-[10px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
                 </div>
                 <p 
-                  className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
+                  className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-end-time"
                 >
@@ -336,12 +336,12 @@ export default function PresentationMode({
         )}
 
         {/* Main Timers - Clean and Minimal */}
-        <div className="flex items-center justify-center gap-4 sm:gap-10 md:gap-16 lg:gap-20 mb-6 sm:mb-10 md:mb-12 w-full">
+        <div className="flex items-center justify-center gap-2 sm:gap-6 md:gap-12 lg:gap-20 mb-2 sm:mb-4 md:mb-8 w-full">
           {/* Elapsed Time */}
           <div className="text-center flex-1 max-w-xs">
-            <p className={`text-xs sm:text-sm md:text-base font-medium ${t.textDimmed} mb-1 sm:mb-2 md:mb-3`}>Transcurrido</p>
+            <p className={`text-[10px] sm:text-xs md:text-sm font-medium ${t.textDimmed} mb-0.5 sm:mb-1 md:mb-2`}>Transcurrido</p>
             <div 
-              className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[100px] font-light tracking-tight leading-none ${isTimerRunning ? t.accent : t.text}`}
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light tracking-tight leading-none ${isTimerRunning ? t.accent : t.text}`}
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               data-testid="presentation-elapsed-time"
             >
@@ -350,13 +350,13 @@ export default function PresentationMode({
           </div>
 
           {/* Divider */}
-          <div className={`w-px h-12 sm:h-16 md:h-20 lg:h-28 ${t.border.replace('border-', 'bg-')} opacity-30 hidden sm:block`} />
+          <div className={`w-px h-8 sm:h-12 md:h-16 lg:h-20 ${t.border.replace('border-', 'bg-')} opacity-30 hidden sm:block`} />
 
           {/* Remaining Time - Green by default, Red when < 5 min */}
           <div className="text-center flex-1 max-w-xs">
-            <p className={`text-xs sm:text-sm md:text-base font-medium ${t.textDimmed} mb-1 sm:mb-2 md:mb-3`}>Restante</p>
+            <p className={`text-[10px] sm:text-xs md:text-sm font-medium ${t.textDimmed} mb-0.5 sm:mb-1 md:mb-2`}>Restante</p>
             <div 
-              className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[100px] font-light tracking-tight leading-none ${
+              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light tracking-tight leading-none ${
                 isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.success
               }`}
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
@@ -368,8 +368,8 @@ export default function PresentationMode({
         </div>
 
         {/* Progress Bar - Green, Red when < 5 min */}
-        <div className="w-full max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl mb-4 sm:mb-6 md:mb-10 px-2">
-          <div className={`h-2 sm:h-3 md:h-4 rounded-full ${t.progressBg} overflow-hidden`}>
+        <div className="w-full max-w-xs sm:max-w-md md:max-w-xl lg:max-w-2xl mb-2 sm:mb-4 md:mb-6 px-2">
+          <div className={`h-1.5 sm:h-2 md:h-3 rounded-full ${t.progressBg} overflow-hidden`}>
             <div 
               className={`h-full rounded-full transition-all duration-500 ${
                 isLowTime ? 'bg-red-500' : 'bg-green-500'
@@ -377,7 +377,7 @@ export default function PresentationMode({
               style={{ width: `${Math.min(100, progressPercentage)}%` }}
             />
           </div>
-          <p className={`text-center text-lg sm:text-xl md:text-2xl font-bold mt-2 sm:mt-3 md:mt-4 ${isLowTime ? t.danger : t.success}`}>
+          <p className={`text-center text-sm sm:text-base md:text-lg font-bold mt-1 sm:mt-2 md:mt-3 ${isLowTime ? t.danger : t.success}`}>
             {progressPercentage.toFixed(0)}%
           </p>
         </div>
