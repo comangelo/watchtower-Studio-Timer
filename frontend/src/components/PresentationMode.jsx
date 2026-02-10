@@ -295,15 +295,15 @@ export default function PresentationMode({
       <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
         {/* Time Schedule - Very Visible */}
         {startTime && (
-          <div className={`${t.card} rounded-2xl px-16 py-8 mb-10 border-2 ${isLowTime ? 'border-red-500/50' : 'border-green-500/30'}`}>
-            <div className="flex items-center gap-16">
+          <div className={`${t.card} rounded-2xl px-12 py-6 mb-10 border ${t.border}`}>
+            <div className="flex items-center gap-12">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <div className="w-5 h-5 rounded-full bg-green-500"></div>
-                  <span className={`text-lg font-bold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
+                  <span className={`text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
                 </div>
                 <p 
-                  className={`text-7xl md:text-8xl lg:text-9xl font-bold ${t.success}`}
+                  className="text-5xl md:text-6xl font-semibold text-cyan-400"
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-start-time"
                 >
@@ -312,19 +312,19 @@ export default function PresentationMode({
               </div>
               
               <div className="flex flex-col items-center">
-                <div className={`w-20 h-1 ${t.border.replace('border-', 'bg-')} opacity-30 mb-3`}></div>
-                <Timer className={`w-10 h-10 ${t.textMuted}`} />
-                <span className={`text-lg ${t.textDimmed} mt-2`}>60 min</span>
-                <div className={`w-20 h-1 ${t.border.replace('border-', 'bg-')} opacity-30 mt-3`}></div>
+                <div className={`w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mb-2`}></div>
+                <Timer className={`w-6 h-6 ${t.textDimmed}`} />
+                <span className={`text-xs ${t.textDimmed} mt-1`}>60 min</span>
+                <div className={`w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mt-2`}></div>
               </div>
               
               <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <div className={`w-5 h-5 rounded-full ${isOvertime ? 'bg-red-500 animate-pulse' : isLowTime ? 'bg-red-500 animate-pulse' : 'bg-orange-500'}`}></div>
-                  <span className={`text-lg font-bold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className={`w-3 h-3 rounded-full ${isOvertime || isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-400'}`}></div>
+                  <span className={`text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
                 </div>
                 <p 
-                  className={`text-7xl md:text-8xl lg:text-9xl font-bold ${isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.warning}`}
+                  className={`text-5xl md:text-6xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-end-time"
                 >
