@@ -457,8 +457,8 @@ export default function PresentationMode({
         </p>
       </div>
 
-      {/* Bottom Stats */}
-      <div className={`flex items-center justify-center gap-1.5 sm:gap-3 md:gap-6 px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-3 border-t ${t.border} text-[10px] sm:text-xs md:text-sm ${t.textDimmed} flex-wrap shrink-0`}>
+      {/* Bottom Stats - Hidden on mobile to save space */}
+      <div className={`hidden sm:flex items-center justify-center gap-1.5 sm:gap-3 md:gap-6 px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-3 border-t ${t.border} text-[10px] sm:text-xs md:text-sm ${t.textDimmed} flex-wrap shrink-0`}>
         <span>{analysisResult.total_paragraphs} párrafos</span>
         <span className="hidden sm:inline">·</span>
         <span>{analysisResult.total_words} palabras</span>
