@@ -245,8 +245,8 @@ export function ParagraphCard({
                 className={`rounded-full p-2 h-auto transition-all ${
                   showContent
                     ? darkMode 
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                      : 'bg-purple-500 hover:bg-purple-600 text-white'
+                      ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                      : 'bg-orange-500 hover:bg-orange-600 text-white'
                     : darkMode 
                       ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
                       : 'bg-emerald-500 hover:bg-emerald-600 text-white'
