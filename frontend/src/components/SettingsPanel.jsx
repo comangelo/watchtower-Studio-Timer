@@ -16,14 +16,6 @@ export function SettingsPanel({
     { value: 210, label: "Rápido", description: "210 palabras/min" }
   ];
 
-  const durationOptions = [
-    { value: 30, label: "30 min" },
-    { value: 45, label: "45 min" },
-    { value: 60, label: "60 min" },
-    { value: 75, label: "75 min" },
-    { value: 90, label: "90 min" }
-  ];
-
   return (
     <Card className="mb-8 border-slate-200 shadow-sm">
       <CardContent className="p-4 sm:p-6">
@@ -33,27 +25,29 @@ export function SettingsPanel({
         </div>
         
         <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
-          {/* Duración total */}
+          {/* Duración total - Slider */}
           <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-3 sm:mb-4">
-              <Timer className="w-4 h-4 text-orange-500" />
-              <span className="text-sm font-medium text-slate-700">Duración total</span>
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className="flex items-center gap-2">
+                <Timer className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-medium text-slate-700">Duración total</span>
+              </div>
+              <span className="text-base sm:text-lg font-bold text-orange-500" style={{ fontFamily: 'system-ui' }}>
+                {totalDuration} min
+              </span>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {durationOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => setTotalDuration(option.value)}
-                  className={`py-2 px-3 rounded-lg text-center transition-all text-sm ${
-                    totalDuration === option.value
-                      ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                  data-testid={`duration-${option.value}`}
-                >
-                  {option.label}
-                </button>
-              ))}
+            <Slider
+              value={[totalDuration]}
+              onValueChange={(value) => setTotalDuration(value[0])}
+              min={30}
+              max={120}
+              step={5}
+              className="w-full"
+              data-testid="duration-slider"
+            />
+            <div className="flex justify-between text-xs text-slate-400 mt-2">
+              <span>30 min</span>
+              <span>120 min</span>
             </div>
           </div>
 
