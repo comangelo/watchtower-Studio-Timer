@@ -55,6 +55,12 @@ export function ParagraphCard({
   const hasQuestions = allQuestions.length > 0;
   const hasFinalQuestions = allQuestions.some(q => q.is_final_question);
 
+  // Check for extra content in questions (image or scripture references)
+  const questionsWithImage = allQuestions.filter(q => q.content_type === 'image');
+  const questionsWithScripture = allQuestions.filter(q => q.content_type === 'scripture');
+  const hasImageContent = questionsWithImage.length > 0;
+  const hasScriptureContent = questionsWithScripture.length > 0;
+
   // Get estimated time for this paragraph group
   const estimatedTime = isGrouped 
     ? allParagraphs.reduce((sum, p) => sum + (p.total_time_seconds || 0), 0)
