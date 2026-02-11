@@ -1038,7 +1038,13 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         para_has_image = False
         para_has_scripture = False
         for q in questions:
-            if q.content_type == 'image':
+            if q.content_type == 'both':
+                # Both image and scripture in the same parenthesis
+                total_images += 1
+                total_scriptures += 1
+                para_has_image = True
+                para_has_scripture = True
+            elif q.content_type == 'image':
                 total_images += 1
                 para_has_image = True
             elif q.content_type == 'scripture':
