@@ -616,28 +616,41 @@ export function FinalQuestionsSection({
             <div 
               key={idx}
               className={`rounded-xl py-3 px-4 text-sm ${
-                isCriticalTime ? 'bg-red-100 text-red-900' :
-                isLowTime ? 'bg-orange-100 text-orange-900' :
-                'bg-red-100/50 text-red-800'
+                isCriticalTime 
+                  ? darkMode ? 'bg-red-950/50 text-red-300' : 'bg-red-100 text-red-900' 
+                  : isLowTime 
+                    ? darkMode ? 'bg-orange-950/50 text-orange-300' : 'bg-orange-100 text-orange-900' 
+                    : darkMode ? 'bg-red-950/30 text-red-300' : 'bg-red-100/50 text-red-800'
               }`}
               data-testid={`final-question-${idx}`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 flex items-start gap-2">
-                  <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isCriticalTime ? 'text-red-600' : isLowTime ? 'text-orange-600' : 'text-red-500'}`} />
+                  <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
+                    isCriticalTime 
+                      ? darkMode ? 'text-red-400' : 'text-red-600' 
+                      : isLowTime 
+                        ? darkMode ? 'text-orange-400' : 'text-orange-600' 
+                        : darkMode ? 'text-red-400' : 'text-red-500'
+                  }`} />
                   <span>{q.text}</span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <span className={`text-sm font-light px-2 py-0.5 rounded-full ${
-                    isCriticalTime ? 'bg-red-200 text-red-700' :
-                    isLowTime ? 'bg-orange-200 text-orange-700' :
-                    isAdjusted ? (timeDiff > 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700') : 
-                    'bg-red-200 text-red-600'
+                    isCriticalTime 
+                      ? darkMode ? 'bg-red-900 text-red-300' : 'bg-red-200 text-red-700' 
+                      : isLowTime 
+                        ? darkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-200 text-orange-700' 
+                        : isAdjusted 
+                          ? (timeDiff > 0 
+                              ? darkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-700' 
+                              : darkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-100 text-orange-700') 
+                          : darkMode ? 'bg-red-900 text-red-400' : 'bg-red-200 text-red-600'
                   }`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                     +{formatTimeCompact(perQuestionTime)}
                   </span>
                   {startTime && (
-                    <span className="text-xs text-red-500" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                    <span className={`text-xs ${darkMode ? 'text-red-400' : 'text-red-500'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                       {isTimerRunning && getQuestionTime
                         ? formatClockTime(getQuestionTime(idx))
                         : formatClockTime(addSecondsToDate(startTime, originalStartTime + (idx * 35)))
