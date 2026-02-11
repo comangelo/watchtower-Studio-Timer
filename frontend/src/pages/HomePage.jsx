@@ -773,6 +773,8 @@ export default function HomePage() {
                   onReset={resetTimer}
                   remainingTime={remainingTime}
                   totalDuration={totalDuration}
+                  manualEndTime={manualEndTime}
+                  onManualEndTimeChange={setManualEndTime}
                 />
 
                 <CountdownTimer
