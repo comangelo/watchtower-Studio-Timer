@@ -61,7 +61,7 @@ export function SettingsPanel({
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
               <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-500" />
-              <span className="text-xs sm:text-sm font-medium text-slate-700">Velocidad</span>
+              <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>Velocidad</span>
             </div>
             <div className="flex gap-1.5 sm:gap-2">
               {speedOptions.map((option) => (
@@ -71,12 +71,18 @@ export function SettingsPanel({
                   className={`flex-1 py-1.5 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 rounded-lg sm:rounded-xl text-center transition-all ${
                     readingSpeed === option.value
                       ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      : darkMode 
+                        ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                   data-testid={`speed-${option.value}`}
                 >
                   <span className="block text-[10px] sm:text-xs md:text-sm font-semibold">{option.label}</span>
-                  <span className={`block text-[8px] sm:text-[10px] md:text-xs mt-0.5 ${readingSpeed === option.value ? 'text-orange-100' : 'text-slate-400'}`}>
+                  <span className={`block text-[8px] sm:text-[10px] md:text-xs mt-0.5 ${
+                    readingSpeed === option.value 
+                      ? 'text-orange-100' 
+                      : darkMode ? 'text-zinc-500' : 'text-slate-400'
+                  }`}>
                     {option.description}
                   </span>
                 </button>
@@ -89,7 +95,7 @@ export function SettingsPanel({
             <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <MessageCircleQuestion className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-500" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700">Respuesta</span>
+                <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>Respuesta</span>
               </div>
               <span className="text-sm sm:text-base md:text-lg font-bold text-orange-500" style={{ fontFamily: 'system-ui' }}>
                 {answerTime} seg
@@ -104,7 +110,7 @@ export function SettingsPanel({
               className="w-full"
               data-testid="answer-time-slider"
             />
-            <div className="flex justify-between text-[10px] sm:text-xs text-slate-400 mt-1.5 sm:mt-2">
+            <div className={`flex justify-between text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
               <span>15</span>
               <span>90 seg</span>
             </div>
