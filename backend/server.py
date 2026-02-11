@@ -513,19 +513,11 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
         # Prefer numbered questions if found
         if numbered_questions:
             for q in numbered_questions:
-                final_questions.append(QuestionInfo(
-                    text=q,
-                    answer_time=QUESTION_ANSWER_TIME,
-                    is_final_question=True
-                ))
+                final_questions.append(create_question_info(q, QUESTION_ANSWER_TIME, True))
         # Otherwise use bullet points
         elif bullet_points:
             for point in bullet_points:
-                final_questions.append(QuestionInfo(
-                    text=point,
-                    answer_time=QUESTION_ANSWER_TIME,
-                    is_final_question=True
-                ))
+                final_questions.append(create_question_info(point, QUESTION_ANSWER_TIME, True))
         
         return final_questions, bold_title
         
@@ -606,11 +598,7 @@ def detect_questions(text: str, paragraph_number: int, is_final_question: bool =
             if is_ignored_question(question_text):
                 continue
             if len(question_text) > 5:
-                questions.append(QuestionInfo(
-                    text=question_text,
-                    answer_time=QUESTION_ANSWER_TIME,
-                    is_final_question=is_final_question
-                ))
+                questions.append(create_question_info(question_text, QUESTION_ANSWER_TIME, is_final_question))
     
     return questions
 
