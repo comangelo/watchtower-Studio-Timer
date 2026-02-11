@@ -35,6 +35,8 @@ class QuestionInfo(BaseModel):
     text: str
     answer_time: int = QUESTION_ANSWER_TIME
     is_final_question: bool = False  # Questions that precede "¿QUÉ RESPONDERÍAS?"
+    parenthesis_content: str = ""  # Content inside parentheses after the question
+    content_type: str = ""  # "image" if contains "Vea también", "scripture" if contains bible reference, "" otherwise
 
 class ParagraphAnalysis(BaseModel):
     number: int
