@@ -306,31 +306,17 @@ export default function PresentationMode({
       {/* Main Content - Landscape optimized */}
       <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-6 overflow-auto min-h-0">
         
-        {/* Combined Time Display for Mobile Landscape - Horizontal layout */}
-        <div className="sm:hidden w-full flex items-center justify-center gap-2 mb-1">
-          {/* Start/End Times - Compact inline */}
-          {startTime && (
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-cyan-400 font-semibold">{formatClockTime(startTime)}</span>
-              <span className={t.textDimmed}>→</span>
-              <span className={`font-semibold ${isOvertime ? 'text-rose-500' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>
-                {formatClockTime(endTime)}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Time Schedule - Hidden on mobile, visible on larger screens */}
+        {/* Time Schedule - Always visible, compact on mobile */}
         {startTime && (
-          <div className={`hidden sm:block ${t.card} rounded-lg sm:rounded-xl md:rounded-2xl px-3 sm:px-6 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
-            <div className="flex items-center justify-center gap-3 sm:gap-6 md:gap-12">
+          <div className={`${t.card} rounded-lg sm:rounded-xl md:rounded-2xl px-2 sm:px-6 md:px-12 py-1 sm:py-4 md:py-6 mb-1 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
+            <div className="flex items-center justify-center gap-2 sm:gap-6 md:gap-12">
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-0.5 sm:mb-1 md:mb-2">
                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full bg-cyan-500"></div>
-                  <span className={`text-[10px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
+                  <span className={`text-[8px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
                 </div>
                 <p 
-                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-cyan-400"
+                  className="text-sm sm:text-xl md:text-2xl lg:text-3xl font-semibold text-cyan-400"
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-start-time"
                 >
@@ -339,19 +325,16 @@ export default function PresentationMode({
               </div>
               
               <div className="flex flex-col items-center">
-                <div className={`w-4 sm:w-8 md:w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mb-0.5 sm:mb-1`}></div>
                 <Timer className={`w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 ${t.textDimmed}`} />
-                <span className={`text-[10px] sm:text-xs ${t.textDimmed} mt-0.5`}>60 min</span>
-                <div className={`w-4 sm:w-8 md:w-12 h-0.5 ${t.border.replace('border-', 'bg-')} opacity-30 mt-0.5 sm:mt-1`}></div>
               </div>
               
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 mb-0.5 sm:mb-1 md:mb-2">
                   <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full ${isOvertime || isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-400'}`}></div>
-                  <span className={`text-[10px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
+                  <span className={`text-[8px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
                 </div>
                 <p 
-                  className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
+                  className={`text-sm sm:text-xl md:text-2xl lg:text-3xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
                   style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
                   data-testid="presentation-end-time"
                 >
