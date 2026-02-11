@@ -130,16 +130,24 @@ export function ParagraphCard({
         className={`
           group relative p-5 rounded-2xl border-2 transition-all duration-300 hover:shadow-md
           ${isCompletedParagraph
-            ? 'border-slate-200 bg-slate-50/50 opacity-70'
+            ? darkMode 
+              ? 'border-zinc-700 bg-zinc-800/50 opacity-70'
+              : 'border-slate-200 bg-slate-50/50 opacity-70'
             : isCurrentParagraph 
               ? isOverTime
                 ? 'border-red-400 bg-red-50 shadow-lg shadow-red-100 scale-[1.01]'
                 : 'border-green-400 bg-green-50 shadow-lg shadow-green-100 scale-[1.01]' 
               : hasFinalQuestions 
-                ? 'border-red-200 bg-red-50/30 hover:border-red-300' 
+                ? darkMode
+                  ? 'border-red-800 bg-red-950/50 hover:border-red-700'
+                  : 'border-red-200 bg-red-50/30 hover:border-red-300' 
                 : hasQuestions 
-                  ? 'border-orange-100 bg-white hover:border-orange-300' 
-                  : 'border-slate-100 bg-white hover:border-slate-300'
+                  ? darkMode
+                    ? 'border-orange-800 bg-zinc-800 hover:border-orange-600'
+                    : 'border-orange-100 bg-white hover:border-orange-300' 
+                  : darkMode
+                    ? 'border-zinc-700 bg-zinc-800 hover:border-zinc-600'
+                    : 'border-slate-100 bg-white hover:border-slate-300'
           }
         `}
         style={{ animationDelay: `${index * 50}ms` }}
