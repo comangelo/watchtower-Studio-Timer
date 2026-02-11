@@ -246,6 +246,21 @@ def extract_question_with_parenthesis(question_text: str) -> dict:
     return result
 
 
+def create_question_info(question_text: str, answer_time: int, is_final_question: bool = False) -> QuestionInfo:
+    """
+    Helper function to create QuestionInfo with parenthesis extraction.
+    Uses extract_question_with_parenthesis to extract and classify content in parentheses.
+    """
+    extracted = extract_question_with_parenthesis(question_text)
+    return QuestionInfo(
+        text=extracted["text"],
+        answer_time=answer_time,
+        is_final_question=is_final_question,
+        parenthesis_content=extracted["parenthesis_content"],
+        content_type=extracted["content_type"]
+    )
+
+
 def process_pdf_with_font_sizes(pdf_bytes: bytes) -> dict:
     """
     Process PDF using font size information to distinguish paragraphs from questions.
