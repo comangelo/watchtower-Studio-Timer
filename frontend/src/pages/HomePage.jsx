@@ -1009,9 +1009,34 @@ export default function HomePage() {
               {/* Paragraphs List */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className={`font-heading font-semibold text-lg ${darkMode ? 'text-zinc-200' : 'text-zinc-900'}`}>
-                    Desglose por párrafo
-                  </h3>
+                  <div className="flex items-center gap-3">
+                    <h3 className={`font-heading font-semibold text-lg ${darkMode ? 'text-zinc-200' : 'text-zinc-900'}`}>
+                      Desglose por párrafo
+                    </h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowAllParagraphContent(!showAllParagraphContent)}
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        darkMode 
+                          ? 'border-zinc-500 text-zinc-200 hover:bg-zinc-700' 
+                          : 'border-slate-300 text-slate-600 hover:bg-slate-100'
+                      }`}
+                      data-testid="toggle-all-content-btn"
+                    >
+                      {showAllParagraphContent ? (
+                        <>
+                          <EyeOff className="w-3.5 h-3.5 mr-1.5" />
+                          Ocultar contenido
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="w-3.5 h-3.5 mr-1.5" />
+                          Mostrar contenido
+                        </>
+                      )}
+                    </Button>
+                  </div>
                   {isTimerRunning && !isInIntroductionMode && (
                     <div className="flex items-center gap-2">
                       <Button size="sm" variant="outline" onClick={goToPreviousParagraph} disabled={currentManualParagraph <= 0} className="text-xs" data-testid="prev-paragraph-btn-2">
