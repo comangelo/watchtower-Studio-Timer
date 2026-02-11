@@ -411,6 +411,8 @@ export default function HomePage() {
     setIsInReviewMode(false);
     setCurrentReviewQuestion(0);
     setReviewQuestionStartTime(null);
+    setIsInClosingWordsMode(false);
+    setClosingWordsStartTime(null);
   };
 
   const resetAll = () => {
