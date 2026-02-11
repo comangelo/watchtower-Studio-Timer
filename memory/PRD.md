@@ -75,6 +75,10 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ **Manual de usuario actualizado a v2.3 con instrucciones de actualización (11-Feb-2025)**
 - ✅ **Hora de fin editable manualmente con cálculo automático de duración (11-Feb-2025)**
 - ✅ **Etiqueta "DURACIÓN" visible en panel de horarios (11-Feb-2025)**
+- ✅ **Panel de horarios visible en pantalla inicial ANTES de cargar PDF (11-Feb-2025)**
+- ✅ **Edición de hora de fin funcional en pantalla inicial con indicador "(MANUAL)" (11-Feb-2025)**
+- ✅ **Duración calculada automáticamente al establecer hora manual (color cian) (11-Feb-2025)**
+- ✅ **Opción "Restaurar hora automática" para volver a duración configurada (11-Feb-2025)**
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
