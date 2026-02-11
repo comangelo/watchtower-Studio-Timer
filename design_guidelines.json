@@ -1,0 +1,108 @@
+{
+  "identity": {
+    "persona": "E1",
+    "philosophy": "Fusion over Imitation. Emotion First. Content is King.",
+    "archetype": "The Soft Utility (Productivity + Warmth)"
+  },
+  "color_palette": {
+    "primary": {
+      "name": "Slate Authority",
+      "hex": "#334155",
+      "tailwind": "bg-slate-700 text-white hover:bg-slate-800"
+    },
+    "accent": {
+      "name": "Clay Action",
+      "hex": "#f97316",
+      "tailwind": "bg-orange-500 text-white hover:bg-orange-600",
+      "usage": "Primary CTAs (Start Timer), Active States, Highlights"
+    },
+    "background": {
+      "main": "#fdfbf7",
+      "tailwind": "bg-stone-50",
+      "paper": "bg-white shadow-sm border border-stone-200"
+    },
+    "text": {
+      "heading": "text-slate-900",
+      "body": "text-slate-600",
+      "muted": "text-slate-400"
+    }
+  },
+  "typography": {
+    "headings": {
+      "font": "Manrope",
+      "weights": "Bold (700), ExtraBold (800)",
+      "tracking": "tracking-tight",
+      "usage": "Section titles, Modal headers"
+    },
+    "body": {
+      "font": "Inter",
+      "weights": "Regular (400), Medium (500)",
+      "leading": "leading-relaxed",
+      "usage": "Paragraph text, Instructions"
+    },
+    "mono": {
+      "font": "JetBrains Mono",
+      "usage": "Timers, Statistics, Data points"
+    }
+  },
+  "layout_strategy": {
+    "global": "h-screen w-full overflow-hidden bg-stone-50",
+    "split_view": {
+      "container": "grid grid-cols-1 lg:grid-cols-12 h-full",
+      "left_panel": "lg:col-span-8 h-full overflow-y-auto p-6 lg:p-12 custom-scrollbar",
+      "right_panel": "lg:col-span-4 h-full border-l border-stone-200 bg-white/50 backdrop-blur-sm p-6 flex flex-col gap-6 shadow-[-4px_0_24px_rgba(0,0,0,0.02)]"
+    },
+    "presentation_mode": {
+      "container": "fixed inset-0 z-50 bg-slate-950 text-white flex flex-col items-center justify-center p-12",
+      "timer": "text-[15vw] font-mono font-bold tracking-tighter tabular-nums text-orange-500"
+    }
+  },
+  "component_styles": {
+    "buttons": {
+      "primary": "rounded-full px-8 py-6 text-lg font-bold shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all active:scale-95",
+      "secondary": "rounded-full px-6 py-4 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 font-medium",
+      "icon": "rounded-full p-3 hover:bg-slate-100 transition-colors"
+    },
+    "cards": {
+      "paragraph": "group relative p-6 rounded-xl border border-transparent hover:border-orange-200 hover:bg-white hover:shadow-md transition-all duration-200 cursor-pointer",
+      "paragraph_active": "bg-white border-l-4 border-l-orange-500 shadow-lg scale-[1.01]",
+      "upload_zone": "border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50/50 hover:bg-white hover:border-orange-400 transition-all duration-300 flex flex-col items-center justify-center gap-4 p-12"
+    },
+    "timers": {
+      "main": "text-6xl lg:text-7xl font-mono font-bold tracking-tighter text-slate-800 tabular-nums",
+      "sub": "text-xl font-mono text-slate-500 tabular-nums"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+    "borders": "border-stone-200",
+    "glass": "bg-white/80 backdrop-blur-md border border-white/20",
+    "animations": {
+      "enter": "animate-in fade-in slide-in-from-bottom-4 duration-500",
+      "hover": "hover:-translate-y-1 transition-transform duration-200"
+    }
+  },
+  "images": {
+    "upload_background": {
+      "url": "https://images.unsplash.com/photo-1758640920659-0bb864175983?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTF8MHwxfHNlYXJjaHwzfHxtaW5pbWFsaXN0JTIwc3R1ZHklMjBkZXNrJTIwb3BlbiUyMGJvb2t8ZW58MHx8fHwxNzcwNTgxNDQzfDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Minimalist study desk with laptop and books",
+      "usage": "Background for the upload/welcome screen with overlay"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Refactor the layout to use the 'Split View' strategy defined above.",
+    "Replace all generic buttons with the 'Pill' shaped styles defined in component_styles.",
+    "Ensure the 'Timer' is the visual anchor of the Right Panel.",
+    "Implement the 'Paragraph Card' styles to make the text interactive.",
+    "Use the 'Manrope' font for all headings and 'JetBrains Mono' for all time-related data.",
+    "Ensure the 'Upload Zone' uses the provided image as a subtle background or inspiration for the empty state.",
+    "Add 'data-testid' to all interactive elements (buttons, inputs, cards)."
+  ],
+  "universal_guidelines": [
+    "Avoid 'SaaS Blue'. Use the Slate/Orange palette.",
+    "No generic gradients. Use solid colors or subtle noise textures.",
+    "Spacing: Use p-6 or p-8 for internal card padding.",
+    "Contrast: Ensure text is legible (Slate-600+ on White).",
+    "Motion: Add hover states to everything interactive."
+  ]
+}
