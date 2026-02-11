@@ -234,27 +234,47 @@ export function ParagraphCard({
                 <>Párrafo {paragraph.number}</>
               )}
             </span>
-            <Badge 
-              className={`font-mono text-sm px-3 py-1 ${
-                isCompletedParagraph 
-                  ? darkMode ? 'bg-zinc-600 text-zinc-300' : 'bg-slate-200 text-slate-600' 
-                  : isCurrentParagraph ? 'bg-green-500 text-white' : 
-                  hasFinalQuestions ? 'bg-red-500 text-white' :
-                  hasQuestions 
-                    ? darkMode ? 'bg-orange-700 text-orange-100' : 'bg-orange-100 text-orange-700' 
-                    : darkMode ? 'bg-zinc-600 text-zinc-100' : 'bg-slate-100 text-slate-600'
-              }`}
-              data-testid={`paragraph-time-${paragraph.number}`}
-            >
-              {isGrouped 
-                ? formatTimeText(estimatedTime)
-                : (paragraphTimes.adjustedDuration ? formatTimeText(paragraphTimes.adjustedDuration) : formatTimeText(paragraph.total_time_seconds))
-              }
-            </Badge>
+            <div className="flex items-center gap-2">
+              {/* Individual show/hide content button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowContent(!showContent);
+                }}
+                className={`rounded-full p-1.5 h-auto ${
+                  darkMode 
+                    ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' 
+                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                }`}
+                title={showContent ? 'Ocultar contenido' : 'Mostrar contenido'}
+                data-testid={`toggle-content-${paragraph.number}`}
+              >
+                {showContent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </Button>
+              <Badge 
+                className={`font-mono text-sm px-3 py-1 ${
+                  isCompletedParagraph 
+                    ? darkMode ? 'bg-zinc-600 text-zinc-300' : 'bg-slate-200 text-slate-600' 
+                    : isCurrentParagraph ? 'bg-green-500 text-white' : 
+                    hasFinalQuestions ? 'bg-red-500 text-white' :
+                    hasQuestions 
+                      ? darkMode ? 'bg-orange-700 text-orange-100' : 'bg-orange-100 text-orange-700' 
+                      : darkMode ? 'bg-zinc-600 text-zinc-100' : 'bg-slate-100 text-slate-600'
+                }`}
+                data-testid={`paragraph-time-${paragraph.number}`}
+              >
+                {isGrouped 
+                  ? formatTimeText(estimatedTime)
+                  : (paragraphTimes.adjustedDuration ? formatTimeText(paragraphTimes.adjustedDuration) : formatTimeText(paragraph.total_time_seconds))
+                }
+              </Badge>
+            </div>
           </div>
 
           {/* Time Schedule */}
-          {startTime && paragraphTimes.start && !isCompletedParagraph && (
+          {startTime && paragraphTimes.start && !isCompletedParagraph && showContent && (
             <div className="mb-4 flex items-center gap-3 text-xs">
               <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${
                 isCurrentParagraph 
