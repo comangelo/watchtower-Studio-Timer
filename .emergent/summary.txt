@@ -1,101 +1,90 @@
 <analysis>**original_problem_statement:**
-El usuario quiere construir una aplicación que pueda analizar un artículo en PDF (La Atalaya) y determinar el tiempo necesario para leerlo en voz alta. La aplicación debe crear un cronograma dinámico que desglose el tiempo por párrafo y por pregunta.
+El usuario quiere construir una aplicación PWA (Progressive Web App) que pueda analizar un artículo en PDF (La Atalaya) y determinar el tiempo necesario para leerlo en voz alta. La aplicación debe crear un cronograma dinámico que desglose el tiempo por párrafo y por pregunta.
 
 PRODUCT REQUIREMENTS:
-- Carga de archivos PDF.
-- Un cronómetro principal que el usuario puede iniciar/detener y un temporizador de cuenta regresiva de duración configurable.
-- Lógica de análisis de PDF para identificar párrafos y preguntas.
-- Un flujo de estudio completo que incluye Palabras de Introducción, Lectura de Párrafos, Preguntas de Repaso y Palabras de Conclusión.
-- Múltiples cambios de texto, color y diseño en la interfaz de usuario, incluyendo un modo oscuro y varios temas de color.
-- La aplicación debe ser una PWA (Progressive Web App) instalable con un icono personalizado.
-- Poder configurar la velocidad de lectura (WPM), el tiempo base para las respuestas, la duración total del estudio, y los tiempos para la introducción y conclusión.
-- Cronómetros individuales para cada sección del estudio.
-- Un panel de estadísticas para comparar el tiempo estimado con el tiempo real.
-- Un rediseño completo del modo de presentación para que sea responsivo.
-- Mostrar de forma prominente las horas de inicio y fin, permitiendo la edición manual de la hora de fin.
-- Manual de usuario actualizado.
+- Carga y análisis de archivos PDF para extraer párrafos y preguntas.
+- Un cronómetro principal y un temporizador de cuenta regresiva configurable.
+- Un flujo de estudio completo: Palabras de Introducción, Lectura de Párrafos, Preguntas de Repaso y Palabras de Conclusión.
+- Configuraciones personalizables: velocidad de lectura (WPM), tiempo por pregunta, duración total, y tiempos de introducción/conclusión.
+- Modo oscuro con múltiples variantes (Zinc, AMOLED, etc.) y múltiples temas de color para el modo de presentación.
+- Botones para ocultar/mostrar el contenido de los párrafos (global e individualmente).
+- Un panel de estadísticas para comparar tiempo estimado vs. real.
+- Extracción de contenido extra de las preguntas: Debe identificar contenido entre paréntesis  después de una pregunta, clasificarlo como imagen (si contiene Vea también) o texto para leer (si es una cita bíblica), y mostrarlo en la UI con un distintivo atractivo.
+- Exportación del cronograma a PNG/PDF y un manual de usuario.
 
 **User's preferred language**: Español
 
 **what currently exists?**
-Una aplicación full-stack altamente funcional con un backend de FastAPI y un frontend de React. La aplicación implementa casi todos los requisitos del producto. Incluye un analizador de PDF, un flujo de estudio completo (Introducción, Párrafos, Preguntas, Conclusión), gestión de tiempo personalizable (velocidad de lectura, tiempos de respuesta, duración, etc.), modo oscuro, temas de color, un panel de estadísticas, y es una PWA instalable con un icono personalizado. El agente ha realizado numerosas iteraciones de diseño en la interfaz de usuario para mejorar la estética y la usabilidad según las solicitudes del usuario.
+Una aplicación full-stack funcional con un backend de FastAPI y un frontend de React. La aplicación implementa la mayoría de los requisitos, incluyendo análisis de PDF, un flujo de estudio completo, gestión de tiempo, modo oscuro con selector de temas, y la funcionalidad de mostrar/ocultar párrafos. Se han realizado numerosas mejoras de UI para aumentar el contraste y la legibilidad. El agente corrigió un bug que truncaba el texto de los párrafos en el backend y otro que afectaba la visibilidad de un botón en el frontend.
 
 **Last working item**:
-- Last item agent was working: El agente estaba mejorando la interfaz del modo oscuro. Específicamente, aplicando fondos más oscuros y un mayor contraste de texto a los paneles de la aplicación (párrafos, introducción, preguntas) para mejorar la legibilidad y la estética, según la petición del usuario.
+- Last item agent was working: El agente estaba implementando la lógica en el backend para extraer y clasificar el contenido que se encuentra entre paréntesis  después de las preguntas del PDF. El objetivo es identificar si el contenido es una referencia a una imagen (Vea también) o a un texto bíblico, para luego mostrarlo en el frontend.
 - Status: IN PROGRESS
 - Agent Testing Done: N
-- Which testing method agent to use? screenshot tool
+- Which testing method agent to use? backend testing agent (para verificar que la API devuelve los nuevos datos) seguido de la screenshot tool (para verificar la nueva UI).
 - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  - Issue 1: Finalizar la mejora visual del modo oscuro (P0)
+  - Issue 1: Implementar la visualización del contenido extra de las preguntas en el frontend (P0).
 
   Issues Detail:
   - Issue 1: 
-     - Attempted fixes: El agente ha añadido la prop  a los componentes ,  y . También ha modificado las clases de Tailwind CSS en estos archivos para usar colores más oscuros para los fondos (ej. ) y colores más claros para el texto (ej. ) cuando el modo oscuro está activo.
+     - Attempted fixes: Aún no se ha intentado. Es el siguiente paso después de finalizar la lógica del backend.
      - Next debug checklist: 
-        1. Verificar que no haya errores de compilación.
-        2. Tomar una captura de pantalla completa de la aplicación con el modo oscuro activado *después* de haber cargado un PDF.
-        3. Confirmar que los paneles de Introducción, Párrafos y Preguntas de Repaso tienen los nuevos fondos oscuros y el texto con buen contraste.
-     - Why fix this issue and what will be achieved with the fix? Cumplirá con la solicitud del usuario de una interfaz de modo oscuro más pulida y visualmente atractiva.
-     - Status: IN PROGRESS
+        1.  Modificar el componente .
+        2.  Asegurarse de que recibe los nuevos campos  y  desde la API.
+        3.  Renderizar un distintivo atractivo (Contiene imagen o Contiene un Texto para leer) basado en .
+        4.  Mostrar el  cuando la sección de preguntas esté expandida.
+     - Why fix this issue and what will be achieved with the fix? Cumplirá con el requisito del usuario de mostrar información contextual adicional para las preguntas, haciendo el estudio más completo.
+     - Status: NOT STARTED
      - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? frontend
-     - Blocked on other issue: No.
+     - Should Test frontend/backend/both after fix? both
+     - Blocked on other issue: Finalización de la Tarea 1 en .
 
 **In progress Task List**:
-  - Task 1: Mejora visual del modo oscuro (P0)
+  - Task 1: Finalizar la extracción de contenido extra de las preguntas en el backend (P0)
 
  Task Detail:
   - Task 1: 
-     - Where to resume: El agente acaba de terminar de propagar la prop  y de añadir las clases de estilo condicionales a los componentes principales. El siguiente paso es realizar una verificación visual completa mediante una captura de pantalla para asegurarse de que todos los componentes se renderizan correctamente en modo oscuro.
-     - What will be achieved with this? Una experiencia de usuario más cohesiva y estéticamente agradable en modo oscuro, de acuerdo con los requisitos del usuario.
+     - Where to resume: En el archivo . El agente ya ha modificado el modelo Pydantic  y ha creado la función auxiliar . El siguiente paso es integrar la llamada a esta función dentro de la lógica de análisis del PDF, donde se instancian los objetos , para que los nuevos campos se rellenen y se devuelvan en la respuesta de la API.
+     - What will be achieved with this? El endpoint  devolverá la información adicional sobre el contenido entre paréntesis para cada pregunta.
      - Status: IN PROGRESS
-     - Should Test frontend/backend/both after fix? frontend
+     - Should Test frontend/backend/both after fix? backend
      - Blocked on something: No.
 
 **Upcoming and Future Tasks**
   Upcoming Tasks:
-    - P2: Implementar un historial de documentos analizados.
+    - P1: Implementar un historial de documentos analizados.
   Future Tasks:
-    - P3: Agregar un modo de solo lectura que oculte los controles de la interfaz de usuario.
-    - P3: Crear un editor de colores o agregar más temas para el modo de presentación.
+    - P2: Agregar un modo de solo lectura que oculte los controles de la interfaz de usuario.
+    - P2: Crear un editor de colores o agregar más temas para el modo de presentación.
     - P3: Generar un resumen en PDF que incluya el tiempo por párrafo y una gráfica comparativa.
 
 **Completed work in this session**
-- **Panel de Horarios en Pantalla Inicial (Bug Fix)**: Se corrigió un error que impedía que el panel para editar la hora de fin apareciera en la pantalla inicial. Se implementó y verificó completamente la funcionalidad.
-- **Rediseño de UI (Múltiples Componentes)**:
-    - Se rediseñó el **Panel de Horarios** (, ) para ser más grande, ordenado y con colores más llamativos.
-    - Se rediseñó el panel de **Estadísticas Rápidas** () con iconos, colores y mejor layout.
-    - Se rediseñó el banner Respondiendo en la sección de **Preguntas de Repaso** () para que fuera más responsivo.
-    - Se rediseñó el encabezado del **Párrafo Activo** () para un look más minimalista y atractivo.
-- **Nuevo Flujo de Estudio**:
-    - Se implementó una nueva sección de **Palabras de Introducción** al inicio del estudio.
-    - Se implementó una nueva sección de **Palabras de Conclusión** al final, después de las preguntas.
-    - Se estandarizó el diseño de los cronómetros para las secciones de Introducción, Párrafos y Conclusión.
-- **Modo Oscuro y Temas**:
-    - Se implementó un **modo oscuro global** para toda la aplicación con un botón de activación en el encabezado.
-    - Se añadieron **nuevos temas de color** (Azul Océano, Café, Rosa Suave, Púrpura Noche, Turquesa) para el modo de presentación.
-- **Nuevas Configuraciones**:
-    - Se añadieron sliders en el panel de configuración para permitir al usuario **definir los tiempos** para las Palabras de Introducción y Palabras de Conclusión.
-- **Manual de Usuario Actualizado**: Se actualizó el archivo  a la versión 2.4 para documentar el nuevo flujo de estudio y las nuevas características.
+- **Mejora de Contraste en Modo Oscuro**: Se ajustaron los colores de texto, bordes y botones en toda la aplicación para mejorar la legibilidad en modo oscuro.
+- **Selector de Temas Oscuros**: Se implementó un menú desplegable para elegir entre varias variantes del modo oscuro (Zinc, AMOLED, etc.).
+- **Ocultar/Mostrar Contenido de Párrafos**: Se añadieron botones (global e individual) para colapsar/expandir el texto de los párrafos. Se rediseñó el encabezado de esta sección y los botones para ser más atractivos.
+- **Corrección de Bug (Texto Truncado)**: Se solucionó un problema en el backend que limitaba el texto de los párrafos a 500 caracteres.
+- **Corrección de Bug (Botón de Preguntas)**: Se corrigió un error de renderizado que hacía que el botón Ver pregunta se volviera ilegible después de abrirlo y cerrarlo.
+- **Ajustes de Diseño**: Se movió el botón Ver pregunta a la derecha y se aumentó el grosor de su borde.
+- **Creación de Prompt para la App**: Se generó un archivo  con un prompt detallado para recrear la aplicación, a petición del usuario.
 
 **Earlier issues found/mentioned but not fixed**
-   - La funcionalidad de agrupación de párrafos (ej. párrafos 1, 2. que comparten una pregunta) implementada en el backend aún no se ha probado con un PDF real que contenga dicho formato. Podría ser un error latente.
+   - La funcionalidad de agrupación de párrafos (ej. párrafos 1, 2.) implementada en el backend aún no se ha probado con un PDF real que contenga dicho formato. Podría ser un error latente.
 
 **Known issue recurrence from previous fork**
-  - El usuario es muy detallista con el diseño y es común que solicite múltiples pequeños ajustes visuales de forma iterativa.
-  - El caché de la PWA a veces impide que el usuario vea los últimos cambios, requiriendo una reinstalación o limpieza de caché.
+  - **Sensibilidad al diseño**: El usuario es muy detallista y suele solicitar múltiples ajustes visuales de forma iterativa.
+  - **Caché de la PWA**: El usuario a menudo no ve los últimos cambios debido al caché, lo que requiere recordarle que debe refrescar forzadamente o reinstalar la aplicación.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend**: FastAPI, PyMuPDF.
-- **Frontend**: React, Hooks (, , ).
-- **Styling**: Tailwind CSS, con uso intensivo de clases  para el modo oscuro.
-- **PWA**: Service Workers, Web App Manifest.
-- **State Management**: Persistencia de ajustes en  (incluyendo el estado del modo oscuro y el tema) y manejo de estado centralizado en .
+- **Backend**: FastAPI, PyMuPDF para el parseo de PDF.
+- **Frontend**: React, Hooks (, ).
+- **Styling**: Tailwind CSS, con uso intensivo de clases  y un sistema de temas para modo oscuro.
+- **PWA**: Service Workers, Web App Manifest para la instalación.
+- **State Management**: Persistencia en  y manejo de estado centralizado en .
 
 **key DB schema**
   - La aplicación no utiliza una base de datos.
@@ -104,50 +93,45 @@ Una aplicación full-stack altamente funcional con un backend de FastAPI y un fr
   - Ninguno.
 
 **All files of reference**
-- : Modificado extensamente para añadir estados y lógica para los modos de introducción/conclusión, modo oscuro y pasar props a los componentes hijos.
-- : Rediseñado el encabezado del temporizador y añadido soporte para modo oscuro.
-- : Modificado para añadir el flujo de Palabras de Conclusión, rediseñar el temporizador y añadir soporte para modo oscuro.
-- : **Nuevo archivo** creado para la sección de introducción.
-- : Modificado para incluir sliders de tiempo de introducción/conclusión y soporte para modo oscuro.
-- : Añadidos nuevos temas y corregida la visibilidad de la barra de control.
-- : Rediseñado para una mejor estética.
-- : Rediseñado para consistencia visual con el panel de la página de inicio.
-- : Añadido soporte para modo oscuro.
-- : Actualizado a la versión 2.4.
+- : Modificado para eliminar el truncamiento de texto y para añadir la nueva lógica de extracción de contenido entre paréntesis (en progreso).
+- : Modificado para la funcionalidad de mostrar/ocultar párrafos, el selector de temas y rediseños de UI.
+- : Modificado para corregir bugs de UI, mejorar el contraste y ajustar el layout de los botones.
+- : Nuevo archivo creado para las variantes de tema oscuro.
+- : Un PDF de prueba real proporcionado por el usuario, que debe usarse para las pruebas.
+- : Nuevo archivo creado a petición del usuario.
 
 **Areas that need refactoring**:
-- : Este componente ha crecido aún más y es extremadamente complejo. Gestiona una cantidad masiva de estado. Es crucial empezar a extraer lógica a custom hooks para mejorar la mantenibilidad.
-- : Este archivo ahora contiene la lógica y renderizado para tres componentes distintos (,  y el contenedor principal). Debería dividirse en archivos separados.
+- : Sigue siendo un componente monolítico con una cantidad excesiva de estados y lógica. Es un candidato prioritario para refactorizar usando custom hooks.
+- : Contiene la lógica y renderizado de varios sub-componentes que deberían ser divididos en archivos separados.
 
 **key api endpoints**
-- 
+- : Endpoint principal que está siendo modificado para incluir la nueva información de las preguntas.
 
 **Critical Info for New Agent**
-- **Prioridad Inmediata**: La tarea más importante es verificar y finalizar las mejoras visuales del modo oscuro que se estaban implementando. Toma una captura de pantalla para confirmar que todos los paneles se ven bien en modo oscuro.
-- **Flujo de Trabajo del Usuario**: El usuario es muy visual y proporciona feedback iterativo. Prepárate para realizar pequeños ajustes de diseño hasta que esté satisfecho.
-- **Problemas de Caché**: Ten presente que el usuario puede no ver tus cambios debido al caché de la PWA. Debes estar listo para guiarlo en el proceso de limpieza de caché o reinstalación de la aplicación.
-- **Complejidad del Código**: Ten cuidado al editar . Es un componente muy grande y propenso a errores. Considera proponer una refactorización (extracción de hooks) como una tarea futura para mejorar la salud del código.
+- **Prioridad Inmediata**: La tarea más importante es finalizar la modificación del backend en  para que la API devuelva el contenido extra de las preguntas. Inmediatamente después, implementa la visualización de esta información en el frontend en .
+- **Utiliza el PDF de prueba**: Para todas las pruebas relacionadas con las preguntas y su contenido extra, utiliza el archivo que proporcionó el usuario, disponible en .
+- **Iteración de Diseño**: El usuario es muy visual. Prepárate para recibir feedback sobre el diseño de los nuevos distintivos y realiza ajustes hasta que esté satisfecho.
+- **Problemas de Caché**: Recuerda constantemente al usuario que debe limpiar el caché de la PWA o del navegador si no ve los cambios más recientes.
 
 **documents and test reports created in this job**
--  (actualizado a v2.4)
--  (actualizado en múltiples ocasiones)
+-  (actualizado)
+-  (creado)
 
 **Last 10 User Messages and any pending HUMAN messages** 
-- 10. : Pide mejorar el modo oscuro con fondos más oscuros y mejor contraste en los paneles. (IN PROGRESS)
-- 9. : Pide agregar una forma de configurar los tiempos de introducción y conclusión. (COMPLETED)
-- 8. : Pide agregar nuevos temas de colores y un modo oscuro. (COMPLETED)
-- 7. : Pide actualizar el manual de usuario con el nuevo flujo. (COMPLETED)
-- 6. : Pide que el cronómetro en el encabezado del párrafo activo sea más minimalista. (COMPLETED)
-- 5. : Pide añadir una sección de Palabras de introducción antes del primer párrafo. (COMPLETED)
-- 4. : Pide añadir una sección de Palabras de conclusión después de las preguntas de repaso. (COMPLETED)
-- 3. : Reporta que el banner de respondiendo ahora en las preguntas se desordena. (COMPLETED)
-- 2. : Pide cambiar el texto Total preguntas de repaso y hacer el panel más atractivo. (COMPLETED)
-- 1. : Reporta que el panel para editar la hora de fin se desordena después de cargar el PDF. (COMPLETED)
+- 10. : Pide extraer y clasificar el contenido entre paréntesis después de las preguntas, mostrándolo con distintivos atractivos. (IN PROGRESS)
+- 9. : Reporta que el texto de los párrafos se está truncando. (COMPLETED)
+- 8. : Pide cambiar el color de los botones de mostrar contenido a un verde más claro y ajustar el texto. (COMPLETED)
+- 7. : Pide rediseñar la sección Desglose por párrafo, el icono del ojo (a naranja) y el borde del botón de pregunta (más grueso). (COMPLETED)
+- 6. : Pide mover el botón Ver pregunta al lado derecho. (COMPLETED)
+- 5. : Confirma que el bug del botón Ver pregunta es real. (COMPLETED)
+- 4. : Pide hacer más llamativos los botones de mostrar/ocultar y mejorar el contraste del botón de pregunta. (COMPLETED)
+- 3. : Reporta que los botones para mostrar/ocultar no se ven en móvil. (RESOLVED - Cache issue)
+- 2. : Reporta no ver los nuevos botones y un símbolo extraño. (RESOLVED - Cache issue)
+- 1. : Pide añadir botones para mostrar/ocultar el contenido de los párrafos. (COMPLETED)
 
 **Project Health Check:**
-- **Working**: La aplicación es estable y cuenta con un conjunto de características muy completo que cumple con casi todas las solicitudes originales del usuario y más.
-- **Mocked**: N/A
-- **Broken**: No hay funcionalidades rotas. La única tarea rota es la interfaz de usuario del modo oscuro, que está a mitad de una mejora visual.
+- **Working**: La aplicación es estable y muy completa.
+- **Broken**: No hay funcionalidades rotas; la tarea actual es una mejora en curso.
 
 **3rd Party Integrations**
 - PyMuPDF
@@ -164,4 +148,4 @@ Una aplicación full-stack altamente funcional con un backend de FastAPI y un fr
 N/A
 
 **What agent forgot to execute**
-- El agente estaba en medio de la implementación de las mejoras del modo oscuro y no llegó a realizar una verificación visual final con una captura de pantalla para confirmar que todos los cambios se aplicaron correctamente y de manera consistente en toda la interfaz.</analysis>
+El agente estaba a mitad de la implementación de la nueva funcionalidad en el backend. Creó el modelo y la función auxiliar en  pero no llegó a integrar la llamada a esta función en la lógica principal de análisis del PDF para que los datos se devuelvan efectivamente en la API. La parte del frontend para esta tarea no se ha iniciado.</analysis>
