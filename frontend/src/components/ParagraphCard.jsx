@@ -449,7 +449,7 @@ export function ParagraphCard({
                     : (hasFinalQuestions 
                         ? (darkMode ? '#dc2626' : '#fca5a5')
                         : (darkMode ? '#ea580c' : '#fdba74')),
-                  borderWidth: '2px',
+                  borderWidth: '3px',
                   borderStyle: 'solid',
                   borderRadius: '9999px',
                   padding: '0.75rem 1rem',
