@@ -95,6 +95,14 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
   - Indicador de progreso de párrafos con estilo oscuro
   - Sección de preguntas finales con variantes oscuras
   - Componentes de introducción/conclusión con fondos oscuros
+- ✅ **Selector de variantes de modo oscuro con 4 temas (11-Feb-2025)**
+  - Menú desplegable al hacer clic en el icono sol/luna
+  - **Zinc**: Equilibrado y suave (por defecto)
+  - **AMOLED Negro**: Negro puro #000000 para pantallas OLED
+  - **Slate Oscuro**: Tono azulado frío
+  - **Neutral Oscuro**: Tono cálido marrón
+  - Indicadores visuales de color en cada opción
+  - Preferencia guardada en localStorage
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
