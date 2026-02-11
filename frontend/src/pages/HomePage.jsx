@@ -667,7 +667,7 @@ export default function HomePage() {
                   onClick={enterPresentationMode} 
                   className={`rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 font-medium transition-all text-xs sm:text-sm ${
                     darkMode
-                      ? 'border-zinc-600 text-zinc-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-500/10'
+                      ? 'border-zinc-500 text-zinc-100 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-500/10'
                       : 'border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
                   }`}
                   data-testid="presentation-mode-btn"
@@ -681,7 +681,7 @@ export default function HomePage() {
                       variant="outline" 
                       className={`rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 font-medium text-xs sm:text-sm ${
                         darkMode
-                          ? 'border-zinc-600 text-zinc-300 hover:border-zinc-500'
+                          ? 'border-zinc-500 text-zinc-100 hover:border-zinc-400 hover:bg-zinc-700'
                           : 'border-slate-300 text-slate-700 hover:border-slate-400'
                       }`}
                       data-testid="export-btn"
@@ -690,12 +690,12 @@ export default function HomePage() {
                       <span className="hidden sm:inline">Exportar</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="rounded-xl">
-                    <DropdownMenuItem onClick={exportToImage} data-testid="export-image-btn" className="cursor-pointer">
+                  <DropdownMenuContent align="end" className={`rounded-xl ${darkMode ? 'bg-zinc-800 border-zinc-600' : ''}`}>
+                    <DropdownMenuItem onClick={exportToImage} data-testid="export-image-btn" className={`cursor-pointer ${darkMode ? 'text-zinc-100 hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}>
                       <FileImage className="w-4 h-4 mr-2" />
                       Exportar como Imagen (PNG)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-btn" className="cursor-pointer">
+                    <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-btn" className={`cursor-pointer ${darkMode ? 'text-zinc-100 hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}>
                       <File className="w-4 h-4 mr-2" />
                       Exportar como PDF
                     </DropdownMenuItem>
@@ -706,7 +706,7 @@ export default function HomePage() {
                   onClick={resetAll} 
                   className={`rounded-full px-2 sm:px-4 py-1.5 sm:py-2 font-medium text-xs sm:text-sm ${
                     darkMode
-                      ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700'
+                      ? 'text-zinc-200 hover:text-zinc-50 hover:bg-zinc-700'
                       : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
                   }`}
                   data-testid="new-analysis-btn"
