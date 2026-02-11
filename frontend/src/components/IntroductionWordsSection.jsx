@@ -13,7 +13,8 @@ export function IntroductionWordsSection({
   vibrationEnabled,
   playNotificationSound,
   triggerVibration,
-  hasStarted // true if timer has been started
+  hasStarted, // true if timer has been started
+  darkMode = false
 }) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
