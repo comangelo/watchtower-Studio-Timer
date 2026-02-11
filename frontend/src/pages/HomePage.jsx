@@ -1056,6 +1056,7 @@ export default function HomePage() {
                   analysisResult={analysisResult}
                   currentManualParagraph={currentManualParagraph}
                   readingSpeed={readingSpeed}
+                  darkMode={darkMode}
                 />
 
                 <NotificationSettings
@@ -1069,6 +1070,7 @@ export default function HomePage() {
                   onTestVibration={() => triggerVibration([200, 100, 200])}
                   overtimeAlertEnabled={overtimeAlertEnabled}
                   setOvertimeAlertEnabled={setOvertimeAlertEnabled}
+                  darkMode={darkMode}
                 />
 
                 {/* Statistics Panel - shows after at least one paragraph is completed */}
