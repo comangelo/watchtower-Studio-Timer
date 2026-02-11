@@ -1,9 +1,9 @@
-import { Play, Pause, RotateCcw, Clock } from "lucide-react";
+import { Play, Pause, RotateCcw, Clock, Pencil, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatTime, formatClockTime } from "../utils/timeFormatters";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export function TimerDisplay({
   elapsedTime,
@@ -15,22 +15,54 @@ export function TimerDisplay({
   onReset,
   remainingTime,
   totalDuration = 60,
+  manualEndTime,
+  onManualEndTimeChange,
 }) {
   const isLowTime = remainingTime <= 300;
   const isOvertime = remainingTime <= 0;
+  const [isEditingEndTime, setIsEditingEndTime] = useState(false);
+  const [editHours, setEditHours] = useState('');
+  const [editMinutes, setEditMinutes] = useState('');
 
   // Calculate projected times based on current time and configured duration
-  // This updates every render to show real-time preview
   const { displayStartTime, displayEndTime } = useMemo(() => {
     if (startTime && endTime) {
-      // Timer is running - use actual times
       return { displayStartTime: startTime, displayEndTime: endTime };
     }
-    // Timer not started - calculate preview based on NOW + duration
     const now = new Date();
+    // Use manual end time if set, otherwise calculate from duration
+    if (manualEndTime) {
+      return { displayStartTime: now, displayEndTime: manualEndTime };
+    }
     const projected = new Date(now.getTime() + totalDuration * 60 * 1000);
     return { displayStartTime: now, displayEndTime: projected };
-  }, [startTime, endTime, totalDuration]);
+  }, [startTime, endTime, totalDuration, manualEndTime]);
+
+  const startEditingEndTime = () => {
+    const timeToEdit = manualEndTime || displayEndTime;
+    setEditHours(timeToEdit.getHours().toString().padStart(2, '0'));
+    setEditMinutes(timeToEdit.getMinutes().toString().padStart(2, '0'));
+    setIsEditingEndTime(true);
+  };
+
+  const saveEndTime = () => {
+    const hours = parseInt(editHours) || 0;
+    const minutes = parseInt(editMinutes) || 0;
+    if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+      const newEndTime = new Date();
+      newEndTime.setHours(hours, minutes, 0, 0);
+      onManualEndTimeChange(newEndTime);
+      setIsEditingEndTime(false);
+    }
+  };
+
+  const cancelEditEndTime = () => {
+    setIsEditingEndTime(false);
+  };
+
+  const clearManualEndTime = () => {
+    onManualEndTimeChange(null);
+  };
 
   return (
     <div className="space-y-2 sm:space-y-4">
