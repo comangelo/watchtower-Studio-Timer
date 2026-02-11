@@ -152,8 +152,12 @@ export function IntroductionWordsSection({
       ref={cardRef}
       className={`relative rounded-2xl border-2 shadow-lg transition-all duration-300 ${
         isOverTime 
-          ? 'border-red-400 bg-red-50 shadow-red-100' 
-          : 'border-blue-400 bg-blue-50 shadow-blue-100'
+          ? darkMode 
+            ? 'border-red-600 bg-red-950/50 shadow-red-900/30' 
+            : 'border-red-400 bg-red-50 shadow-red-100' 
+          : darkMode 
+            ? 'border-blue-600 bg-blue-950/50 shadow-blue-900/30' 
+            : 'border-blue-400 bg-blue-50 shadow-blue-100'
       }`}
       data-testid="introduction-words-active"
     >
@@ -214,10 +218,18 @@ export function IntroductionWordsSection({
             <Mic className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className={`font-bold text-lg ${isOverTime ? 'text-red-800' : 'text-blue-800'}`}>
+            <h3 className={`font-bold text-lg ${
+              isOverTime 
+                ? darkMode ? 'text-red-300' : 'text-red-800' 
+                : darkMode ? 'text-blue-300' : 'text-blue-800'
+            }`}>
               Palabras de Introducción
             </h3>
-            <p className={`text-sm mt-1 ${isOverTime ? 'text-red-600' : 'text-blue-600'}`}>
+            <p className={`text-sm mt-1 ${
+              isOverTime 
+                ? darkMode ? 'text-red-400' : 'text-red-600' 
+                : darkMode ? 'text-blue-400' : 'text-blue-600'
+            }`}>
               El conductor introduce el tema del artículo de estudio.
             </p>
           </div>
