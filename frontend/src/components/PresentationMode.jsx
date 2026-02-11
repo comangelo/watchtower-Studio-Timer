@@ -538,15 +538,15 @@ export default function PresentationMode({
         <div className={`w-full max-w-xl ${t.card} rounded-2xl p-4 md:p-5 mb-4 border ${t.border}`}>
           {/* Paragraph Progress Indicator (only for paragraphs phase) */}
           {studyPhase === PHASES.PARAGRAPHS && (
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-medium ${t.textMuted}`}>Progreso de párrafos</span>
-                <span className={`text-xs font-bold ${phaseInfo.color}`}>
-                  {currentParagraphIndex + 1} / {articleStats.paragraphs}
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-3">
+                <span className={`text-sm font-semibold ${t.textMuted}`}>Progreso de párrafos</span>
+                <span className={`text-sm font-bold ${phaseInfo.color} bg-green-500/20 px-3 py-1 rounded-full`}>
+                  {currentParagraphIndex + 1} de {articleStats.paragraphs}
                 </span>
               </div>
-              {/* Visual paragraph dots */}
-              <div className="flex gap-1 flex-wrap">
+              {/* Visual paragraph progress bar - LONGER */}
+              <div className="flex gap-1.5 flex-wrap">
                 {Array.from({ length: articleStats.paragraphs }).map((_, idx) => {
                   const para = analysisResult?.paragraphs?.[idx];
                   const hasImg = para?.questions?.some(q => q.content_type === 'image');
@@ -557,19 +557,44 @@ export default function PresentationMode({
                   return (
                     <div 
                       key={idx}
-                      className={`h-2 rounded-full transition-all ${
+                      className={`h-3 rounded-full transition-all relative ${
                         isCurrent 
-                          ? 'w-6 bg-green-500' 
+                          ? 'w-10 bg-green-500 shadow-lg shadow-green-500/50' 
                           : isCompleted 
-                            ? 'w-2 bg-green-500/50' 
-                            : hasImg || hasTxt
-                              ? 'w-2 bg-gradient-to-r from-purple-500 to-blue-500'
-                              : `w-2 ${t.progressBg}`
+                            ? 'w-4 bg-green-500/60' 
+                            : hasImg && hasTxt
+                              ? 'w-4 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 animate-pulse'
+                              : hasImg
+                                ? 'w-4 bg-purple-500/80'
+                                : hasTxt
+                                  ? 'w-4 bg-blue-500/80'
+                                  : `w-4 ${t.progressBg}`
                       }`}
-                      title={`Párrafo ${idx + 1}${hasImg ? ' (imagen)' : ''}${hasTxt ? ' (texto)' : ''}`}
-                    />
+                      title={`Párrafo ${idx + 1}${hasImg ? ' 🖼️' : ''}${hasTxt ? ' 📖' : ''}`}
+                    >
+                      {isCurrent && (
+                        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-green-400">
+                          {idx + 1}
+                        </span>
+                      )}
+                    </div>
                   );
                 })}
+              </div>
+              {/* Legend */}
+              <div className="flex items-center gap-4 mt-3 justify-center">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                  <span className={`text-[10px] ${t.textMuted}`}>Imagen</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                  <span className={`text-[10px] ${t.textMuted}`}>Texto</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className={`text-[10px] ${t.textMuted}`}>Actual</span>
+                </div>
               </div>
             </div>
           )}
