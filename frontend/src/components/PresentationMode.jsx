@@ -152,17 +152,93 @@ export default function PresentationMode({
     setPhaseElapsed(0);
   }, [studyPhase, currentParagraphIndex, currentReviewQuestion]);
 
-  // Current paragraph
+  // Group paragraphs that belong together based on "grouped_with" field
+  const paragraphGroups = useMemo(() => {
+    if (!analysisResult?.paragraphs) return [];
+    
+    const paragraphs = analysisResult.paragraphs;
+    const groups = [];
+    const processedIndices = new Set();
+    
+    paragraphs.forEach((para, index) => {
+      if (processedIndices.has(index)) return;
+      
+      const groupedWith = para.grouped_with || [];
+      
+      if (groupedWith.length > 1) {
+        // This paragraph is part of a group
+        const groupParagraphs = groupedWith
+          .map(num => paragraphs.find(p => p.number === num))
+          .filter(Boolean);
+        
+        // Mark all paragraphs in this group as processed
+        groupParagraphs.forEach(gp => {
+          const gIndex = paragraphs.findIndex(p => p.number === gp.number);
+          processedIndices.add(gIndex);
+        });
+        
+        // Only add the group once (when we encounter the first paragraph of the group)
+        if (para.number === Math.min(...groupedWith)) {
+          groups.push({
+            type: 'group',
+            paragraphs: groupParagraphs,
+            numbers: groupParagraphs.map(p => p.number),
+            indices: groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number)),
+            // Combined stats
+            totalTime: groupParagraphs.reduce((sum, p) => sum + (p.total_time_seconds || 0), 0),
+            totalWords: groupParagraphs.reduce((sum, p) => sum + (p.word_count || 0), 0),
+            allQuestions: groupParagraphs.flatMap(p => p.questions || [])
+          });
+        }
+      } else {
+        // Single paragraph
+        processedIndices.add(index);
+        groups.push({
+          type: 'single',
+          paragraphs: [para],
+          numbers: [para.number],
+          indices: [index],
+          totalTime: para.total_time_seconds || 0,
+          totalWords: para.word_count || 0,
+          allQuestions: para.questions || []
+        });
+      }
+    });
+    
+    return groups;
+  }, [analysisResult?.paragraphs]);
+
+  // Current group index based on currentParagraphIndex
+  const currentGroupIndex = useMemo(() => {
+    for (let i = 0; i < paragraphGroups.length; i++) {
+      if (paragraphGroups[i].indices.includes(currentParagraphIndex)) {
+        return i;
+      }
+    }
+    return 0;
+  }, [paragraphGroups, currentParagraphIndex]);
+
+  // Current group
+  const currentGroup = useMemo(() => {
+    return paragraphGroups[currentGroupIndex] || null;
+  }, [paragraphGroups, currentGroupIndex]);
+
+  // Next group (for showing alerts)
+  const nextGroup = useMemo(() => {
+    return paragraphGroups[currentGroupIndex + 1] || null;
+  }, [paragraphGroups, currentGroupIndex]);
+
+  // Current paragraph (first of current group for compatibility)
   const currentParagraph = useMemo(() => {
-    if (!analysisResult || !analysisResult.paragraphs) return null;
-    return analysisResult.paragraphs[currentParagraphIndex] || null;
-  }, [analysisResult, currentParagraphIndex]);
+    if (!currentGroup) return null;
+    return currentGroup.paragraphs[0] || null;
+  }, [currentGroup]);
   
-  // Next paragraph (for showing alerts)
+  // Next paragraph (first of next group for alerts)
   const nextParagraph = useMemo(() => {
-    if (!analysisResult || !analysisResult.paragraphs) return null;
-    return analysisResult.paragraphs[currentParagraphIndex + 1] || null;
-  }, [analysisResult, currentParagraphIndex]);
+    if (!nextGroup) return null;
+    return nextGroup.paragraphs[0] || null;
+  }, [nextGroup]);
   
   // Check if next paragraph has special content ("both" means image AND scripture)
   const nextParagraphHasImage = useMemo(() => {
