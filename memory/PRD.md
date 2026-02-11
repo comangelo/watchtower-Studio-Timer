@@ -79,6 +79,11 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ **Edición de hora de fin funcional en pantalla inicial con indicador "(MANUAL)" (11-Feb-2025)**
 - ✅ **Duración calculada automáticamente al establecer hora manual (color cian) (11-Feb-2025)**
 - ✅ **Opción "Restaurar hora automática" para volver a duración configurada (11-Feb-2025)**
+- ✅ **Palabras de Introducción: Nueva sección antes de los párrafos con cronómetro (1 min) (11-Feb-2025)**
+- ✅ **Palabras de Conclusión: Nueva sección después de preguntas de repaso con cronómetro (1 min) (11-Feb-2025)**
+- ✅ **Flujo completo: Introducción → Párrafos → Preguntas → Conclusión → Finalizar (11-Feb-2025)**
+- ✅ **Encabezados de párrafos rediseñados: más minimalistas con "LEYENDO" (11-Feb-2025)**
+- ✅ **Manual de usuario actualizado a v2.4 con nuevo flujo documentado (11-Feb-2025)**
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
