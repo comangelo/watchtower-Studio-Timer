@@ -243,10 +243,14 @@ export function ParagraphCard({
                   e.stopPropagation();
                   setShowContent(!showContent);
                 }}
-                className={`rounded-full p-1.5 h-auto ${
-                  darkMode 
-                    ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700' 
-                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                className={`rounded-full p-2 h-auto transition-all ${
+                  showContent
+                    ? darkMode 
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                      : 'bg-purple-500 hover:bg-purple-600 text-white'
+                    : darkMode 
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
+                      : 'bg-emerald-500 hover:bg-emerald-600 text-white'
                 }`}
                 title={showContent ? 'Ocultar contenido' : 'Mostrar contenido'}
                 data-testid={`toggle-content-${paragraph.number}`}
