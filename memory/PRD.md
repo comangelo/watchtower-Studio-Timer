@@ -13,11 +13,11 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - Extracción de texto y división en párrafos
 - **Cálculo de tiempo de lectura CONFIGURABLE (150/180/210 palabras/minuto)**
 - **Tiempo por respuesta CONFIGURABLE (15-90 segundos)**
+- **Duración total CONFIGURABLE (0-60 minutos, incremento de 1)**
 - Detección de preguntas formato "número. pregunta"
 - Detección de preguntas finales después de línea horizontal (no "¿QUÉ RESPONDERÍAS?")
 - Cronómetro principal (cuenta hacia arriba)
 - Contador regresivo hasta últimas preguntas
-- Duración total fija de 60 minutos
 - Ajuste dinámico: tiempo de lectura FIJO, tiempo de preguntas VARIABLE
 - Interfaz completamente en español
 - PWA instalable en Android/iOS/Desktop
