@@ -287,16 +287,24 @@ function ReviewQuestionCard({
       ref={cardRef}
       className={`relative rounded-xl transition-all duration-300 ${
         isCompletedQuestion
-          ? 'bg-slate-100 border border-slate-200 opacity-70'
+          ? darkMode 
+            ? 'bg-zinc-800 border border-zinc-700 opacity-70'
+            : 'bg-slate-100 border border-slate-200 opacity-70'
           : isCurrentQuestion 
             ? isOverTime
               ? 'bg-red-100 border-2 border-red-400 shadow-lg'
               : 'bg-green-100 border-2 border-green-400 shadow-lg'
             : isCriticalTime 
-              ? 'bg-red-100 border border-red-200'
+              ? darkMode 
+                ? 'bg-red-950/50 border border-red-800'
+                : 'bg-red-100 border border-red-200'
               : isLowTime 
-                ? 'bg-orange-100 border border-orange-200'
-                : 'bg-red-50 border border-red-100'
+                ? darkMode 
+                  ? 'bg-orange-950/50 border border-orange-800'
+                  : 'bg-orange-100 border border-orange-200'
+                : darkMode 
+                  ? 'bg-red-950/30 border border-red-900'
+                  : 'bg-red-50 border border-red-100'
       }`}
       data-testid={`review-question-${index}`}
     >
