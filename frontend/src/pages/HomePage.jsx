@@ -993,6 +993,7 @@ export default function HomePage() {
                         triggerVibration={triggerVibration}
                         onStartReview={startReviewMode}
                         hasReviewQuestions={analysisResult.final_questions?.length > 0}
+                        darkMode={darkMode}
                       />
                     );
                   })}
