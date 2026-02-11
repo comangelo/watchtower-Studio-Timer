@@ -480,48 +480,109 @@ export function ParagraphCard({
           {/* Questions Section */}
           {hasQuestions && (
             <CollapsibleContent>
-              <div className="mt-4 space-y-2 pl-2 border-l-2 border-orange-200">
+              <div className={`mt-4 space-y-2 pl-2 border-l-2 ${darkMode ? 'border-orange-700' : 'border-orange-200'}`}>
                 {allQuestions.map((q, qIndex) => {
                   const displayTime = isTimerRunning && adjustedQuestionTime ? adjustedQuestionTime : q.answer_time;
                   const isAdjusted = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime !== 35;
                   const timeDiff = adjustedQuestionTime ? adjustedQuestionTime - 35 : 0;
                   const isLowTime = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime < 20;
                   const formattedTime = formatTimeCompact(displayTime);
+                  const hasExtraContent = q.parenthesis_content && q.parenthesis_content.length > 0;
+                  const isImageContent = q.content_type === 'image';
+                  const isScriptureContent = q.content_type === 'scripture';
                   
                   return (
                     <div 
                       key={qIndex}
                       className={`rounded-xl py-3 px-4 text-sm ${
                         q.is_final_question 
-                          ? 'bg-red-50 text-red-800 border border-red-200' 
+                          ? darkMode 
+                            ? 'bg-red-950 text-red-200 border border-red-800' 
+                            : 'bg-red-50 text-red-800 border border-red-200' 
                           : isLowTime
-                            ? 'bg-orange-100 text-orange-900 border border-orange-300'
-                            : 'bg-orange-50 text-orange-800 border border-orange-100'
+                            ? darkMode 
+                              ? 'bg-orange-950 text-orange-200 border border-orange-700'
+                              : 'bg-orange-100 text-orange-900 border border-orange-300'
+                            : darkMode 
+                              ? 'bg-orange-950/50 text-orange-200 border border-orange-800'
+                              : 'bg-orange-50 text-orange-800 border border-orange-100'
                       }`}
                       data-testid={`question-${paragraph.number}-${qIndex}`}
                     >
                       <div className="flex items-start gap-2">
-                        <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${q.is_final_question ? 'text-red-500' : 'text-orange-500'}`} />
-                        <div className="flex-1 flex items-start justify-between">
-                          <span>{q.text}</span>
-                          <div className="flex items-center gap-1 ml-2 shrink-0">
-                            <span className={`text-xs font-light px-2 py-0.5 rounded-full ${
-                              isLowTime 
-                                ? 'bg-orange-200 text-orange-700' 
-                                : q.is_final_question 
-                                  ? 'text-red-500' 
-                                  : isAdjusted
-                                    ? timeDiff > 0 ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
-                                    : 'text-orange-500'
-                            }`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-                              +{formattedTime}
-                            </span>
-                            {isAdjusted && (
-                              <span className={`text-[10px] ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
-                                ({timeDiff > 0 ? '+' : ''}{formatTimeCompact(Math.abs(timeDiff))})
+                        <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
+                          q.is_final_question 
+                            ? darkMode ? 'text-red-400' : 'text-red-500' 
+                            : darkMode ? 'text-orange-400' : 'text-orange-500'
+                        }`} />
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between">
+                            <span>{q.text}</span>
+                            <div className="flex items-center gap-1 ml-2 shrink-0">
+                              <span className={`text-xs font-light px-2 py-0.5 rounded-full ${
+                                isLowTime 
+                                  ? darkMode ? 'bg-orange-800 text-orange-200' : 'bg-orange-200 text-orange-700' 
+                                  : q.is_final_question 
+                                    ? darkMode ? 'text-red-400' : 'text-red-500' 
+                                    : isAdjusted
+                                      ? timeDiff > 0 
+                                        ? darkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-700' 
+                                        : darkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-100 text-orange-700'
+                                      : darkMode ? 'text-orange-400' : 'text-orange-500'
+                              }`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                                +{formattedTime}
                               </span>
-                            )}
+                              {isAdjusted && (
+                                <span className={`text-[10px] ${
+                                  timeDiff > 0 
+                                    ? darkMode ? 'text-green-400' : 'text-green-600' 
+                                    : darkMode ? 'text-orange-400' : 'text-orange-600'
+                                }`}>
+                                  ({timeDiff > 0 ? '+' : ''}{formatTimeCompact(Math.abs(timeDiff))})
+                                </span>
+                              )}
+                            </div>
                           </div>
+                          
+                          {/* Extra Content Badge */}
+                          {hasExtraContent && (
+                            <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${
+                              isImageContent 
+                                ? darkMode 
+                                  ? 'bg-purple-900/60 text-purple-200 border border-purple-700' 
+                                  : 'bg-purple-100 text-purple-700 border border-purple-200'
+                                : isScriptureContent 
+                                  ? darkMode 
+                                    ? 'bg-blue-900/60 text-blue-200 border border-blue-700' 
+                                    : 'bg-blue-100 text-blue-700 border border-blue-200'
+                                  : darkMode 
+                                    ? 'bg-zinc-700 text-zinc-200 border border-zinc-600' 
+                                    : 'bg-gray-100 text-gray-700 border border-gray-200'
+                            }`}>
+                              {isImageContent ? (
+                                <>
+                                  <Image className="w-3.5 h-3.5" />
+                                  <span>Contiene imagen</span>
+                                </>
+                              ) : isScriptureContent ? (
+                                <>
+                                  <BookOpen className="w-3.5 h-3.5" />
+                                  <span>Texto para leer</span>
+                                </>
+                              ) : (
+                                <span>Contenido adicional</span>
+                              )}
+                              <span className={`${
+                                isImageContent 
+                                  ? darkMode ? 'text-purple-300' : 'text-purple-600' 
+                                  : isScriptureContent 
+                                    ? darkMode ? 'text-blue-300' : 'text-blue-600'
+                                    : darkMode ? 'text-zinc-300' : 'text-gray-600'
+                              }`}>
+                                ({q.parenthesis_content})
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
