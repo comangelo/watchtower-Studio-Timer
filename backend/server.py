@@ -261,6 +261,29 @@ def create_question_info(question_text: str, answer_time: int, is_final_question
     )
 
 
+def join_hyphenated_lines(parts: List[str]) -> str:
+    """
+    Join lines of text, handling hyphenated word breaks.
+    Example: ["ima-", "gen de la portada"] -> "imagen de la portada"
+    """
+    if not parts:
+        return ""
+    
+    result = []
+    for i, part in enumerate(parts):
+        part = part.strip()
+        if not part:
+            continue
+            
+        if result and result[-1].endswith('-'):
+            # Previous part ended with hyphen - join without space
+            result[-1] = result[-1][:-1] + part
+        else:
+            result.append(part)
+    
+    return ' '.join(result)
+
+
 def process_pdf_with_font_sizes(pdf_bytes: bytes) -> dict:
     """
     Process PDF using font size information to distinguish paragraphs from questions.
