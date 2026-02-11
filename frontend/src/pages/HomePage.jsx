@@ -367,7 +367,7 @@ export default function HomePage() {
       const now = new Date();
       if (!startTime) {
         setStartTime(now);
-        setEndTime(addSecondsToDate(now, 3600));
+        setEndTime(addSecondsToDate(now, totalDurationSeconds));
         setParagraphStartTime(Date.now()); // Start timing first paragraph
       }
     }
@@ -377,7 +377,7 @@ export default function HomePage() {
   const resetTimer = () => {
     setIsTimerRunning(false);
     setElapsedTime(0);
-    setRemainingTime(3600);
+    setRemainingTime(totalDurationSeconds);
     setStartTime(null);
     setEndTime(null);
     setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
