@@ -1298,6 +1298,11 @@ def analyze_pdf_with_font_info_configurable(
     total_reading_time = 0.0
     total_question_time = 0.0
     cumulative_time = 0.0
+    total_images = 0
+    total_scriptures = 0
+    
+    # Extra time for paragraphs with image or scripture references (40 seconds)
+    EXTRA_CONTENT_TIME = 40
     
     for para_num in sorted(paragraphs_data.keys()):
         para_data = paragraphs_data[para_num]
@@ -1308,6 +1313,26 @@ def analyze_pdf_with_font_info_configurable(
         word_count = count_words(para_text)
         reading_time = calculate_reading_time(word_count, wpm)
         question_time = len(questions) * answer_time
+        
+        # Count extra content and add time
+        para_has_image = False
+        para_has_scripture = False
+        for q in questions:
+            if q.content_type == 'image':
+                total_images += 1
+                para_has_image = True
+            elif q.content_type == 'scripture':
+                total_scriptures += 1
+                para_has_scripture = True
+        
+        # Add 40 seconds for each type of extra content
+        extra_time = 0
+        if para_has_image:
+            extra_time += EXTRA_CONTENT_TIME
+        if para_has_scripture:
+            extra_time += EXTRA_CONTENT_TIME
+        
+        reading_time += extra_time
         
         total_words += word_count
         total_questions += len(questions)
@@ -1325,6 +1350,16 @@ def analyze_pdf_with_font_info_configurable(
             cumulative_time_seconds=round(cumulative_time, 2),
             grouped_with=grouped_with
         ))
+    
+    # Count extra content in final questions
+    for q in final_questions:
+        if q.content_type == 'image':
+            total_images += 1
+        elif q.content_type == 'scripture':
+            total_scriptures += 1
+    
+    # Calculate paragraph questions (total - final)
+    total_paragraph_questions = total_questions - len(final_questions)
     
     final_questions_start_time = cumulative_time
     final_questions_time = len(final_questions) * answer_time
@@ -1345,7 +1380,11 @@ def analyze_pdf_with_font_info_configurable(
         final_questions_start_time=round(final_questions_start_time, 2),
         final_questions=final_questions,
         final_questions_title=final_questions_title,
-        paragraphs=analyzed_paragraphs
+        paragraphs=analyzed_paragraphs,
+        total_paragraph_questions=total_paragraph_questions,
+        total_review_questions=len(final_questions),
+        total_images=total_images,
+        total_scriptures=total_scriptures
     )
 
 
