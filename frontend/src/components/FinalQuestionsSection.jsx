@@ -15,7 +15,8 @@ function ClosingWordsSection({
   soundEnabled,
   vibrationEnabled,
   playNotificationSound,
-  triggerVibration
+  triggerVibration,
+  darkMode = false
 }) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
@@ -74,17 +75,25 @@ function ClosingWordsSection({
   if (!isActive) {
     // Show preview/pending state
     return (
-      <div className="relative rounded-2xl bg-purple-50 border-2 border-purple-200 p-4 opacity-60">
+      <div className={`relative rounded-2xl border-2 p-4 opacity-60 ${
+        darkMode 
+          ? 'bg-purple-950/50 border-purple-800' 
+          : 'bg-purple-50 border-purple-200'
+      }`}>
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-purple-600" />
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+            darkMode ? 'bg-purple-800' : 'bg-purple-200'
+          }`}>
+            <Sparkles className={`w-6 h-6 ${darkMode ? 'text-purple-300' : 'text-purple-600'}`} />
           </div>
           <div>
-            <p className="font-bold text-purple-700">Palabras de Conclusión</p>
-            <p className="text-sm text-purple-500">Después de las preguntas de repaso</p>
-            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 rounded-full">
-              <Timer className="w-3 h-3 text-purple-600" />
-              <span className="text-xs font-medium text-purple-700">{formatTime(estimatedTime)}</span>
+            <p className={`font-bold ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>Palabras de Conclusión</p>
+            <p className={`text-sm ${darkMode ? 'text-purple-400' : 'text-purple-500'}`}>Después de las preguntas de repaso</p>
+            <div className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${
+              darkMode ? 'bg-purple-900' : 'bg-purple-100'
+            }`}>
+              <Timer className={`w-3 h-3 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
+              <span className={`text-xs font-medium ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>{formatTime(estimatedTime)}</span>
             </div>
           </div>
         </div>
@@ -203,7 +212,8 @@ function ReviewQuestionCard({
   vibrationEnabled,
   playNotificationSound,
   triggerVibration,
-  isTimerRunning
+  isTimerRunning,
+  darkMode = false
 }) {
   const [questionElapsed, setQuestionElapsed] = useState(0);
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
