@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatTime, formatClockTime } from "../utils/timeFormatters";
+import { useMemo } from "react";
 
 export function TimerDisplay({
   elapsedTime,
@@ -18,13 +19,18 @@ export function TimerDisplay({
   const isLowTime = remainingTime <= 300;
   const isOvertime = remainingTime <= 0;
 
-  // Calculate projected times if timer hasn't started
-  const now = new Date();
-  const projectedEndTime = new Date(now.getTime() + totalDuration * 60 * 1000);
-
-  // Use actual times if available, otherwise use projected
-  const displayStartTime = startTime || now;
-  const displayEndTime = endTime || projectedEndTime;
+  // Calculate projected times based on current time and configured duration
+  // This updates every render to show real-time preview
+  const { displayStartTime, displayEndTime } = useMemo(() => {
+    if (startTime && endTime) {
+      // Timer is running - use actual times
+      return { displayStartTime: startTime, displayEndTime: endTime };
+    }
+    // Timer not started - calculate preview based on NOW + duration
+    const now = new Date();
+    const projected = new Date(now.getTime() + totalDuration * 60 * 1000);
+    return { displayStartTime: now, displayEndTime: projected };
+  }, [startTime, endTime, totalDuration]);
 
   return (
     <div className="space-y-4">
@@ -43,11 +49,11 @@ export function TimerDisplay({
             </p>
           </div>
           
-          {/* Separator */}
-          <div className="flex flex-col items-center opacity-60">
-            <div className="w-8 sm:w-12 h-px bg-slate-600"></div>
-            <span className="text-[10px] sm:text-xs text-slate-500 my-1">{totalDuration} min</span>
-            <div className="w-8 sm:w-12 h-px bg-slate-600"></div>
+          {/* Separator with Duration */}
+          <div className="flex flex-col items-center">
+            <div className="w-8 sm:w-12 h-px bg-slate-600 opacity-60"></div>
+            <span className="text-xs sm:text-sm font-bold text-orange-400 my-1">{totalDuration} min</span>
+            <div className="w-8 sm:w-12 h-px bg-slate-600 opacity-60"></div>
           </div>
           
           {/* End Time - Amber/Gold Color */}
@@ -67,7 +73,9 @@ export function TimerDisplay({
           </div>
         </div>
         {!startTime && (
-          <p className="text-center text-slate-500 text-xs mt-3">Vista previa • Presiona ▶ para confirmar</p>
+          <p className="text-center text-slate-500 text-xs mt-3">
+            Hora actual + {totalDuration} min = Hora de fin
+          </p>
         )}
       </div>
 
