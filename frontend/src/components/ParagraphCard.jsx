@@ -281,20 +281,20 @@ export function ParagraphCard({
           {isGrouped ? (
             <div className="space-y-4">
               {allParagraphs.map((p, idx) => (
-                <div key={p.number} className={idx > 0 ? `pt-4 border-t ${darkMode ? 'border-zinc-700' : 'border-slate-200'}` : ''}>
+                <div key={p.number} className={idx > 0 ? `pt-4 border-t ${darkMode ? 'border-zinc-600' : 'border-slate-200'}` : ''}>
                   <p className={`text-xs font-semibold mb-1 ${
                     isCompletedParagraph 
-                      ? darkMode ? 'text-zinc-500' : 'text-slate-400' 
-                      : darkMode ? 'text-zinc-400' : 'text-slate-500'
+                      ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
+                      : darkMode ? 'text-zinc-300' : 'text-slate-500'
                   }`}>
                     Párrafo {p.number}:
                   </p>
                   <p className={`text-sm leading-relaxed ${
                     isCompletedParagraph 
-                      ? darkMode ? 'text-zinc-500' : 'text-slate-400' 
+                      ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
                       : isCurrentParagraph 
                         ? 'text-slate-800' 
-                        : darkMode ? 'text-zinc-200' : 'text-slate-600'
+                        : darkMode ? 'text-zinc-100' : 'text-slate-600'
                   }`}>
                     {p.text}
                   </p>
@@ -304,10 +304,10 @@ export function ParagraphCard({
           ) : (
             <p className={`text-sm leading-relaxed ${
               isCompletedParagraph 
-                ? darkMode ? 'text-zinc-500' : 'text-slate-400' 
+                ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
                 : isCurrentParagraph 
                   ? 'text-slate-800' 
-                  : darkMode ? 'text-zinc-200' : 'text-slate-600'
+                  : darkMode ? 'text-zinc-100' : 'text-slate-600'
             }`}>
               {paragraph.text}
             </p>
@@ -316,23 +316,23 @@ export function ParagraphCard({
           {/* Stats Row */}
           <div className={`flex items-center gap-3 mt-4 text-xs ${
             isCompletedParagraph 
-              ? darkMode ? 'text-zinc-500' : 'text-slate-400' 
-              : darkMode ? 'text-zinc-400' : 'text-slate-500'
+              ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
+              : darkMode ? 'text-zinc-300' : 'text-slate-500'
           }`}>
-            <span className={`px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700' : 'bg-slate-50'}`}>{totalWordCount} palabras</span>
-            <span className={`px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700' : 'bg-slate-50'}`}>{formatTimeText(totalReadingTime)} lectura</span>
+            <span className={`px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{totalWordCount} palabras</span>
+            <span className={`px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{formatTimeText(totalReadingTime)} lectura</span>
             {hasQuestions && (
               <span className={`px-2 py-1 rounded-full font-medium ${
                 hasFinalQuestions 
-                  ? darkMode ? 'bg-red-950 text-red-400' : 'bg-red-100 text-red-600' 
-                  : darkMode ? 'bg-orange-950 text-orange-400' : 'bg-orange-100 text-orange-600'
+                  ? darkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-600' 
+                  : darkMode ? 'bg-orange-900 text-orange-200' : 'bg-orange-100 text-orange-600'
               }`}>
                 {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
               </span>
             )}
             {isGrouped && (
               <span className={`px-2 py-1 rounded-full font-medium ${
-                darkMode ? 'bg-blue-950 text-blue-400' : 'bg-blue-100 text-blue-600'
+                darkMode ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-600'
               }`}>
                 {allParagraphs.length} párrafos agrupados
               </span>
