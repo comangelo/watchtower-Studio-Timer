@@ -844,18 +844,24 @@ export default function HomePage() {
 
               {/* Paragraph Progress Indicator */}
               {isTimerRunning && !isInIntroductionMode && (
-                <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-white shadow-md rounded-2xl">
+                <Card className={`border-2 shadow-md rounded-2xl ${
+                  darkMode 
+                    ? 'border-green-700 bg-gradient-to-r from-green-950 to-zinc-900' 
+                    : 'border-green-200 bg-gradient-to-r from-green-50 to-white'
+                }`}>
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-200">
+                        <div className={`w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg ${
+                          darkMode ? 'shadow-green-900/30' : 'shadow-green-200'
+                        }`}>
                           <span className="text-white font-bold text-lg">{currentManualParagraph + 1}</span>
                         </div>
                         <div>
-                          <p className="text-base font-bold text-slate-800">
-                            Párrafo {currentManualParagraph + 1} <span className="text-slate-400 font-normal">de {analysisResult.total_paragraphs}</span>
+                          <p className={`text-base font-bold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+                            Párrafo {currentManualParagraph + 1} <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>de {analysisResult.total_paragraphs}</span>
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             Usa los botones para navegar
                           </p>
                         </div>
@@ -865,7 +871,11 @@ export default function HomePage() {
                           variant="outline" 
                           onClick={goToPreviousParagraph} 
                           disabled={currentManualParagraph <= 0} 
-                          className="rounded-full w-12 h-12 border-2 border-slate-300 hover:border-green-400 hover:bg-green-50 disabled:opacity-40" 
+                          className={`rounded-full w-12 h-12 border-2 disabled:opacity-40 ${
+                            darkMode 
+                              ? 'border-zinc-600 hover:border-green-500 hover:bg-green-950' 
+                              : 'border-slate-300 hover:border-green-400 hover:bg-green-50'
+                          }`}
                           data-testid="prev-paragraph-btn"
                         >
                           <ChevronLeft className="w-5 h-5" />
@@ -873,7 +883,9 @@ export default function HomePage() {
                         <Button 
                           onClick={goToNextParagraph} 
                           disabled={currentManualParagraph >= analysisResult.paragraphs.length - 1} 
-                          className="rounded-full w-12 h-12 bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 disabled:opacity-40" 
+                          className={`rounded-full w-12 h-12 bg-green-500 hover:bg-green-600 text-white shadow-lg disabled:opacity-40 ${
+                            darkMode ? 'shadow-green-900/30' : 'shadow-green-200'
+                          }`}
                           data-testid="next-paragraph-btn"
                         >
                           <ChevronRight className="w-5 h-5" />
@@ -883,17 +895,29 @@ export default function HomePage() {
                     
                     {/* Adjusted Times Summary */}
                     {adjustedFinalTimes.perQuestion && adjustedFinalTimes.perQuestion !== 35 && (
-                      <div className={`mt-4 p-4 rounded-xl border-2 ${adjustedFinalTimes.perQuestion < 20 ? 'bg-orange-100 border-orange-300' : 'bg-slate-50 border-slate-200'}`}>
+                      <div className={`mt-4 p-4 rounded-xl border-2 ${
+                        adjustedFinalTimes.perQuestion < 20 
+                          ? darkMode ? 'bg-orange-950/50 border-orange-800' : 'bg-orange-100 border-orange-300' 
+                          : darkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-slate-200'
+                      }`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Clock className={`w-4 h-4 ${adjustedFinalTimes.perQuestion < 20 ? 'text-orange-600' : 'text-slate-600'}`} />
-                            <span className="text-sm font-medium text-slate-700">Tiempo por pregunta:</span>
+                            <Clock className={`w-4 h-4 ${
+                              adjustedFinalTimes.perQuestion < 20 
+                                ? darkMode ? 'text-orange-400' : 'text-orange-600' 
+                                : darkMode ? 'text-slate-400' : 'text-slate-600'
+                            }`} />
+                            <span className={`text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Tiempo por pregunta:</span>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className={`font-mono text-xl font-bold ${adjustedFinalTimes.perQuestion < 20 ? 'text-orange-600' : 'text-slate-800'}`}>
+                            <span className={`font-mono text-xl font-bold ${
+                              adjustedFinalTimes.perQuestion < 20 
+                                ? darkMode ? 'text-orange-400' : 'text-orange-600' 
+                                : darkMode ? 'text-slate-200' : 'text-slate-800'
+                            }`}>
                               {Math.round(adjustedFinalTimes.perQuestion)} seg
                             </span>
-                            <span className="text-sm text-slate-400">(orig: 35s)</span>
+                            <span className={`text-sm ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>(orig: 35s)</span>
                           </div>
                         </div>
                       </div>
