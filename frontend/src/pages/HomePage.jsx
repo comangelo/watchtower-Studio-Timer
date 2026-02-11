@@ -565,9 +565,128 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {!analysisResult ? (
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
+            {/* Time Schedule Panel - Before PDF Upload */}
+            <div className="bg-slate-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 shadow-xl">
+              <div className="flex items-center justify-center gap-3 sm:gap-6 md:gap-10">
+                {/* Start Time - Emerald */}
+                <div className="text-center min-w-0">
+                  <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-emerald-400 uppercase tracking-wider">Inicio</span>
+                  <p 
+                    className="text-lg sm:text-2xl md:text-4xl font-bold mt-0.5 sm:mt-1 text-emerald-400/60"
+                    style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+                  >
+                    {new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                  </p>
+                </div>
+                
+                {/* Duration */}
+                <div className="flex flex-col items-center shrink-0">
+                  <span className="text-[7px] sm:text-[9px] md:text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Duración</span>
+                  <span className={`text-sm sm:text-base md:text-lg font-bold ${manualEndTime ? 'text-cyan-400' : 'text-orange-400'}`}>
+                    {manualEndTime 
+                      ? Math.max(0, Math.round((manualEndTime.getTime() - new Date().getTime()) / 60000))
+                      : totalDuration}m
+                  </span>
+                </div>
+                
+                {/* End Time - Amber - Editable */}
+                <div className="text-center min-w-0">
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-amber-400 uppercase tracking-wider">
+                      Fin {manualEndTime && <span className="text-[8px] opacity-60">(manual)</span>}
+                    </span>
+                    {!isEditingInitialEndTime && (
+                      <button
+                        onClick={() => {
+                          const timeToEdit = manualEndTime || new Date(Date.now() + totalDuration * 60 * 1000);
+                          setInitialEditHours(timeToEdit.getHours().toString().padStart(2, '0'));
+                          setInitialEditMinutes(timeToEdit.getMinutes().toString().padStart(2, '0'));
+                          setIsEditingInitialEndTime(true);
+                        }}
+                        className="p-0.5 rounded hover:bg-slate-700 transition-colors"
+                        title="Editar hora de fin"
+                      >
+                        <Pencil className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 hover:text-amber-400" />
+                      </button>
+                    )}
+                  </div>
+                  
+                  {isEditingInitialEndTime ? (
+                    <div className="flex items-center justify-center gap-1 mt-0.5 sm:mt-1">
+                      <input
+                        type="text"
+                        value={initialEditHours}
+                        onChange={(e) => setInitialEditHours(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                        className="w-8 sm:w-12 text-center bg-slate-800 border border-slate-600 rounded text-amber-400 text-lg sm:text-2xl font-bold"
+                        placeholder="HH"
+                        maxLength={2}
+                      />
+                      <span className="text-amber-400 text-lg sm:text-2xl font-bold">:</span>
+                      <input
+                        type="text"
+                        value={initialEditMinutes}
+                        onChange={(e) => setInitialEditMinutes(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                        className="w-8 sm:w-12 text-center bg-slate-800 border border-slate-600 rounded text-amber-400 text-lg sm:text-2xl font-bold"
+                        placeholder="MM"
+                        maxLength={2}
+                      />
+                      <button
+                        onClick={() => {
+                          const hours = parseInt(initialEditHours) || 0;
+                          const minutes = parseInt(initialEditMinutes) || 0;
+                          if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+                            const newEndTime = new Date();
+                            newEndTime.setHours(hours, minutes, 0, 0);
+                            setManualEndTime(newEndTime);
+                            setIsEditingInitialEndTime(false);
+                          }
+                        }}
+                        className="p-1 rounded bg-emerald-600 hover:bg-emerald-500 transition-colors ml-1"
+                        title="Guardar"
+                      >
+                        <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                      </button>
+                      <button
+                        onClick={() => setIsEditingInitialEndTime(false)}
+                        className="p-1 rounded bg-slate-600 hover:bg-slate-500 transition-colors"
+                        title="Cancelar"
+                      >
+                        <X className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                      </button>
+                    </div>
+                  ) : (
+                    <p 
+                      className="text-lg sm:text-2xl md:text-4xl font-bold mt-0.5 sm:mt-1 text-amber-400/60"
+                      style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+                    >
+                      {manualEndTime 
+                        ? manualEndTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true })
+                        : new Date(Date.now() + totalDuration * 60 * 1000).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true })
+                      }
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="text-center mt-2 sm:mt-3">
+                {manualEndTime ? (
+                  <button
+                    onClick={() => setManualEndTime(null)}
+                    className="text-[10px] sm:text-xs text-slate-500 hover:text-slate-300 underline"
+                  >
+                    Restaurar hora automática
+                  </button>
+                ) : (
+                  <p className="text-slate-500 text-[10px] sm:text-xs">
+                    Hora actual + {totalDuration} min = Hora de fin
+                  </p>
+                )}
+              </div>
+            </div>
+
             <SettingsPanel
               readingSpeed={readingSpeed}
               setReadingSpeed={setReadingSpeed}
