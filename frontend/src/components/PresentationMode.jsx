@@ -164,25 +164,27 @@ export default function PresentationMode({
     return analysisResult.paragraphs[currentParagraphIndex + 1] || null;
   }, [analysisResult, currentParagraphIndex]);
   
-  // Check if next paragraph has special content
+  // Check if next paragraph has special content ("both" means image AND scripture)
   const nextParagraphHasImage = useMemo(() => {
     if (!nextParagraph) return false;
-    return nextParagraph.questions?.some(q => q.content_type === 'image') || false;
+    return nextParagraph.questions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
   }, [nextParagraph]);
   
   const nextParagraphHasScripture = useMemo(() => {
     if (!nextParagraph) return false;
-    return nextParagraph.questions?.some(q => q.content_type === 'scripture') || false;
+    return nextParagraph.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
   }, [nextParagraph]);
   
   // Current paragraph has special content
   const currentParagraphHasImage = useMemo(() => {
     if (!currentParagraph) return false;
-    return currentParagraph.questions?.some(q => q.content_type === 'image') || false;
+    return currentParagraph.questions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
   }, [currentParagraph]);
   
   const currentParagraphHasScripture = useMemo(() => {
     if (!currentParagraph) return false;
+    return currentParagraph.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
+  }, [currentParagraph]);
     return currentParagraph.questions?.some(q => q.content_type === 'scripture') || false;
   }, [currentParagraph]);
   
