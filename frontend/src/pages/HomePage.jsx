@@ -417,6 +417,8 @@ export default function HomePage() {
     setIsInReviewMode(false);
     setCurrentReviewQuestion(0);
     setReviewQuestionStartTime(null);
+    setIsInIntroductionMode(false);
+    setIntroductionStartTime(null);
     setIsInClosingWordsMode(false);
     setClosingWordsStartTime(null);
   };
