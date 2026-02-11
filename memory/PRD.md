@@ -87,6 +87,14 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ **Modo oscuro global para la aplicación principal con toggle sol/luna (11-Feb-2025)**
 - ✅ **12 temas de colores para el modo presentación: Oscuro, Claro, Azul Océano, Verde Bosque, Púrpura Noche, Cálido Atardecer, Rosa Suave, Turquesa, Medianoche, Café, Alto Contraste, AMOLED Negro (11-Feb-2025)**
 - ✅ **Configuración de tiempos de introducción y conclusión: sliders de 30 seg a 3 min con colores distintivos (azul/púrpura) (11-Feb-2025)**
+- ✅ **Modo oscuro mejorado: fondos más oscuros y mejor contraste en todos los componentes (11-Feb-2025)**
+  - Panel de análisis (AnalysisSummary) con fondo zinc-800
+  - Tarjetas de párrafos con fondo zinc-800 y texto claro
+  - Panel de estadísticas rápidas (QuickStats) con gradiente oscuro
+  - Configuración de alertas (NotificationSettings) con fondo oscuro
+  - Indicador de progreso de párrafos con estilo oscuro
+  - Sección de preguntas finales con variantes oscuras
+  - Componentes de introducción/conclusión con fondos oscuros
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
