@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
   Play, 
@@ -6,7 +6,13 @@ import {
   RotateCcw, 
   X,
   Timer,
-  Palette
+  Palette,
+  ChevronRight,
+  Mic,
+  BookOpen,
+  HelpCircle,
+  Sparkles,
+  CheckCircle2
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -16,7 +22,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { formatTime, formatClockTime, addSecondsToDate } from "../utils/timeFormatters";
+import { formatTime, formatClockTime, formatTimeCompact } from "../utils/timeFormatters";
 
 // Theme configurations
 const THEMES = {
@@ -71,142 +77,6 @@ const THEMES = {
     buttonOutline: "border-slate-600 text-slate-400 hover:text-white hover:border-slate-500",
     kbd: "bg-slate-800 text-slate-400"
   },
-  green: {
-    name: "🌲 Verde Bosque",
-    bg: "bg-emerald-950",
-    text: "text-white",
-    textMuted: "text-emerald-300",
-    textDimmed: "text-emerald-400",
-    border: "border-emerald-800",
-    card: "bg-emerald-900/50",
-    accent: "text-lime-400",
-    accentBg: "bg-lime-500",
-    success: "text-green-400",
-    warning: "text-yellow-400",
-    danger: "text-red-400",
-    progressBg: "bg-emerald-900",
-    buttonOutline: "border-emerald-700 text-emerald-400 hover:text-white hover:border-emerald-600",
-    kbd: "bg-emerald-900 text-emerald-400"
-  },
-  purple: {
-    name: "🔮 Púrpura Noche",
-    bg: "bg-violet-950",
-    text: "text-white",
-    textMuted: "text-violet-300",
-    textDimmed: "text-violet-400",
-    border: "border-violet-800",
-    card: "bg-violet-900/50",
-    accent: "text-fuchsia-400",
-    accentBg: "bg-fuchsia-500",
-    success: "text-emerald-400",
-    warning: "text-amber-400",
-    danger: "text-rose-400",
-    progressBg: "bg-violet-900",
-    buttonOutline: "border-violet-700 text-violet-400 hover:text-white hover:border-violet-600",
-    kbd: "bg-violet-900 text-violet-400"
-  },
-  warm: {
-    name: "🌅 Cálido Atardecer",
-    bg: "bg-amber-950",
-    text: "text-white",
-    textMuted: "text-amber-200",
-    textDimmed: "text-amber-300",
-    border: "border-amber-800",
-    card: "bg-amber-900/50",
-    accent: "text-yellow-400",
-    accentBg: "bg-yellow-500",
-    success: "text-lime-400",
-    warning: "text-orange-400",
-    danger: "text-red-400",
-    progressBg: "bg-amber-900",
-    buttonOutline: "border-amber-700 text-amber-400 hover:text-white hover:border-amber-600",
-    kbd: "bg-amber-900 text-amber-400"
-  },
-  rose: {
-    name: "🌸 Rosa Suave",
-    bg: "bg-rose-950",
-    text: "text-white",
-    textMuted: "text-rose-200",
-    textDimmed: "text-rose-300",
-    border: "border-rose-800",
-    card: "bg-rose-900/50",
-    accent: "text-pink-400",
-    accentBg: "bg-pink-500",
-    success: "text-emerald-400",
-    warning: "text-amber-400",
-    danger: "text-red-400",
-    progressBg: "bg-rose-900",
-    buttonOutline: "border-rose-700 text-rose-400 hover:text-white hover:border-rose-600",
-    kbd: "bg-rose-900 text-rose-400"
-  },
-  teal: {
-    name: "🦚 Turquesa",
-    bg: "bg-teal-950",
-    text: "text-white",
-    textMuted: "text-teal-200",
-    textDimmed: "text-teal-300",
-    border: "border-teal-800",
-    card: "bg-teal-900/50",
-    accent: "text-cyan-400",
-    accentBg: "bg-cyan-500",
-    success: "text-green-400",
-    warning: "text-yellow-400",
-    danger: "text-red-400",
-    progressBg: "bg-teal-900",
-    buttonOutline: "border-teal-700 text-teal-400 hover:text-white hover:border-teal-600",
-    kbd: "bg-teal-900 text-teal-400"
-  },
-  midnight: {
-    name: "🌌 Medianoche",
-    bg: "bg-indigo-950",
-    text: "text-white",
-    textMuted: "text-indigo-300",
-    textDimmed: "text-indigo-400",
-    border: "border-indigo-800",
-    card: "bg-indigo-900/50",
-    accent: "text-sky-400",
-    accentBg: "bg-sky-500",
-    success: "text-emerald-400",
-    warning: "text-amber-400",
-    danger: "text-rose-400",
-    progressBg: "bg-indigo-900",
-    buttonOutline: "border-indigo-700 text-indigo-400 hover:text-white hover:border-indigo-600",
-    kbd: "bg-indigo-900 text-indigo-400"
-  },
-  coffee: {
-    name: "☕ Café",
-    bg: "bg-stone-900",
-    text: "text-white",
-    textMuted: "text-stone-300",
-    textDimmed: "text-stone-400",
-    border: "border-stone-700",
-    card: "bg-stone-800/50",
-    accent: "text-amber-400",
-    accentBg: "bg-amber-600",
-    success: "text-green-400",
-    warning: "text-orange-400",
-    danger: "text-red-400",
-    progressBg: "bg-stone-800",
-    buttonOutline: "border-stone-600 text-stone-400 hover:text-white hover:border-stone-500",
-    kbd: "bg-stone-800 text-stone-400"
-  },
-  highContrast: {
-    name: "⚡ Alto Contraste",
-    bg: "bg-black",
-    text: "text-white",
-    textMuted: "text-yellow-300",
-    textDimmed: "text-yellow-400",
-    border: "border-yellow-500",
-    card: "bg-zinc-900",
-    accent: "text-yellow-400",
-    accentBg: "bg-yellow-500",
-    success: "text-green-400",
-    warning: "text-yellow-400",
-    danger: "text-red-500",
-    progressBg: "bg-zinc-900",
-    buttonOutline: "border-yellow-500 text-yellow-400 hover:text-yellow-300 hover:border-yellow-400",
-    kbd: "bg-zinc-900 text-yellow-400"
-  },
   amoled: {
     name: "📱 AMOLED Negro",
     bg: "bg-black",
@@ -226,6 +96,15 @@ const THEMES = {
   }
 };
 
+// Study phases
+const PHASES = {
+  INTRO: 'intro',
+  PARAGRAPHS: 'paragraphs',
+  REVIEW: 'review',
+  CONCLUSION: 'conclusion',
+  FINISHED: 'finished'
+};
+
 export default function PresentationMode({
   analysisResult,
   elapsedTime,
@@ -235,45 +114,224 @@ export default function PresentationMode({
   onResetTimer,
   onExit,
   currentParagraphIndex = 0,
+  onParagraphChange,
   theme = 'dark',
   onThemeChange,
   totalDurationSeconds = 3600,
   startTime,
-  endTime
+  endTime,
+  introductionTime = 60,
+  conclusionTime = 60,
+  onStartStudy,
+  studyPhase: externalStudyPhase,
+  onPhaseChange
 }) {
+  // Internal study phase state (can be controlled externally)
+  const [internalPhase, setInternalPhase] = useState(PHASES.INTRO);
+  const [currentReviewQuestion, setCurrentReviewQuestion] = useState(0);
+  const [phaseElapsed, setPhaseElapsed] = useState(0);
+  
+  // Use external phase if provided, otherwise use internal
+  const studyPhase = externalStudyPhase || internalPhase;
+  const setStudyPhase = onPhaseChange || setInternalPhase;
+  
+  // Phase timer
+  useEffect(() => {
+    let interval;
+    if (isTimerRunning) {
+      interval = setInterval(() => {
+        setPhaseElapsed(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning]);
+  
+  // Reset phase elapsed when phase changes
+  useEffect(() => {
+    setPhaseElapsed(0);
+  }, [studyPhase, currentParagraphIndex, currentReviewQuestion]);
+
   // Calculate derived values
   const currentParagraph = useMemo(() => {
     if (!analysisResult || !analysisResult.paragraphs) return null;
     return analysisResult.paragraphs[currentParagraphIndex] || null;
   }, [analysisResult, currentParagraphIndex]);
   
+  const currentReviewQuestionData = useMemo(() => {
+    if (!analysisResult || !analysisResult.final_questions) return null;
+    return analysisResult.final_questions[currentReviewQuestion] || null;
+  }, [analysisResult, currentReviewQuestion]);
+  
   const progressPercentage = useMemo(() => {
     return Math.min(100, (elapsedTime / totalDurationSeconds) * 100);
   }, [elapsedTime, totalDurationSeconds]);
   
-  // Check if less than 5 minutes remaining (or overtime)
   const isLowTime = remainingTime <= 300;
   const isOvertime = remainingTime <= 0;
   
-  // Calculate remaining paragraphs and questions
-  const remainingStats = useMemo(() => {
-    if (!analysisResult) return { paragraphs: 0, questions: 0, reviewQuestions: 0 };
-    
-    const remainingParagraphs = analysisResult.paragraphs.length - currentParagraphIndex - 1;
-    const remainingQuestions = analysisResult.paragraphs
-      .slice(currentParagraphIndex)
-      .reduce((sum, p) => sum + p.questions.length, 0);
-    const reviewQuestions = analysisResult.final_questions?.length || 0;
-    
-    return {
-      paragraphs: Math.max(0, remainingParagraphs),
-      questions: remainingQuestions,
-      reviewQuestions: reviewQuestions
-    };
-  }, [analysisResult, currentParagraphIndex]);
-  
   const t = THEMES[theme] || THEMES.dark;
   
+  // Get phase-specific info
+  const getPhaseInfo = () => {
+    switch (studyPhase) {
+      case PHASES.INTRO:
+        return {
+          title: "Palabras de Introducción",
+          icon: Mic,
+          color: "text-blue-400",
+          bgColor: "bg-blue-500",
+          estimatedTime: introductionTime,
+          subtitle: "El conductor introduce el tema del artículo"
+        };
+      case PHASES.PARAGRAPHS:
+        return {
+          title: `Párrafo ${currentParagraph?.number || 1}`,
+          icon: BookOpen,
+          color: "text-green-400",
+          bgColor: "bg-green-500",
+          estimatedTime: currentParagraph?.total_time_seconds || 60,
+          subtitle: `de ${analysisResult?.total_paragraphs || 0} párrafos`
+        };
+      case PHASES.REVIEW:
+        return {
+          title: `Pregunta de Repaso ${currentReviewQuestion + 1}`,
+          icon: HelpCircle,
+          color: "text-red-400",
+          bgColor: "bg-red-500",
+          estimatedTime: currentReviewQuestionData?.answer_time || 35,
+          subtitle: `de ${analysisResult?.final_questions?.length || 0} preguntas`
+        };
+      case PHASES.CONCLUSION:
+        return {
+          title: "Palabras de Conclusión",
+          icon: Sparkles,
+          color: "text-purple-400",
+          bgColor: "bg-purple-500",
+          estimatedTime: conclusionTime,
+          subtitle: "El conductor resume y anima a la congregación"
+        };
+      case PHASES.FINISHED:
+        return {
+          title: "¡Estudio Finalizado!",
+          icon: CheckCircle2,
+          color: "text-green-400",
+          bgColor: "bg-green-500",
+          estimatedTime: 0,
+          subtitle: "Gracias por tu dedicación"
+        };
+      default:
+        return { title: "", icon: Timer, color: "", bgColor: "", estimatedTime: 0, subtitle: "" };
+    }
+  };
+  
+  const phaseInfo = getPhaseInfo();
+  const PhaseIcon = phaseInfo.icon;
+  const isPhaseOvertime = phaseElapsed > phaseInfo.estimatedTime;
+  
+  // Navigation handlers
+  const handleStartStudy = () => {
+    if (onStartStudy) {
+      onStartStudy();
+    } else {
+      onToggleTimer();
+    }
+    setStudyPhase(PHASES.INTRO);
+  };
+  
+  const handleNextStep = () => {
+    setPhaseElapsed(0);
+    
+    switch (studyPhase) {
+      case PHASES.INTRO:
+        setStudyPhase(PHASES.PARAGRAPHS);
+        if (onParagraphChange) onParagraphChange(0);
+        break;
+      case PHASES.PARAGRAPHS:
+        if (currentParagraphIndex < (analysisResult?.paragraphs?.length || 1) - 1) {
+          if (onParagraphChange) onParagraphChange(currentParagraphIndex + 1);
+        } else {
+          // Last paragraph - go to review questions
+          if (analysisResult?.final_questions?.length > 0) {
+            setStudyPhase(PHASES.REVIEW);
+            setCurrentReviewQuestion(0);
+          } else {
+            setStudyPhase(PHASES.CONCLUSION);
+          }
+        }
+        break;
+      case PHASES.REVIEW:
+        if (currentReviewQuestion < (analysisResult?.final_questions?.length || 1) - 1) {
+          setCurrentReviewQuestion(prev => prev + 1);
+        } else {
+          setStudyPhase(PHASES.CONCLUSION);
+        }
+        break;
+      case PHASES.CONCLUSION:
+        setStudyPhase(PHASES.FINISHED);
+        onToggleTimer(); // Stop timer
+        break;
+      default:
+        break;
+    }
+  };
+  
+  const handlePrevStep = () => {
+    setPhaseElapsed(0);
+    
+    switch (studyPhase) {
+      case PHASES.PARAGRAPHS:
+        if (currentParagraphIndex > 0) {
+          if (onParagraphChange) onParagraphChange(currentParagraphIndex - 1);
+        } else {
+          setStudyPhase(PHASES.INTRO);
+        }
+        break;
+      case PHASES.REVIEW:
+        if (currentReviewQuestion > 0) {
+          setCurrentReviewQuestion(prev => prev - 1);
+        } else {
+          setStudyPhase(PHASES.PARAGRAPHS);
+          if (onParagraphChange) onParagraphChange((analysisResult?.paragraphs?.length || 1) - 1);
+        }
+        break;
+      case PHASES.CONCLUSION:
+        if (analysisResult?.final_questions?.length > 0) {
+          setStudyPhase(PHASES.REVIEW);
+          setCurrentReviewQuestion((analysisResult?.final_questions?.length || 1) - 1);
+        } else {
+          setStudyPhase(PHASES.PARAGRAPHS);
+          if (onParagraphChange) onParagraphChange((analysisResult?.paragraphs?.length || 1) - 1);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+  
+  // Get next button text
+  const getNextButtonText = () => {
+    switch (studyPhase) {
+      case PHASES.INTRO:
+        return "Pasar al Párrafo 1";
+      case PHASES.PARAGRAPHS:
+        if (currentParagraphIndex < (analysisResult?.paragraphs?.length || 1) - 1) {
+          return `Siguiente Párrafo (${currentParagraphIndex + 2})`;
+        }
+        return analysisResult?.final_questions?.length > 0 
+          ? "Pasar a Preguntas de Repaso" 
+          : "Palabras de Conclusión";
+      case PHASES.REVIEW:
+        if (currentReviewQuestion < (analysisResult?.final_questions?.length || 1) - 1) {
+          return `Siguiente Pregunta (${currentReviewQuestion + 2})`;
+        }
+        return "Palabras de Conclusión";
+      case PHASES.CONCLUSION:
+        return "Finalizar Estudio";
+      default:
+        return "Siguiente";
+    }
+  };
+
   // Handle ESC key to exit
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -282,15 +340,26 @@ export default function PresentationMode({
       }
       if (e.key === ' ' || e.key === 'Space') {
         e.preventDefault();
-        onToggleTimer();
+        if (studyPhase === PHASES.INTRO && !isTimerRunning) {
+          handleStartStudy();
+        } else {
+          onToggleTimer();
+        }
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (isTimerRunning) handleNextStep();
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (isTimerRunning) handlePrevStep();
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onExit, onToggleTimer]);
+  }, [onExit, onToggleTimer, studyPhase, isTimerRunning, currentParagraphIndex, currentReviewQuestion]);
 
-  // Format remaining time (allow negative for overtime)
   const formatRemainingTime = (seconds) => {
     const isNegative = seconds < 0;
     const absSeconds = Math.abs(seconds);
@@ -309,29 +378,24 @@ export default function PresentationMode({
       className={`fixed inset-0 z-[9999] ${t.bg} ${t.text} flex flex-col`}
       data-testid="presentation-mode"
     >
-      {/* Top Bar - Always visible but compact */}
-      <div className={`flex items-center justify-between px-2 sm:px-4 md:px-8 py-1 sm:py-2 border-b ${t.border} shrink-0 opacity-60 hover:opacity-100 transition-opacity`}>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <div className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 ${t.accentBg} rounded-lg sm:rounded-xl flex items-center justify-center`}>
-            <Timer className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" />
+      {/* Top Bar */}
+      <div className={`flex items-center justify-between px-4 md:px-8 py-2 border-b ${t.border} shrink-0`}>
+        <div className="flex items-center gap-4">
+          <div className={`w-8 h-8 md:w-10 md:h-10 ${t.accentBg} rounded-xl flex items-center justify-center`}>
+            <Timer className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-heading font-bold text-xs sm:text-sm md:text-lg truncate max-w-[100px] sm:max-w-[150px] md:max-w-none">{analysisResult.filename}</h1>
+            <h1 className="font-heading font-bold text-sm md:text-lg truncate max-w-[200px] md:max-w-none">{analysisResult.filename}</h1>
             <p className={`text-xs ${t.textMuted} hidden md:block`}>ATALAYA DE ESTUDIO</p>
           </div>
         </div>
         
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {/* Theme Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`${t.textMuted} hover:${t.text} px-1.5 sm:px-2 md:px-3 h-7 sm:h-8 md:h-9`}
-                data-testid="theme-selector-btn"
-              >
-                <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 md:mr-2" />
+              <Button variant="ghost" size="sm" className={`${t.textMuted} hover:${t.text}`}>
+                <Palette className="w-4 h-4 md:mr-2" />
                 <span className="hidden md:inline">Tema</span>
               </Button>
             </DropdownMenuTrigger>
@@ -343,7 +407,6 @@ export default function PresentationMode({
                   key={key}
                   onClick={() => onThemeChange(key)}
                   className={theme === key ? 'bg-accent' : ''}
-                  data-testid={`theme-${key}`}
                 >
                   <div className="flex items-center gap-2">
                     <div className={`w-4 h-4 rounded-full ${value.accentBg}`} />
@@ -355,191 +418,212 @@ export default function PresentationMode({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onExit}
-            className={`${t.textMuted} hover:${t.text} px-1.5 sm:px-2 md:px-3 h-7 sm:h-8 md:h-9`}
-            data-testid="exit-presentation-btn"
-          >
-            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 md:mr-2" />
-            <span className="hidden md:inline">Salir (ESC)</span>
+          <Button variant="ghost" size="sm" onClick={onExit} className={`${t.textMuted} hover:${t.text}`}>
+            <X className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">Salir</span>
           </Button>
         </div>
       </div>
 
-      {/* Floating Exit Button - Only visible on mobile (portrait and landscape) */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onExit}
-        className={`sm:hidden absolute top-1 right-1 z-10 ${t.textMuted} hover:${t.text} px-1.5 h-6 rounded-full ${t.card} border ${t.border}`}
-        data-testid="exit-presentation-btn-mobile"
-      >
-        <X className="w-3 h-3 mr-0.5" />
-        <span className="text-[10px]">Salir</span>
-      </Button>
-
-      {/* Main Content - Landscape optimized */}
-      <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-6 overflow-auto min-h-0">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 py-4 overflow-auto">
         
-        {/* Time Schedule - Always visible, directly tied to duration */}
-        <div className={`${t.card} rounded-xl sm:rounded-2xl px-3 sm:px-8 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
-          <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-14">
-            {/* Start Time - Emerald Color */}
+        {/* Time Schedule */}
+        <div className={`${t.card} rounded-2xl px-6 md:px-12 py-4 md:py-6 mb-4 md:mb-6 border ${t.border} w-full max-w-xl`}>
+          <div className="flex items-center justify-center gap-6 md:gap-14">
             <div className="text-center">
-              <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
-              <p 
-                className={`text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold mt-0.5 sm:mt-1 ${startTime ? 'text-emerald-400' : 'text-emerald-400/60'}`}
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
-                data-testid="presentation-start-time"
-              >
+              <span className="text-[10px] md:text-xs font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
+              <p className={`text-2xl md:text-4xl font-bold mt-1 ${startTime ? 'text-emerald-400' : 'text-emerald-400/60'}`}
+                style={{ fontFamily: 'system-ui' }}>
                 {startTime ? formatClockTime(startTime) : '--:--'}
               </p>
             </div>
-            
-            {/* Separator with Duration - More prominent */}
             <div className="flex flex-col items-center">
-              <div className={`w-6 sm:w-10 md:w-14 h-px ${t.border.replace('border-', 'bg-')} opacity-60`}></div>
-              <span className="text-[10px] sm:text-xs md:text-sm font-bold text-orange-400 my-0.5 sm:my-1">{Math.round(totalDurationSeconds / 60)} min</span>
-              <div className={`w-6 sm:w-10 md:w-14 h-px ${t.border.replace('border-', 'bg-')} opacity-60`}></div>
+              <div className={`w-8 md:w-14 h-px ${t.border.replace('border-', 'bg-')} opacity-60`}></div>
+              <span className="text-xs md:text-sm font-bold text-orange-400 my-1">{Math.round(totalDurationSeconds / 60)} min</span>
+              <div className={`w-8 md:w-14 h-px ${t.border.replace('border-', 'bg-')} opacity-60`}></div>
             </div>
-            
-            {/* End Time - Amber/Gold Color */}
             <div className="text-center">
-              <span className={`text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-widest ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
-              <p 
-                className={`text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold mt-0.5 sm:mt-1 ${
-                  !endTime ? 'text-amber-400/60' :
-                  isOvertime ? 'text-rose-400 animate-pulse' : 
-                  isLowTime ? 'text-rose-400' : 'text-amber-400'
-                }`}
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
-                data-testid="presentation-end-time"
-              >
+              <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
+              <p className={`text-2xl md:text-4xl font-bold mt-1 ${
+                !endTime ? 'text-amber-400/60' : isOvertime ? 'text-rose-400 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'
+              }`} style={{ fontFamily: 'system-ui' }}>
                 {endTime ? formatClockTime(endTime) : '--:--'}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Main Timers - Clean and Minimal */}
-        <div className="flex items-center justify-center gap-2 sm:gap-6 md:gap-12 lg:gap-20 mb-2 sm:mb-4 md:mb-8 w-full">
-          {/* Elapsed Time */}
+        {/* Current Phase Card */}
+        <div className={`w-full max-w-xl ${t.card} rounded-2xl p-4 md:p-6 mb-4 border ${t.border}`}>
+          <div className="flex items-center gap-4 mb-4">
+            <div className={`w-12 h-12 ${phaseInfo.bgColor} rounded-xl flex items-center justify-center`}>
+              <PhaseIcon className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <h2 className={`text-xl md:text-2xl font-bold ${phaseInfo.color}`}>{phaseInfo.title}</h2>
+              <p className={`text-sm ${t.textMuted}`}>{phaseInfo.subtitle}</p>
+            </div>
+            {studyPhase !== PHASES.FINISHED && (
+              <div className="text-right">
+                <p className={`text-2xl md:text-3xl font-bold ${isPhaseOvertime ? 'text-red-400' : t.text}`}>
+                  {formatTimeCompact(phaseElapsed)}
+                </p>
+                <p className={`text-xs ${t.textDimmed}`}>/ {formatTimeCompact(phaseInfo.estimatedTime)}</p>
+              </div>
+            )}
+          </div>
+          
+          {/* Phase Progress Bar */}
+          {studyPhase !== PHASES.FINISHED && phaseInfo.estimatedTime > 0 && (
+            <div className={`h-2 rounded-full ${t.progressBg} overflow-hidden`}>
+              <div 
+                className={`h-full rounded-full transition-all duration-500 ${
+                  isPhaseOvertime ? 'bg-red-500' : phaseInfo.bgColor
+                }`}
+                style={{ width: `${Math.min(100, (phaseElapsed / phaseInfo.estimatedTime) * 100)}%` }}
+              />
+            </div>
+          )}
+          
+          {/* Question text for review phase */}
+          {studyPhase === PHASES.REVIEW && currentReviewQuestionData && (
+            <div className={`mt-4 p-4 rounded-xl ${t.progressBg}`}>
+              <p className={`text-sm md:text-base ${t.text}`}>{currentReviewQuestionData.text}</p>
+              {currentReviewQuestionData.parenthesis_content && (
+                <p className={`text-xs mt-2 ${t.textMuted}`}>({currentReviewQuestionData.parenthesis_content})</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Main Timers */}
+        <div className="flex items-center justify-center gap-6 md:gap-12 mb-4 md:mb-6 w-full">
           <div className="text-center flex-1 max-w-xs">
-            <p className={`text-[10px] sm:text-xs md:text-sm font-medium ${t.textDimmed} mb-0.5 sm:mb-1 md:mb-2`}>Transcurrido</p>
-            <div 
-              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light tracking-tight leading-none ${isTimerRunning ? t.accent : t.text}`}
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-              data-testid="presentation-elapsed-time"
-            >
+            <p className={`text-xs md:text-sm font-medium ${t.textDimmed} mb-1`}>Transcurrido</p>
+            <div className={`text-4xl md:text-6xl font-light tracking-tight ${isTimerRunning ? t.accent : t.text}`}
+              style={{ fontFamily: 'system-ui' }}>
               {formatTime(elapsedTime)}
             </div>
           </div>
-
-          {/* Divider */}
-          <div className={`w-px h-8 sm:h-12 md:h-16 lg:h-20 ${t.border.replace('border-', 'bg-')} opacity-30 hidden sm:block`} />
-
-          {/* Remaining Time - Green by default, Red when < 5 min */}
+          <div className={`w-px h-12 md:h-16 ${t.border.replace('border-', 'bg-')} opacity-30`} />
           <div className="text-center flex-1 max-w-xs">
-            <p className={`text-[10px] sm:text-xs md:text-sm font-medium ${t.textDimmed} mb-0.5 sm:mb-1 md:mb-2`}>Restante</p>
-            <div 
-              className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light tracking-tight leading-none ${
-                isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.success
-              }`}
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-              data-testid="presentation-remaining-time"
-            >
+            <p className={`text-xs md:text-sm font-medium ${t.textDimmed} mb-1`}>Restante</p>
+            <div className={`text-4xl md:text-6xl font-light tracking-tight ${
+              isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.success
+            }`} style={{ fontFamily: 'system-ui' }}>
               {formatRemainingTime(remainingTime)}
             </div>
           </div>
         </div>
 
-        {/* Progress Bar - Green, Red when < 5 min */}
-        <div className="w-full max-w-xs sm:max-w-md md:max-w-xl lg:max-w-2xl mb-2 sm:mb-4 md:mb-6 px-2">
-          <div className={`h-1.5 sm:h-2 md:h-3 rounded-full ${t.progressBg} overflow-hidden`}>
+        {/* Progress Bar */}
+        <div className="w-full max-w-xl mb-4 md:mb-6">
+          <div className={`h-2 md:h-3 rounded-full ${t.progressBg} overflow-hidden`}>
             <div 
-              className={`h-full rounded-full transition-all duration-500 ${
-                isLowTime ? 'bg-red-500' : 'bg-green-500'
-              }`}
+              className={`h-full rounded-full transition-all duration-500 ${isLowTime ? 'bg-red-500' : 'bg-green-500'}`}
               style={{ width: `${Math.min(100, progressPercentage)}%` }}
             />
           </div>
-          <p className={`text-center text-sm sm:text-base md:text-lg font-bold mt-1 sm:mt-2 md:mt-3 ${isLowTime ? t.danger : t.success}`}>
+          <p className={`text-center text-sm md:text-lg font-bold mt-2 ${isLowTime ? t.danger : t.success}`}>
             {progressPercentage.toFixed(0)}%
           </p>
         </div>
 
-        {/* Current Paragraph Info - Simplified with remaining counts */}
-        {currentParagraph && (
-          <div className={`w-full max-w-xs sm:max-w-md md:max-w-xl lg:max-w-2xl ${t.card} rounded-lg sm:rounded-xl md:rounded-2xl p-2 sm:p-4 md:p-6 mb-2 sm:mb-4 md:mb-6 mx-2`}>
-            <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
-              {/* Current Paragraph */}
-              <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
-                <span className={`text-base sm:text-lg md:text-2xl lg:text-3xl font-bold ${t.accent}`}>Párrafo {currentParagraph.number}</span>
-                <span className={`text-xs sm:text-sm md:text-base lg:text-lg ${t.textMuted}`}>de {analysisResult.total_paragraphs}</span>
-              </div>
+        {/* Controls */}
+        <div className="flex items-center gap-3 md:gap-4 flex-wrap justify-center">
+          {/* Start Study Button (only before starting) */}
+          {studyPhase === PHASES.INTRO && !isTimerRunning && (
+            <Button
+              onClick={handleStartStudy}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 md:px-8 py-3 text-base md:text-lg"
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Iniciar Estudio
+            </Button>
+          )}
+          
+          {/* Navigation Controls (when running) */}
+          {isTimerRunning && studyPhase !== PHASES.FINISHED && (
+            <>
+              {/* Previous */}
+              {studyPhase !== PHASES.INTRO && (
+                <Button
+                  onClick={handlePrevStep}
+                  variant="outline"
+                  size="lg"
+                  className={`rounded-full ${t.buttonOutline}`}
+                >
+                  Anterior
+                </Button>
+              )}
               
-              {/* Remaining Stats */}
-              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                <div className="text-center">
-                  <p className={`text-[10px] sm:text-xs ${t.textDimmed}`}>Párrafos</p>
-                  <p className={`text-base sm:text-lg md:text-2xl font-bold ${t.warning}`}>{remainingStats.paragraphs}</p>
-                </div>
-                <div className={`w-px h-6 sm:h-8 md:h-10 ${t.border.replace('border-', 'bg-')} opacity-30`} />
-                <div className="text-center">
-                  <p className={`text-[10px] sm:text-xs ${t.textDimmed}`}>Repaso</p>
-                  <p className={`text-base sm:text-lg md:text-2xl font-bold ${t.danger}`}>{remainingStats.reviewQuestions}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Controls - Cleaner */}
-        <div className="flex items-center gap-2 sm:gap-3 md:gap-5">
-          <Button
-            onClick={onToggleTimer}
-            size="lg"
-            className={`
-              rounded-full p-0 text-white shadow-lg
-              ${isTimerRunning 
-                ? t.accentBg + ' hover:opacity-90' 
-                : 'bg-green-600 hover:bg-green-700'
-              }
-            `}
-            style={{ width: '44px', height: '44px' }}
-            data-testid="presentation-toggle-btn"
-          >
-            {isTimerRunning 
-              ? <Pause className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" /> 
-              : <Play className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 ml-0.5" />
-            }
-          </Button>
-          <Button
-            onClick={onResetTimer}
-            variant="outline"
-            size="lg"
-            className={`rounded-full p-0 ${t.buttonOutline}`}
-            style={{ width: '36px', height: '36px' }}
-            data-testid="presentation-reset-btn"
-          >
-            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
-          </Button>
+              {/* Play/Pause */}
+              <Button
+                onClick={onToggleTimer}
+                size="lg"
+                className={`rounded-full p-0 text-white shadow-lg ${
+                  isTimerRunning ? t.accentBg + ' hover:opacity-90' : 'bg-green-600 hover:bg-green-700'
+                }`}
+                style={{ width: '56px', height: '56px' }}
+              >
+                {isTimerRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
+              </Button>
+              
+              {/* Next */}
+              <Button
+                onClick={handleNextStep}
+                size="lg"
+                className={`rounded-full px-6 ${
+                  studyPhase === PHASES.CONCLUSION 
+                    ? 'bg-green-600 hover:bg-green-700' 
+                    : studyPhase === PHASES.REVIEW && currentReviewQuestion >= (analysisResult?.final_questions?.length || 1) - 1
+                      ? 'bg-purple-600 hover:bg-purple-700'
+                      : studyPhase === PHASES.PARAGRAPHS && currentParagraphIndex >= (analysisResult?.paragraphs?.length || 1) - 1
+                        ? 'bg-red-600 hover:bg-red-700'
+                        : 'bg-green-600 hover:bg-green-700'
+                } text-white`}
+              >
+                {getNextButtonText()}
+                <ChevronRight className="w-5 h-5 ml-1" />
+              </Button>
+            </>
+          )}
+          
+          {/* Reset (always visible when not initial) */}
+          {(isTimerRunning || studyPhase !== PHASES.INTRO) && (
+            <Button
+              onClick={() => {
+                onResetTimer();
+                setStudyPhase(PHASES.INTRO);
+                setCurrentReviewQuestion(0);
+                setPhaseElapsed(0);
+              }}
+              variant="outline"
+              size="sm"
+              className={`rounded-full ${t.buttonOutline}`}
+            >
+              <RotateCcw className="w-4 h-4" />
+            </Button>
+          )}
         </div>
 
-        <p className={`text-[10px] sm:text-xs md:text-sm ${t.textDimmed} mt-2 sm:mt-4 md:mt-6 hidden md:block`}>
-          <kbd className={`px-1.5 py-0.5 sm:px-2 sm:py-1 ${t.kbd} rounded text-[10px] sm:text-xs`}>Espacio</kbd> iniciar/pausar · <kbd className={`px-1.5 py-0.5 sm:px-2 sm:py-1 ${t.kbd} rounded text-[10px] sm:text-xs`}>ESC</kbd> salir
+        {/* Keyboard shortcuts */}
+        <p className={`text-xs ${t.textDimmed} mt-4 hidden md:block`}>
+          <kbd className={`px-2 py-1 ${t.kbd} rounded`}>Espacio</kbd> iniciar/pausar · 
+          <kbd className={`px-2 py-1 ${t.kbd} rounded mx-1`}>←</kbd>/<kbd className={`px-2 py-1 ${t.kbd} rounded`}>→</kbd> navegar · 
+          <kbd className={`px-2 py-1 ${t.kbd} rounded ml-1`}>ESC</kbd> salir
         </p>
       </div>
 
-      {/* Bottom Stats - Hidden on mobile to save space */}
-      <div className={`hidden sm:flex items-center justify-center gap-1.5 sm:gap-3 md:gap-6 px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-3 border-t ${t.border} text-[10px] sm:text-xs md:text-sm ${t.textDimmed} flex-wrap shrink-0`}>
+      {/* Bottom Stats */}
+      <div className={`flex items-center justify-center gap-3 md:gap-6 px-4 py-2 border-t ${t.border} text-xs ${t.textDimmed} shrink-0`}>
         <span>{analysisResult.total_paragraphs} párrafos</span>
-        <span className="hidden sm:inline">·</span>
-        <span>{analysisResult.total_words} palabras</span>
-        <span className="hidden sm:inline">·</span>
+        <span>·</span>
         <span>{analysisResult.total_questions} preguntas</span>
+        <span>·</span>
+        <span>{analysisResult.final_questions?.length || 0} repaso</span>
       </div>
     </div>
   );
