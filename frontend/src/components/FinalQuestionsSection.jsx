@@ -9,6 +9,7 @@ import { formatClockTime, addSecondsToDate, formatTimeCompact } from "../utils/t
 function ClosingWordsSection({
   isActive,
   isTimerRunning,
+  estimatedTime = 60, // 1 minute default
   onFinishStudy,
   overtimeAlertEnabled,
   soundEnabled,
@@ -17,8 +18,11 @@ function ClosingWordsSection({
   triggerVibration
 }) {
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
   const timerRef = useRef(null);
   const cardRef = useRef(null);
+
+  const isOverTime = elapsedTime > estimatedTime;
 
   // Auto-scroll when active
   useEffect(() => {
@@ -27,10 +31,24 @@ function ClosingWordsSection({
     }
   }, [isActive]);
 
+  // Overtime alert
+  useEffect(() => {
+    if (isOverTime && !overtimeAlertTriggered && overtimeAlertEnabled && isActive) {
+      setOvertimeAlertTriggered(true);
+      if (soundEnabled && playNotificationSound) {
+        playNotificationSound('urgent');
+      }
+      if (vibrationEnabled && triggerVibration) {
+        triggerVibration([200, 100, 200, 100, 200]);
+      }
+    }
+  }, [isOverTime, overtimeAlertTriggered, overtimeAlertEnabled, isActive, soundEnabled, vibrationEnabled, playNotificationSound, triggerVibration]);
+
   // Timer for closing words
   useEffect(() => {
     if (isActive && isTimerRunning) {
       setElapsedTime(0);
+      setOvertimeAlertTriggered(false);
       timerRef.current = setInterval(() => {
         setElapsedTime(prev => prev + 1);
       }, 1000);
@@ -56,14 +74,18 @@ function ClosingWordsSection({
   if (!isActive) {
     // Show preview/pending state
     return (
-      <div className="relative rounded-xl bg-purple-50 border border-purple-200 p-4 opacity-60">
+      <div className="relative rounded-2xl bg-purple-50 border-2 border-purple-200 p-4 opacity-60">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-purple-600" />
+          <div className="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center">
+            <Sparkles className="w-6 h-6 text-purple-600" />
           </div>
           <div>
-            <p className="font-semibold text-purple-700">Palabras de Conclusión</p>
+            <p className="font-bold text-purple-700">Palabras de Conclusión</p>
             <p className="text-sm text-purple-500">Después de las preguntas de repaso</p>
+            <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 bg-purple-100 rounded-full">
+              <Timer className="w-3 h-3 text-purple-600" />
+              <span className="text-xs font-medium text-purple-700">{formatTime(estimatedTime)}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -74,53 +96,89 @@ function ClosingWordsSection({
   return (
     <div 
       ref={cardRef}
-      className="relative rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 border-2 border-purple-400 shadow-lg overflow-hidden"
+      className={`relative rounded-2xl border-2 shadow-lg transition-all duration-300 ${
+        isOverTime 
+          ? 'border-red-400 bg-red-50 shadow-red-100' 
+          : 'border-purple-400 bg-purple-50 shadow-purple-100'
+      }`}
       data-testid="closing-words-section"
     >
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3">
-        <div className="flex items-center justify-between">
+      {/* Active Banner with Timer */}
+      <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold rounded-t-2xl ${
+        isOverTime 
+          ? 'bg-gradient-to-r from-red-500 to-red-600' 
+          : 'bg-gradient-to-r from-purple-500 to-purple-600'
+      }`}>
+        {/* Main row */}
+        <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            <span className="relative flex h-2.5 w-2.5">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
             </span>
             <Sparkles className="w-4 h-4" />
-            <span className="font-bold text-sm">PALABRAS DE CONCLUSIÓN</span>
+            <span className="font-bold tracking-wide">
+              {isOverTime ? 'TIEMPO EXCEDIDO' : 'PALABRAS DE CONCLUSIÓN'}
+            </span>
           </div>
+          
+          {/* Timer display */}
           {isTimerRunning && (
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/20 text-xs">
-              <Timer className="w-3 h-3" />
-              <span className="font-mono font-bold">{formatTime(elapsedTime)}</span>
+            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${
+              isOverTime ? 'bg-red-400/40' : 'bg-white/20'
+            }`}>
+              <Timer className="w-3.5 h-3.5" />
+              <span className="font-mono font-bold text-sm">
+                {formatTime(elapsedTime)}
+              </span>
+              <span className="opacity-70">/</span>
+              <span className="opacity-70">
+                {formatTime(estimatedTime)}
+              </span>
             </div>
           )}
         </div>
+        
+        {/* Overtime badge */}
+        {isOverTime && (
+          <div className="px-4 pb-2 -mt-1">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-700 text-white text-[10px] font-bold rounded-full animate-pulse">
+              ⚠️ +{formatTime(elapsedTime - estimatedTime)} excedido
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
-      <div className="p-5">
+      <div className={`p-5 ${isOverTime ? 'pt-16' : 'pt-14'}`}>
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
-            <Sparkles className="w-6 h-6 text-white" />
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${
+            isOverTime 
+              ? 'bg-gradient-to-br from-red-500 to-red-600' 
+              : 'bg-gradient-to-br from-purple-500 to-purple-600'
+          }`}>
+            <Sparkles className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1">
-            <p className="text-purple-800 font-medium">
-              Este es el momento para las palabras finales del conductor. 
+            <h3 className={`font-bold text-lg ${isOverTime ? 'text-red-800' : 'text-purple-800'}`}>
+              Palabras de Conclusión
+            </h3>
+            <p className={`text-sm mt-1 ${isOverTime ? 'text-red-600' : 'text-purple-600'}`}>
               Resume los puntos principales y anima a la congregación.
             </p>
           </div>
         </div>
 
         {/* Finish Button */}
-        <div className="mt-6 flex justify-center">
+        <div className="mt-5 flex justify-end">
           <Button
             onClick={onFinishStudy}
-            className="rounded-full px-8 py-3 text-base font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all"
+            className="rounded-full px-6 py-2 text-sm font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg transition-all"
             data-testid="finish-study-btn"
           >
-            <PartyPopper className="w-5 h-5 mr-2" />
+            <PartyPopper className="w-4 h-4 mr-2" />
             Finalizar Estudio
-            <Check className="w-5 h-5 ml-2" />
+            <Check className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </div>
