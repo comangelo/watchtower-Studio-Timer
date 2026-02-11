@@ -1,4 +1,4 @@
-import { Clock, MessageCircleQuestion, Settings, Timer } from "lucide-react";
+import { Clock, MessageCircleQuestion, Settings, Timer, Mic, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 
@@ -9,6 +9,10 @@ export function SettingsPanel({
   setAnswerTime,
   totalDuration,
   setTotalDuration,
+  introductionDuration,
+  setIntroductionDuration,
+  closingWordsDuration,
+  setClosingWordsDuration,
   darkMode = false
 }) {
   const speedOptions = [
@@ -29,14 +33,14 @@ export function SettingsPanel({
           <h3 className={`font-semibold text-sm sm:text-base ${darkMode ? 'text-zinc-200' : 'text-slate-800'}`}>Configuración de tiempos</h3>
         </div>
         
-        {/* Grid que cambia a 3 columnas en landscape móvil y en pantallas medianas+ */}
-        <div className="grid grid-cols-1 landscape:grid-cols-3 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        {/* Primera fila: Duración, Velocidad, Respuesta */}
+        <div className="grid grid-cols-1 landscape:grid-cols-3 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-4 sm:mb-6">
           {/* Duración total - Slider */}
           <div className="flex flex-col justify-center">
             <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <Timer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-500" />
-                <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>Duración</span>
+                <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>Duración Total</span>
               </div>
               <span className="text-sm sm:text-base md:text-lg font-bold text-orange-500" style={{ fontFamily: 'system-ui' }}>
                 {totalDuration} min
@@ -113,6 +117,66 @@ export function SettingsPanel({
             <div className={`flex justify-between text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
               <span>15</span>
               <span>90 seg</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Segunda fila: Introducción y Conclusión */}
+        <div className={`pt-4 sm:pt-6 border-t ${darkMode ? 'border-zinc-700' : 'border-slate-200'}`}>
+          <p className={`text-xs sm:text-sm font-medium mb-3 sm:mb-4 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
+            Tiempos del conductor
+          </p>
+          <div className="grid grid-cols-1 landscape:grid-cols-2 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+            {/* Tiempo de Introducción */}
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center justify-between mb-2 sm:mb-3">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Mic className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500" />
+                  <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>Introducción</span>
+                </div>
+                <span className="text-sm sm:text-base md:text-lg font-bold text-blue-500" style={{ fontFamily: 'system-ui' }}>
+                  {introductionDuration} seg
+                </span>
+              </div>
+              <Slider
+                value={[introductionDuration]}
+                onValueChange={(value) => setIntroductionDuration(value[0])}
+                min={30}
+                max={180}
+                step={10}
+                className="w-full [&_[role=slider]]:bg-blue-500"
+                data-testid="introduction-time-slider"
+              />
+              <div className={`flex justify-between text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
+                <span>30 seg</span>
+                <span>3 min</span>
+              </div>
+            </div>
+
+            {/* Tiempo de Conclusión */}
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center justify-between mb-2 sm:mb-3">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-500" />
+                  <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>Conclusión</span>
+                </div>
+                <span className="text-sm sm:text-base md:text-lg font-bold text-purple-500" style={{ fontFamily: 'system-ui' }}>
+                  {closingWordsDuration} seg
+                </span>
+              </div>
+              <Slider
+                value={[closingWordsDuration]}
+                onValueChange={(value) => setClosingWordsDuration(value[0])}
+                min={30}
+                max={180}
+                step={10}
+                className="w-full [&_[role=slider]]:bg-purple-500"
+                data-testid="closing-time-slider"
+              />
+              <div className={`flex justify-between text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
+                <span>30 seg</span>
+                <span>3 min</span>
+              </div>
             </div>
           </div>
         </div>
