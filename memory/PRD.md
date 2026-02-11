@@ -68,6 +68,11 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ **Tamaño responsivo de horas inicio/fin (10-Feb-2025)**
 - ✅ **Nuevo ícono de app: fondo naranja con reloj blanco minimalista (10-Feb-2025)**
 - ✅ **Ícono actualizado en encabezado de la aplicación (10-Feb-2025)**
+- ✅ **Duración configurable de 0 a 60 minutos con incremento de 1 (11-Feb-2025)**
+- ✅ **Hora de fin vinculada directamente a la duración configurada (11-Feb-2025)**
+- ✅ **Horarios siempre visibles con colores distintivos: esmeralda (inicio) y ámbar (fin) (11-Feb-2025)**
+- ✅ **Panel de horarios responsivo para móviles en horizontal (11-Feb-2025)**
+- ✅ **Manual de usuario actualizado a v2.3 con instrucciones de actualización (11-Feb-2025)**
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
