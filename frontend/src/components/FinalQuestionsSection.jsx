@@ -564,19 +564,29 @@ export function FinalQuestionsSection({
                         : darkMode ? 'bg-orange-900' : 'bg-orange-100') 
                     : darkMode ? 'bg-red-900' : 'bg-red-100'
             }`}>
-              <span className="text-xs block mb-1 text-slate-500">Por pregunta</span>
+              <span className={`text-xs block mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Por pregunta</span>
               <span 
                 className={`text-xl font-light ${
-                  isCriticalTime ? 'text-red-700' :
-                  isLowTime ? 'text-orange-700' :
-                  isAdjusted ? (timeDiff > 0 ? 'text-green-700' : 'text-orange-700') : 'text-red-700'
+                  isCriticalTime 
+                    ? darkMode ? 'text-red-400' : 'text-red-700' 
+                    : isLowTime 
+                      ? darkMode ? 'text-orange-400' : 'text-orange-700' 
+                      : isAdjusted 
+                        ? (timeDiff > 0 
+                            ? darkMode ? 'text-green-400' : 'text-green-700' 
+                            : darkMode ? 'text-orange-400' : 'text-orange-700') 
+                        : darkMode ? 'text-red-400' : 'text-red-700'
                 }`}
                 style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               >
                 {Math.round(perQuestionTime)}s
               </span>
               {isAdjusted && (
-                <span className={`text-xs block ${timeDiff > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                <span className={`text-xs block ${
+                  timeDiff > 0 
+                    ? darkMode ? 'text-green-400' : 'text-green-600' 
+                    : darkMode ? 'text-orange-400' : 'text-orange-600'
+                }`}>
                   {timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)}s
                 </span>
               )}
