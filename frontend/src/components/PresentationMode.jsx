@@ -455,15 +455,6 @@ export default function PresentationMode({
     let hasScripture = false;
     let buttonColor = "bg-green-600 hover:bg-green-700";
     
-    // Debug log
-    console.log('getNextButtonInfo:', { 
-      studyPhase, 
-      paragraphGroupsLength: paragraphGroups.length,
-      currentGroupIndex,
-      firstGroupNumbers: paragraphGroups[0]?.numbers,
-      nextGroupNumbers: paragraphGroups[currentGroupIndex + 1]?.numbers
-    });
-    
     switch (studyPhase) {
       case PHASES.INTRO:
         // Check first group - show what paragraphs we'll start with
