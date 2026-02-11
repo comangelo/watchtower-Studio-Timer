@@ -761,6 +761,7 @@ export default function HomePage() {
                   onToggle={toggleTimer}
                   onReset={resetTimer}
                   remainingTime={remainingTime}
+                  totalDuration={totalDuration}
                 />
 
                 <CountdownTimer
