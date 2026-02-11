@@ -358,10 +358,10 @@ export default function PresentationMode({
     switch (studyPhase) {
       case PHASES.INTRO:
         text = "Párrafo 1";
-        // Check first paragraph
+        // Check first paragraph - include "both" type
         const firstPara = analysisResult?.paragraphs?.[0];
-        hasImage = firstPara?.questions?.some(q => q.content_type === 'image') || false;
-        hasScripture = firstPara?.questions?.some(q => q.content_type === 'scripture') || false;
+        hasImage = firstPara?.questions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
+        hasScripture = firstPara?.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
         break;
       case PHASES.PARAGRAPHS:
         if (currentParagraphIndex < (analysisResult?.paragraphs?.length || 1) - 1) {
