@@ -75,7 +75,11 @@ export function IntroductionWordsSection({
     return (
       <div 
         ref={cardRef}
-        className="relative rounded-2xl border-2 border-blue-300 bg-gradient-to-br from-blue-50 to-white p-5 shadow-md"
+        className={`relative rounded-2xl border-2 p-5 shadow-md ${
+          darkMode 
+            ? 'border-blue-700 bg-gradient-to-br from-blue-950 to-zinc-900'
+            : 'border-blue-300 bg-gradient-to-br from-blue-50 to-white'
+        }`}
         data-testid="introduction-words-section"
       >
         <div className="flex items-start gap-4">
@@ -83,13 +87,15 @@ export function IntroductionWordsSection({
             <Mic className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-lg text-blue-800">Palabras de Introducción</h3>
-            <p className="text-sm text-blue-600 mt-1">
+            <h3 className={`font-bold text-lg ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>Palabras de Introducción</h3>
+            <p className={`text-sm mt-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
               El conductor introduce el tema del artículo de estudio.
             </p>
-            <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-blue-100 rounded-full">
-              <Timer className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-700">Tiempo estimado: {formatTime(estimatedTime)}</span>
+            <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full ${
+              darkMode ? 'bg-blue-900' : 'bg-blue-100'
+            }`}>
+              <Timer className={`w-4 h-4 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+              <span className={`text-sm font-medium ${darkMode ? 'text-blue-300' : 'text-blue-700'}`}>Tiempo estimado: {formatTime(estimatedTime)}</span>
             </div>
           </div>
         </div>
