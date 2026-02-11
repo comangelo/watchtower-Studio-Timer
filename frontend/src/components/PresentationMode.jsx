@@ -627,36 +627,38 @@ export default function PresentationMode({
 
           {/* Phase Info */}
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 ${phaseInfo.bgColor} rounded-xl flex items-center justify-center`}>
-              <PhaseIcon className="w-6 h-6 text-white" />
+            <div className={`w-14 h-14 ${phaseInfo.bgColor} rounded-xl flex items-center justify-center shadow-lg`}>
+              <PhaseIcon className="w-7 h-7 text-white" />
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h2 className={`text-xl md:text-2xl font-bold ${phaseInfo.color}`}>{phaseInfo.title}</h2>
-                {/* Current paragraph badges */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <h2 className={`text-2xl md:text-3xl font-bold ${phaseInfo.color}`}>{phaseInfo.title}</h2>
+                {/* Current paragraph badges - MORE VISIBLE */}
                 {studyPhase === PHASES.PARAGRAPHS && (currentParagraphHasImage || currentParagraphHasScripture) && (
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     {currentParagraphHasImage && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                        <Image className="w-3 h-3" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-600 text-white shadow-lg shadow-purple-500/30">
+                        <Image className="w-4 h-4" />
+                        MOSTRAR IMAGEN
                       </span>
                     )}
                     {currentParagraphHasScripture && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                        <BookOpen className="w-3 h-3" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-500/30">
+                        <BookOpen className="w-4 h-4" />
+                        LEER TEXTO
                       </span>
                     )}
                   </div>
                 )}
               </div>
-              <p className={`text-sm ${t.textMuted}`}>{phaseInfo.subtitle}</p>
+              <p className={`text-sm ${t.textMuted} mt-1`}>{phaseInfo.subtitle}</p>
             </div>
             {studyPhase !== PHASES.FINISHED && (
               <div className="text-right">
-                <p className={`text-2xl md:text-3xl font-bold ${isPhaseOvertime ? 'text-red-400' : t.text}`}>
+                <p className={`text-3xl md:text-4xl font-bold ${isPhaseOvertime ? 'text-red-400' : t.text}`}>
                   {formatTimeCompact(phaseElapsed)}
                 </p>
-                <p className={`text-xs ${t.textDimmed}`}>/ {formatTimeCompact(phaseInfo.estimatedTime)}</p>
+                <p className={`text-sm ${t.textDimmed}`}>/ {formatTimeCompact(phaseInfo.estimatedTime)}</p>
               </div>
             )}
           </div>
