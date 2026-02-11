@@ -653,36 +653,36 @@ export default function PresentationMode({
                   {currentParagraphIndex + 1} de {articleStats.paragraphs}
                 </span>
               </div>
-              {/* Visual paragraph progress bar - LONGER */}
+              {/* Visual paragraph progress bar - shows GROUPS, not individual paragraphs */}
               <div className="flex gap-1.5 flex-wrap">
-                {Array.from({ length: articleStats.paragraphs }).map((_, idx) => {
-                  const para = analysisResult?.paragraphs?.[idx];
-                  const hasImg = para?.questions?.some(q => q.content_type === 'image' || q.content_type === 'both');
-                  const hasTxt = para?.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both');
-                  const isCurrent = idx === currentParagraphIndex;
-                  const isCompleted = idx < currentParagraphIndex;
+                {paragraphGroups.map((group, groupIdx) => {
+                  const hasImg = group.allQuestions?.some(q => q.content_type === 'image' || q.content_type === 'both');
+                  const hasTxt = group.allQuestions?.some(q => q.content_type === 'scripture' || q.content_type === 'both');
+                  const isCurrent = groupIdx === currentGroupIndex;
+                  const isCompleted = groupIdx < currentGroupIndex;
+                  const isGrouped = group.numbers.length > 1;
                   
                   return (
                     <div 
-                      key={idx}
+                      key={groupIdx}
                       className={`h-3 rounded-full transition-all relative ${
                         isCurrent 
-                          ? 'w-10 bg-green-500 shadow-lg shadow-green-500/50' 
+                          ? `${isGrouped ? 'w-14' : 'w-10'} bg-green-500 shadow-lg shadow-green-500/50` 
                           : isCompleted 
-                            ? 'w-4 bg-green-500/60' 
+                            ? `${isGrouped ? 'w-6' : 'w-4'} bg-green-500/60` 
                             : hasImg && hasTxt
-                              ? 'w-4 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 animate-pulse'
+                              ? `${isGrouped ? 'w-6' : 'w-4'} bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 animate-pulse`
                               : hasImg
-                                ? 'w-4 bg-purple-500/80'
+                                ? `${isGrouped ? 'w-6' : 'w-4'} bg-purple-500/80`
                                 : hasTxt
-                                  ? 'w-4 bg-blue-500/80'
-                                  : `w-4 ${t.progressBg}`
+                                  ? `${isGrouped ? 'w-6' : 'w-4'} bg-blue-500/80`
+                                  : `${isGrouped ? 'w-6' : 'w-4'} ${t.progressBg}`
                       }`}
-                      title={`Párrafo ${idx + 1}${hasImg ? ' 🖼️' : ''}${hasTxt ? ' 📖' : ''}`}
+                      title={`${isGrouped ? 'Párrafos' : 'Párrafo'} ${group.numbers.join(', ')}${hasImg ? ' 🖼️' : ''}${hasTxt ? ' 📖' : ''}`}
                     >
                       {isCurrent && (
-                        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-green-400">
-                          {idx + 1}
+                        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-green-400 whitespace-nowrap">
+                          {group.numbers.join(',')}
                         </span>
                       )}
                     </div>
