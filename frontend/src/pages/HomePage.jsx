@@ -817,6 +817,7 @@ export default function HomePage() {
               setAnswerTime={setAnswerTime}
               totalDuration={totalDuration}
               setTotalDuration={setTotalDuration}
+              darkMode={darkMode}
             />
             <UploadZone
               onFileSelect={handleFileUpload}
@@ -828,6 +829,7 @@ export default function HomePage() {
               fileInputRef={fileInputRef}
               readingSpeed={readingSpeed}
               answerTime={answerTime}
+              darkMode={darkMode}
             />
           </div>
         ) : (
