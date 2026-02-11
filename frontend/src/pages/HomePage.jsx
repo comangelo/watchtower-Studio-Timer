@@ -1041,20 +1041,20 @@ export default function HomePage() {
                             ? 'bg-orange-600 hover:bg-orange-700 text-white border-orange-500' 
                             : 'bg-orange-500 hover:bg-orange-600 text-white border-orange-400'
                           : darkMode 
-                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500' 
-                            : 'bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-400'
+                            ? 'bg-green-500 hover:bg-green-600 text-white border-green-400' 
+                            : 'bg-green-400 hover:bg-green-500 text-white border-green-300'
                       }`}
                       data-testid="toggle-all-content-btn"
                     >
                       {showAllParagraphContent ? (
                         <>
                           <EyeOff className="w-4 h-4 mr-1.5" />
-                          Ocultar contenido
+                          Ocultar contenido de párrafos
                         </>
                       ) : (
                         <>
                           <Eye className="w-4 h-4 mr-1.5" />
-                          Mostrar contenido
+                          Mostrar contenido de párrafos
                         </>
                       )}
                     </Button>
