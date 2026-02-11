@@ -1067,6 +1067,16 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     total_questions += len(final_questions)
     total_question_time += final_questions_time
     
+    # Count extra content in final questions
+    for q in final_questions:
+        if q.content_type == 'image':
+            total_images += 1
+        elif q.content_type == 'scripture':
+            total_scriptures += 1
+    
+    # Calculate paragraph questions (total - final)
+    total_paragraph_questions = total_questions - len(final_questions)
+    
     FIXED_TOTAL_TIME = 3600  # 60 minutes
     
     return PDFAnalysisResult(
@@ -1081,7 +1091,11 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         final_questions_start_time=round(final_questions_start_time, 2),
         final_questions=final_questions,
         final_questions_title=final_questions_title,
-        paragraphs=analyzed_paragraphs
+        paragraphs=analyzed_paragraphs,
+        total_paragraph_questions=total_paragraph_questions,
+        total_review_questions=len(final_questions),
+        total_images=total_images,
+        total_scriptures=total_scriptures
     )
 
 
