@@ -1832,6 +1832,13 @@ async def get_status_checks():
         return []
 
 
+# Health check endpoint for Kubernetes/deployment
+@api_router.get("/health")
+async def health_check():
+    """Health check endpoint for deployment"""
+    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
@@ -1842,9 +1849,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Health check endpoint for Kubernetes/deployment
-@api_router.get("/health")
-async def health_check():
-    """Health check endpoint for deployment"""
-    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
