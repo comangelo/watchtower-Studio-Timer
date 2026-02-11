@@ -109,6 +109,12 @@ export default function HomePage() {
   const [isInReviewMode, setIsInReviewMode] = useState(false);
   const [currentReviewQuestion, setCurrentReviewQuestion] = useState(0);
   const [reviewQuestionStartTime, setReviewQuestionStartTime] = useState(null);
+  
+  // State for editing end time on initial screen (before PDF upload)
+  const [isEditingInitialEndTime, setIsEditingInitialEndTime] = useState(false);
+  const [initialEditHours, setInitialEditHours] = useState('');
+  const [initialEditMinutes, setInitialEditMinutes] = useState('');
+
 
   // Custom hooks
   const { playNotificationSound, triggerVibration } = useNotifications(soundEnabled, vibrationEnabled);
