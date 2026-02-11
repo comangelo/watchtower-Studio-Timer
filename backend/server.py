@@ -1784,36 +1784,52 @@ async def analyze_pdf(
 @api_router.get("/analyses", response_model=List[PDFAnalysisResult])
 async def get_analyses():
     """Get all PDF analyses"""
-    analyses = await db.pdf_analyses.find(
-        {}, 
-        {"_id": 0}
-    ).sort("timestamp", -1).to_list(50)
-    for analysis in analyses:
-        if isinstance(analysis.get('timestamp'), str):
-            analysis['timestamp'] = datetime.fromisoformat(analysis['timestamp'])
-    return analyses
+    if db is None:
+        return []
+    try:
+        analyses = await db.pdf_analyses.find(
+            {}, 
+            {"_id": 0}
+        ).sort("timestamp", -1).to_list(50)
+        for analysis in analyses:
+            if isinstance(analysis.get('timestamp'), str):
+                analysis['timestamp'] = datetime.fromisoformat(analysis['timestamp'])
+        return analyses
+    except Exception as e:
+        logger.warning(f"Failed to get analyses: {e}")
+        return []
 
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
     status_obj = StatusCheck(**status_dict)
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    _ = await db.status_checks.insert_one(doc)
+    if db is not None:
+        try:
+            doc = status_obj.model_dump()
+            doc['timestamp'] = doc['timestamp'].isoformat()
+            await db.status_checks.insert_one(doc)
+        except Exception as e:
+            logger.warning(f"Failed to save status check: {e}")
     return status_obj
 
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-    status_checks = await db.status_checks.find(
-        {}, 
-        {"_id": 0}
-    ).sort("timestamp", -1).to_list(100)
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    return status_checks
+    if db is None:
+        return []
+    try:
+        status_checks = await db.status_checks.find(
+            {}, 
+            {"_id": 0}
+        ).sort("timestamp", -1).to_list(100)
+        for check in status_checks:
+            if isinstance(check['timestamp'], str):
+                check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+        return status_checks
+    except Exception as e:
+        logger.warning(f"Failed to get status checks: {e}")
+        return []
 
 
 # Include the router in the main app
