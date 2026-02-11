@@ -428,43 +428,45 @@ export function ParagraphCard({
             
             {/* Questions Toggle */}
             {hasQuestions && (
-              <CollapsibleTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className={`rounded-full px-4 py-3 text-sm font-semibold transition-all border-2 ${
-                    isOpen
-                      ? hasFinalQuestions 
-                        ? darkMode 
-                          ? 'bg-red-600 text-white border-red-500 hover:bg-red-700' 
-                          : 'bg-red-500 text-white border-red-400 hover:bg-red-600'
+              <Button 
+                variant="ghost"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(!isOpen);
+                }}
+                className={`rounded-full px-4 py-3 text-sm font-semibold transition-all border-2 ${
+                  isOpen
+                    ? hasFinalQuestions 
+                      ? darkMode 
+                        ? 'bg-red-600 text-white border-red-500 hover:bg-red-700' 
+                        : 'bg-red-500 text-white border-red-400 hover:bg-red-600'
+                      : darkMode 
+                        ? 'bg-orange-600 text-white border-orange-500 hover:bg-orange-700' 
+                        : 'bg-orange-500 text-white border-orange-400 hover:bg-orange-600'
+                    : hasFinalQuestions 
+                      ? darkMode 
+                        ? 'text-red-400 border-red-700 hover:bg-red-950 hover:border-red-600' 
+                        : 'text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300'
+                      : isCurrentParagraph 
+                        ? 'text-green-600 border-green-200 hover:bg-green-100 hover:border-green-300' 
                         : darkMode 
-                          ? 'bg-orange-600 text-white border-orange-500 hover:bg-orange-700' 
-                          : 'bg-orange-500 text-white border-orange-400 hover:bg-orange-600'
-                      : hasFinalQuestions 
-                        ? darkMode 
-                          ? 'text-red-400 border-red-700 hover:bg-red-950 hover:border-red-600' 
-                          : 'text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300'
-                        : isCurrentParagraph 
-                          ? 'text-green-600 border-green-200 hover:bg-green-100 hover:border-green-300' 
-                          : darkMode 
-                            ? 'text-orange-400 border-orange-700 hover:bg-orange-950 hover:border-orange-600' 
-                            : 'text-orange-600 border-orange-200 hover:bg-orange-50 hover:border-orange-300'
-                  }`}
-                  data-testid={`toggle-questions-${paragraph.number}`}
-                >
-                  {isOpen ? (
-                    <>
-                      <ChevronUp className="w-4 h-4 mr-1" />
-                      Ocultar preguntas
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-4 h-4 mr-1" />
-                      Ver {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
-                    </>
-                  )}
-                </Button>
-              </CollapsibleTrigger>
+                          ? 'text-orange-400 border-orange-700 hover:bg-orange-950 hover:border-orange-600' 
+                          : 'text-orange-600 border-orange-200 hover:bg-orange-50 hover:border-orange-300'
+                }`}
+                data-testid={`toggle-questions-${paragraph.number}`}
+              >
+                {isOpen ? (
+                  <>
+                    <ChevronUp className="w-4 h-4 mr-1" />
+                    Ocultar preguntas
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4 mr-1" />
+                    Ver {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
+                  </>
+                )}
+              </Button>
             )}
           </div>
 
