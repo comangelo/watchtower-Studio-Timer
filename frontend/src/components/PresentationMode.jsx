@@ -185,8 +185,6 @@ export default function PresentationMode({
     if (!currentParagraph) return false;
     return currentParagraph.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
   }, [currentParagraph]);
-    return currentParagraph.questions?.some(q => q.content_type === 'scripture') || false;
-  }, [currentParagraph]);
   
   const currentReviewQuestionData = useMemo(() => {
     if (!analysisResult || !analysisResult.final_questions) return null;
