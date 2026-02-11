@@ -1337,25 +1337,28 @@ def parse_question_line_watchtower(text: str) -> tuple:
 def extract_multiple_questions(text: str) -> list:
     """
     Extract multiple questions from a single text line.
+    Preserves content in parentheses after the question mark.
     
     Examples:
     - "¿Primera pregunta? ¿Segunda pregunta?" -> ["¿Primera pregunta?", "¿Segunda pregunta?"]
     - "¿Única pregunta?" -> ["¿Única pregunta?"]
+    - "¿Pregunta? (Vea imagen)" -> ["¿Pregunta? (Vea imagen)"]
     - "Pregunta sin signos?" -> ["Pregunta sin signos?"]
     """
     questions = []
     
-    # Try to split by "?" keeping each question complete
-    # Pattern matches: ¿...? or text ending with ?
-    parts = re.findall(r'¿[^?]+\?|[^?]+\?', text)
+    # Pattern to match questions with optional parenthetical content after them
+    # Matches: ¿...? or ...? optionally followed by (...) 
+    # Updated pattern to capture parentheses content that follows a question
+    parts = re.findall(r'¿[^?]+\?\s*(?:\([^)]+\))?|[^?¿]+\?\s*(?:\([^)]+\))?', text)
     
     for part in parts:
         part = part.strip()
         if part and len(part) > 3:
             questions.append(part)
     
-    # If no questions found but text ends with ?, use whole text
-    if not questions and text.strip().endswith('?'):
+    # If no questions found but text ends with ? or has parentheses, use whole text
+    if not questions and ('?' in text.strip()):
         questions.append(text.strip())
     
     return questions
