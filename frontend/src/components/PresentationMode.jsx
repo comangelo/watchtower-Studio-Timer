@@ -298,36 +298,35 @@ export default function PresentationMode({
       {/* Main Content - Landscape optimized */}
       <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-6 overflow-auto min-h-0">
         
-        {/* Time Schedule - Always visible, compact on mobile */}
+        {/* Time Schedule - Always visible, eye-catching & minimalist */}
         {startTime && (
-          <div className={`${t.card} rounded-lg sm:rounded-xl md:rounded-2xl px-2 sm:px-6 md:px-12 py-1 sm:py-4 md:py-6 mb-1 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
-            <div className="flex items-center justify-center gap-2 sm:gap-6 md:gap-12">
+          <div className={`${t.card} rounded-xl sm:rounded-2xl px-3 sm:px-8 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
+            <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-14">
+              {/* Start Time - Emerald Color */}
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-0.5 sm:mb-1 md:mb-2">
-                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full bg-cyan-500"></div>
-                  <span className={`text-[8px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Inicio</span>
-                </div>
+                <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
                 <p 
-                  className="text-sm sm:text-xl md:text-2xl lg:text-3xl font-semibold text-cyan-400"
-                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                  className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold text-emerald-400 mt-0.5 sm:mt-1"
+                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
                   data-testid="presentation-start-time"
                 >
                   {formatClockTime(startTime)}
                 </p>
               </div>
               
-              <div className="flex flex-col items-center">
-                <Timer className={`w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 ${t.textDimmed}`} />
+              {/* Separator */}
+              <div className="flex flex-col items-center opacity-60">
+                <div className={`w-6 sm:w-10 md:w-14 h-px ${t.border.replace('border-', 'bg-')}`}></div>
+                <span className={`text-[8px] sm:text-[10px] md:text-xs ${t.textDimmed} my-0.5 sm:my-1`}>{Math.round(totalDurationSeconds / 60)} min</span>
+                <div className={`w-6 sm:w-10 md:w-14 h-px ${t.border.replace('border-', 'bg-')}`}></div>
               </div>
               
+              {/* End Time - Amber/Gold Color */}
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-0.5 sm:mb-1 md:mb-2">
-                  <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full ${isOvertime || isLowTime ? 'bg-rose-500 animate-pulse' : 'bg-amber-400'}`}></div>
-                  <span className={`text-[8px] sm:text-xs md:text-sm font-semibold uppercase tracking-wider ${t.textDimmed}`}>Fin</span>
-                </div>
+                <span className={`text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-widest ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
                 <p 
-                  className={`text-sm sm:text-xl md:text-2xl lg:text-3xl font-semibold ${isOvertime ? 'text-rose-500 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
-                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                  className={`text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold mt-0.5 sm:mt-1 ${isOvertime ? 'text-rose-400 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
+                  style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
                   data-testid="presentation-end-time"
                 >
                   {formatClockTime(endTime)}
