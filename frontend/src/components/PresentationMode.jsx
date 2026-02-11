@@ -436,7 +436,11 @@ export default function PresentationMode({
           setCurrentReviewQuestion((analysisResult?.final_questions?.length || 1) - 1);
         } else {
           setStudyPhase(PHASES.PARAGRAPHS);
-          if (onParagraphChange) onParagraphChange((analysisResult?.paragraphs?.length || 1) - 1);
+          // Go to last group's first paragraph index
+          if (onParagraphChange && paragraphGroups.length > 0) {
+            const lastGroupFirstIndex = paragraphGroups[paragraphGroups.length - 1].indices[0];
+            onParagraphChange(lastGroupFirstIndex);
+          }
         }
         break;
       default:
@@ -444,7 +448,7 @@ export default function PresentationMode({
     }
   };
   
-  // Get next button info with alerts
+  // Get next button info with alerts - using groups
   const getNextButtonInfo = () => {
     let text = "Siguiente";
     let hasImage = false;
@@ -453,15 +457,23 @@ export default function PresentationMode({
     
     switch (studyPhase) {
       case PHASES.INTRO:
-        text = "Párrafo 1";
-        // Check first paragraph - include "both" type
-        const firstPara = analysisResult?.paragraphs?.[0];
-        hasImage = firstPara?.questions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
-        hasScripture = firstPara?.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
+        // Check first group
+        if (paragraphGroups.length > 0) {
+          const firstGroup = paragraphGroups[0];
+          const isGrouped = firstGroup.numbers.length > 1;
+          text = isGrouped ? `Párrafos ${firstGroup.numbers.join(', ')}` : `Párrafo ${firstGroup.numbers[0]}`;
+          hasImage = firstGroup.allQuestions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
+          hasScripture = firstGroup.allQuestions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
+        } else {
+          text = "Párrafo 1";
+        }
         break;
       case PHASES.PARAGRAPHS:
-        if (currentParagraphIndex < (analysisResult?.paragraphs?.length || 1) - 1) {
-          text = `Párrafo ${currentParagraphIndex + 2}`;
+        if (currentGroupIndex < paragraphGroups.length - 1) {
+          // Next group info
+          const nextGrp = paragraphGroups[currentGroupIndex + 1];
+          const isGrouped = nextGrp.numbers.length > 1;
+          text = isGrouped ? `Párrafos ${nextGrp.numbers.join(', ')}` : `Párrafo ${nextGrp.numbers[0]}`;
           hasImage = nextParagraphHasImage;
           hasScripture = nextParagraphHasScripture;
         } else {
