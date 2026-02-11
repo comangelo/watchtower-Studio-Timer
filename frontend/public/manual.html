@@ -517,10 +517,10 @@
         <section class="section" id="horarios">
             <div class="section-header">
                 <div class="section-icon">🕐</div>
-                <h2>Horarios de Inicio y Fin <span class="badge-new">NUEVO</span></h2>
+                <h2>Horarios de Inicio y Fin <span class="badge-new">MEJORADO</span></h2>
             </div>
             
-            <p>La aplicación muestra de forma prominente las horas de inicio y fin del estudio.</p>
+            <p>La aplicación muestra de forma prominente las horas de inicio y fin del estudio, con la posibilidad de editar manualmente la hora de fin.</p>
 
             <h3>Visualización de Horarios</h3>
             <p>Los horarios se muestran en un panel oscuro con colores distintivos:</p>
@@ -530,18 +530,61 @@
                     <span class="dot" style="background: #34d399;"></span>
                     <span style="color: #34d399; font-weight: bold;">INICIO - Color Esmeralda</span>
                 </div>
+                <div class="color-indicator" style="background: #1e3a5f;">
+                    <span class="dot" style="background: #f97316;"></span>
+                    <span style="color: #f97316; font-weight: bold;">DURACIÓN - Color Naranja (automático)</span>
+                </div>
+                <div class="color-indicator" style="background: #164e63;">
+                    <span class="dot" style="background: #22d3ee;"></span>
+                    <span style="color: #22d3ee; font-weight: bold;">DURACIÓN - Color Cian (manual)</span>
+                </div>
                 <div class="color-indicator" style="background: #78350f;">
                     <span class="dot" style="background: #fbbf24;"></span>
                     <span style="color: #fbbf24; font-weight: bold;">FIN - Color Ámbar</span>
                 </div>
             </div>
 
+            <h3>Editar Hora de Fin Manualmente <span class="badge-new">NUEVO</span></h3>
+            <p>Puedes definir manualmente la hora de fin del estudio:</p>
+            <ol>
+                <li>Haz clic en el <strong>ícono de lápiz (✏️)</strong> junto a la hora de fin</li>
+                <li>Ingresa la hora deseada en formato <strong>HH:MM</strong></li>
+                <li>Presiona <strong>✓</strong> para guardar o <strong>✗</strong> para cancelar</li>
+            </ol>
+            <p>Cuando defines una hora manual:</p>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">🔢</div>
+                    <div class="text">
+                        <strong>La duración se calcula automáticamente</strong>
+                        <span>Se muestra en color cian cuántos minutos durará el estudio</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🏷️</div>
+                    <div class="text">
+                        <strong>Aparece la etiqueta "(manual)"</strong>
+                        <span>Para indicar que la hora fue configurada manualmente</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">↩️</div>
+                    <div class="text">
+                        <strong>Opción de restaurar</strong>
+                        <span>Puedes hacer clic en "Restaurar hora automática" para volver al cálculo basado en duración</span>
+                    </div>
+                </li>
+            </ul>
+
             <h3>Relación con la Duración</h3>
             <p>La hora de fin está directamente vinculada a la duración configurada:</p>
             <div class="tip-box">
                 <h4>📐 Fórmula</h4>
                 <p><strong>Hora de Inicio + Duración = Hora de Fin</strong><br>
-                Ejemplo: Si empiezas a las 7:00 PM con duración de 45 min → Fin a las 7:45 PM</p>
+                Ejemplo: Si empiezas a las 7:00 PM con duración de 45 min → Fin a las 7:45 PM<br><br>
+                <strong>O al revés (modo manual):</strong><br>
+                Hora de Fin - Hora de Inicio = Duración mostrada<br>
+                Ejemplo: Inicio 7:00 PM, Fin manual 7:30 PM → Duración: 30m (en cian)</p>
             </div>
 
             <h3>Vista Previa</h3>
