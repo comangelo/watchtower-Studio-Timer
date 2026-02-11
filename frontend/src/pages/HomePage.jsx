@@ -859,13 +859,28 @@ export default function HomePage() {
               </Card>
               )}
 
+              {/* Introduction Words Section */}
+              <IntroductionWordsSection
+                isActive={isInIntroductionMode}
+                isTimerRunning={isTimerRunning}
+                estimatedTime={introductionDuration}
+                onStartIntroduction={startIntroductionMode}
+                onGoToFirstParagraph={goToFirstParagraph}
+                hasStarted={startTime !== null}
+                overtimeAlertEnabled={overtimeAlertEnabled}
+                soundEnabled={soundEnabled}
+                vibrationEnabled={vibrationEnabled}
+                playNotificationSound={playNotificationSound}
+                triggerVibration={triggerVibration}
+              />
+
               {/* Paragraphs List */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-heading font-semibold text-lg text-zinc-900">
                     Desglose por párrafo
                   </h3>
-                  {isTimerRunning && (
+                  {isTimerRunning && !isInIntroductionMode && (
                     <div className="flex items-center gap-2">
                       <Button size="sm" variant="outline" onClick={goToPreviousParagraph} disabled={currentManualParagraph <= 0} className="text-xs" data-testid="prev-paragraph-btn-2">
                         <ChevronLeft className="w-3 h-3 mr-1" />
