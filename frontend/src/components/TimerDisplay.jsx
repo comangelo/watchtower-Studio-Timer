@@ -88,26 +88,94 @@ export function TimerDisplay({
             <div className="w-4 sm:w-8 md:w-12 h-px bg-slate-600 opacity-60"></div>
           </div>
           
-          {/* End Time - Amber/Gold Color */}
+          {/* End Time - Amber/Gold Color - Editable */}
           <div className="text-center min-w-0">
-            <span className={`text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
-            <p 
-              className={`text-lg sm:text-2xl md:text-4xl font-bold mt-0.5 sm:mt-1 ${
-                !startTime ? 'text-amber-400/60' :
-                isOvertime ? 'text-rose-400 animate-pulse' : 
-                isLowTime ? 'text-rose-400' : 'text-amber-400'
-              }`}
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
-              data-testid="end-time-display"
-            >
-              {formatClockTime(displayEndTime)}
-            </p>
+            <div className="flex items-center justify-center gap-1">
+              <span className={`text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>
+                Fin {manualEndTime && !startTime && <span className="text-[8px] opacity-60">(manual)</span>}
+              </span>
+              {!startTime && !isEditingEndTime && (
+                <button
+                  onClick={startEditingEndTime}
+                  className="p-0.5 rounded hover:bg-slate-700 transition-colors"
+                  title="Editar hora de fin"
+                  data-testid="edit-end-time-btn"
+                >
+                  <Pencil className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-400 hover:text-amber-400" />
+                </button>
+              )}
+            </div>
+            
+            {isEditingEndTime ? (
+              <div className="flex items-center justify-center gap-1 mt-0.5 sm:mt-1">
+                <input
+                  type="text"
+                  value={editHours}
+                  onChange={(e) => setEditHours(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                  className="w-8 sm:w-12 text-center bg-slate-800 border border-slate-600 rounded text-amber-400 text-lg sm:text-2xl font-bold"
+                  placeholder="HH"
+                  maxLength={2}
+                  data-testid="edit-hours-input"
+                />
+                <span className="text-amber-400 text-lg sm:text-2xl font-bold">:</span>
+                <input
+                  type="text"
+                  value={editMinutes}
+                  onChange={(e) => setEditMinutes(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                  className="w-8 sm:w-12 text-center bg-slate-800 border border-slate-600 rounded text-amber-400 text-lg sm:text-2xl font-bold"
+                  placeholder="MM"
+                  maxLength={2}
+                  data-testid="edit-minutes-input"
+                />
+                <button
+                  onClick={saveEndTime}
+                  className="p-1 rounded bg-emerald-600 hover:bg-emerald-500 transition-colors ml-1"
+                  title="Guardar"
+                  data-testid="save-end-time-btn"
+                >
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                </button>
+                <button
+                  onClick={cancelEditEndTime}
+                  className="p-1 rounded bg-slate-600 hover:bg-slate-500 transition-colors"
+                  title="Cancelar"
+                  data-testid="cancel-end-time-btn"
+                >
+                  <X className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                </button>
+              </div>
+            ) : (
+              <p 
+                className={`text-lg sm:text-2xl md:text-4xl font-bold mt-0.5 sm:mt-1 ${
+                  !startTime ? 'text-amber-400/60' :
+                  isOvertime ? 'text-rose-400 animate-pulse' : 
+                  isLowTime ? 'text-rose-400' : 'text-amber-400'
+                }`}
+                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+                data-testid="end-time-display"
+              >
+                {formatClockTime(displayEndTime)}
+              </p>
+            )}
           </div>
         </div>
+        
         {!startTime && (
-          <p className="text-center text-slate-500 text-[10px] sm:text-xs mt-1 sm:mt-3">
-            Hora actual + {totalDuration} min = Hora de fin
-          </p>
+          <div className="text-center mt-1 sm:mt-3">
+            {manualEndTime ? (
+              <button
+                onClick={clearManualEndTime}
+                className="text-[10px] sm:text-xs text-slate-500 hover:text-slate-300 underline"
+                data-testid="clear-manual-time-btn"
+              >
+                Restaurar hora automática
+              </button>
+            ) : (
+              <p className="text-slate-500 text-[10px] sm:text-xs">
+                Hora actual + {totalDuration} min = Hora de fin
+              </p>
+            )}
+          </div>
         )}
       </div>
 
