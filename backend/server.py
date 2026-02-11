@@ -266,6 +266,8 @@ def extract_question_with_parenthesis(question_text: str) -> dict:
                 if has_image and has_scripture:
                     result["content_type"] = "both"
                 elif has_image:
+                    result["content_type"] = "image"
+                elif has_scripture:
                     result["content_type"] = "scripture"
     
     return result
