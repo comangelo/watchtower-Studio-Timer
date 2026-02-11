@@ -298,7 +298,7 @@ export default function PresentationMode({
       {/* Main Content - Landscape optimized */}
       <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-6 overflow-auto min-h-0">
         
-        {/* Time Schedule - Always visible, eye-catching & minimalist */}
+        {/* Time Schedule - Always visible, directly tied to duration */}
         <div className={`${t.card} rounded-xl sm:rounded-2xl px-3 sm:px-8 md:px-12 py-2 sm:py-4 md:py-6 mb-2 sm:mb-4 md:mb-8 border ${t.border} w-full max-w-xl`}>
           <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-14">
             {/* Start Time - Emerald Color */}
@@ -313,11 +313,11 @@ export default function PresentationMode({
               </p>
             </div>
             
-            {/* Separator */}
-            <div className="flex flex-col items-center opacity-60">
-              <div className={`w-6 sm:w-10 md:w-14 h-px ${t.border.replace('border-', 'bg-')}`}></div>
-              <span className={`text-[8px] sm:text-[10px] md:text-xs ${t.textDimmed} my-0.5 sm:my-1`}>{Math.round(totalDurationSeconds / 60)} min</span>
-              <div className={`w-6 sm:w-10 md:w-14 h-px ${t.border.replace('border-', 'bg-')}`}></div>
+            {/* Separator with Duration - More prominent */}
+            <div className="flex flex-col items-center">
+              <div className={`w-6 sm:w-10 md:w-14 h-px ${t.border.replace('border-', 'bg-')} opacity-60`}></div>
+              <span className="text-[10px] sm:text-xs md:text-sm font-bold text-orange-400 my-0.5 sm:my-1">{Math.round(totalDurationSeconds / 60)} min</span>
+              <div className={`w-6 sm:w-10 md:w-14 h-px ${t.border.replace('border-', 'bg-')} opacity-60`}></div>
             </div>
             
             {/* End Time - Amber/Gold Color */}
