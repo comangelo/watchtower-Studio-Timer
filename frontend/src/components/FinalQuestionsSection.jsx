@@ -373,8 +373,8 @@ export function FinalQuestionsSection({
               key={idx}
               question={q}
               index={idx}
-              isCurrentQuestion={idx === currentReviewQuestion}
-              isCompletedQuestion={idx < currentReviewQuestion}
+              isCurrentQuestion={idx === currentReviewQuestion && !isInClosingWordsMode}
+              isCompletedQuestion={idx < currentReviewQuestion || isInClosingWordsMode}
               perQuestionTime={perQuestionTime}
               isLowTime={isLowTime}
               isCriticalTime={isCriticalTime}
@@ -382,7 +382,7 @@ export function FinalQuestionsSection({
               timeDiff={timeDiff}
               onGoToNext={() => {
                 if (idx === finalQuestions.length - 1) {
-                  onFinishStudy?.();
+                  onStartClosingWords?.();
                 } else {
                   onNextReviewQuestion?.();
                 }
@@ -434,6 +434,20 @@ export function FinalQuestionsSection({
               </div>
             </div>
           ))
+        )}
+        
+        {/* Closing Words Section */}
+        {isInReviewMode && (
+          <ClosingWordsSection 
+            isActive={isInClosingWordsMode}
+            isTimerRunning={isTimerRunning}
+            onFinishStudy={onFinishStudy}
+            overtimeAlertEnabled={overtimeAlertEnabled}
+            soundEnabled={soundEnabled}
+            vibrationEnabled={vibrationEnabled}
+            playNotificationSound={playNotificationSound}
+            triggerVibration={triggerVibration}
+          />
         )}
       </CardContent>
     </Card>
