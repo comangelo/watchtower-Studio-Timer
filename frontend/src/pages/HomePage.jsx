@@ -1017,21 +1017,25 @@ export default function HomePage() {
                       variant="outline"
                       size="sm"
                       onClick={() => setShowAllParagraphContent(!showAllParagraphContent)}
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        darkMode 
-                          ? 'border-zinc-500 text-zinc-200 hover:bg-zinc-700' 
-                          : 'border-slate-300 text-slate-600 hover:bg-slate-100'
+                      className={`rounded-full px-4 py-2 text-xs font-semibold transition-all shadow-sm ${
+                        showAllParagraphContent
+                          ? darkMode 
+                            ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-500' 
+                            : 'bg-purple-500 hover:bg-purple-600 text-white border-purple-400'
+                          : darkMode 
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500' 
+                            : 'bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-400'
                       }`}
                       data-testid="toggle-all-content-btn"
                     >
                       {showAllParagraphContent ? (
                         <>
-                          <EyeOff className="w-3.5 h-3.5 mr-1.5" />
+                          <EyeOff className="w-4 h-4 mr-1.5" />
                           Ocultar contenido
                         </>
                       ) : (
                         <>
-                          <Eye className="w-3.5 h-3.5 mr-1.5" />
+                          <Eye className="w-4 h-4 mr-1.5" />
                           Mostrar contenido
                         </>
                       )}
