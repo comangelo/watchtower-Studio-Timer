@@ -428,7 +428,7 @@ export function ParagraphCard({
             {/* Questions Toggle */}
             {hasQuestions && (
               <Button 
-                variant="ghost"
+                variant="outline"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsOpen(!isOpen);
@@ -436,21 +436,17 @@ export function ParagraphCard({
                 className={`rounded-full px-4 py-3 text-sm font-semibold transition-all border-2 ${
                   isOpen
                     ? hasFinalQuestions 
-                      ? darkMode 
-                        ? 'bg-red-600 text-white border-red-500 hover:bg-red-700' 
-                        : 'bg-red-500 text-white border-red-400 hover:bg-red-600'
-                      : darkMode 
-                        ? 'bg-orange-600 text-white border-orange-500 hover:bg-orange-700' 
-                        : 'bg-orange-500 text-white border-orange-400 hover:bg-orange-600'
+                      ? 'bg-red-500 text-white border-red-400 hover:bg-red-600' 
+                      : 'bg-orange-500 text-white border-orange-400 hover:bg-orange-600'
                     : hasFinalQuestions 
                       ? darkMode 
-                        ? 'text-red-400 border-red-700 hover:bg-red-950 hover:border-red-600' 
-                        : 'text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300'
+                        ? 'bg-transparent text-red-400 border-red-600 hover:bg-red-950' 
+                        : 'bg-transparent text-red-600 border-red-300 hover:bg-red-50'
                       : isCurrentParagraph 
-                        ? 'text-green-600 border-green-200 hover:bg-green-100 hover:border-green-300' 
+                        ? 'bg-transparent text-green-600 border-green-300 hover:bg-green-100' 
                         : darkMode 
-                          ? 'text-orange-400 border-orange-700 hover:bg-orange-950 hover:border-orange-600' 
-                          : 'text-orange-600 border-orange-200 hover:bg-orange-50 hover:border-orange-300'
+                          ? 'bg-transparent text-orange-400 border-orange-600 hover:bg-orange-950' 
+                          : 'bg-transparent text-orange-600 border-orange-300 hover:bg-orange-50'
                 }`}
                 data-testid={`toggle-questions-${paragraph.number}`}
               >
