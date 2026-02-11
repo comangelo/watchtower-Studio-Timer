@@ -33,15 +33,15 @@ export function TimerDisplay({
   }, [startTime, endTime, totalDuration]);
 
   return (
-    <div className="space-y-4">
-      {/* Start/End Time Display - Always Visible */}
-      <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 shadow-xl" data-testid="time-schedule-card">
-        <div className="flex items-center justify-center gap-6 sm:gap-10 md:gap-14">
+    <div className="space-y-2 sm:space-y-4">
+      {/* Start/End Time Display - Always Visible, Responsive */}
+      <div className="bg-slate-900 rounded-xl sm:rounded-2xl p-2 sm:p-4 md:p-6 shadow-xl" data-testid="time-schedule-card">
+        <div className="flex items-center justify-center gap-2 sm:gap-6 md:gap-10">
           {/* Start Time - Emerald/Teal Color */}
-          <div className="text-center">
-            <span className="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
+          <div className="text-center min-w-0">
+            <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-emerald-400 uppercase tracking-wider">Inicio</span>
             <p 
-              className={`text-2xl sm:text-4xl md:text-5xl font-bold mt-1 ${startTime ? 'text-emerald-400' : 'text-emerald-400/60'}`}
+              className={`text-lg sm:text-2xl md:text-4xl font-bold mt-0.5 sm:mt-1 ${startTime ? 'text-emerald-400' : 'text-emerald-400/60'}`}
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
               data-testid="start-time-display"
             >
@@ -50,17 +50,17 @@ export function TimerDisplay({
           </div>
           
           {/* Separator with Duration */}
-          <div className="flex flex-col items-center">
-            <div className="w-8 sm:w-12 h-px bg-slate-600 opacity-60"></div>
-            <span className="text-xs sm:text-sm font-bold text-orange-400 my-1">{totalDuration} min</span>
-            <div className="w-8 sm:w-12 h-px bg-slate-600 opacity-60"></div>
+          <div className="flex flex-col items-center shrink-0">
+            <div className="w-4 sm:w-8 md:w-12 h-px bg-slate-600 opacity-60"></div>
+            <span className="text-[10px] sm:text-xs md:text-sm font-bold text-orange-400 my-0.5 sm:my-1">{totalDuration}m</span>
+            <div className="w-4 sm:w-8 md:w-12 h-px bg-slate-600 opacity-60"></div>
           </div>
           
           {/* End Time - Amber/Gold Color */}
-          <div className="text-center">
-            <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
+          <div className="text-center min-w-0">
+            <span className={`text-[8px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
             <p 
-              className={`text-2xl sm:text-4xl md:text-5xl font-bold mt-1 ${
+              className={`text-lg sm:text-2xl md:text-4xl font-bold mt-0.5 sm:mt-1 ${
                 !startTime ? 'text-amber-400/60' :
                 isOvertime ? 'text-rose-400 animate-pulse' : 
                 isLowTime ? 'text-rose-400' : 'text-amber-400'
@@ -73,7 +73,7 @@ export function TimerDisplay({
           </div>
         </div>
         {!startTime && (
-          <p className="text-center text-slate-500 text-xs mt-3">
+          <p className="text-center text-slate-500 text-[10px] sm:text-xs mt-1 sm:mt-3">
             Hora actual + {totalDuration} min = Hora de fin
           </p>
         )}
