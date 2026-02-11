@@ -80,33 +80,33 @@ export function TimerDisplay({
       </div>
 
       {/* Main Timer Card */}
-      <Card className="border border-slate-200 shadow-sm rounded-2xl overflow-hidden" data-testid="main-timer-card">
-        <CardHeader className="bg-slate-800 pb-3 pt-4">
-          <CardTitle className="text-sm text-slate-300 text-center font-medium">
+      <Card className="border border-slate-200 shadow-sm rounded-xl sm:rounded-2xl overflow-hidden" data-testid="main-timer-card">
+        <CardHeader className="bg-slate-800 pb-2 sm:pb-3 pt-2 sm:pt-4">
+          <CardTitle className="text-xs sm:text-sm text-slate-300 text-center font-medium">
             Cronómetro de Lectura
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 text-center bg-white">
+        <CardContent className="p-3 sm:p-6 text-center bg-white">
           {/* Main Timer */}
-          <div className="py-4">
+          <div className="py-2 sm:py-4">
             <p 
-              className="text-6xl lg:text-7xl font-light text-slate-800 tracking-tight" 
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-slate-800 tracking-tight" 
               style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
               data-testid="elapsed-time"
             >
               {formatTime(elapsedTime)}
             </p>
-            <p className="text-slate-400 mt-3 text-sm">Transcurrido</p>
+            <p className="text-slate-400 mt-1 sm:mt-3 text-xs sm:text-sm">Transcurrido</p>
           </div>
           
           {/* Progress Bar */}
-          <div className="mt-4 mb-6">
-            <Progress value={progressPercentage} className="h-2 rounded-full" />
-            <p className="text-xs text-slate-400 mt-2">{Math.round(progressPercentage)}%</p>
+          <div className="mt-2 sm:mt-4 mb-3 sm:mb-6">
+            <Progress value={progressPercentage} className="h-1.5 sm:h-2 rounded-full" />
+            <p className="text-[10px] sm:text-xs text-slate-400 mt-1 sm:mt-2">{Math.round(progressPercentage)}%</p>
           </div>
 
           {/* Timer Controls */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-3 sm:gap-4">
             <Button 
               onClick={onToggle}
               className={`rounded-full shadow-lg transition-all active:scale-95 ${
@@ -114,23 +114,23 @@ export function TimerDisplay({
                   ? 'bg-slate-700 hover:bg-slate-800' 
                   : 'bg-orange-500 hover:bg-orange-600'
               }`}
-              style={{ width: '72px', height: '72px' }}
+              style={{ width: '56px', height: '56px' }}
               data-testid="timer-toggle-btn"
             >
               {isTimerRunning ? (
-                <Pause className="w-7 h-7" />
+                <Pause className="w-5 h-5 sm:w-7 sm:h-7" />
               ) : (
-                <Play className="w-7 h-7 ml-0.5" />
+                <Play className="w-5 h-5 sm:w-7 sm:h-7 ml-0.5" />
               )}
             </Button>
             <Button 
               variant="outline"
               onClick={onReset}
               className="rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
-              style={{ width: '52px', height: '52px' }}
+              style={{ width: '44px', height: '44px' }}
               data-testid="timer-reset-btn"
             >
-              <RotateCcw className="w-5 h-5 text-slate-500" />
+              <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500" />
             </Button>
           </div>
         </CardContent>
