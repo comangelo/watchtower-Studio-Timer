@@ -59,7 +59,7 @@ export default function HomePage() {
   // Timer state
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [remainingTime, setRemainingTime] = useState(3600);
+  const [remainingTime, setRemainingTime] = useState(60 * 60); // Will be updated when totalDuration changes
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   
