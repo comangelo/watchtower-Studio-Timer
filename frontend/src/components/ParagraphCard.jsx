@@ -374,21 +374,23 @@ export function ParagraphCard({
           </div>
 
           {/* Action Buttons - Improved Visibility */}
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            {/* Next Paragraph Button - Primary Action */}
-            {isCurrentParagraph && !isLastParagraph && (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onGoToNext();
-                }}
-                className="rounded-full px-6 py-5 text-sm font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 hover:shadow-green-300 transition-all active:scale-95"
-                data-testid={`next-from-paragraph-${paragraph.number}`}
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Siguiente Párrafo
-              </Button>
-            )}
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+            {/* Left side buttons */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Next Paragraph Button - Primary Action */}
+              {isCurrentParagraph && !isLastParagraph && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onGoToNext();
+                  }}
+                  className="rounded-full px-6 py-5 text-sm font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 hover:shadow-green-300 transition-all active:scale-95"
+                  data-testid={`next-from-paragraph-${paragraph.number}`}
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Siguiente Párrafo
+                </Button>
+              )}
 
             {/* Go to Review Questions Button - For Last Paragraph */}
             {isCurrentParagraph && isLastParagraph && hasReviewQuestions && (
