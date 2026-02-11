@@ -431,12 +431,24 @@ export function ParagraphCard({
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className={`rounded-full px-4 py-3 text-sm font-medium transition-all ${
-                    hasFinalQuestions 
-                      ? darkMode ? 'text-red-400 hover:bg-red-950' : 'text-red-600 hover:bg-red-50' 
-                      : isCurrentParagraph 
-                        ? 'text-green-600 hover:bg-green-100' 
-                        : darkMode ? 'text-zinc-200 hover:bg-zinc-700' : 'text-slate-600 hover:bg-slate-100'
+                  className={`rounded-full px-4 py-3 text-sm font-semibold transition-all border-2 ${
+                    isOpen
+                      ? hasFinalQuestions 
+                        ? darkMode 
+                          ? 'bg-red-600 text-white border-red-500 hover:bg-red-700' 
+                          : 'bg-red-500 text-white border-red-400 hover:bg-red-600'
+                        : darkMode 
+                          ? 'bg-orange-600 text-white border-orange-500 hover:bg-orange-700' 
+                          : 'bg-orange-500 text-white border-orange-400 hover:bg-orange-600'
+                      : hasFinalQuestions 
+                        ? darkMode 
+                          ? 'text-red-400 border-red-700 hover:bg-red-950 hover:border-red-600' 
+                          : 'text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300'
+                        : isCurrentParagraph 
+                          ? 'text-green-600 border-green-200 hover:bg-green-100 hover:border-green-300' 
+                          : darkMode 
+                            ? 'text-orange-400 border-orange-700 hover:bg-orange-950 hover:border-orange-600' 
+                            : 'text-orange-600 border-orange-200 hover:bg-orange-50 hover:border-orange-300'
                   }`}
                   data-testid={`toggle-questions-${paragraph.number}`}
                 >
