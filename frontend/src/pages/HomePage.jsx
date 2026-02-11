@@ -132,6 +132,7 @@ export default function HomePage() {
   const [isInIntroductionMode, setIsInIntroductionMode] = useState(false);
   const [introductionStartTime, setIntroductionStartTime] = useState(null);
   const [introductionDuration, setIntroductionDuration] = useLocalStorage('pdfTimer_introductionDuration', 60); // 1 minute default
+  const [conclusionDuration, setConclusionDuration] = useLocalStorage('pdfTimer_conclusionDuration', 60); // 1 minute default
   
   // Closing words section
   const [isInClosingWordsMode, setIsInClosingWordsMode] = useState(false);
