@@ -302,7 +302,7 @@ export function ParagraphCard({
                 </span>
               )}
             </div>
-          )}}
+          )}
           
           {/* Paragraph Text - Show all paragraphs if grouped */}
           {showContent && (
