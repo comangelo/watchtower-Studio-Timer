@@ -901,8 +901,8 @@ export default function HomePage() {
                   {groupedParagraphs.map((group, groupIndex) => {
                     const firstIndex = group.indices[0];
                     const lastIndex = group.indices[group.indices.length - 1];
-                    const isCurrentGroup = isTimerRunning && group.indices.includes(currentManualParagraph);
-                    const isCompletedGroup = isTimerRunning && lastIndex < currentManualParagraph;
+                    const isCurrentGroup = isTimerRunning && !isInIntroductionMode && group.indices.includes(currentManualParagraph);
+                    const isCompletedGroup = isTimerRunning && !isInIntroductionMode && lastIndex < currentManualParagraph;
                     
                     return (
                       <ParagraphCard
@@ -913,7 +913,7 @@ export default function HomePage() {
                         startTime={startTime}
                         paragraphTimes={getAdjustedParagraphTimes(firstIndex)}
                         onStartFromHere={() => startFromParagraph(firstIndex)}
-                        isTimerRunning={isTimerRunning}
+                        isTimerRunning={isTimerRunning && !isInIntroductionMode}
                         isCurrentParagraph={isCurrentGroup}
                         isCompletedParagraph={isCompletedGroup || isInReviewMode}
                         elapsedTime={elapsedTime}
