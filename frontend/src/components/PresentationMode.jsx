@@ -21,7 +21,7 @@ import { formatTime, formatClockTime, addSecondsToDate } from "../utils/timeForm
 // Theme configurations
 const THEMES = {
   dark: {
-    name: "Oscuro",
+    name: "🌙 Oscuro",
     bg: "bg-zinc-900",
     text: "text-white",
     textMuted: "text-zinc-400",
@@ -38,7 +38,7 @@ const THEMES = {
     kbd: "bg-zinc-800 text-zinc-400"
   },
   light: {
-    name: "Claro",
+    name: "☀️ Claro",
     bg: "bg-white",
     text: "text-zinc-900",
     textMuted: "text-zinc-600",
@@ -55,7 +55,7 @@ const THEMES = {
     kbd: "bg-zinc-200 text-zinc-600"
   },
   blue: {
-    name: "Azul Océano",
+    name: "🌊 Azul Océano",
     bg: "bg-slate-900",
     text: "text-white",
     textMuted: "text-slate-400",
@@ -72,7 +72,7 @@ const THEMES = {
     kbd: "bg-slate-800 text-slate-400"
   },
   green: {
-    name: "Verde Bosque",
+    name: "🌲 Verde Bosque",
     bg: "bg-emerald-950",
     text: "text-white",
     textMuted: "text-emerald-300",
@@ -89,7 +89,7 @@ const THEMES = {
     kbd: "bg-emerald-900 text-emerald-400"
   },
   purple: {
-    name: "Púrpura Noche",
+    name: "🔮 Púrpura Noche",
     bg: "bg-violet-950",
     text: "text-white",
     textMuted: "text-violet-300",
@@ -106,7 +106,7 @@ const THEMES = {
     kbd: "bg-violet-900 text-violet-400"
   },
   warm: {
-    name: "Cálido Atardecer",
+    name: "🌅 Cálido Atardecer",
     bg: "bg-amber-950",
     text: "text-white",
     textMuted: "text-amber-200",
@@ -122,8 +122,76 @@ const THEMES = {
     buttonOutline: "border-amber-700 text-amber-400 hover:text-white hover:border-amber-600",
     kbd: "bg-amber-900 text-amber-400"
   },
+  rose: {
+    name: "🌸 Rosa Suave",
+    bg: "bg-rose-950",
+    text: "text-white",
+    textMuted: "text-rose-200",
+    textDimmed: "text-rose-300",
+    border: "border-rose-800",
+    card: "bg-rose-900/50",
+    accent: "text-pink-400",
+    accentBg: "bg-pink-500",
+    success: "text-emerald-400",
+    warning: "text-amber-400",
+    danger: "text-red-400",
+    progressBg: "bg-rose-900",
+    buttonOutline: "border-rose-700 text-rose-400 hover:text-white hover:border-rose-600",
+    kbd: "bg-rose-900 text-rose-400"
+  },
+  teal: {
+    name: "🦚 Turquesa",
+    bg: "bg-teal-950",
+    text: "text-white",
+    textMuted: "text-teal-200",
+    textDimmed: "text-teal-300",
+    border: "border-teal-800",
+    card: "bg-teal-900/50",
+    accent: "text-cyan-400",
+    accentBg: "bg-cyan-500",
+    success: "text-green-400",
+    warning: "text-yellow-400",
+    danger: "text-red-400",
+    progressBg: "bg-teal-900",
+    buttonOutline: "border-teal-700 text-teal-400 hover:text-white hover:border-teal-600",
+    kbd: "bg-teal-900 text-teal-400"
+  },
+  midnight: {
+    name: "🌌 Medianoche",
+    bg: "bg-indigo-950",
+    text: "text-white",
+    textMuted: "text-indigo-300",
+    textDimmed: "text-indigo-400",
+    border: "border-indigo-800",
+    card: "bg-indigo-900/50",
+    accent: "text-sky-400",
+    accentBg: "bg-sky-500",
+    success: "text-emerald-400",
+    warning: "text-amber-400",
+    danger: "text-rose-400",
+    progressBg: "bg-indigo-900",
+    buttonOutline: "border-indigo-700 text-indigo-400 hover:text-white hover:border-indigo-600",
+    kbd: "bg-indigo-900 text-indigo-400"
+  },
+  coffee: {
+    name: "☕ Café",
+    bg: "bg-stone-900",
+    text: "text-white",
+    textMuted: "text-stone-300",
+    textDimmed: "text-stone-400",
+    border: "border-stone-700",
+    card: "bg-stone-800/50",
+    accent: "text-amber-400",
+    accentBg: "bg-amber-600",
+    success: "text-green-400",
+    warning: "text-orange-400",
+    danger: "text-red-400",
+    progressBg: "bg-stone-800",
+    buttonOutline: "border-stone-600 text-stone-400 hover:text-white hover:border-stone-500",
+    kbd: "bg-stone-800 text-stone-400"
+  },
   highContrast: {
-    name: "Alto Contraste",
+    name: "⚡ Alto Contraste",
     bg: "bg-black",
     text: "text-white",
     textMuted: "text-yellow-300",
@@ -138,6 +206,23 @@ const THEMES = {
     progressBg: "bg-zinc-900",
     buttonOutline: "border-yellow-500 text-yellow-400 hover:text-yellow-300 hover:border-yellow-400",
     kbd: "bg-zinc-900 text-yellow-400"
+  },
+  amoled: {
+    name: "📱 AMOLED Negro",
+    bg: "bg-black",
+    text: "text-white",
+    textMuted: "text-zinc-400",
+    textDimmed: "text-zinc-500",
+    border: "border-zinc-800",
+    card: "bg-zinc-950",
+    accent: "text-orange-500",
+    accentBg: "bg-orange-500",
+    success: "text-green-500",
+    warning: "text-orange-500",
+    danger: "text-red-500",
+    progressBg: "bg-zinc-950",
+    buttonOutline: "border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-600",
+    kbd: "bg-zinc-950 text-zinc-400"
   }
 };
 
