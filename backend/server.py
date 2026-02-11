@@ -577,9 +577,9 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
         numbered_questions = []
         
         for y_pos, font_size, text, is_bold in text_items:
-            # Skip song references at the end
+            # Skip song references at the end - "CANCIÓN" followed by space and number
             text_upper = text.upper()
-            if text_upper.startswith("CANCIÓN") or text_upper.startswith("CANCION"):
+            if re.match(r'^CANCI[OÓ]N\s+\d+', text_upper):
                 break
             
             # Skip bullet character alone
@@ -599,12 +599,12 @@ def extract_questions_after_horizontal_line(pdf_bytes: bytes, line_info: dict) -
             match = re.match(r'^(\d{1,2})\.\s*(.+\?)$', text)
             if match:
                 question_text = match.group(2).strip()
-                if len(question_text) > 5:
+                if len(question_text) > 3:
                     numbered_questions.append(question_text)
             # Bullet point items (short phrases, not numbered)
-            elif len(text) > 3 and len(text) < 150 and not text[0].isdigit():
-                # Check if it looks like a question or topic
-                if '?' in text or (len(text) > 5 and text[0].isupper()):
+            elif len(text) > 2 and len(text) < 150 and not text[0].isdigit():
+                # Check if it looks like a question or topic (names start with uppercase)
+                if '?' in text or (len(text) > 2 and text[0].isupper()):
                     bullet_points.append(text)
         
         # Prefer numbered questions if found
