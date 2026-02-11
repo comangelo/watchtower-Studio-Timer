@@ -519,12 +519,12 @@ export function FinalQuestionsSection({
       <CardHeader className={`pb-3 ${isInReviewMode ? 'pt-4' : ''}`}>
         {!isInReviewMode && (
           <>
-            <CardTitle className="text-base text-red-700 flex items-center gap-2">
+            <CardTitle className={`text-base flex items-center gap-2 ${darkMode ? 'text-red-400' : 'text-red-700'}`}>
               <AlertCircle className="w-4 h-4" />
               Preguntas de Repaso
               <Badge variant="destructive" className="ml-2 text-xs">{finalQuestions.length}</Badge>
             </CardTitle>
-            <p className="text-sm text-red-600">
+            <p className={`text-sm ${darkMode ? 'text-red-400' : 'text-red-600'}`}>
               Preguntas de repaso al final del artículo{finalQuestionsTitle ? `: ${finalQuestionsTitle}` : ''}
             </p>
           </>
@@ -534,29 +534,35 @@ export function FinalQuestionsSection({
         {startTime && !isInReviewMode && (
           <div className="mt-4 flex items-center gap-6 text-sm">
             <div className="text-center">
-              <span className="text-red-400 text-xs block mb-1">Inicio</span>
-              <span className="text-lg font-light text-red-700" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              <span className={`text-xs block mb-1 ${darkMode ? 'text-red-500' : 'text-red-400'}`}>Inicio</span>
+              <span className={`text-lg font-light ${darkMode ? 'text-red-400' : 'text-red-700'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                 {isTimerRunning && adjustedTimes.start 
                   ? formatClockTime(adjustedTimes.start)
                   : formatClockTime(addSecondsToDate(startTime, originalStartTime))
                 }
               </span>
             </div>
-            <div className="text-red-300">—</div>
+            <div className={darkMode ? 'text-red-600' : 'text-red-300'}>—</div>
             <div className="text-center">
-              <span className="text-red-400 text-xs block mb-1">Fin</span>
-              <span className="text-lg font-light text-red-700" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              <span className={`text-xs block mb-1 ${darkMode ? 'text-red-500' : 'text-red-400'}`}>Fin</span>
+              <span className={`text-lg font-light ${darkMode ? 'text-red-400' : 'text-red-700'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                 {isTimerRunning && adjustedTimes.end
                   ? formatClockTime(adjustedTimes.end)
                   : formatClockTime(addSecondsToDate(startTime, originalStartTime + (finalQuestions.length * 35)))
                 }
               </span>
             </div>
-            <div className="text-red-300">|</div>
+            <div className={darkMode ? 'text-red-600' : 'text-red-300'}>|</div>
             <div className={`text-center px-3 py-2 rounded-lg ${
-              isCriticalTime ? 'bg-red-200' :
-              isLowTime ? 'bg-orange-200' :
-              isAdjusted ? (timeDiff > 0 ? 'bg-green-100' : 'bg-orange-100') : 'bg-red-100'
+              isCriticalTime 
+                ? darkMode ? 'bg-red-900' : 'bg-red-200' 
+                : isLowTime 
+                  ? darkMode ? 'bg-orange-900' : 'bg-orange-200' 
+                  : isAdjusted 
+                    ? (timeDiff > 0 
+                        ? darkMode ? 'bg-green-900' : 'bg-green-100' 
+                        : darkMode ? 'bg-orange-900' : 'bg-orange-100') 
+                    : darkMode ? 'bg-red-900' : 'bg-red-100'
             }`}>
               <span className="text-xs block mb-1 text-slate-500">Por pregunta</span>
               <span 
