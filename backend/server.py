@@ -118,12 +118,13 @@ def split_into_paragraphs(text: str) -> List[str]:
     Split text into paragraphs based on paragraph numbers at the start of lines.
     Paragraphs are identified by a number at the beginning (e.g., "1 Texto..." or "2 Texto...")
     Questions that start with the same number belong to that paragraph.
+    Lines without numbers are joined to the current paragraph.
     """
     paragraphs = []
     
     # First, try to split by paragraph numbers at the start of lines
     lines = text.split('\n')
-    current_paragraph = []
+    current_paragraph_lines = []
     current_number = None
     
     for line in lines:
@@ -131,50 +132,54 @@ def split_into_paragraphs(text: str) -> List[str]:
         if not line:
             continue
         
-        # Check if line starts with a number followed by space (paragraph or question marker)
-        match = re.match(r'^(\d+)\s+(.+)$', line)
+        # Check if line starts with a number followed by space or period (paragraph marker)
+        # Matches: "1 Text", "2 Text", "1, 2 Text", "1. Text", etc.
+        match = re.match(r'^(\d+(?:\s*,\s*\d+)*)[.\s]+(.+)$', line)
+        
         if match:
-            num = int(match.group(1))
+            num_str = match.group(1)
             content = match.group(2)
+            
+            # Get the first number in case of grouped paragraphs like "1, 2"
+            first_num = int(re.match(r'\d+', num_str).group())
             
             # Check if this is a question line (contains ¿ or ends with ?)
             is_question = '¿' in content or content.endswith('?')
             
             if is_question:
-                # This is a question - it belongs to the paragraph with the same number
-                if current_number is not None and num == current_number:
-                    # Question belongs to current paragraph
-                    current_paragraph.append(line)
-                elif num != current_number and current_paragraph:
-                    # Question has different number - find or create paragraph
-                    # First, save current paragraph if exists
-                    # Then add question to appropriate paragraph
-                    current_paragraph.append(line)
-                else:
-                    # No current paragraph, start new one with this question
-                    current_paragraph = [line]
-                    current_number = num
+                # This is a question - it belongs to the current paragraph
+                if current_paragraph_lines:
+                    current_paragraph_lines.append(line)
             else:
                 # This is a new paragraph (not a question)
-                if current_paragraph:
-                    paragraphs.append('\n'.join(current_paragraph))
-                current_paragraph = [line]
-                current_number = num
+                if current_paragraph_lines:
+                    # Join all lines of the current paragraph with spaces
+                    paragraph_text = ' '.join(current_paragraph_lines)
+                    # Clean up extra spaces
+                    paragraph_text = re.sub(r'\s+', ' ', paragraph_text).strip()
+                    paragraphs.append(paragraph_text)
+                current_paragraph_lines = [line]
+                current_number = first_num
         else:
             # Line doesn't start with number - continue current paragraph
-            if current_paragraph:
-                current_paragraph.append(line)
+            # Join with current paragraph (this handles wrapped text)
+            if current_paragraph_lines:
+                current_paragraph_lines.append(line)
             else:
-                current_paragraph = [line]
+                current_paragraph_lines = [line]
     
     # Add the last paragraph
-    if current_paragraph:
-        paragraphs.append('\n'.join(current_paragraph))
+    if current_paragraph_lines:
+        paragraph_text = ' '.join(current_paragraph_lines)
+        paragraph_text = re.sub(r'\s+', ' ', paragraph_text).strip()
+        paragraphs.append(paragraph_text)
     
     # If no numbered paragraphs found, fall back to double newline split
     if len(paragraphs) <= 1 and '\n\n' in text:
         paragraphs = re.split(r'\n\s*\n+', text.strip())
         paragraphs = [p.strip() for p in paragraphs if p.strip()]
+        # Clean up each paragraph
+        paragraphs = [re.sub(r'\s+', ' ', p).strip() for p in paragraphs]
     
     return paragraphs if paragraphs else [text.strip()]
 
