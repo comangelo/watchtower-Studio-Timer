@@ -187,17 +187,6 @@ export default function PresentationMode({
     };
   }, [analysisResult, currentParagraphIndex]);
   
-  // Calculate start and end times based on elapsed time
-  const startTime = useMemo(() => {
-    if (elapsedTime === 0 && !isTimerRunning) return null;
-    return new Date(Date.now() - elapsedTime * 1000);
-  }, [elapsedTime, isTimerRunning]);
-  
-  const endTime = useMemo(() => {
-    if (!startTime) return null;
-    return addSecondsToDate(startTime, 3600);
-  }, [startTime]);
-  
   const t = THEMES[theme] || THEMES.dark;
   
   // Handle ESC key to exit
