@@ -18,45 +18,58 @@ export function TimerDisplay({
   const isLowTime = remainingTime <= 300;
   const isOvertime = remainingTime <= 0;
 
+  // Calculate projected times if timer hasn't started
+  const now = new Date();
+  const projectedEndTime = new Date(now.getTime() + totalDuration * 60 * 1000);
+
+  // Use actual times if available, otherwise use projected
+  const displayStartTime = startTime || now;
+  const displayEndTime = endTime || projectedEndTime;
+
   return (
     <div className="space-y-4">
-      {/* Start/End Time Display - Eye-catching & Minimalist */}
-      {startTime && (
-        <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 shadow-xl" data-testid="time-schedule-card">
-          <div className="flex items-center justify-center gap-6 sm:gap-10 md:gap-14">
-            {/* Start Time - Emerald/Teal Color */}
-            <div className="text-center">
-              <span className="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
-              <p 
-                className="text-2xl sm:text-4xl md:text-5xl font-bold text-emerald-400 mt-1" 
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
-                data-testid="start-time-display"
-              >
-                {formatClockTime(startTime)}
-              </p>
-            </div>
-            
-            {/* Separator */}
-            <div className="flex flex-col items-center opacity-60">
-              <div className="w-8 sm:w-12 h-px bg-slate-600"></div>
-              <span className="text-[10px] sm:text-xs text-slate-500 my-1">{totalDuration} min</span>
-              <div className="w-8 sm:w-12 h-px bg-slate-600"></div>
-            </div>
-            
-            {/* End Time - Amber/Gold Color */}
-            <div className="text-center">
-              <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
-              <p 
-                className={`text-2xl sm:text-4xl md:text-5xl font-bold mt-1 ${isOvertime ? 'text-rose-400 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
-                data-testid="end-time-display"
-              >
-                {formatClockTime(endTime)}
-              </p>
-            </div>
+      {/* Start/End Time Display - Always Visible */}
+      <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 shadow-xl" data-testid="time-schedule-card">
+        <div className="flex items-center justify-center gap-6 sm:gap-10 md:gap-14">
+          {/* Start Time - Emerald/Teal Color */}
+          <div className="text-center">
+            <span className="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
+            <p 
+              className={`text-2xl sm:text-4xl md:text-5xl font-bold mt-1 ${startTime ? 'text-emerald-400' : 'text-emerald-400/60'}`}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+              data-testid="start-time-display"
+            >
+              {formatClockTime(displayStartTime)}
+            </p>
+          </div>
+          
+          {/* Separator */}
+          <div className="flex flex-col items-center opacity-60">
+            <div className="w-8 sm:w-12 h-px bg-slate-600"></div>
+            <span className="text-[10px] sm:text-xs text-slate-500 my-1">{totalDuration} min</span>
+            <div className="w-8 sm:w-12 h-px bg-slate-600"></div>
+          </div>
+          
+          {/* End Time - Amber/Gold Color */}
+          <div className="text-center">
+            <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
+            <p 
+              className={`text-2xl sm:text-4xl md:text-5xl font-bold mt-1 ${
+                !startTime ? 'text-amber-400/60' :
+                isOvertime ? 'text-rose-400 animate-pulse' : 
+                isLowTime ? 'text-rose-400' : 'text-amber-400'
+              }`}
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
+              data-testid="end-time-display"
+            >
+              {formatClockTime(displayEndTime)}
+            </p>
           </div>
         </div>
-      )}
+        {!startTime && (
+          <p className="text-center text-slate-500 text-xs mt-3">Vista previa • Presiona ▶ para confirmar</p>
+        )}
+      </div>
 
       {/* Main Timer Card */}
       <Card className="border border-slate-200 shadow-sm rounded-2xl overflow-hidden" data-testid="main-timer-card">
@@ -112,12 +125,6 @@ export function TimerDisplay({
               <RotateCcw className="w-5 h-5 text-slate-500" />
             </Button>
           </div>
-          
-          {!startTime && (
-            <p className="text-sm text-slate-400 mt-5">
-              Presiona ▶ para iniciar
-            </p>
-          )}
         </CardContent>
       </Card>
     </div>
