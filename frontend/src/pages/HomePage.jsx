@@ -812,6 +812,9 @@ export default function HomePage() {
           currentParagraphIndex={currentManualParagraph}
           theme={presentationTheme}
           onThemeChange={setPresentationTheme}
+          totalDurationSeconds={totalDurationSeconds}
+          startTime={startTime}
+          endTime={endTime}
         />
       )}
     </div>
