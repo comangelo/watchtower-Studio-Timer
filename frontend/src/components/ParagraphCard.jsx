@@ -320,12 +320,18 @@ export function ParagraphCard({
             <span className={`px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700' : 'bg-slate-50'}`}>{totalWordCount} palabras</span>
             <span className={`px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700' : 'bg-slate-50'}`}>{formatTimeText(totalReadingTime)} lectura</span>
             {hasQuestions && (
-              <span className={`px-2 py-1 rounded-full font-medium ${hasFinalQuestions ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
+              <span className={`px-2 py-1 rounded-full font-medium ${
+                hasFinalQuestions 
+                  ? darkMode ? 'bg-red-950 text-red-400' : 'bg-red-100 text-red-600' 
+                  : darkMode ? 'bg-orange-950 text-orange-400' : 'bg-orange-100 text-orange-600'
+              }`}>
                 {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
               </span>
             )}
             {isGrouped && (
-              <span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full font-medium">
+              <span className={`px-2 py-1 rounded-full font-medium ${
+                darkMode ? 'bg-blue-950 text-blue-400' : 'bg-blue-100 text-blue-600'
+              }`}>
                 {allParagraphs.length} párrafos agrupados
               </span>
             )}
