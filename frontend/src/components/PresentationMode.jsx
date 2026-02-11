@@ -760,32 +760,39 @@ export default function PresentationMode({
                   {isTimerRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
                 </Button>
                 
-                {/* Next with alerts */}
-                <div className="flex flex-col items-center gap-1">
-                  <Button
-                    onClick={handleNextStep}
-                    size="lg"
-                    className={`rounded-full px-5 ${nextBtnInfo.buttonColor} text-white`}
-                  >
-                    {nextBtnInfo.text}
-                    <ChevronRight className="w-5 h-5 ml-1" />
-                  </Button>
-                  {/* Alert badges under button */}
+                {/* Next with PROMINENT alerts */}
+                <div className="flex flex-col items-center gap-2">
+                  {/* Alert badges ABOVE button - MORE VISIBLE */}
                   {(nextBtnInfo.hasImage || nextBtnInfo.hasScripture) && (
-                    <div className="flex items-center gap-1 animate-pulse">
-                      <AlertCircle className="w-3 h-3 text-yellow-400" />
+                    <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed animate-pulse ${
+                      nextBtnInfo.hasImage && nextBtnInfo.hasScripture
+                        ? 'bg-gradient-to-r from-purple-500/30 to-blue-500/30 border-yellow-400'
+                        : nextBtnInfo.hasImage
+                          ? 'bg-purple-500/30 border-purple-400'
+                          : 'bg-blue-500/30 border-blue-400'
+                    }`}>
+                      <AlertCircle className="w-5 h-5 text-yellow-400" />
+                      <span className="text-sm font-bold text-yellow-300">¡ATENCIÓN!</span>
                       {nextBtnInfo.hasImage && (
-                        <span className="text-[10px] text-purple-400 flex items-center gap-0.5">
-                          <Image className="w-3 h-3" /> Imagen
+                        <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-purple-600 text-white text-xs font-bold">
+                          <Image className="w-4 h-4" /> IMAGEN
                         </span>
                       )}
                       {nextBtnInfo.hasScripture && (
-                        <span className="text-[10px] text-blue-400 flex items-center gap-0.5">
-                          <BookOpen className="w-3 h-3" /> Texto
+                        <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold">
+                          <BookOpen className="w-4 h-4" /> TEXTO
                         </span>
                       )}
                     </div>
                   )}
+                  <Button
+                    onClick={handleNextStep}
+                    size="lg"
+                    className={`rounded-full px-6 py-3 text-base ${nextBtnInfo.buttonColor} text-white shadow-lg`}
+                  >
+                    {nextBtnInfo.text}
+                    <ChevronRight className="w-5 h-5 ml-1" />
+                  </Button>
                 </div>
               </>
             )}
