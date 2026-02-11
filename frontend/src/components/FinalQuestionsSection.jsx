@@ -205,15 +205,15 @@ function ReviewQuestionCard({
               onClick={onGoToNext}
               className={`rounded-full px-6 py-2 text-sm font-semibold ${
                 isLastQuestion
-                  ? 'bg-green-600 hover:bg-green-700 text-white'
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg'
                   : 'bg-red-600 hover:bg-red-700 text-white'
               }`}
               data-testid={`next-review-question-${index}`}
             >
               {isLastQuestion ? (
                 <>
-                  <Check className="w-4 h-4 mr-2" />
-                  Finalizar Estudio
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Palabras de Conclusión
                 </>
               ) : (
                 <>
