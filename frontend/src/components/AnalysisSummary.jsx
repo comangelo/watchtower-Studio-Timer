@@ -11,7 +11,7 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
   const reviewQuestions = analysisResult.final_questions?.length || 0;
 
   return (
-    <Card className={`mb-8 shadow-sm ${darkMode ? 'border-zinc-700 bg-zinc-800' : 'border-zinc-100'}`} data-testid="analysis-summary">
+    <Card className={`mb-8 shadow-sm ${darkMode ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-100'}`} data-testid="analysis-summary">
       <CardContent className="p-6">
         <div className="flex items-start gap-4 mb-6">
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
@@ -20,10 +20,10 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
             <FileText className={`w-5 h-5 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} />
           </div>
           <div>
-            <h3 className={`font-heading font-semibold text-lg ${darkMode ? 'text-zinc-100' : 'text-zinc-900'}`} data-testid="pdf-filename">
+            <h3 className={`font-heading font-semibold text-lg ${darkMode ? 'text-zinc-50' : 'text-zinc-900'}`} data-testid="pdf-filename">
               {analysisResult.filename}
             </h3>
-            <p className={`text-sm ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
+            <p className={`text-sm ${darkMode ? 'text-zinc-300' : 'text-zinc-500'}`}>
               {analysisResult.total_paragraphs} párrafos · {analysisResult.total_words} palabras
             </p>
           </div>
@@ -42,15 +42,15 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <div className={`rounded-xl p-5 text-center ${darkMode ? 'bg-zinc-700' : 'bg-zinc-50'}`}>
-            <p className={`text-sm mb-2 ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Lectura</p>
-            <p className={`text-3xl font-light ${darkMode ? 'text-zinc-100' : 'text-zinc-900'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="reading-time">
+          <div className={`rounded-xl p-5 text-center ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-zinc-50'}`}>
+            <p className={`text-sm mb-2 ${darkMode ? 'text-zinc-300' : 'text-zinc-500'}`}>Lectura</p>
+            <p className={`text-3xl font-light ${darkMode ? 'text-zinc-50' : 'text-zinc-900'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="reading-time">
               {formatTimeCompact(analysisResult.total_reading_time_seconds)}
             </p>
           </div>
-          <div className={`rounded-xl p-5 text-center ${darkMode ? 'bg-orange-950/50' : 'bg-orange-50'}`}>
-            <p className={`text-sm mb-2 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>Respuestas</p>
-            <p className={`text-3xl font-light ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="question-time">
+          <div className={`rounded-xl p-5 text-center ${darkMode ? 'bg-orange-900/50 border border-orange-800' : 'bg-orange-50'}`}>
+            <p className={`text-sm mb-2 ${darkMode ? 'text-orange-300' : 'text-orange-600'}`}>Respuestas</p>
+            <p className={`text-3xl font-light ${darkMode ? 'text-orange-300' : 'text-orange-600'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="question-time">
               {formatTimeCompact(analysisResult.total_question_time_seconds)}
             </p>
           </div>
