@@ -305,39 +305,43 @@ export function ParagraphCard({
           )}}
           
           {/* Paragraph Text - Show all paragraphs if grouped */}
-          {isGrouped ? (
-            <div className="space-y-4">
-              {allParagraphs.map((p, idx) => (
-                <div key={p.number} className={idx > 0 ? `pt-4 border-t ${darkMode ? 'border-zinc-600' : 'border-slate-200'}` : ''}>
-                  <p className={`text-xs font-semibold mb-1 ${
-                    isCompletedParagraph 
-                      ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
-                      : darkMode ? 'text-zinc-300' : 'text-slate-500'
-                  }`}>
-                    Párrafo {p.number}:
-                  </p>
-                  <p className={`text-sm leading-relaxed ${
-                    isCompletedParagraph 
-                      ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
-                      : isCurrentParagraph 
-                        ? 'text-slate-800' 
-                        : darkMode ? 'text-zinc-100' : 'text-slate-600'
-                  }`}>
-                    {p.text}
-                  </p>
+          {showContent && (
+            <>
+              {isGrouped ? (
+                <div className="space-y-4">
+                  {allParagraphs.map((p, idx) => (
+                    <div key={p.number} className={idx > 0 ? `pt-4 border-t ${darkMode ? 'border-zinc-600' : 'border-slate-200'}` : ''}>
+                      <p className={`text-xs font-semibold mb-1 ${
+                        isCompletedParagraph 
+                          ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
+                          : darkMode ? 'text-zinc-300' : 'text-slate-500'
+                      }`}>
+                        Párrafo {p.number}:
+                      </p>
+                      <p className={`text-sm leading-relaxed ${
+                        isCompletedParagraph 
+                          ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
+                          : isCurrentParagraph 
+                            ? 'text-slate-800' 
+                            : darkMode ? 'text-zinc-100' : 'text-slate-600'
+                      }`}>
+                        {p.text}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className={`text-sm leading-relaxed ${
-              isCompletedParagraph 
-                ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
-                : isCurrentParagraph 
-                  ? 'text-slate-800' 
-                  : darkMode ? 'text-zinc-100' : 'text-slate-600'
-            }`}>
-              {paragraph.text}
-            </p>
+              ) : (
+                <p className={`text-sm leading-relaxed ${
+                  isCompletedParagraph 
+                    ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
+                    : isCurrentParagraph 
+                      ? 'text-slate-800' 
+                      : darkMode ? 'text-zinc-100' : 'text-slate-600'
+                }`}>
+                  {paragraph.text}
+                </p>
+              )}
+            </>
           )}
           
           {/* Stats Row */}
