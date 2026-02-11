@@ -518,8 +518,6 @@ export function ParagraphCard({
                   const isLowTime = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime < 20;
                   const formattedTime = formatTimeCompact(displayTime);
                   const hasExtraContent = q.parenthesis_content && q.parenthesis_content.length > 0;
-                  const isImageContent = q.content_type === 'image';
-                  const isScriptureContent = q.content_type === 'scripture';
                   
                   return (
                     <div 
@@ -547,7 +545,17 @@ export function ParagraphCard({
                         }`} />
                         <div className="flex-1">
                           <div className="flex items-start justify-between">
-                            <span>{q.text}</span>
+                            <div>
+                              <span>{q.text}</span>
+                              {/* Show parenthesis content inline */}
+                              {hasExtraContent && (
+                                <span className={`ml-1 ${
+                                  darkMode ? 'text-zinc-400' : 'text-slate-500'
+                                }`}>
+                                  ({q.parenthesis_content})
+                                </span>
+                              )}
+                            </div>
                             <div className="flex items-center gap-1 ml-2 shrink-0">
                               <span className={`text-xs font-light px-2 py-0.5 rounded-full ${
                                 isLowTime 
@@ -573,46 +581,6 @@ export function ParagraphCard({
                               )}
                             </div>
                           </div>
-                          
-                          {/* Extra Content Badge */}
-                          {hasExtraContent && (
-                            <div className={`mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${
-                              isImageContent 
-                                ? darkMode 
-                                  ? 'bg-purple-900/60 text-purple-200 border border-purple-700' 
-                                  : 'bg-purple-100 text-purple-700 border border-purple-200'
-                                : isScriptureContent 
-                                  ? darkMode 
-                                    ? 'bg-blue-900/60 text-blue-200 border border-blue-700' 
-                                    : 'bg-blue-100 text-blue-700 border border-blue-200'
-                                  : darkMode 
-                                    ? 'bg-zinc-700 text-zinc-200 border border-zinc-600' 
-                                    : 'bg-gray-100 text-gray-700 border border-gray-200'
-                            }`}>
-                              {isImageContent ? (
-                                <>
-                                  <Image className="w-3.5 h-3.5" />
-                                  <span>Contiene imagen</span>
-                                </>
-                              ) : isScriptureContent ? (
-                                <>
-                                  <BookOpen className="w-3.5 h-3.5" />
-                                  <span>Texto para leer</span>
-                                </>
-                              ) : (
-                                <span>Contenido adicional</span>
-                              )}
-                              <span className={`${
-                                isImageContent 
-                                  ? darkMode ? 'text-purple-300' : 'text-purple-600' 
-                                  : isScriptureContent 
-                                    ? darkMode ? 'text-blue-300' : 'text-blue-600'
-                                    : darkMode ? 'text-zinc-300' : 'text-gray-600'
-                              }`}>
-                                ({q.parenthesis_content})
-                              </span>
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
