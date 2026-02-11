@@ -650,7 +650,10 @@ export default function PresentationMode({
               <div className="flex items-center justify-between mb-3">
                 <span className={`text-sm font-semibold ${t.textMuted}`}>Progreso de párrafos</span>
                 <span className={`text-sm font-bold ${phaseInfo.color} bg-green-500/20 px-3 py-1 rounded-full`}>
-                  {currentParagraphIndex + 1} de {articleStats.paragraphs}
+                  {currentGroup?.numbers?.length > 1 
+                    ? `${currentGroup.numbers.join(', ')} de ${articleStats.paragraphs}`
+                    : `${currentGroup?.numbers?.[0] || currentParagraphIndex + 1} de ${articleStats.paragraphs}`
+                  }
                 </span>
               </div>
               {/* Visual paragraph progress bar - shows GROUPS, not individual paragraphs */}
