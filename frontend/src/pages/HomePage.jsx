@@ -570,11 +570,11 @@ export default function HomePage() {
   const adjustedFinalTimes = getAdjustedFinalQuestionsTime();
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-zinc-900' : 'bg-stone-50'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? currentTheme?.bg || 'bg-zinc-900' : 'bg-stone-50'}`}>
       {/* Header */}
       <header className={`border-b sticky top-0 z-50 shadow-sm backdrop-blur-md transition-colors duration-300 ${
         darkMode 
-          ? 'border-zinc-700 bg-zinc-800/90' 
+          ? `${currentTheme?.border || 'border-zinc-700'} ${currentTheme?.panel || 'bg-zinc-800'}/90` 
           : 'border-slate-200 bg-white/90'
       }`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-4">
@@ -589,25 +589,76 @@ export default function HomePage() {
                 <h1 className="font-heading font-bold text-base sm:text-xl text-orange-500" data-testid="app-title">
                   ATALAYA DE ESTUDIO
                 </h1>
-                <p className={`text-xs font-semibold tracking-wide hidden sm:block ${darkMode ? 'text-zinc-400' : 'text-slate-700'}`}>Calculadora de Tiempo</p>
+                <p className={`text-xs font-semibold tracking-wide hidden sm:block ${darkMode ? currentTheme?.textMuted || 'text-zinc-400' : 'text-slate-700'}`}>Calculadora de Tiempo</p>
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Dark Mode Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setDarkMode(!darkMode)}
-                className={`rounded-full w-9 h-9 sm:w-10 sm:h-10 ${
-                  darkMode 
-                    ? 'text-yellow-400 hover:bg-zinc-700' 
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}
-                title={darkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-                data-testid="dark-mode-toggle"
-              >
-                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </Button>
+              {/* Dark Mode Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-full w-9 h-9 sm:w-10 sm:h-10 ${
+                      darkMode 
+                        ? 'text-yellow-400 hover:bg-zinc-700' 
+                        : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                    title={darkMode ? 'Opciones de modo oscuro' : 'Activar modo oscuro'}
+                    data-testid="dark-mode-toggle"
+                  >
+                    {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className={`rounded-xl min-w-[200px] ${darkMode ? 'bg-zinc-800 border-zinc-700' : ''}`}>
+                  {darkMode ? (
+                    <>
+                      <DropdownMenuItem 
+                        onClick={() => setDarkMode(false)} 
+                        className={`cursor-pointer ${darkMode ? 'hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}
+                      >
+                        <Sun className="w-4 h-4 mr-2 text-yellow-500" />
+                        <span className={darkMode ? 'text-zinc-200' : ''}>Modo Claro</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className={darkMode ? 'bg-zinc-700' : ''} />
+                      <DropdownMenuLabel className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
+                        <Palette className="w-3 h-3 inline mr-1" />
+                        Variante Oscura
+                      </DropdownMenuLabel>
+                      {Object.entries(darkThemes).map(([key, theme]) => (
+                        <DropdownMenuItem 
+                          key={key}
+                          onClick={() => setDarkTheme(key)}
+                          className={`cursor-pointer ${darkMode ? 'hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}
+                        >
+                          <div className="flex items-center gap-2 w-full">
+                            <div 
+                              className="w-4 h-4 rounded-full border-2"
+                              style={{ 
+                                backgroundColor: theme.colors.panel,
+                                borderColor: darkTheme === key ? '#f97316' : theme.colors.border
+                              }}
+                            />
+                            <div className="flex-1">
+                              <span className={`text-sm ${darkMode ? 'text-zinc-200' : ''}`}>{theme.name}</span>
+                              <span className={`text-xs block ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{theme.description}</span>
+                            </div>
+                            {darkTheme === key && <Check className="w-4 h-4 text-orange-500" />}
+                          </div>
+                        </DropdownMenuItem>
+                      ))}
+                    </>
+                  ) : (
+                    <DropdownMenuItem 
+                      onClick={() => setDarkMode(true)} 
+                      className="cursor-pointer"
+                    >
+                      <Moon className="w-4 h-4 mr-2 text-slate-600" />
+                      Activar Modo Oscuro
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
               
               {analysisResult && (
                 <>
