@@ -1008,20 +1008,37 @@ export default function HomePage() {
 
               {/* Paragraphs List */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <h3 className={`font-heading font-semibold text-lg ${darkMode ? 'text-zinc-200' : 'text-zinc-900'}`}>
-                      Desglose por párrafo
-                    </h3>
+                {/* Header con estilo mejorado */}
+                <div className={`rounded-2xl border-2 p-4 ${
+                  darkMode 
+                    ? 'bg-gradient-to-r from-orange-950/50 to-zinc-900 border-orange-700' 
+                    : 'bg-gradient-to-r from-orange-50 to-white border-orange-200'
+                }`}>
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        darkMode ? 'bg-orange-600' : 'bg-orange-500'
+                      }`}>
+                        <FileText className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className={`font-heading font-bold text-base ${darkMode ? 'text-zinc-100' : 'text-zinc-900'}`}>
+                          Desglose por párrafo
+                        </h3>
+                        <p className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                          {analysisResult.total_paragraphs} párrafos · {analysisResult.total_words} palabras
+                        </p>
+                      </div>
+                    </div>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setShowAllParagraphContent(!showAllParagraphContent)}
-                      className={`rounded-full px-4 py-2 text-xs font-semibold transition-all shadow-sm ${
+                      className={`rounded-full px-4 py-2 text-xs font-semibold transition-all shadow-sm border-2 ${
                         showAllParagraphContent
                           ? darkMode 
-                            ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-500' 
-                            : 'bg-purple-500 hover:bg-purple-600 text-white border-purple-400'
+                            ? 'bg-orange-600 hover:bg-orange-700 text-white border-orange-500' 
+                            : 'bg-orange-500 hover:bg-orange-600 text-white border-orange-400'
                           : darkMode 
                             ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-500' 
                             : 'bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-400'
@@ -1042,15 +1059,17 @@ export default function HomePage() {
                     </Button>
                   </div>
                   {isTimerRunning && !isInIntroductionMode && (
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline" onClick={goToPreviousParagraph} disabled={currentManualParagraph <= 0} className="text-xs" data-testid="prev-paragraph-btn-2">
+                    <div className={`flex items-center justify-center gap-2 mt-3 pt-3 border-t ${
+                      darkMode ? 'border-orange-800' : 'border-orange-100'
+                    }`}>
+                      <Button size="sm" variant="outline" onClick={goToPreviousParagraph} disabled={currentManualParagraph <= 0} className={`text-xs rounded-full ${darkMode ? 'border-zinc-600' : ''}`} data-testid="prev-paragraph-btn-2">
                         <ChevronLeft className="w-3 h-3 mr-1" />
                         Anterior
                       </Button>
-                      <Badge variant="secondary" className="font-mono">
+                      <Badge className={`font-mono px-3 py-1 ${darkMode ? 'bg-orange-700 text-white' : 'bg-orange-100 text-orange-700'}`}>
                         {currentManualParagraph + 1} / {analysisResult.total_paragraphs}
                       </Badge>
-                      <Button size="sm" variant="outline" onClick={goToNextParagraph} disabled={currentManualParagraph >= analysisResult.paragraphs.length - 1} className="text-xs" data-testid="next-paragraph-btn-2">
+                      <Button size="sm" variant="outline" onClick={goToNextParagraph} disabled={currentManualParagraph >= analysisResult.paragraphs.length - 1} className={`text-xs rounded-full ${darkMode ? 'border-zinc-600' : ''}`} data-testid="next-paragraph-btn-2">
                         Siguiente
                         <ChevronRight className="w-3 h-3 ml-1" />
                       </Button>
