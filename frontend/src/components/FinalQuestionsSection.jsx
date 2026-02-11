@@ -111,33 +111,45 @@ function ReviewQuestionCard({
     >
       {/* Current Question Indicator with Timer */}
       {isCurrentQuestion && (
-        <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold py-2 px-4 flex items-center justify-between rounded-t-xl ${
+        <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold rounded-t-xl ${
           isOverTime 
             ? 'bg-gradient-to-r from-red-500 to-red-600' 
             : 'bg-gradient-to-r from-green-500 to-green-600'
         }`}>
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
-            </span>
-            {isOverTime ? '⚠️ TIEMPO EXCEDIDO' : 'RESPONDIENDO AHORA'}
-            {isOverTime && (
-              <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full animate-pulse">
-                +{formatTime(questionElapsed - Math.round(estimatedTime))} excedido
+          {/* Main row - always visible */}
+          <div className="flex items-center justify-between px-3 py-2">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
               </span>
+              <span className="text-[11px] sm:text-xs font-bold tracking-wide">
+                {isOverTime ? 'TIEMPO EXCEDIDO' : 'RESPONDIENDO'}
+              </span>
+            </div>
+            
+            {/* Timer display - compact */}
+            {isTimerRunning && (
+              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] ${
+                isOverTime ? 'bg-red-400/40' : 'bg-white/20'
+              }`}>
+                <Timer className="w-3 h-3" />
+                <span className="font-mono font-bold">
+                  {formatTime(questionElapsed)}
+                </span>
+                <span className="opacity-70">/</span>
+                <span className="opacity-70">
+                  {formatTime(Math.round(estimatedTime))}
+                </span>
+              </div>
             )}
           </div>
-          {isTimerRunning && (
-            <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${
-              isOverTime ? 'bg-red-500/30' : 'bg-white/20'
-            }`}>
-              <Timer className={`w-3 h-3 ${isOverTime ? 'text-red-200' : 'text-white/80'}`} />
-              <span className={`font-mono text-sm ${isOverTime ? 'text-red-200 font-bold' : 'text-white'}`}>
-                {formatTime(questionElapsed)}
-              </span>
-              <span className="text-white/60 text-[10px]">
-                / {formatTime(Math.round(estimatedTime))}
+          
+          {/* Overtime badge - separate row when overtime */}
+          {isOverTime && (
+            <div className="px-3 pb-2 -mt-1">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-700 text-white text-[10px] font-bold rounded-full animate-pulse">
+                ⚠️ +{formatTime(questionElapsed - Math.round(estimatedTime))} excedido
               </span>
             </div>
           )}
