@@ -88,11 +88,10 @@ export function TimerDisplay({
           
           {/* Separator with Duration - Shows calculated duration when manual */}
           <div className="flex flex-col items-center shrink-0">
-            <div className="w-4 sm:w-8 md:w-12 h-px bg-slate-600 opacity-60"></div>
-            <span className={`text-[10px] sm:text-xs md:text-sm font-bold my-0.5 sm:my-1 ${manualEndTime && !startTime ? 'text-cyan-400' : 'text-orange-400'}`}>
+            <span className="text-[7px] sm:text-[9px] md:text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">Duración</span>
+            <span className={`text-sm sm:text-base md:text-lg font-bold ${manualEndTime && !startTime ? 'text-cyan-400' : 'text-orange-400'}`}>
               {displayDuration}m
             </span>
-            <div className="w-4 sm:w-8 md:w-12 h-px bg-slate-600 opacity-60"></div>
           </div>
           
           {/* End Time - Amber/Gold Color - Editable */}
