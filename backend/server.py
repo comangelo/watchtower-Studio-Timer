@@ -689,11 +689,7 @@ def extract_final_questions(text: str, pdf_bytes: bytes = None) -> List[Question
                     if match:
                         question_text = match.group(2).strip()
                         if len(question_text) > 5:
-                            final_questions.append(QuestionInfo(
-                                text=question_text,
-                                answer_time=QUESTION_ANSWER_TIME,
-                                is_final_question=True
-                            ))
+                            final_questions.append(create_question_info(question_text, QUESTION_ANSWER_TIME, True))
                 
                 if final_questions:
                     return final_questions
@@ -746,11 +742,7 @@ def extract_final_questions(text: str, pdf_bytes: bytes = None) -> List[Question
         if match:
             question_text = match.group(2).strip()
             if len(question_text) > 5:
-                final_questions.append(QuestionInfo(
-                    text=question_text,
-                    answer_time=QUESTION_ANSWER_TIME,
-                    is_final_question=True
-                ))
+                final_questions.append(create_question_info(question_text, QUESTION_ANSWER_TIME, True))
     
     return final_questions
 
