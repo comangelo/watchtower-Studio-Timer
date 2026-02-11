@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer } from "lucide-react";
+import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -30,13 +30,20 @@ export function ParagraphCard({
   triggerVibration,
   onStartReview,
   hasReviewQuestions,
-  darkMode = false
+  darkMode = false,
+  showContentGlobal = true
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showContent, setShowContent] = useState(true); // Individual content visibility
   const [paragraphElapsed, setParagraphElapsed] = useState(0);
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
   const cardRef = useRef(null);
   const paragraphTimerRef = useRef(null);
+  
+  // Sync with global show/hide state
+  useEffect(() => {
+    setShowContent(showContentGlobal);
+  }, [showContentGlobal]);
   
   // If grouped, use all paragraphs; otherwise just this one
   const allParagraphs = groupedParagraphs.length > 0 ? groupedParagraphs : [paragraph];
