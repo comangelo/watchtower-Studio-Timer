@@ -118,7 +118,11 @@ export function IntroductionWordsSection({
   if (!isActive && hasStarted) {
     return (
       <div 
-        className="relative rounded-2xl border-2 border-slate-200 bg-slate-50/50 p-5 opacity-70"
+        className={`relative rounded-2xl border-2 p-5 opacity-70 ${
+          darkMode 
+            ? 'border-zinc-700 bg-zinc-800/50'
+            : 'border-slate-200 bg-slate-50/50'
+        }`}
         data-testid="introduction-words-completed"
       >
         {/* Completed Banner */}
@@ -128,12 +132,14 @@ export function IntroductionWordsSection({
         </div>
         
         <div className="mt-6 flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-slate-300 flex items-center justify-center">
-            <Mic className="w-6 h-6 text-slate-600" />
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+            darkMode ? 'bg-zinc-700' : 'bg-slate-300'
+          }`}>
+            <Mic className={`w-6 h-6 ${darkMode ? 'text-zinc-400' : 'text-slate-600'}`} />
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-slate-600">Palabras de Introducción</h3>
-            <p className="text-sm text-slate-500 mt-1">Introducción completada</p>
+            <h3 className={`font-semibold ${darkMode ? 'text-zinc-400' : 'text-slate-600'}`}>Palabras de Introducción</h3>
+            <p className={`text-sm mt-1 ${darkMode ? 'text-zinc-500' : 'text-slate-500'}`}>Introducción completada</p>
           </div>
         </div>
       </div>
