@@ -430,19 +430,19 @@ export default function HomePage() {
     }
     
     setElapsedTime(Math.floor(cumulativeTime));
-    setRemainingTime(3600 - Math.floor(cumulativeTime));
+    setRemainingTime(totalDurationSeconds - Math.floor(cumulativeTime));
     
     const now = new Date();
     const virtualStartTime = new Date(now.getTime() - cumulativeTime * 1000);
     setStartTime(virtualStartTime);
-    setEndTime(addSecondsToDate(virtualStartTime, 3600));
+    setEndTime(addSecondsToDate(virtualStartTime, totalDurationSeconds));
     setCurrentManualParagraph(paragraphIndex);
     setIsTimerRunning(true);
     setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
     setParagraphStartTime(Date.now()); // Start timing this paragraph
     
     toast.success(`Iniciando desde Párrafo ${paragraphIndex + 1}`);
-  }, [analysisResult]);
+  }, [analysisResult, totalDurationSeconds]);
 
   // Export functions
   const exportToImage = async () => {
