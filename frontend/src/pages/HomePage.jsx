@@ -562,9 +562,13 @@ export default function HomePage() {
   const adjustedFinalTimes = getAdjustedFinalQuestionsTime();
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-zinc-900' : 'bg-stone-50'}`}>
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+      <header className={`border-b sticky top-0 z-50 shadow-sm backdrop-blur-md transition-colors duration-300 ${
+        darkMode 
+          ? 'border-zinc-700 bg-zinc-800/90' 
+          : 'border-slate-200 bg-white/90'
+      }`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
@@ -577,15 +581,36 @@ export default function HomePage() {
                 <h1 className="font-heading font-bold text-base sm:text-xl text-orange-500" data-testid="app-title">
                   ATALAYA DE ESTUDIO
                 </h1>
-                <p className="text-xs text-slate-700 font-semibold tracking-wide hidden sm:block">Calculadora de Tiempo</p>
+                <p className={`text-xs font-semibold tracking-wide hidden sm:block ${darkMode ? 'text-zinc-400' : 'text-slate-700'}`}>Calculadora de Tiempo</p>
               </div>
             </div>
-            {analysisResult && (
-              <div className="flex items-center gap-1 sm:gap-3">
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Dark Mode Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setDarkMode(!darkMode)}
+                className={`rounded-full w-9 h-9 sm:w-10 sm:h-10 ${
+                  darkMode 
+                    ? 'text-yellow-400 hover:bg-zinc-700' 
+                    : 'text-slate-600 hover:bg-slate-100'
+                }`}
+                title={darkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                data-testid="dark-mode-toggle"
+              >
+                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </Button>
+              
+              {analysisResult && (
+                <>
                 <Button 
                   variant="outline" 
                   onClick={enterPresentationMode} 
-                  className="rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 font-medium transition-all text-xs sm:text-sm" 
+                  className={`rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 font-medium transition-all text-xs sm:text-sm ${
+                    darkMode
+                      ? 'border-zinc-600 text-zinc-300 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-500/10'
+                      : 'border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
+                  }`}
                   data-testid="presentation-mode-btn"
                 >
                   <Maximize className="w-4 h-4 sm:mr-2" />
