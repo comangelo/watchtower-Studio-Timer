@@ -430,7 +430,8 @@ export function FinalQuestionsSection({
   soundEnabled,
   vibrationEnabled,
   playNotificationSound,
-  triggerVibration
+  triggerVibration,
+  darkMode = false
 }) {
   if (!finalQuestions || finalQuestions.length === 0) return null;
   
@@ -451,10 +452,17 @@ export function FinalQuestionsSection({
 
   return (
     <Card className={`shadow-sm rounded-2xl ${
-      isCriticalTime ? 'border-red-500 bg-red-50' : 
-      isLowTime ? 'border-orange-400 bg-orange-50' : 
-      isInReviewMode ? 'border-green-400 bg-green-50/30' :
-      'border-red-200 bg-red-50/30'
+      isCriticalTime 
+        ? 'border-red-500 bg-red-50' 
+        : isLowTime 
+          ? 'border-orange-400 bg-orange-50' 
+          : isInReviewMode 
+            ? darkMode 
+              ? 'border-green-700 bg-green-950/30' 
+              : 'border-green-400 bg-green-50/30'
+            : darkMode 
+              ? 'border-red-800 bg-red-950/30' 
+              : 'border-red-200 bg-red-50/30'
     }`} data-testid="final-questions-section">
       {/* Low Time Alert Banner */}
       {isLowTime && !isInReviewMode && (
