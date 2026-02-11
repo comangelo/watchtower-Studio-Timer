@@ -915,12 +915,13 @@ export default function HomePage() {
                 vibrationEnabled={vibrationEnabled}
                 playNotificationSound={playNotificationSound}
                 triggerVibration={triggerVibration}
+                darkMode={darkMode}
               />
 
               {/* Paragraphs List */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-heading font-semibold text-lg text-zinc-900">
+                  <h3 className={`font-heading font-semibold text-lg ${darkMode ? 'text-zinc-200' : 'text-zinc-900'}`}>
                     Desglose por párrafo
                   </h3>
                   {isTimerRunning && !isInIntroductionMode && (
