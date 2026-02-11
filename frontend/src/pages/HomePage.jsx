@@ -291,12 +291,12 @@ export default function HomePage() {
     }
   }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds, alertTimes, triggerVibration]);
 
-  // Initialize remaining time when analysis is complete
+  // Initialize remaining time when analysis is complete or duration changes
   useEffect(() => {
     if (analysisResult) {
-      setRemainingTime(3600);
+      setRemainingTime(totalDurationSeconds);
     }
-  }, [analysisResult]);
+  }, [analysisResult, totalDurationSeconds]);
 
   // Timer effect
   useEffect(() => {
