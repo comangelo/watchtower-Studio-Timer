@@ -1007,6 +1007,11 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     total_reading_time = 0.0
     total_question_time = 0.0
     cumulative_time = 0.0
+    total_images = 0
+    total_scriptures = 0
+    
+    # Extra time for paragraphs with image or scripture references (40 seconds)
+    EXTRA_CONTENT_TIME = 40
     
     # Sort paragraphs by number
     for para_num in sorted(paragraphs_data.keys()):
@@ -1018,6 +1023,26 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         word_count = count_words(para_text)
         reading_time = calculate_reading_time(word_count)
         question_time = len(questions) * QUESTION_ANSWER_TIME
+        
+        # Count extra content and add time
+        para_has_image = False
+        para_has_scripture = False
+        for q in questions:
+            if q.content_type == 'image':
+                total_images += 1
+                para_has_image = True
+            elif q.content_type == 'scripture':
+                total_scriptures += 1
+                para_has_scripture = True
+        
+        # Add 40 seconds for each type of extra content
+        extra_time = 0
+        if para_has_image:
+            extra_time += EXTRA_CONTENT_TIME
+        if para_has_scripture:
+            extra_time += EXTRA_CONTENT_TIME
+        
+        reading_time += extra_time
         
         total_words += word_count
         total_questions += len(questions)
