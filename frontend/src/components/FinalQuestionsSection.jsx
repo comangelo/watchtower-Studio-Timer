@@ -357,7 +357,9 @@ function ReviewQuestionCard({
 
       {/* Completed Indicator */}
       {isCompletedQuestion && (
-        <div className="absolute top-0 left-0 right-0 bg-slate-400 text-white text-xs font-bold py-1.5 px-4 flex items-center justify-center gap-2 rounded-t-xl">
+        <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold py-1.5 px-4 flex items-center justify-center gap-2 rounded-t-xl ${
+          darkMode ? 'bg-zinc-600' : 'bg-slate-400'
+        }`}>
           <Check className="w-3 h-3" />
           COMPLETADA
         </div>
@@ -367,17 +369,19 @@ function ReviewQuestionCard({
         <div className="flex items-start gap-3">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
             isCompletedQuestion
-              ? 'bg-slate-300 text-slate-600'
+              ? darkMode ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-300 text-slate-600'
               : isCurrentQuestion
                 ? isOverTime ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-                : 'bg-red-200 text-red-700'
+                : darkMode ? 'bg-red-900 text-red-300' : 'bg-red-200 text-red-700'
           }`}>
             {index + 1}
           </div>
           
           <div className="flex-1">
             <p className={`text-sm ${
-              isCompletedQuestion ? 'text-slate-500' : 'text-slate-700'
+              isCompletedQuestion 
+                ? darkMode ? 'text-zinc-500' : 'text-slate-500' 
+                : darkMode ? 'text-slate-300' : 'text-slate-700'
             }`}>
               {question.text}
             </p>
@@ -386,9 +390,11 @@ function ReviewQuestionCard({
             {!isCompletedQuestion && !isCurrentQuestion && (
               <div className="mt-2 flex items-center gap-2">
                 <span className={`text-xs px-2 py-1 rounded-full ${
-                  isCriticalTime ? 'bg-red-200 text-red-700' :
-                  isLowTime ? 'bg-orange-200 text-orange-700' :
-                  'bg-red-100 text-red-600'
+                  isCriticalTime 
+                    ? darkMode ? 'bg-red-900 text-red-300' : 'bg-red-200 text-red-700' 
+                    : isLowTime 
+                      ? darkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-200 text-orange-700' 
+                      : darkMode ? 'bg-red-900/50 text-red-400' : 'bg-red-100 text-red-600'
                 }`}>
                   {Math.round(perQuestionTime)} seg
                 </span>
