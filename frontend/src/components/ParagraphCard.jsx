@@ -374,9 +374,9 @@ export function ParagraphCard({
           </div>
 
           {/* Action Buttons - Improved Visibility */}
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-5 flex items-center justify-between gap-3">
             {/* Left side buttons */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 flex-1">
               {/* Next Paragraph Button - Primary Action */}
               {isCurrentParagraph && !isLastParagraph && (
                 <Button
