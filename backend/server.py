@@ -206,12 +206,13 @@ def extract_question_with_parenthesis(question_text: str) -> dict:
     Classifies the parenthesis content:
     - "image" if contains "Vea también", "Vea", "imagen", "ilustración"
     - "scripture" if contains bible reference pattern (e.g., Salmos 32:17, Juan 3:16)
+    - "both" if contains BOTH image reference AND scripture (e.g., "Juan 3:16, vea también la imagen")
     - "" if no special content
     
     Returns dict with:
     - text: the question text
     - parenthesis_content: content inside parentheses
-    - content_type: "image", "scripture", or ""
+    - content_type: "image", "scripture", "both", or ""
     """
     # First clean any hyphenated words in the input
     question_text = clean_hyphenated_text(question_text)
@@ -233,13 +234,16 @@ def extract_question_with_parenthesis(question_text: str) -> dict:
         # Remove the parenthesis from the question text for cleaner display
         result["text"] = question_text[:paren_match.start() + 1].strip()
         
+        # Check for BOTH types (e.g., "Juan 3:16, vea también la imagen")
+        has_image = bool(re.search(r'[Vv]ea\s*(también|la|el|las|los)?', paren_content, re.IGNORECASE))
+        has_scripture = bool(re.search(r'[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+', paren_content))
+        
         # Classify the content
-        # Case 1: Contains "Vea también" or similar (indicates image reference)
-        if re.search(r'[Vv]ea\s*(también|la|el|las|los)?', paren_content, re.IGNORECASE):
+        if has_image and has_scripture:
+            result["content_type"] = "both"
+        elif has_image:
             result["content_type"] = "image"
-        # Case 2: Contains bible reference pattern (Book Chapter:Verse)
-        # Pattern: Word(s) followed by number(s):number(s)
-        elif re.search(r'[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+', paren_content):
+        elif has_scripture:
             result["content_type"] = "scripture"
     else:
         # Also check for parentheses anywhere in the question
@@ -254,10 +258,14 @@ def extract_question_with_parenthesis(question_text: str) -> dict:
                 # Remove parenthesis from text
                 result["text"] = question_text.replace(f'({paren_content})', '').strip()
                 
+                # Check for BOTH types
+                has_image = bool(re.search(r'[Vv]ea\s*(también|la|el|las|los)?', paren_content, re.IGNORECASE))
+                has_scripture = bool(re.search(r'[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+', paren_content))
+                
                 # Classify
-                if re.search(r'[Vv]ea\s*(también|la|el|las|los)?', paren_content, re.IGNORECASE):
-                    result["content_type"] = "image"
-                elif re.search(r'[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+', paren_content):
+                if has_image and has_scripture:
+                    result["content_type"] = "both"
+                elif has_image:
                     result["content_type"] = "scripture"
     
     return result
