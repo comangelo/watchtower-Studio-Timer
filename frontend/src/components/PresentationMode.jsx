@@ -240,27 +240,27 @@ export default function PresentationMode({
     return nextGroup.paragraphs[0] || null;
   }, [nextGroup]);
   
-  // Check if next paragraph has special content ("both" means image AND scripture)
+  // Check if next GROUP has special content ("both" means image AND scripture)
   const nextParagraphHasImage = useMemo(() => {
-    if (!nextParagraph) return false;
-    return nextParagraph.questions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
-  }, [nextParagraph]);
+    if (!nextGroup) return false;
+    return nextGroup.allQuestions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
+  }, [nextGroup]);
   
   const nextParagraphHasScripture = useMemo(() => {
-    if (!nextParagraph) return false;
-    return nextParagraph.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
-  }, [nextParagraph]);
+    if (!nextGroup) return false;
+    return nextGroup.allQuestions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
+  }, [nextGroup]);
   
-  // Current paragraph has special content
+  // Current GROUP has special content
   const currentParagraphHasImage = useMemo(() => {
-    if (!currentParagraph) return false;
-    return currentParagraph.questions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
-  }, [currentParagraph]);
+    if (!currentGroup) return false;
+    return currentGroup.allQuestions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
+  }, [currentGroup]);
   
   const currentParagraphHasScripture = useMemo(() => {
-    if (!currentParagraph) return false;
-    return currentParagraph.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
-  }, [currentParagraph]);
+    if (!currentGroup) return false;
+    return currentGroup.allQuestions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
+  }, [currentGroup]);
   
   const currentReviewQuestionData = useMemo(() => {
     if (!analysisResult || !analysisResult.final_questions) return null;
