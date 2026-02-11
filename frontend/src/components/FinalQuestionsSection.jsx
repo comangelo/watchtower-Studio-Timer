@@ -676,6 +676,7 @@ export function FinalQuestionsSection({
             vibrationEnabled={vibrationEnabled}
             playNotificationSound={playNotificationSound}
             triggerVibration={triggerVibration}
+            darkMode={darkMode}
           />
         )}
       </CardContent>
