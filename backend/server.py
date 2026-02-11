@@ -946,7 +946,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         
         analyzed_paragraphs.append(ParagraphAnalysis(
             number=para_num,
-            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
+            text=para_text,
             word_count=word_count,
             reading_time_seconds=round(reading_time, 2),
             questions=questions,
@@ -1207,7 +1207,7 @@ def analyze_pdf_with_font_info_configurable(
         
         analyzed_paragraphs.append(ParagraphAnalysis(
             number=para_num,
-            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
+            text=para_text,
             word_count=word_count,
             reading_time_seconds=round(reading_time, 2),
             questions=questions,
@@ -1358,7 +1358,7 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
         
         analyzed_paragraphs.append(ParagraphAnalysis(
             number=i,
-            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
+            text=para_text,
             word_count=word_count,
             reading_time_seconds=round(reading_time, 2),
             questions=questions,
@@ -1453,7 +1453,7 @@ def analyze_pdf_content_configurable(
         
         analyzed_paragraphs.append(ParagraphAnalysis(
             number=i,
-            text=para_text[:500] + ("..." if len(para_text) > 500 else ""),
+            text=para_text,
             word_count=word_count,
             reading_time_seconds=round(reading_time, 2),
             questions=questions,
