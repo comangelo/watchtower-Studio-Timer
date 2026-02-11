@@ -186,6 +186,15 @@ def split_into_paragraphs(text: str) -> List[str]:
     return paragraphs if paragraphs else [text.strip()]
 
 
+def clean_hyphenated_text(text: str) -> str:
+    """
+    Remove word-break hyphens from text.
+    Example: "ima- gen" -> "imagen", "tam- bién" -> "también"
+    """
+    # Replace hyphen followed by space and lowercase letter
+    return re.sub(r'-\s+([a-záéíóúñ])', r'\1', text)
+
+
 def extract_question_with_parenthesis(question_text: str) -> dict:
     """
     Extract question text and any content in parentheses after the question.
@@ -199,6 +208,9 @@ def extract_question_with_parenthesis(question_text: str) -> dict:
     - parenthesis_content: content inside parentheses
     - content_type: "image", "scripture", or ""
     """
+    # First clean any hyphenated words in the input
+    question_text = clean_hyphenated_text(question_text)
+    
     result = {
         "text": question_text.strip(),
         "parenthesis_content": "",
