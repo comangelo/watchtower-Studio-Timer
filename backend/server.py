@@ -63,6 +63,11 @@ class PDFAnalysisResult(BaseModel):
     final_questions_title: str = ""  # Bold title/question before the final questions
     paragraphs: List[ParagraphAnalysis]
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    # New counters for extra content
+    total_paragraph_questions: int = 0  # Questions in paragraphs (not final)
+    total_review_questions: int = 0  # Final review questions
+    total_images: int = 0  # Questions with image references
+    total_scriptures: int = 0  # Questions with scripture references
 
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")
