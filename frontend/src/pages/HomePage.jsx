@@ -62,6 +62,7 @@ export default function HomePage() {
   const [remainingTime, setRemainingTime] = useState(60 * 60); // Will be updated when totalDuration changes
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const [manualEndTime, setManualEndTime] = useState(null); // For manual end time override
   
   // Refs
   const timerRef = useRef(null);
