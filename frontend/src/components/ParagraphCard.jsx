@@ -216,10 +216,10 @@ export function ParagraphCard({
           <div className="flex items-center justify-between mb-3">
             <span className={`text-sm font-bold ${
               isCompletedParagraph 
-                ? darkMode ? 'text-zinc-500' : 'text-slate-400' 
+                ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
                 : isCurrentParagraph 
                   ? 'text-green-700' 
-                  : darkMode ? 'text-zinc-200' : 'text-slate-700'
+                  : darkMode ? 'text-zinc-100' : 'text-slate-700'
             }`}>
               {isGrouped ? (
                 <>Párrafos {allParagraphs.map(p => p.number).join(', ')}</>
@@ -230,12 +230,12 @@ export function ParagraphCard({
             <Badge 
               className={`font-mono text-sm px-3 py-1 ${
                 isCompletedParagraph 
-                  ? darkMode ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-200 text-slate-600' 
+                  ? darkMode ? 'bg-zinc-600 text-zinc-300' : 'bg-slate-200 text-slate-600' 
                   : isCurrentParagraph ? 'bg-green-500 text-white' : 
                   hasFinalQuestions ? 'bg-red-500 text-white' :
                   hasQuestions 
-                    ? darkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-100 text-orange-700' 
-                    : darkMode ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-100 text-slate-600'
+                    ? darkMode ? 'bg-orange-700 text-orange-100' : 'bg-orange-100 text-orange-700' 
+                    : darkMode ? 'bg-zinc-600 text-zinc-100' : 'bg-slate-100 text-slate-600'
               }`}
               data-testid={`paragraph-time-${paragraph.number}`}
             >
@@ -252,30 +252,30 @@ export function ParagraphCard({
               <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${
                 isCurrentParagraph 
                   ? 'bg-green-100' 
-                  : darkMode ? 'bg-zinc-700' : 'bg-slate-100'
+                  : darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-100'
               }`}>
                 <Clock className={`w-3.5 h-3.5 ${
                   isCurrentParagraph 
                     ? 'text-green-600' 
-                    : darkMode ? 'text-zinc-400' : 'text-slate-500'
+                    : darkMode ? 'text-zinc-300' : 'text-slate-500'
                 }`} />
                 <span className={
                   isCurrentParagraph 
                     ? 'text-green-700 font-medium' 
-                    : darkMode ? 'text-zinc-300' : 'text-slate-600'
+                    : darkMode ? 'text-zinc-200' : 'text-slate-600'
                 }>
                   {formatClockTime(paragraphTimes.start)} - {formatClockTime(paragraphTimes.end)}
                 </span>
               </div>
               {paragraphTimes.adjustedDuration !== paragraph.total_time_seconds && (
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                  darkMode ? 'text-orange-400 bg-orange-950' : 'text-orange-500 bg-orange-50'
+                  darkMode ? 'text-orange-300 bg-orange-900' : 'text-orange-500 bg-orange-50'
                 }`}>
                   ajustado
                 </span>
               )}
             </div>
-          )}
+          )}}
           
           {/* Paragraph Text - Show all paragraphs if grouped */}
           {isGrouped ? (
