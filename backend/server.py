@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+from contextlib import asynccontextmanager
 import os
 import logging
 import re
@@ -12,16 +13,62 @@ import uuid
 from datetime import datetime, timezone
 import fitz  # PyMuPDF
 
+# Configure logging early
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# MongoDB connection - use get() with defaults to avoid crashes
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+db_name = os.environ.get('DB_NAME', 'pdf_timer_db')
 
-# Create the main app without a prefix
-app = FastAPI()
+# Global variables for database connection
+client: AsyncIOMotorClient = None
+db = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup and shutdown events"""
+    global client, db
+    
+    # Startup
+    try:
+        logger.info(f"Connecting to MongoDB...")
+        client = AsyncIOMotorClient(
+            mongo_url,
+            serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=5000
+        )
+        # Test connection
+        await client.admin.command('ping')
+        db = client[db_name]
+        
+        # Create indexes
+        await db.pdf_analyses.create_index([("timestamp", -1)])
+        await db.status_checks.create_index([("timestamp", -1)])
+        logger.info("Database indexes created successfully")
+        logger.info("MongoDB connection established successfully")
+    except Exception as e:
+        logger.warning(f"MongoDB connection failed: {e}. App will run without database.")
+        # Create a None db so the app can still serve static endpoints
+        db = None
+    
+    yield
+    
+    # Shutdown
+    if client:
+        client.close()
+        logger.info("MongoDB connection closed")
+
+
+# Create the main app with lifespan
+app = FastAPI(lifespan=lifespan)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
