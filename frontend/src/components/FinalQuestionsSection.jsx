@@ -241,6 +241,8 @@ export function FinalQuestionsSection({
   currentReviewQuestion,
   onStartReview,
   onNextReviewQuestion,
+  onStartClosingWords,
+  isInClosingWordsMode,
   onFinishStudy,
   overtimeAlertEnabled,
   soundEnabled,
