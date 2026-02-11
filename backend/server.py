@@ -1435,9 +1435,15 @@ def analyze_pdf_content_configurable(
     
     # Extract final questions (those after "¿QUÉ RESPONDERÍAS?")
     final_questions_raw = extract_final_questions(text)
-    # Update answer_time for final questions
+    # Update answer_time for final questions - preserve parenthesis info
     final_questions = [
-        QuestionInfo(text=q.text, answer_time=answer_time, is_final_question=True)
+        QuestionInfo(
+            text=q.text, 
+            answer_time=answer_time, 
+            is_final_question=True,
+            parenthesis_content=q.parenthesis_content,
+            content_type=q.content_type
+        )
         for q in final_questions_raw
     ]
     final_questions_title = ""
@@ -1469,9 +1475,15 @@ def analyze_pdf_content_configurable(
         reading_time = calculate_reading_time(word_count, wpm)
         
         questions_raw = detect_questions(para_text, i, False)
-        # Update answer_time for questions
+        # Update answer_time for questions - preserve parenthesis info
         questions = [
-            QuestionInfo(text=q.text, answer_time=answer_time, is_final_question=False)
+            QuestionInfo(
+                text=q.text, 
+                answer_time=answer_time, 
+                is_final_question=False,
+                parenthesis_content=q.parenthesis_content,
+                content_type=q.content_type
+            )
             for q in questions_raw
         ]
         question_time = len(questions) * answer_time
