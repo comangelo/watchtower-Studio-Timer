@@ -56,10 +56,9 @@ export function ParagraphCard({
   const hasFinalQuestions = allQuestions.some(q => q.is_final_question);
 
   // Check for extra content in questions (image or scripture references)
-  const questionsWithImage = allQuestions.filter(q => q.content_type === 'image');
-  const questionsWithScripture = allQuestions.filter(q => q.content_type === 'scripture');
-  const hasImageContent = questionsWithImage.length > 0;
-  const hasScriptureContent = questionsWithScripture.length > 0;
+  // "both" means the question has both image AND scripture in the same parenthesis
+  const hasImageContent = allQuestions.some(q => q.content_type === 'image' || q.content_type === 'both');
+  const hasScriptureContent = allQuestions.some(q => q.content_type === 'scripture' || q.content_type === 'both');
 
   // Get estimated time for this paragraph group
   const estimatedTime = isGrouped 
