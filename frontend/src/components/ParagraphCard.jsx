@@ -379,7 +379,11 @@ export function ParagraphCard({
                   e.stopPropagation();
                   onStartFromHere();
                 }}
-                className="rounded-full px-5 py-4 text-sm font-semibold border-2 border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 transition-all"
+                className={`rounded-full px-5 py-4 text-sm font-semibold border-2 transition-all ${
+                  darkMode 
+                    ? 'border-zinc-500 text-zinc-100 hover:border-orange-500 hover:text-orange-400 hover:bg-orange-500/10' 
+                    : 'border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
+                }`}
                 data-testid={`start-from-paragraph-${paragraph.number}`}
               >
                 <Play className="w-4 h-4 mr-2" />
@@ -394,10 +398,10 @@ export function ParagraphCard({
                   variant="ghost" 
                   className={`rounded-full px-4 py-3 text-sm font-medium transition-all ${
                     hasFinalQuestions 
-                      ? 'text-red-600 hover:bg-red-50' 
+                      ? darkMode ? 'text-red-400 hover:bg-red-950' : 'text-red-600 hover:bg-red-50' 
                       : isCurrentParagraph 
                         ? 'text-green-600 hover:bg-green-100' 
-                        : 'text-slate-600 hover:bg-slate-100'
+                        : darkMode ? 'text-zinc-200 hover:bg-zinc-700' : 'text-slate-600 hover:bg-slate-100'
                   }`}
                   data-testid={`toggle-questions-${paragraph.number}`}
                 >
