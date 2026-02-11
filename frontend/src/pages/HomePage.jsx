@@ -18,7 +18,8 @@ import {
   Pencil,
   X,
   Moon,
-  Sun
+  Sun,
+  Palette
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +29,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import PresentationMode from "@/components/PresentationMode";
 
@@ -51,6 +54,7 @@ import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
 
 // Import utils
 import { addSecondsToDate } from "@/utils/timeFormatters";
+import { darkThemes, defaultDarkTheme } from "@/utils/darkThemes";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
