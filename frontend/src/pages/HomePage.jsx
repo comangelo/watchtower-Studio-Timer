@@ -1233,11 +1233,15 @@ export default function HomePage() {
           onResetTimer={resetTimer}
           onExit={exitPresentationMode}
           currentParagraphIndex={currentManualParagraph}
+          onParagraphChange={setCurrentManualParagraph}
           theme={presentationTheme}
           onThemeChange={setPresentationTheme}
           totalDurationSeconds={totalDurationSeconds}
           startTime={startTime}
           endTime={endTime}
+          introductionTime={introductionDuration}
+          conclusionTime={conclusionDuration}
+          onStartStudy={startIntroductionMode}
         />
       )}
     </div>
