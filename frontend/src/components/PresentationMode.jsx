@@ -288,7 +288,7 @@ export default function PresentationMode({
   
   const t = THEMES[theme] || THEMES.dark;
   
-  // Get phase-specific info
+  // Get phase-specific info - using groups for paragraphs
   const getPhaseInfo = () => {
     switch (studyPhase) {
       case PHASES.INTRO:
@@ -301,12 +301,18 @@ export default function PresentationMode({
           subtitle: "El conductor introduce el tema del artículo"
         };
       case PHASES.PARAGRAPHS:
+        // Use group info for title and time
+        const groupNumbers = currentGroup?.numbers || [currentParagraph?.number || 1];
+        const isGrouped = groupNumbers.length > 1;
+        const groupTitle = isGrouped 
+          ? `Párrafos ${groupNumbers.join(', ')}` 
+          : `Párrafo ${groupNumbers[0]}`;
         return {
-          title: `Párrafo ${currentParagraph?.number || 1}`,
+          title: groupTitle,
           icon: BookOpen,
           color: "text-green-400",
           bgColor: "bg-green-500",
-          estimatedTime: currentParagraph?.total_time_seconds || 60,
+          estimatedTime: currentGroup?.totalTime || currentParagraph?.total_time_seconds || 60,
           subtitle: `de ${analysisResult?.total_paragraphs || 0} párrafos`
         };
       case PHASES.REVIEW:
