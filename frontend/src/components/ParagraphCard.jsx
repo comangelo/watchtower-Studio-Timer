@@ -131,7 +131,7 @@ export function ParagraphCard({
           group relative p-5 rounded-2xl border-2 transition-all duration-300 hover:shadow-md
           ${isCompletedParagraph
             ? darkMode 
-              ? 'border-zinc-700 bg-zinc-800/50 opacity-70'
+              ? 'border-zinc-600 bg-zinc-800/50 opacity-70'
               : 'border-slate-200 bg-slate-50/50 opacity-70'
             : isCurrentParagraph 
               ? isOverTime
@@ -139,14 +139,14 @@ export function ParagraphCard({
                 : 'border-green-400 bg-green-50 shadow-lg shadow-green-100 scale-[1.01]' 
               : hasFinalQuestions 
                 ? darkMode
-                  ? 'border-red-800 bg-red-950/50 hover:border-red-700'
+                  ? 'border-red-600 bg-red-950/50 hover:border-red-500'
                   : 'border-red-200 bg-red-50/30 hover:border-red-300' 
                 : hasQuestions 
                   ? darkMode
-                    ? 'border-orange-800 bg-zinc-800 hover:border-orange-600'
+                    ? 'border-orange-600 bg-zinc-800 hover:border-orange-500'
                     : 'border-orange-100 bg-white hover:border-orange-300' 
                   : darkMode
-                    ? 'border-zinc-700 bg-zinc-800 hover:border-zinc-600'
+                    ? 'border-zinc-500 bg-zinc-800 hover:border-zinc-400'
                     : 'border-slate-100 bg-white hover:border-slate-300'
           }
         `}
@@ -155,7 +155,9 @@ export function ParagraphCard({
       >
         {/* Completed Indicator */}
         {isCompletedParagraph && (
-          <div className="absolute top-0 left-0 right-0 bg-slate-500 text-white text-xs font-bold py-1.5 px-4 flex items-center justify-center gap-2 rounded-t-xl">
+          <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold py-1.5 px-4 flex items-center justify-center gap-2 rounded-t-xl ${
+            darkMode ? 'bg-zinc-600' : 'bg-slate-500'
+          }`}>
             <Check className="w-3.5 h-3.5" />
             COMPLETADO
           </div>
