@@ -368,7 +368,15 @@ export default function HomePage() {
       const now = new Date();
       if (!startTime) {
         setStartTime(now);
-        setEndTime(addSecondsToDate(now, totalDurationSeconds));
+        // Use manual end time if set, otherwise calculate from duration
+        if (manualEndTime) {
+          setEndTime(manualEndTime);
+          // Calculate remaining time based on manual end time
+          const diffSeconds = Math.floor((manualEndTime.getTime() - now.getTime()) / 1000);
+          setRemainingTime(Math.max(0, diffSeconds));
+        } else {
+          setEndTime(addSecondsToDate(now, totalDurationSeconds));
+        }
         setParagraphStartTime(Date.now()); // Start timing first paragraph
       }
     }
@@ -381,6 +389,7 @@ export default function HomePage() {
     setRemainingTime(totalDurationSeconds);
     setStartTime(null);
     setEndTime(null);
+    // Don't reset manualEndTime so user keeps their preference
     setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
     setCurrentManualParagraph(0);
     setParagraphStartTimes({});
@@ -394,6 +403,7 @@ export default function HomePage() {
 
   const resetAll = () => {
     setAnalysisResult(null);
+    setManualEndTime(null); // Reset manual end time when starting fresh
     resetTimer();
   };
 
