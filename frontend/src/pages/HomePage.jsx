@@ -110,6 +110,10 @@ export default function HomePage() {
   const [currentReviewQuestion, setCurrentReviewQuestion] = useState(0);
   const [reviewQuestionStartTime, setReviewQuestionStartTime] = useState(null);
   
+  // Closing words section
+  const [isInClosingWordsMode, setIsInClosingWordsMode] = useState(false);
+  const [closingWordsStartTime, setClosingWordsStartTime] = useState(null);
+  
   // State for editing end time on initial screen (before PDF upload)
   const [isEditingInitialEndTime, setIsEditingInitialEndTime] = useState(false);
   const [initialEditHours, setInitialEditHours] = useState('');
