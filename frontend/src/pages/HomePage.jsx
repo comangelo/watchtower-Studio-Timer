@@ -800,7 +800,7 @@ export default function HomePage() {
               <AnalysisSummary analysisResult={analysisResult} />
 
               {/* Paragraph Progress Indicator */}
-              {isTimerRunning && (
+              {isTimerRunning && !isInIntroductionMode && (
                 <Card className="border-2 border-green-200 bg-gradient-to-r from-green-50 to-white shadow-md rounded-2xl">
                   <CardContent className="p-5">
                     <div className="flex items-center justify-between">
