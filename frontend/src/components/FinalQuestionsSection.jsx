@@ -424,6 +424,7 @@ export function FinalQuestionsSection({
   onNextReviewQuestion,
   onStartClosingWords,
   isInClosingWordsMode,
+  closingWordsDuration = 60,
   onFinishStudy,
   overtimeAlertEnabled,
   soundEnabled,
