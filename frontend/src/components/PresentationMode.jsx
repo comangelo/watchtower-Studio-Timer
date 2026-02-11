@@ -309,8 +309,8 @@ export default function PresentationMode({
       className={`fixed inset-0 z-[9999] ${t.bg} ${t.text} flex flex-col`}
       data-testid="presentation-mode"
     >
-      {/* Top Bar - Hidden in landscape mobile, minimal otherwise */}
-      <div className={`hidden landscape:hidden sm:flex items-center justify-between px-2 sm:px-4 md:px-8 py-1 sm:py-2 md:py-3 border-b ${t.border} shrink-0`}>
+      {/* Top Bar - Always visible but compact */}
+      <div className={`flex items-center justify-between px-2 sm:px-4 md:px-8 py-1 sm:py-2 border-b ${t.border} shrink-0 opacity-60 hover:opacity-100 transition-opacity`}>
         <div className="flex items-center gap-2 sm:gap-4">
           <div className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 ${t.accentBg} rounded-lg sm:rounded-xl flex items-center justify-center`}>
             <Timer className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" />
