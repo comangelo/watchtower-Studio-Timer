@@ -1,9 +1,132 @@
 import { useState, useEffect, useRef } from "react";
-import { Clock, Timer, MessageCircleQuestion, AlertCircle, ArrowRight, Check } from "lucide-react";
+import { Clock, Timer, MessageCircleQuestion, AlertCircle, ArrowRight, Check, Sparkles, PartyPopper } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatClockTime, addSecondsToDate, formatTimeCompact } from "../utils/timeFormatters";
+
+// Closing Words Section Component
+function ClosingWordsSection({
+  isActive,
+  isTimerRunning,
+  onFinishStudy,
+  overtimeAlertEnabled,
+  soundEnabled,
+  vibrationEnabled,
+  playNotificationSound,
+  triggerVibration
+}) {
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const timerRef = useRef(null);
+  const cardRef = useRef(null);
+
+  // Auto-scroll when active
+  useEffect(() => {
+    if (isActive && cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [isActive]);
+
+  // Timer for closing words
+  useEffect(() => {
+    if (isActive && isTimerRunning) {
+      setElapsedTime(0);
+      timerRef.current = setInterval(() => {
+        setElapsedTime(prev => prev + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isActive, isTimerRunning]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (!isActive) {
+    // Show preview/pending state
+    return (
+      <div className="relative rounded-xl bg-purple-50 border border-purple-200 p-4 opacity-60">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-purple-200 flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-purple-600" />
+          </div>
+          <div>
+            <p className="font-semibold text-purple-700">Palabras de Conclusión</p>
+            <p className="text-sm text-purple-500">Después de las preguntas de repaso</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Active state
+  return (
+    <div 
+      ref={cardRef}
+      className="relative rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 border-2 border-purple-400 shadow-lg overflow-hidden"
+      data-testid="closing-words-section"
+    >
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+            </span>
+            <Sparkles className="w-4 h-4" />
+            <span className="font-bold text-sm">PALABRAS DE CONCLUSIÓN</span>
+          </div>
+          {isTimerRunning && (
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/20 text-xs">
+              <Timer className="w-3 h-3" />
+              <span className="font-mono font-bold">{formatTime(elapsedTime)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-5">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <Sparkles className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="text-purple-800 font-medium">
+              Este es el momento para las palabras finales del conductor. 
+              Resume los puntos principales y anima a la congregación.
+            </p>
+          </div>
+        </div>
+
+        {/* Finish Button */}
+        <div className="mt-6 flex justify-center">
+          <Button
+            onClick={onFinishStudy}
+            className="rounded-full px-8 py-3 text-base font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all"
+            data-testid="finish-study-btn"
+          >
+            <PartyPopper className="w-5 h-5 mr-2" />
+            Finalizar Estudio
+            <Check className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ReviewQuestionCard({
   question,
