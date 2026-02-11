@@ -562,6 +562,8 @@ export default function HomePage() {
               setReadingSpeed={setReadingSpeed}
               answerTime={answerTime}
               setAnswerTime={setAnswerTime}
+              totalDuration={totalDuration}
+              setTotalDuration={setTotalDuration}
             />
             <UploadZone
               onFileSelect={handleFileUpload}
