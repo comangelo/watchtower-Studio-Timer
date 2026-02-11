@@ -8,6 +8,7 @@ import {
   Download,
   FileImage,
   File,
+  FileText,
   Maximize,
   RotateCcw,
   ChevronLeft,
