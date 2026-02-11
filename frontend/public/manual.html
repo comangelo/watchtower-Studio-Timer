@@ -436,6 +436,96 @@
             </div>
         </section>
 
+        <!-- FLUJO DEL ESTUDIO -->
+        <section class="section" id="flujo-estudio">
+            <div class="section-header">
+                <div class="section-icon">🔄</div>
+                <h2>Flujo Completo del Estudio <span class="badge-new">NUEVO</span></h2>
+            </div>
+            
+            <p>La aplicación ahora sigue un flujo estructurado que refleja las partes de un estudio de La Atalaya:</p>
+
+            <h3>Las 4 Etapas del Estudio</h3>
+            <div class="steps">
+                <div class="step-item">
+                    <div class="step-number" style="background: #3b82f6;">1</div>
+                    <div class="step-content">
+                        <h4>🎤 Palabras de Introducción <span class="badge-new">NUEVO</span></h4>
+                        <p>El conductor introduce el tema del artículo. Duración predeterminada: <strong>1 minuto</strong>. Aquí se encuentra el botón <strong>"Iniciar Estudio"</strong> que arranca el cronómetro general.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number" style="background: #22c55e;">2</div>
+                    <div class="step-content">
+                        <h4>📖 Lectura de Párrafos</h4>
+                        <p>Lectura y desarrollo de cada párrafo del artículo. Cada párrafo tiene su propio cronómetro que muestra el tiempo transcurrido vs. el tiempo estimado. Al terminar el último párrafo, presiona <strong>"Pasar a Preguntas de Repaso"</strong>.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number" style="background: #ef4444;">3</div>
+                    <div class="step-content">
+                        <h4>❓ Preguntas de Repaso</h4>
+                        <p>Responde las preguntas finales del artículo. Cada pregunta tiene un tiempo asignado. Al terminar la última pregunta, presiona <strong>"Palabras de Conclusión"</strong>.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number" style="background: #a855f7;">4</div>
+                    <div class="step-content">
+                        <h4>✨ Palabras de Conclusión <span class="badge-new">NUEVO</span></h4>
+                        <p>El conductor resume los puntos principales y anima a la congregación. Duración predeterminada: <strong>1 minuto</strong>. Aquí se encuentra el botón <strong>"Finalizar Estudio"</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Identificación Visual de Cada Etapa</h3>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin: 20px 0;">
+                <div class="color-indicator" style="background: #dbeafe; border-left: 4px solid #3b82f6;">
+                    <span class="dot" style="background: #3b82f6;"></span>
+                    <span style="color: #1e40af;"><strong>Azul:</strong> Palabras de Introducción</span>
+                </div>
+                <div class="color-indicator" style="background: #dcfce7; border-left: 4px solid #22c55e;">
+                    <span class="dot" style="background: #22c55e;"></span>
+                    <span style="color: #166534;"><strong>Verde:</strong> Párrafo Actual</span>
+                </div>
+                <div class="color-indicator" style="background: #fee2e2; border-left: 4px solid #ef4444;">
+                    <span class="dot" style="background: #ef4444;"></span>
+                    <span style="color: #b91c1c;"><strong>Rojo:</strong> Preguntas de Repaso</span>
+                </div>
+                <div class="color-indicator" style="background: #f3e8ff; border-left: 4px solid #a855f7;">
+                    <span class="dot" style="background: #a855f7;"></span>
+                    <span style="color: #7c3aed;"><strong>Púrpura:</strong> Palabras de Conclusión</span>
+                </div>
+                <div class="color-indicator" style="background: #f1f5f9; border-left: 4px solid #64748b;">
+                    <span class="dot" style="background: #64748b;"></span>
+                    <span style="color: #475569;"><strong>Gris:</strong> Sección Completada</span>
+                </div>
+            </div>
+
+            <h3>Cronómetro Individual por Sección</h3>
+            <p>Cada sección (introducción, párrafo, pregunta, conclusión) tiene su propio cronómetro que muestra:</p>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">⏱️</div>
+                    <div class="text">
+                        <strong>Tiempo transcurrido / Tiempo estimado</strong>
+                        <span>Ejemplo: <code>0:45 / 1:00</code> significa que llevas 45 segundos de 1 minuto estimado</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🔴</div>
+                    <div class="text">
+                        <strong>Alerta de tiempo excedido</strong>
+                        <span>Cuando superas el tiempo estimado, el encabezado cambia a rojo y muestra cuánto tiempo de más llevas</span>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="tip-box">
+                <h4>💡 Consejo</h4>
+                <p>El flujo es flexible: puedes navegar entre párrafos y secciones en cualquier momento usando los botones de navegación. El cronómetro general sigue corriendo independientemente de la sección en la que te encuentres.</p>
+            </div>
+        </section>
+
         <!-- CONFIGURACIÓN -->
         <section class="section" id="configuracion">
             <div class="section-header">
