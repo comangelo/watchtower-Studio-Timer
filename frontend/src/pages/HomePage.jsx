@@ -1024,6 +1024,7 @@ export default function HomePage() {
                   vibrationEnabled={vibrationEnabled}
                   playNotificationSound={playNotificationSound}
                   triggerVibration={triggerVibration}
+                  darkMode={darkMode}
                 />
               )}
             </div>
