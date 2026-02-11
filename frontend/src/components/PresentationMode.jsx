@@ -549,8 +549,8 @@ export default function PresentationMode({
               <div className="flex gap-1.5 flex-wrap">
                 {Array.from({ length: articleStats.paragraphs }).map((_, idx) => {
                   const para = analysisResult?.paragraphs?.[idx];
-                  const hasImg = para?.questions?.some(q => q.content_type === 'image');
-                  const hasTxt = para?.questions?.some(q => q.content_type === 'scripture');
+                  const hasImg = para?.questions?.some(q => q.content_type === 'image' || q.content_type === 'both');
+                  const hasTxt = para?.questions?.some(q => q.content_type === 'scripture' || q.content_type === 'both');
                   const isCurrent = idx === currentParagraphIndex;
                   const isCompleted = idx < currentParagraphIndex;
                   
