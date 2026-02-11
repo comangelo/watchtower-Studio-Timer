@@ -426,8 +426,9 @@ export function ParagraphCard({
                 Iniciar desde aquí
               </Button>
             )}
+            </div>
             
-            {/* Questions Toggle */}
+            {/* Questions Toggle - Right side */}
             {hasQuestions && (
               <button
                 onClick={(e) => {
