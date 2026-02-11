@@ -800,7 +800,59 @@
             
             <p>La sección "Desglose por párrafo" muestra cada párrafo del artículo con su información de tiempo.</p>
 
-            <h3>Cronómetro por Párrafo <span class="badge-new">NUEVO</span></h3>
+            <h3>Distintivos de Contenido Extra <span class="badge-new">NUEVO v2.5</span></h3>
+            <p>Cuando las preguntas de un párrafo incluyen referencias adicionales entre paréntesis, se muestran distintivos visuales en el encabezado del párrafo:</p>
+            
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin: 20px 0;">
+                <div class="color-indicator" style="background: #f3e8ff; border-left: 4px solid #a855f7;">
+                    <span class="dot" style="background: #a855f7;"></span>
+                    <span style="color: #7c3aed;"><strong>🖼️ Contiene imagen</strong> - Referencia a una ilustración</span>
+                </div>
+                <div class="color-indicator" style="background: #dbeafe; border-left: 4px solid #3b82f6;">
+                    <span class="dot" style="background: #3b82f6;"></span>
+                    <span style="color: #1e40af;"><strong>📖 Texto para leer</strong> - Cita bíblica para leer</span>
+                </div>
+            </div>
+
+            <ul class="icon-list">
+                <li>
+                    <div class="icon" style="background: #f3e8ff;">🖼️</div>
+                    <div class="text">
+                        <strong>Distintivo "Contiene imagen" (púrpura)</strong>
+                        <span>Aparece cuando la pregunta tiene texto como "(Vea también la imagen de la portada)" o "(Vea las imágenes)"</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon" style="background: #dbeafe;">📖</div>
+                    <div class="text">
+                        <strong>Distintivo "Texto para leer" (azul)</strong>
+                        <span>Aparece cuando la pregunta incluye una referencia bíblica como "(Marcos 3:1-6)" o "(Juan 3:16)"</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">📍</div>
+                    <div class="text">
+                        <strong>Ubicación del distintivo</strong>
+                        <span>Se muestra en el encabezado del párrafo, entre "Párrafo N" y el tiempo estimado</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🔍</div>
+                    <div class="text">
+                        <strong>Detección automática</strong>
+                        <span>El sistema extrae automáticamente el contenido entre paréntesis después del signo "?" de las preguntas</span>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="tip-box">
+                <h4>💡 ¿Para qué sirven estos distintivos?</h4>
+                <p>Te permiten saber de un vistazo si el párrafo requiere:<br>
+                • <strong>🖼️ Mostrar una imagen</strong>: Prepara la imagen antes de llegar al párrafo<br>
+                • <strong>📖 Leer un texto bíblico</strong>: Ten la Biblia lista para la lectura adicional</p>
+            </div>
+
+            <h3>Cronómetro por Párrafo</h3>
             <p>Cada párrafo tiene su propio cronómetro que te indica si vas en tiempo:</p>
             <ul class="icon-list">
                 <li>
