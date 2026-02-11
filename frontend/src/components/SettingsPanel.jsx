@@ -8,7 +8,8 @@ export function SettingsPanel({
   answerTime, 
   setAnswerTime,
   totalDuration,
-  setTotalDuration
+  setTotalDuration,
+  darkMode = false
 }) {
   const speedOptions = [
     { value: 150, label: "Lento", description: "150 PPM" },
@@ -17,11 +18,15 @@ export function SettingsPanel({
   ];
 
   return (
-    <Card className="mb-4 sm:mb-8 border-slate-200 shadow-sm">
+    <Card className={`mb-4 sm:mb-8 shadow-sm transition-colors duration-300 ${
+      darkMode 
+        ? 'bg-zinc-800 border-zinc-700' 
+        : 'bg-white border-slate-200'
+    }`}>
       <CardContent className="p-3 sm:p-4 md:p-6">
         <div className="flex items-center gap-2 mb-3 sm:mb-4 md:mb-6">
-          <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500" />
-          <h3 className="font-semibold text-slate-800 text-sm sm:text-base">Configuración de tiempos</h3>
+          <Settings className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`} />
+          <h3 className={`font-semibold text-sm sm:text-base ${darkMode ? 'text-zinc-200' : 'text-slate-800'}`}>Configuración de tiempos</h3>
         </div>
         
         {/* Grid que cambia a 3 columnas en landscape móvil y en pantallas medianas+ */}
@@ -31,7 +36,7 @@ export function SettingsPanel({
             <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <Timer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-500" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700">Duración</span>
+                <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>Duración</span>
               </div>
               <span className="text-sm sm:text-base md:text-lg font-bold text-orange-500" style={{ fontFamily: 'system-ui' }}>
                 {totalDuration} min
@@ -46,7 +51,7 @@ export function SettingsPanel({
               className="w-full"
               data-testid="duration-slider"
             />
-            <div className="flex justify-between text-[10px] sm:text-xs text-slate-400 mt-1.5 sm:mt-2">
+            <div className={`flex justify-between text-[10px] sm:text-xs mt-1.5 sm:mt-2 ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
               <span>0</span>
               <span>60 min</span>
             </div>
