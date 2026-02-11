@@ -110,9 +110,15 @@ export default function HomePage() {
   const [currentReviewQuestion, setCurrentReviewQuestion] = useState(0);
   const [reviewQuestionStartTime, setReviewQuestionStartTime] = useState(null);
   
+  // Introduction words section
+  const [isInIntroductionMode, setIsInIntroductionMode] = useState(false);
+  const [introductionStartTime, setIntroductionStartTime] = useState(null);
+  const [introductionDuration, setIntroductionDuration] = useLocalStorage('pdfTimer_introductionDuration', 60); // 1 minute default
+  
   // Closing words section
   const [isInClosingWordsMode, setIsInClosingWordsMode] = useState(false);
   const [closingWordsStartTime, setClosingWordsStartTime] = useState(null);
+  const [closingWordsDuration, setClosingWordsDuration] = useLocalStorage('pdfTimer_closingWordsDuration', 60); // 1 minute default
   
   // State for editing end time on initial screen (before PDF upload)
   const [isEditingInitialEndTime, setIsEditingInitialEndTime] = useState(false);
