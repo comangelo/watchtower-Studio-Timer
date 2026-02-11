@@ -183,3 +183,10 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - `/app/frontend/src/components/ParagraphCard.jsx` - Tarjetas de párrafo **con distintivos de contenido extra**
 - `/app/frontend/src/components/FinalQuestionsSection.jsx` - Preguntas de repaso
 - `/app/test_reports/iteration_8.json` - Último reporte de tests (100% passed)
+
+## Cambios para Deployment (11-Feb-2026)
+- ✅ **Migración a patrón `lifespan` de FastAPI** (reemplazo del deprecado `@app.on_event`)
+- ✅ **Endpoint de health check `/api/health`** para Kubernetes
+- ✅ **Manejo robusto de conexión a MongoDB** con timeouts y fallbacks
+- ✅ **Variables de entorno con valores por defecto** para evitar crashes
+- ✅ **Operaciones de base de datos con try-catch** para manejar errores de conexión
