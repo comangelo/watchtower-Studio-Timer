@@ -85,6 +85,10 @@ export default function HomePage() {
   // Configurable reading settings
   const [readingSpeed, setReadingSpeed] = useLocalStorage('pdfTimer_readingSpeed', 180);
   const [answerTime, setAnswerTime] = useLocalStorage('pdfTimer_answerTime', 35);
+  const [totalDuration, setTotalDuration] = useLocalStorage('pdfTimer_totalDuration', 60);
+  
+  // Calculate total seconds from duration in minutes
+  const totalDurationSeconds = totalDuration * 60;
   
   // Presentation mode
   const [isPresentationMode, setIsPresentationMode] = useState(false);
