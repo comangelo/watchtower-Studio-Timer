@@ -107,8 +107,12 @@ function ClosingWordsSection({
       ref={cardRef}
       className={`relative rounded-2xl border-2 shadow-lg transition-all duration-300 ${
         isOverTime 
-          ? 'border-red-400 bg-red-50 shadow-red-100' 
-          : 'border-purple-400 bg-purple-50 shadow-purple-100'
+          ? darkMode 
+            ? 'border-red-600 bg-red-950/50 shadow-red-900/30' 
+            : 'border-red-400 bg-red-50 shadow-red-100' 
+          : darkMode 
+            ? 'border-purple-600 bg-purple-950/50 shadow-purple-900/30' 
+            : 'border-purple-400 bg-purple-50 shadow-purple-100'
       }`}
       data-testid="closing-words-section"
     >
@@ -169,10 +173,18 @@ function ClosingWordsSection({
             <Sparkles className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className={`font-bold text-lg ${isOverTime ? 'text-red-800' : 'text-purple-800'}`}>
+            <h3 className={`font-bold text-lg ${
+              isOverTime 
+                ? darkMode ? 'text-red-300' : 'text-red-800' 
+                : darkMode ? 'text-purple-300' : 'text-purple-800'
+            }`}>
               Palabras de Conclusión
             </h3>
-            <p className={`text-sm mt-1 ${isOverTime ? 'text-red-600' : 'text-purple-600'}`}>
+            <p className={`text-sm mt-1 ${
+              isOverTime 
+                ? darkMode ? 'text-red-400' : 'text-red-600' 
+                : darkMode ? 'text-purple-400' : 'text-purple-600'
+            }`}>
               Resume los puntos principales y anima a la congregación.
             </p>
           </div>
