@@ -659,19 +659,19 @@ export default function PresentationMode({
           )}
         </div>
 
-        {/* Main Timers */}
-        <div className="flex items-center justify-center gap-6 md:gap-12 mb-4 w-full">
+        {/* Main Timers - BIGGER */}
+        <div className="flex items-center justify-center gap-8 md:gap-16 mb-6 w-full">
           <div className="text-center flex-1 max-w-xs">
-            <p className={`text-xs md:text-sm font-medium ${t.textDimmed} mb-1`}>Transcurrido</p>
-            <div className={`text-4xl md:text-5xl font-light tracking-tight ${isTimerRunning ? t.accent : t.text}`}
+            <p className={`text-sm md:text-base font-medium ${t.textDimmed} mb-2`}>Transcurrido</p>
+            <div className={`text-5xl md:text-7xl font-light tracking-tight ${isTimerRunning ? t.accent : t.text}`}
               style={{ fontFamily: 'system-ui' }}>
               {formatTime(elapsedTime)}
             </div>
           </div>
-          <div className={`w-px h-12 md:h-16 ${t.border.replace('border-', 'bg-')} opacity-30`} />
+          <div className={`w-px h-16 md:h-24 ${t.border.replace('border-', 'bg-')} opacity-30`} />
           <div className="text-center flex-1 max-w-xs">
-            <p className={`text-xs md:text-sm font-medium ${t.textDimmed} mb-1`}>Restante</p>
-            <div className={`text-4xl md:text-5xl font-light tracking-tight ${
+            <p className={`text-sm md:text-base font-medium ${t.textDimmed} mb-2`}>Restante</p>
+            <div className={`text-5xl md:text-7xl font-light tracking-tight ${
               isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.success
             }`} style={{ fontFamily: 'system-ui' }}>
               {formatRemainingTime(remainingTime)}
