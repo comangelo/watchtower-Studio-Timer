@@ -1764,11 +1764,15 @@ async def analyze_pdf(
                 raise HTTPException(status_code=400, detail="No se pudo extraer texto del PDF")
             result = analyze_pdf_content_configurable(text, file.filename, wpm, answer_time_seconds)
         
-        # Save to database
-        doc = result.model_dump()
-        doc['timestamp'] = doc['timestamp'].isoformat()
-        doc['settings'] = {'wpm': wpm, 'answer_time_seconds': answer_time_seconds}
-        await db.pdf_analyses.insert_one(doc)
+        # Save to database (if available)
+        if db is not None:
+            try:
+                doc = result.model_dump()
+                doc['timestamp'] = doc['timestamp'].isoformat()
+                doc['settings'] = {'wpm': wpm, 'answer_time_seconds': answer_time_seconds}
+                await db.pdf_analyses.insert_one(doc)
+            except Exception as db_error:
+                logger.warning(f"Failed to save analysis to database: {db_error}")
         
         return result
         
