@@ -427,27 +427,36 @@ export function ParagraphCard({
             
             {/* Questions Toggle */}
             {hasQuestions && (
-              <Button 
-                variant="outline"
+              <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsOpen(!isOpen);
                 }}
-                className={`rounded-full px-4 py-3 text-sm font-semibold transition-all border-2 ${
-                  isOpen
-                    ? hasFinalQuestions 
-                      ? 'bg-red-500 text-white border-red-400 hover:bg-red-600' 
-                      : 'bg-orange-500 text-white border-orange-400 hover:bg-orange-600'
-                    : hasFinalQuestions 
-                      ? darkMode 
-                        ? 'bg-transparent text-red-400 border-red-600 hover:bg-red-950' 
-                        : 'bg-transparent text-red-600 border-red-300 hover:bg-red-50'
-                      : isCurrentParagraph 
-                        ? 'bg-transparent text-green-600 border-green-300 hover:bg-green-100' 
-                        : darkMode 
-                          ? 'bg-transparent text-orange-400 border-orange-600 hover:bg-orange-950' 
-                          : 'bg-transparent text-orange-600 border-orange-300 hover:bg-orange-50'
-                }`}
+                style={{
+                  backgroundColor: isOpen 
+                    ? (hasFinalQuestions ? '#ef4444' : '#f97316')
+                    : 'transparent',
+                  color: isOpen 
+                    ? '#ffffff' 
+                    : (hasFinalQuestions 
+                        ? (darkMode ? '#f87171' : '#dc2626')
+                        : (darkMode ? '#fb923c' : '#ea580c')),
+                  borderColor: isOpen
+                    ? (hasFinalQuestions ? '#f87171' : '#fdba74')
+                    : (hasFinalQuestions 
+                        ? (darkMode ? '#dc2626' : '#fca5a5')
+                        : (darkMode ? '#ea580c' : '#fdba74')),
+                  borderWidth: '2px',
+                  borderStyle: 'solid',
+                  borderRadius: '9999px',
+                  padding: '0.75rem 1rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
                 data-testid={`toggle-questions-${paragraph.number}`}
               >
                 {isOpen ? (
@@ -461,7 +470,7 @@ export function ParagraphCard({
                     Ver {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
                   </>
                 )}
-              </Button>
+              </button>
             )}
           </div>
 
