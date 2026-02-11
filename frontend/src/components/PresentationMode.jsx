@@ -151,7 +151,10 @@ export default function PresentationMode({
   onExit,
   currentParagraphIndex = 0,
   theme = 'dark',
-  onThemeChange
+  onThemeChange,
+  totalDurationSeconds = 3600,
+  startTime,
+  endTime
 }) {
   // Calculate derived values
   const currentParagraph = useMemo(() => {
@@ -160,8 +163,8 @@ export default function PresentationMode({
   }, [analysisResult, currentParagraphIndex]);
   
   const progressPercentage = useMemo(() => {
-    return Math.min(100, (elapsedTime / 3600) * 100);
-  }, [elapsedTime]);
+    return Math.min(100, (elapsedTime / totalDurationSeconds) * 100);
+  }, [elapsedTime, totalDurationSeconds]);
   
   // Check if less than 5 minutes remaining (or overtime)
   const isLowTime = remainingTime <= 300;
