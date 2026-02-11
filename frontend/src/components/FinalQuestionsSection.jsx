@@ -608,6 +608,7 @@ export function FinalQuestionsSection({
               playNotificationSound={playNotificationSound}
               triggerVibration={triggerVibration}
               isTimerRunning={isTimerRunning}
+              darkMode={darkMode}
             />
           ))
         ) : (
