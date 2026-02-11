@@ -226,19 +226,43 @@ export function ParagraphCard({
         <div className={isCurrentParagraph ? (isOverTime ? 'mt-12' : 'mt-8') : isCompletedParagraph ? 'mt-8' : ''}>
           {/* Header Row */}
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-sm font-bold ${
-              isCompletedParagraph 
-                ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
-                : isCurrentParagraph 
-                  ? 'text-green-700' 
-                  : darkMode ? 'text-zinc-100' : 'text-slate-700'
-            }`}>
-              {isGrouped ? (
-                <>Párrafos {allParagraphs.map(p => p.number).join(', ')}</>
-              ) : (
-                <>Párrafo {paragraph.number}</>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`text-sm font-bold ${
+                isCompletedParagraph 
+                  ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
+                  : isCurrentParagraph 
+                    ? 'text-green-700' 
+                    : darkMode ? 'text-zinc-100' : 'text-slate-700'
+              }`}>
+                {isGrouped ? (
+                  <>Párrafos {allParagraphs.map(p => p.number).join(', ')}</>
+                ) : (
+                  <>Párrafo {paragraph.number}</>
+                )}
+              </span>
+              
+              {/* Extra Content Badges - Between paragraph number and time */}
+              {hasImageContent && (
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  darkMode 
+                    ? 'bg-purple-900/70 text-purple-200 border border-purple-700' 
+                    : 'bg-purple-100 text-purple-700 border border-purple-200'
+                }`} data-testid={`image-badge-${paragraph.number}`}>
+                  <Image className="w-3.5 h-3.5" />
+                  Contiene imagen
+                </span>
               )}
-            </span>
+              {hasScriptureContent && (
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  darkMode 
+                    ? 'bg-blue-900/70 text-blue-200 border border-blue-700' 
+                    : 'bg-blue-100 text-blue-700 border border-blue-200'
+                }`} data-testid={`scripture-badge-${paragraph.number}`}>
+                  <BookOpen className="w-3.5 h-3.5" />
+                  Texto para leer
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-2">
               {/* Individual show/hide content button */}
               <Button
