@@ -620,7 +620,11 @@ export default function HomePage() {
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="outline" 
-                      className="rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 border-slate-300 text-slate-700 hover:border-slate-400 font-medium text-xs sm:text-sm" 
+                      className={`rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 font-medium text-xs sm:text-sm ${
+                        darkMode
+                          ? 'border-zinc-600 text-zinc-300 hover:border-zinc-500'
+                          : 'border-slate-300 text-slate-700 hover:border-slate-400'
+                      }`}
                       data-testid="export-btn"
                     >
                       <Download className="w-4 h-4 sm:mr-2" />
@@ -641,14 +645,19 @@ export default function HomePage() {
                 <Button 
                   variant="ghost" 
                   onClick={resetAll} 
-                  className="rounded-full px-2 sm:px-4 py-1.5 sm:py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 font-medium text-xs sm:text-sm" 
+                  className={`rounded-full px-2 sm:px-4 py-1.5 sm:py-2 font-medium text-xs sm:text-sm ${
+                    darkMode
+                      ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700'
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+                  }`}
                   data-testid="new-analysis-btn"
                 >
                   <RotateCcw className="w-4 h-4 sm:mr-2" />
                   <span className="hidden sm:inline">Nuevo</span>
                 </Button>
-              </div>
-            )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
