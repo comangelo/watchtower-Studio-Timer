@@ -16,7 +16,7 @@ export function QuickStats({ analysisResult, currentManualParagraph, readingSpee
       value: `${readingSpeed}`,
       unit: "PPM",
       color: "text-blue-500",
-      bgColor: darkMode ? "bg-blue-500/20" : "bg-blue-500/10",
+      bgColor: darkMode ? "bg-blue-900/50 border border-blue-700" : "bg-blue-500/10",
     },
     {
       icon: MessageCircleQuestion,
@@ -24,7 +24,7 @@ export function QuickStats({ analysisResult, currentManualParagraph, readingSpee
       value: totalQuestions,
       unit: "",
       color: "text-purple-500",
-      bgColor: darkMode ? "bg-purple-500/20" : "bg-purple-500/10",
+      bgColor: darkMode ? "bg-purple-900/50 border border-purple-700" : "bg-purple-500/10",
     },
     {
       icon: BookOpen,
@@ -32,18 +32,18 @@ export function QuickStats({ analysisResult, currentManualParagraph, readingSpee
       value: `${currentManualParagraph + 1}`,
       unit: `/ ${analysisResult.total_paragraphs}`,
       color: "text-emerald-500",
-      bgColor: darkMode ? "bg-emerald-500/20" : "bg-emerald-500/10",
+      bgColor: darkMode ? "bg-emerald-900/50 border border-emerald-700" : "bg-emerald-500/10",
     },
   ];
 
   return (
-    <Card className={`border-0 shadow-lg overflow-hidden ${
+    <Card className={`border shadow-lg overflow-hidden ${
       darkMode 
-        ? 'bg-gradient-to-br from-zinc-800 to-zinc-900' 
-        : 'bg-gradient-to-br from-slate-50 to-white'
+        ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-600' 
+        : 'bg-gradient-to-br from-slate-50 to-white border-transparent'
     }`}>
       <CardContent className="p-0">
-        <div className={`grid grid-cols-3 divide-x ${darkMode ? 'divide-zinc-700' : 'divide-slate-100'}`}>
+        <div className={`grid grid-cols-3 divide-x ${darkMode ? 'divide-zinc-600' : 'divide-slate-100'}`}>
           {stats.map((stat, index) => (
             <div 
               key={index} 
@@ -59,12 +59,12 @@ export function QuickStats({ analysisResult, currentManualParagraph, readingSpee
                   {stat.value}
                 </span>
                 {stat.unit && (
-                  <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
+                  <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-400' : 'text-slate-400'}`}>
                     {stat.unit}
                   </span>
                 )}
               </div>
-              <p className={`text-[10px] sm:text-xs font-medium mt-1 leading-tight ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
+              <p className={`text-[10px] sm:text-xs font-medium mt-1 leading-tight ${darkMode ? 'text-zinc-300' : 'text-slate-500'}`}>
                 {stat.label}
               </p>
             </div>
