@@ -25,18 +25,23 @@ export function TimerDisplay({
   const [editMinutes, setEditMinutes] = useState('');
 
   // Calculate projected times based on current time and configured duration
-  const { displayStartTime, displayEndTime } = useMemo(() => {
+  const { displayStartTime, displayEndTime, calculatedDuration } = useMemo(() => {
     if (startTime && endTime) {
-      return { displayStartTime: startTime, displayEndTime: endTime };
+      const diffMinutes = Math.round((endTime.getTime() - startTime.getTime()) / 60000);
+      return { displayStartTime: startTime, displayEndTime: endTime, calculatedDuration: diffMinutes };
     }
     const now = new Date();
     // Use manual end time if set, otherwise calculate from duration
     if (manualEndTime) {
-      return { displayStartTime: now, displayEndTime: manualEndTime };
+      const diffMinutes = Math.round((manualEndTime.getTime() - now.getTime()) / 60000);
+      return { displayStartTime: now, displayEndTime: manualEndTime, calculatedDuration: diffMinutes };
     }
     const projected = new Date(now.getTime() + totalDuration * 60 * 1000);
-    return { displayStartTime: now, displayEndTime: projected };
+    return { displayStartTime: now, displayEndTime: projected, calculatedDuration: totalDuration };
   }, [startTime, endTime, totalDuration, manualEndTime]);
+
+  // Display duration - use calculated if manual, otherwise use configured
+  const displayDuration = manualEndTime && !startTime ? calculatedDuration : totalDuration;
 
   const startEditingEndTime = () => {
     const timeToEdit = manualEndTime || displayEndTime;
@@ -81,10 +86,12 @@ export function TimerDisplay({
             </p>
           </div>
           
-          {/* Separator with Duration */}
+          {/* Separator with Duration - Shows calculated duration when manual */}
           <div className="flex flex-col items-center shrink-0">
             <div className="w-4 sm:w-8 md:w-12 h-px bg-slate-600 opacity-60"></div>
-            <span className="text-[10px] sm:text-xs md:text-sm font-bold text-orange-400 my-0.5 sm:my-1">{totalDuration}m</span>
+            <span className={`text-[10px] sm:text-xs md:text-sm font-bold my-0.5 sm:my-1 ${manualEndTime && !startTime ? 'text-cyan-400' : 'text-orange-400'}`}>
+              {displayDuration}m
+            </span>
             <div className="w-4 sm:w-8 md:w-12 h-px bg-slate-600 opacity-60"></div>
           </div>
           
