@@ -484,7 +484,7 @@ export default function HomePage() {
   };
 
   // Calculate progress
-  const progressPercentage = analysisResult ? Math.min(100, (elapsedTime / 3600) * 100) : 0;
+  const progressPercentage = analysisResult ? Math.min(100, (elapsedTime / totalDurationSeconds) * 100) : 0;
   const adjustedFinalTimes = getAdjustedFinalQuestionsTime();
 
   return (
