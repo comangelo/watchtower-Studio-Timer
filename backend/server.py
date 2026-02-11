@@ -186,6 +186,66 @@ def split_into_paragraphs(text: str) -> List[str]:
     return paragraphs if paragraphs else [text.strip()]
 
 
+def extract_question_with_parenthesis(question_text: str) -> dict:
+    """
+    Extract question text and any content in parentheses after the question.
+    Classifies the parenthesis content:
+    - "image" if contains "Vea también", "Vea", "imagen", "ilustración"
+    - "scripture" if contains bible reference pattern (e.g., Salmos 32:17, Juan 3:16)
+    - "" if no special content
+    
+    Returns dict with:
+    - text: the question text
+    - parenthesis_content: content inside parentheses
+    - content_type: "image", "scripture", or ""
+    """
+    result = {
+        "text": question_text.strip(),
+        "parenthesis_content": "",
+        "content_type": ""
+    }
+    
+    # Pattern to find parentheses content after the question
+    # Match content like: "¿Pregunta? (Vea también la imagen)" or "¿Pregunta? (Salmos 32:17)"
+    paren_match = re.search(r'\?\s*\(([^)]+)\)', question_text)
+    
+    if paren_match:
+        paren_content = paren_match.group(1).strip()
+        result["parenthesis_content"] = paren_content
+        
+        # Remove the parenthesis from the question text for cleaner display
+        result["text"] = question_text[:paren_match.start() + 1].strip()
+        
+        # Classify the content
+        # Case 1: Contains "Vea también" or similar (indicates image reference)
+        if re.search(r'[Vv]ea\s*(también|la|el|las|los)?', paren_content, re.IGNORECASE):
+            result["content_type"] = "image"
+        # Case 2: Contains bible reference pattern (Book Chapter:Verse)
+        # Pattern: Word(s) followed by number(s):number(s)
+        elif re.search(r'[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+', paren_content):
+            result["content_type"] = "scripture"
+    else:
+        # Also check for parentheses anywhere in the question
+        paren_match_anywhere = re.search(r'\(([^)]+)\)', question_text)
+        if paren_match_anywhere:
+            paren_content = paren_match_anywhere.group(1).strip()
+            
+            # Check if it's a meaningful reference (not just a number or short text)
+            if len(paren_content) > 3:
+                result["parenthesis_content"] = paren_content
+                
+                # Remove parenthesis from text
+                result["text"] = question_text.replace(f'({paren_content})', '').strip()
+                
+                # Classify
+                if re.search(r'[Vv]ea\s*(también|la|el|las|los)?', paren_content, re.IGNORECASE):
+                    result["content_type"] = "image"
+                elif re.search(r'[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+', paren_content):
+                    result["content_type"] = "scripture"
+    
+    return result
+
+
 def process_pdf_with_font_sizes(pdf_bytes: bytes) -> dict:
     """
     Process PDF using font size information to distinguish paragraphs from questions.
