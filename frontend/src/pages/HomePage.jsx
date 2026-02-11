@@ -427,6 +427,34 @@ export default function HomePage() {
     resetTimer();
   };
 
+  // Start introduction mode and main timer
+  const startIntroductionMode = useCallback(() => {
+    setIsInIntroductionMode(true);
+    setIntroductionStartTime(Date.now());
+    
+    // Start main timer
+    const now = new Date();
+    setStartTime(now);
+    if (manualEndTime) {
+      setEndTime(manualEndTime);
+      const diffSeconds = Math.floor((manualEndTime.getTime() - now.getTime()) / 1000);
+      setRemainingTime(Math.max(0, diffSeconds));
+    } else {
+      setEndTime(addSecondsToDate(now, totalDurationSeconds));
+    }
+    setIsTimerRunning(true);
+    
+    toast.success("Iniciando Palabras de Introducción");
+  }, [manualEndTime, totalDurationSeconds]);
+
+  // Move to first paragraph after introduction
+  const goToFirstParagraph = useCallback(() => {
+    setIsInIntroductionMode(false);
+    setCurrentManualParagraph(0);
+    setParagraphStartTime(Date.now());
+    toast.success("Pasando al Párrafo 1");
+  }, []);
+
   // Start review questions mode
   const startReviewMode = useCallback(() => {
     setIsInReviewMode(true);
