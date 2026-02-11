@@ -32,6 +32,11 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ Detección de preguntas formato "número. pregunta"
 - ✅ Detección de preguntas de repaso basado en línea horizontal del PDF
 - ✅ Preparación para MongoDB (índices creados)
+- ✅ **Extracción de contenido entre paréntesis de preguntas (11-Feb-2026)**
+  - Función `extract_question_with_parenthesis` para detectar contenido en `()`
+  - Clasificación automática: "Vea también" → `image`, Referencias bíblicas (Juan 3:16) → `scripture`
+  - Función helper `create_question_info` que integra la extracción
+  - Campos `parenthesis_content` y `content_type` en modelo `QuestionInfo`
 
 ### Frontend (React)
 - ✅ **Panel de configuración de tiempos (SettingsPanel)**
@@ -103,6 +108,11 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
   - **Neutral Oscuro**: Tono cálido marrón
   - Indicadores visuales de color en cada opción
   - Preferencia guardada en localStorage
+- ✅ **Distintivos de contenido extra en preguntas (11-Feb-2026)**
+  - Badge púrpura "Contiene imagen" con icono Image para referencias "Vea también"
+  - Badge azul "Texto para leer" con icono BookOpen para referencias bíblicas
+  - Muestra el contenido del paréntesis junto al distintivo
+  - Compatible con modo oscuro (bg-purple-900/60, bg-blue-900/60)
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
@@ -118,6 +128,7 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - [x] Bug pantalla blanca (playNotificationSound antes de useEffect)
 - [x] **Velocidad de lectura configurable (150/180/210 WPM)**
 - [x] **Tiempo por respuesta configurable (15-90 seg)**
+- [x] **Extracción y visualización de contenido extra en preguntas**
 
 ### P1 (Importante) - ✅ COMPLETADO
 - [x] Detección preguntas finales (línea horizontal)
@@ -130,10 +141,10 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - [x] PWA instalable
 
 ### P2 (Pendiente)
-- [ ] Estadísticas tiempo estimado vs. tiempo real por párrafo
 - [ ] Historial de documentos analizados
 - [ ] Modo "solo lectura" sin controles UI
 - [ ] Editor de colores / más temas para presentación
+- [ ] Resumen en PDF con gráficas comparativas
 
 ## Arquitectura de Componentes
 
@@ -147,7 +158,7 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 | CountdownTimer.jsx | Timer de cuenta regresiva |
 | QuickStats.jsx | Estadísticas rápidas (muestra WPM configurado) |
 | NotificationSettings.jsx | Configuración de alertas |
-| ParagraphCard.jsx | Tarjeta de párrafo individual |
+| ParagraphCard.jsx | Tarjeta de párrafo individual **con distintivos de contenido extra** |
 | FinalQuestionsSection.jsx | Sección preguntas finales |
 | PresentationMode.jsx | Modo pantalla completa |
 
@@ -163,11 +174,12 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 | Archivo | Funciones |
 |---------|-----------|
 | timeFormatters.js | formatTime, formatTimeText, formatClockTime, addSecondsToDate |
+| darkThemes.js | Variantes de tema oscuro (Zinc, AMOLED, Slate, Neutral) |
 
 ## Archivos Clave
-- `/app/backend/server.py` - API y lógica de análisis PDF (con funciones configurables)
+- `/app/backend/server.py` - API y lógica de análisis PDF (con funciones configurables y extracción de paréntesis)
 - `/app/frontend/src/pages/HomePage.jsx` - Componente principal
 - `/app/frontend/src/components/SettingsPanel.jsx` - **Configuración de tiempos**
-- `/app/frontend/src/components/ParagraphCard.jsx` - Tarjetas de párrafo **con cronómetro individual**
+- `/app/frontend/src/components/ParagraphCard.jsx` - Tarjetas de párrafo **con distintivos de contenido extra**
 - `/app/frontend/src/components/FinalQuestionsSection.jsx` - Preguntas de repaso
-- `/app/test_reports/iteration_7.json` - Último reporte de tests (100% passed)
+- `/app/test_reports/iteration_8.json` - Último reporte de tests (100% passed)
