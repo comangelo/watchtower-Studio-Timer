@@ -84,6 +84,8 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ **Flujo completo: Introducción → Párrafos → Preguntas → Conclusión → Finalizar (11-Feb-2025)**
 - ✅ **Encabezados de párrafos rediseñados: más minimalistas con "LEYENDO" (11-Feb-2025)**
 - ✅ **Manual de usuario actualizado a v2.4 con nuevo flujo documentado (11-Feb-2025)**
+- ✅ **Modo oscuro global para la aplicación principal con toggle sol/luna (11-Feb-2025)**
+- ✅ **12 temas de colores para el modo presentación: Oscuro, Claro, Azul Océano, Verde Bosque, Púrpura Noche, Cálido Atardecer, Rosa Suave, Turquesa, Medianoche, Café, Alto Contraste, AMOLED Negro (11-Feb-2025)**
 
 ## Stack Técnico
 - Backend: FastAPI + PyMuPDF + MongoDB
