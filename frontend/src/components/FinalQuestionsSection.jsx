@@ -623,6 +623,7 @@ export function FinalQuestionsSection({
           <ClosingWordsSection 
             isActive={isInClosingWordsMode}
             isTimerRunning={isTimerRunning}
+            estimatedTime={closingWordsDuration}
             onFinishStudy={onFinishStudy}
             overtimeAlertEnabled={overtimeAlertEnabled}
             soundEnabled={soundEnabled}
