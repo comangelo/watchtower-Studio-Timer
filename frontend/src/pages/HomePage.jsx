@@ -817,6 +817,10 @@ export default function HomePage() {
               setAnswerTime={setAnswerTime}
               totalDuration={totalDuration}
               setTotalDuration={setTotalDuration}
+              introductionDuration={introductionDuration}
+              setIntroductionDuration={setIntroductionDuration}
+              closingWordsDuration={closingWordsDuration}
+              setClosingWordsDuration={setClosingWordsDuration}
               darkMode={darkMode}
             />
             <UploadZone
