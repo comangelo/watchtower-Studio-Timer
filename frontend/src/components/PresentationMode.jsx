@@ -367,12 +367,19 @@ export default function PresentationMode({
     switch (studyPhase) {
       case PHASES.INTRO:
         setStudyPhase(PHASES.PARAGRAPHS);
-        if (onParagraphChange) onParagraphChange(0);
+        // Start with first group's first paragraph index
+        if (onParagraphChange && paragraphGroups.length > 0) {
+          onParagraphChange(paragraphGroups[0].indices[0]);
+        }
         break;
       case PHASES.PARAGRAPHS:
-        if (currentParagraphIndex < (analysisResult?.paragraphs?.length || 1) - 1) {
-          if (onParagraphChange) onParagraphChange(currentParagraphIndex + 1);
+        // Navigate by groups, not individual paragraphs
+        if (currentGroupIndex < paragraphGroups.length - 1) {
+          // Move to next group's first paragraph index
+          const nextGroupFirstIndex = paragraphGroups[currentGroupIndex + 1].indices[0];
+          if (onParagraphChange) onParagraphChange(nextGroupFirstIndex);
         } else {
+          // Last group - move to review or conclusion
           if (analysisResult?.final_questions?.length > 0) {
             setStudyPhase(PHASES.REVIEW);
             setCurrentReviewQuestion(0);
@@ -402,8 +409,11 @@ export default function PresentationMode({
     
     switch (studyPhase) {
       case PHASES.PARAGRAPHS:
-        if (currentParagraphIndex > 0) {
-          if (onParagraphChange) onParagraphChange(currentParagraphIndex - 1);
+        // Navigate by groups, not individual paragraphs
+        if (currentGroupIndex > 0) {
+          // Move to previous group's first paragraph index
+          const prevGroupFirstIndex = paragraphGroups[currentGroupIndex - 1].indices[0];
+          if (onParagraphChange) onParagraphChange(prevGroupFirstIndex);
         } else {
           setStudyPhase(PHASES.INTRO);
         }
@@ -413,7 +423,11 @@ export default function PresentationMode({
           setCurrentReviewQuestion(prev => prev - 1);
         } else {
           setStudyPhase(PHASES.PARAGRAPHS);
-          if (onParagraphChange) onParagraphChange((analysisResult?.paragraphs?.length || 1) - 1);
+          // Go to last group's first paragraph index
+          if (onParagraphChange && paragraphGroups.length > 0) {
+            const lastGroupFirstIndex = paragraphGroups[paragraphGroups.length - 1].indices[0];
+            onParagraphChange(lastGroupFirstIndex);
+          }
         }
         break;
       case PHASES.CONCLUSION:
