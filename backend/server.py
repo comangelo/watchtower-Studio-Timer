@@ -1085,7 +1085,10 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     
     # Count extra content in final questions
     for q in final_questions:
-        if q.content_type == 'image':
+        if q.content_type == 'both':
+            total_images += 1
+            total_scriptures += 1
+        elif q.content_type == 'image':
             total_images += 1
         elif q.content_type == 'scripture':
             total_scriptures += 1
@@ -1375,7 +1378,10 @@ def analyze_pdf_with_font_info_configurable(
     
     # Count extra content in final questions
     for q in final_questions:
-        if q.content_type == 'image':
+        if q.content_type == 'both':
+            total_images += 1
+            total_scriptures += 1
+        elif q.content_type == 'image':
             total_images += 1
         elif q.content_type == 'scripture':
             total_scriptures += 1
