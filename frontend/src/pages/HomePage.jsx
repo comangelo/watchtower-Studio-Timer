@@ -918,6 +918,8 @@ export default function HomePage() {
                   currentReviewQuestion={currentReviewQuestion}
                   onStartReview={startReviewMode}
                   onNextReviewQuestion={goToNextReviewQuestion}
+                  onStartClosingWords={startClosingWordsMode}
+                  isInClosingWordsMode={isInClosingWordsMode}
                   onFinishStudy={finishStudy}
                   overtimeAlertEnabled={overtimeAlertEnabled}
                   soundEnabled={soundEnabled}
