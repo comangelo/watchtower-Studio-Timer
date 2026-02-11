@@ -859,11 +859,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
                 # Final questions (fallback if horizontal line detection didn't work)
                 questions = extract_multiple_questions(question_text)
                 for q in questions:
-                    final_questions.append(QuestionInfo(
-                        text=q,
-                        answer_time=QUESTION_ANSWER_TIME,
-                        is_final_question=True
-                    ))
+                    final_questions.append(create_question_info(q, QUESTION_ANSWER_TIME, True))
             elif para_nums:
                 # Regular question - check if it spans multiple paragraphs
                 if len(para_nums) > 1:
@@ -885,11 +881,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
                 for q in questions:
                     if target_para not in paragraphs_data:
                         paragraphs_data[target_para] = {"text_lines": [], "questions": [], "grouped_with": []}
-                    paragraphs_data[target_para]["questions"].append(QuestionInfo(
-                        text=q,
-                        answer_time=QUESTION_ANSWER_TIME,
-                        is_final_question=False
-                    ))
+                    paragraphs_data[target_para]["questions"].append(create_question_info(q, QUESTION_ANSWER_TIME, False))
                     
         elif item_type == 'question_text':
             # Question text without number (possibly final questions)
@@ -897,11 +889,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
             if found_final_section and not skip_final_detection and '?' in question_text:
                 questions = extract_multiple_questions(question_text)
                 for q in questions:
-                    final_questions.append(QuestionInfo(
-                        text=q,
-                        answer_time=QUESTION_ANSWER_TIME,
-                        is_final_question=True
-                    ))
+                    final_questions.append(create_question_info(q, QUESTION_ANSWER_TIME, True))
                     
         elif item_type == 'text':
             font_size, text = item[1], item[2]
@@ -931,11 +919,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
                 if '?' in text:
                     questions = extract_multiple_questions(text)
                     for q in questions:
-                        final_questions.append(QuestionInfo(
-                            text=q,
-                            answer_time=QUESTION_ANSWER_TIME,
-                            is_final_question=True
-                        ))
+                        final_questions.append(create_question_info(q, QUESTION_ANSWER_TIME, True))
                 continue
             
             # Check if this is a paragraph number (size ~6.8, just a number)
