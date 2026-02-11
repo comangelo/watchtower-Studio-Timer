@@ -1104,9 +1104,15 @@ def analyze_pdf_with_font_info_configurable(
     
     if horizontal_line_info and horizontal_line_info.get("found"):
         final_questions_raw, final_questions_title = extract_questions_after_horizontal_line(pdf_bytes, horizontal_line_info)
-        # Update answer_time for final questions with configurable value
+        # Update answer_time for final questions with configurable value - preserve parenthesis info
         final_questions = [
-            QuestionInfo(text=q.text, answer_time=answer_time, is_final_question=True)
+            QuestionInfo(
+                text=q.text, 
+                answer_time=answer_time, 
+                is_final_question=True,
+                parenthesis_content=q.parenthesis_content,
+                content_type=q.content_type
+            )
             for q in final_questions_raw
         ]
         skip_final_detection = len(final_questions) > 0
@@ -1122,11 +1128,7 @@ def analyze_pdf_with_font_info_configurable(
             if found_final_section and not skip_final_detection:
                 questions = extract_multiple_questions(question_text)
                 for q in questions:
-                    final_questions.append(QuestionInfo(
-                        text=q,
-                        answer_time=answer_time,
-                        is_final_question=True
-                    ))
+                    final_questions.append(create_question_info(q, answer_time, True))
             elif para_nums:
                 # Regular question - check if it spans multiple paragraphs
                 if len(para_nums) > 1:
@@ -1145,22 +1147,14 @@ def analyze_pdf_with_font_info_configurable(
                 for q in questions:
                     if target_para not in paragraphs_data:
                         paragraphs_data[target_para] = {"text_lines": [], "questions": [], "grouped_with": []}
-                    paragraphs_data[target_para]["questions"].append(QuestionInfo(
-                        text=q,
-                        answer_time=answer_time,
-                        is_final_question=False
-                    ))
+                    paragraphs_data[target_para]["questions"].append(create_question_info(q, answer_time, False))
                     
         elif item_type == 'question_text':
             question_text = item[2]
             if found_final_section and not skip_final_detection and '?' in question_text:
                 questions = extract_multiple_questions(question_text)
                 for q in questions:
-                    final_questions.append(QuestionInfo(
-                        text=q,
-                        answer_time=answer_time,
-                        is_final_question=True
-                    ))
+                    final_questions.append(create_question_info(q, answer_time, True))
                     
         elif item_type == 'text':
             font_size, text = item[1], item[2]
@@ -1184,11 +1178,7 @@ def analyze_pdf_with_font_info_configurable(
                 if '?' in text:
                     questions = extract_multiple_questions(text)
                     for q in questions:
-                        final_questions.append(QuestionInfo(
-                            text=q,
-                            answer_time=answer_time,
-                            is_final_question=True
-                        ))
+                        final_questions.append(create_question_info(q, answer_time, True))
                 continue
             
             is_para_number = 6.0 <= font_size <= 7.5 and text.isdigit()
