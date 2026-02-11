@@ -110,6 +110,9 @@ export default function HomePage() {
   // Presentation mode
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   
+  // Show/hide paragraph content globally
+  const [showAllParagraphContent, setShowAllParagraphContent] = useState(true);
+  
   // Manual paragraph navigation
   const [currentManualParagraph, setCurrentManualParagraph] = useState(0);
   const [paragraphStartTimes, setParagraphStartTimes] = useState({});
