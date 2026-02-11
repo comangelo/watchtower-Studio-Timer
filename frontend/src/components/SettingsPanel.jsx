@@ -39,15 +39,15 @@ export function SettingsPanel({
             <Slider
               value={[totalDuration]}
               onValueChange={(value) => setTotalDuration(value[0])}
-              min={30}
-              max={120}
+              min={5}
+              max={60}
               step={5}
               className="w-full"
               data-testid="duration-slider"
             />
             <div className="flex justify-between text-xs text-slate-400 mt-2">
-              <span>30 min</span>
-              <span>120 min</span>
+              <span>5 min</span>
+              <span>60 min</span>
             </div>
           </div>
 
