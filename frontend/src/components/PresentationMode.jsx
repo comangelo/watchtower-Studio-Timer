@@ -8,11 +8,16 @@ import {
   Timer,
   Palette,
   ChevronRight,
+  ChevronLeft,
   Mic,
   BookOpen,
   HelpCircle,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  Image,
+  Layers,
+  MessageCircle,
+  AlertCircle
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -126,16 +131,13 @@ export default function PresentationMode({
   studyPhase: externalStudyPhase,
   onPhaseChange
 }) {
-  // Internal study phase state (can be controlled externally)
   const [internalPhase, setInternalPhase] = useState(PHASES.INTRO);
   const [currentReviewQuestion, setCurrentReviewQuestion] = useState(0);
   const [phaseElapsed, setPhaseElapsed] = useState(0);
   
-  // Use external phase if provided, otherwise use internal
   const studyPhase = externalStudyPhase || internalPhase;
   const setStudyPhase = onPhaseChange || setInternalPhase;
   
-  // Phase timer
   useEffect(() => {
     let interval;
     if (isTimerRunning) {
@@ -146,16 +148,43 @@ export default function PresentationMode({
     return () => clearInterval(interval);
   }, [isTimerRunning]);
   
-  // Reset phase elapsed when phase changes
   useEffect(() => {
     setPhaseElapsed(0);
   }, [studyPhase, currentParagraphIndex, currentReviewQuestion]);
 
-  // Calculate derived values
+  // Current paragraph
   const currentParagraph = useMemo(() => {
     if (!analysisResult || !analysisResult.paragraphs) return null;
     return analysisResult.paragraphs[currentParagraphIndex] || null;
   }, [analysisResult, currentParagraphIndex]);
+  
+  // Next paragraph (for showing alerts)
+  const nextParagraph = useMemo(() => {
+    if (!analysisResult || !analysisResult.paragraphs) return null;
+    return analysisResult.paragraphs[currentParagraphIndex + 1] || null;
+  }, [analysisResult, currentParagraphIndex]);
+  
+  // Check if next paragraph has special content
+  const nextParagraphHasImage = useMemo(() => {
+    if (!nextParagraph) return false;
+    return nextParagraph.questions?.some(q => q.content_type === 'image') || false;
+  }, [nextParagraph]);
+  
+  const nextParagraphHasScripture = useMemo(() => {
+    if (!nextParagraph) return false;
+    return nextParagraph.questions?.some(q => q.content_type === 'scripture') || false;
+  }, [nextParagraph]);
+  
+  // Current paragraph has special content
+  const currentParagraphHasImage = useMemo(() => {
+    if (!currentParagraph) return false;
+    return currentParagraph.questions?.some(q => q.content_type === 'image') || false;
+  }, [currentParagraph]);
+  
+  const currentParagraphHasScripture = useMemo(() => {
+    if (!currentParagraph) return false;
+    return currentParagraph.questions?.some(q => q.content_type === 'scripture') || false;
+  }, [currentParagraph]);
   
   const currentReviewQuestionData = useMemo(() => {
     if (!analysisResult || !analysisResult.final_questions) return null;
@@ -165,6 +194,18 @@ export default function PresentationMode({
   const progressPercentage = useMemo(() => {
     return Math.min(100, (elapsedTime / totalDurationSeconds) * 100);
   }, [elapsedTime, totalDurationSeconds]);
+  
+  // Article stats
+  const articleStats = useMemo(() => {
+    if (!analysisResult) return { paragraphs: 0, questions: 0, images: 0, scriptures: 0, review: 0 };
+    return {
+      paragraphs: analysisResult.total_paragraphs || 0,
+      questions: analysisResult.total_paragraph_questions || analysisResult.paragraphs?.reduce((sum, p) => sum + p.questions?.length || 0, 0) || 0,
+      images: analysisResult.total_images || 0,
+      scriptures: analysisResult.total_scriptures || 0,
+      review: analysisResult.final_questions?.length || 0
+    };
+  }, [analysisResult]);
   
   const isLowTime = remainingTime <= 300;
   const isOvertime = remainingTime <= 0;
@@ -250,7 +291,6 @@ export default function PresentationMode({
         if (currentParagraphIndex < (analysisResult?.paragraphs?.length || 1) - 1) {
           if (onParagraphChange) onParagraphChange(currentParagraphIndex + 1);
         } else {
-          // Last paragraph - go to review questions
           if (analysisResult?.final_questions?.length > 0) {
             setStudyPhase(PHASES.REVIEW);
             setCurrentReviewQuestion(0);
@@ -268,7 +308,7 @@ export default function PresentationMode({
         break;
       case PHASES.CONCLUSION:
         setStudyPhase(PHASES.FINISHED);
-        onToggleTimer(); // Stop timer
+        onToggleTimer();
         break;
       default:
         break;
@@ -308,31 +348,51 @@ export default function PresentationMode({
     }
   };
   
-  // Get next button text
-  const getNextButtonText = () => {
+  // Get next button info with alerts
+  const getNextButtonInfo = () => {
+    let text = "Siguiente";
+    let hasImage = false;
+    let hasScripture = false;
+    let buttonColor = "bg-green-600 hover:bg-green-700";
+    
     switch (studyPhase) {
       case PHASES.INTRO:
-        return "Pasar al Párrafo 1";
+        text = "Párrafo 1";
+        // Check first paragraph
+        const firstPara = analysisResult?.paragraphs?.[0];
+        hasImage = firstPara?.questions?.some(q => q.content_type === 'image') || false;
+        hasScripture = firstPara?.questions?.some(q => q.content_type === 'scripture') || false;
+        break;
       case PHASES.PARAGRAPHS:
         if (currentParagraphIndex < (analysisResult?.paragraphs?.length || 1) - 1) {
-          return `Siguiente Párrafo (${currentParagraphIndex + 2})`;
+          text = `Párrafo ${currentParagraphIndex + 2}`;
+          hasImage = nextParagraphHasImage;
+          hasScripture = nextParagraphHasScripture;
+        } else {
+          text = analysisResult?.final_questions?.length > 0 ? "Preguntas de Repaso" : "Conclusión";
+          buttonColor = analysisResult?.final_questions?.length > 0 ? "bg-red-600 hover:bg-red-700" : "bg-purple-600 hover:bg-purple-700";
         }
-        return analysisResult?.final_questions?.length > 0 
-          ? "Pasar a Preguntas de Repaso" 
-          : "Palabras de Conclusión";
+        break;
       case PHASES.REVIEW:
         if (currentReviewQuestion < (analysisResult?.final_questions?.length || 1) - 1) {
-          return `Siguiente Pregunta (${currentReviewQuestion + 2})`;
+          text = `Pregunta ${currentReviewQuestion + 2}`;
+        } else {
+          text = "Conclusión";
+          buttonColor = "bg-purple-600 hover:bg-purple-700";
         }
-        return "Palabras de Conclusión";
+        break;
       case PHASES.CONCLUSION:
-        return "Finalizar Estudio";
+        text = "Finalizar";
+        buttonColor = "bg-green-600 hover:bg-green-700";
+        break;
       default:
-        return "Siguiente";
+        break;
     }
+    
+    return { text, hasImage, hasScripture, buttonColor };
   };
 
-  // Handle ESC key to exit
+  // Handle keyboard
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -373,25 +433,49 @@ export default function PresentationMode({
     return `${isNegative ? '-' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const nextBtnInfo = getNextButtonInfo();
+
   return (
     <div 
       className={`fixed inset-0 z-[9999] ${t.bg} ${t.text} flex flex-col`}
       data-testid="presentation-mode"
     >
-      {/* Top Bar */}
+      {/* Top Bar with Stats */}
       <div className={`flex items-center justify-between px-4 md:px-8 py-2 border-b ${t.border} shrink-0`}>
         <div className="flex items-center gap-4">
           <div className={`w-8 h-8 md:w-10 md:h-10 ${t.accentBg} rounded-xl flex items-center justify-center`}>
             <Timer className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-heading font-bold text-sm md:text-lg truncate max-w-[200px] md:max-w-none">{analysisResult.filename}</h1>
-            <p className={`text-xs ${t.textMuted} hidden md:block`}>ATALAYA DE ESTUDIO</p>
+            <h1 className="font-heading font-bold text-sm md:text-lg truncate max-w-[150px] md:max-w-none">{analysisResult.filename}</h1>
+            {/* Mini Stats Row */}
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className={`text-[10px] md:text-xs ${t.textMuted} flex items-center gap-1`}>
+                <Layers className="w-3 h-3" />{articleStats.paragraphs}
+              </span>
+              <span className={`text-[10px] md:text-xs text-orange-400 flex items-center gap-1`}>
+                <MessageCircle className="w-3 h-3" />{articleStats.questions}
+              </span>
+              {articleStats.images > 0 && (
+                <span className={`text-[10px] md:text-xs text-purple-400 flex items-center gap-1`}>
+                  <Image className="w-3 h-3" />{articleStats.images}
+                </span>
+              )}
+              {articleStats.scriptures > 0 && (
+                <span className={`text-[10px] md:text-xs text-blue-400 flex items-center gap-1`}>
+                  <BookOpen className="w-3 h-3" />{articleStats.scriptures}
+                </span>
+              )}
+              {articleStats.review > 0 && (
+                <span className={`text-[10px] md:text-xs text-red-400 flex items-center gap-1`}>
+                  <HelpCircle className="w-3 h-3" />{articleStats.review}
+                </span>
+              )}
+            </div>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
-          {/* Theme Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className={`${t.textMuted} hover:${t.text}`}>
@@ -403,11 +487,7 @@ export default function PresentationMode({
               <DropdownMenuLabel>Seleccionar Tema</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {Object.entries(THEMES).map(([key, value]) => (
-                <DropdownMenuItem
-                  key={key}
-                  onClick={() => onThemeChange(key)}
-                  className={theme === key ? 'bg-accent' : ''}
-                >
+                <DropdownMenuItem key={key} onClick={() => onThemeChange(key)} className={theme === key ? 'bg-accent' : ''}>
                   <div className="flex items-center gap-2">
                     <div className={`w-4 h-4 rounded-full ${value.accentBg}`} />
                     <span>{value.name}</span>
@@ -429,7 +509,7 @@ export default function PresentationMode({
       <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 py-4 overflow-auto">
         
         {/* Time Schedule */}
-        <div className={`${t.card} rounded-2xl px-6 md:px-12 py-4 md:py-6 mb-4 md:mb-6 border ${t.border} w-full max-w-xl`}>
+        <div className={`${t.card} rounded-2xl px-6 md:px-12 py-4 md:py-5 mb-4 border ${t.border} w-full max-w-xl`}>
           <div className="flex items-center justify-center gap-6 md:gap-14">
             <div className="text-center">
               <span className="text-[10px] md:text-xs font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
@@ -454,14 +534,96 @@ export default function PresentationMode({
           </div>
         </div>
 
-        {/* Current Phase Card */}
-        <div className={`w-full max-w-xl ${t.card} rounded-2xl p-4 md:p-6 mb-4 border ${t.border}`}>
-          <div className="flex items-center gap-4 mb-4">
+        {/* Current Phase Card with Progress Indicator */}
+        <div className={`w-full max-w-xl ${t.card} rounded-2xl p-4 md:p-5 mb-4 border ${t.border}`}>
+          {/* Paragraph Progress Indicator (only for paragraphs phase) */}
+          {studyPhase === PHASES.PARAGRAPHS && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-xs font-medium ${t.textMuted}`}>Progreso de párrafos</span>
+                <span className={`text-xs font-bold ${phaseInfo.color}`}>
+                  {currentParagraphIndex + 1} / {articleStats.paragraphs}
+                </span>
+              </div>
+              {/* Visual paragraph dots */}
+              <div className="flex gap-1 flex-wrap">
+                {Array.from({ length: articleStats.paragraphs }).map((_, idx) => {
+                  const para = analysisResult?.paragraphs?.[idx];
+                  const hasImg = para?.questions?.some(q => q.content_type === 'image');
+                  const hasTxt = para?.questions?.some(q => q.content_type === 'scripture');
+                  const isCurrent = idx === currentParagraphIndex;
+                  const isCompleted = idx < currentParagraphIndex;
+                  
+                  return (
+                    <div 
+                      key={idx}
+                      className={`h-2 rounded-full transition-all ${
+                        isCurrent 
+                          ? 'w-6 bg-green-500' 
+                          : isCompleted 
+                            ? 'w-2 bg-green-500/50' 
+                            : hasImg || hasTxt
+                              ? 'w-2 bg-gradient-to-r from-purple-500 to-blue-500'
+                              : `w-2 ${t.progressBg}`
+                      }`}
+                      title={`Párrafo ${idx + 1}${hasImg ? ' (imagen)' : ''}${hasTxt ? ' (texto)' : ''}`}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          
+          {/* Review Progress (for review phase) */}
+          {studyPhase === PHASES.REVIEW && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-xs font-medium ${t.textMuted}`}>Progreso de repaso</span>
+                <span className={`text-xs font-bold text-red-400`}>
+                  {currentReviewQuestion + 1} / {articleStats.review}
+                </span>
+              </div>
+              <div className="flex gap-1">
+                {Array.from({ length: articleStats.review }).map((_, idx) => (
+                  <div 
+                    key={idx}
+                    className={`h-2 rounded-full transition-all ${
+                      idx === currentReviewQuestion 
+                        ? 'w-6 bg-red-500' 
+                        : idx < currentReviewQuestion 
+                          ? 'w-2 bg-red-500/50' 
+                          : `w-2 ${t.progressBg}`
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Phase Info */}
+          <div className="flex items-center gap-4">
             <div className={`w-12 h-12 ${phaseInfo.bgColor} rounded-xl flex items-center justify-center`}>
               <PhaseIcon className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1">
-              <h2 className={`text-xl md:text-2xl font-bold ${phaseInfo.color}`}>{phaseInfo.title}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className={`text-xl md:text-2xl font-bold ${phaseInfo.color}`}>{phaseInfo.title}</h2>
+                {/* Current paragraph badges */}
+                {studyPhase === PHASES.PARAGRAPHS && (currentParagraphHasImage || currentParagraphHasScripture) && (
+                  <div className="flex gap-1">
+                    {currentParagraphHasImage && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        <Image className="w-3 h-3" />
+                      </span>
+                    )}
+                    {currentParagraphHasScripture && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                        <BookOpen className="w-3 h-3" />
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
               <p className={`text-sm ${t.textMuted}`}>{phaseInfo.subtitle}</p>
             </div>
             {studyPhase !== PHASES.FINISHED && (
@@ -476,7 +638,7 @@ export default function PresentationMode({
           
           {/* Phase Progress Bar */}
           {studyPhase !== PHASES.FINISHED && phaseInfo.estimatedTime > 0 && (
-            <div className={`h-2 rounded-full ${t.progressBg} overflow-hidden`}>
+            <div className={`h-2 rounded-full ${t.progressBg} overflow-hidden mt-4`}>
               <div 
                 className={`h-full rounded-full transition-all duration-500 ${
                   isPhaseOvertime ? 'bg-red-500' : phaseInfo.bgColor
@@ -498,10 +660,10 @@ export default function PresentationMode({
         </div>
 
         {/* Main Timers */}
-        <div className="flex items-center justify-center gap-6 md:gap-12 mb-4 md:mb-6 w-full">
+        <div className="flex items-center justify-center gap-6 md:gap-12 mb-4 w-full">
           <div className="text-center flex-1 max-w-xs">
             <p className={`text-xs md:text-sm font-medium ${t.textDimmed} mb-1`}>Transcurrido</p>
-            <div className={`text-4xl md:text-6xl font-light tracking-tight ${isTimerRunning ? t.accent : t.text}`}
+            <div className={`text-4xl md:text-5xl font-light tracking-tight ${isTimerRunning ? t.accent : t.text}`}
               style={{ fontFamily: 'system-ui' }}>
               {formatTime(elapsedTime)}
             </div>
@@ -509,7 +671,7 @@ export default function PresentationMode({
           <div className={`w-px h-12 md:h-16 ${t.border.replace('border-', 'bg-')} opacity-30`} />
           <div className="text-center flex-1 max-w-xs">
             <p className={`text-xs md:text-sm font-medium ${t.textDimmed} mb-1`}>Restante</p>
-            <div className={`text-4xl md:text-6xl font-light tracking-tight ${
+            <div className={`text-4xl md:text-5xl font-light tracking-tight ${
               isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.success
             }`} style={{ fontFamily: 'system-ui' }}>
               {formatRemainingTime(remainingTime)}
@@ -518,95 +680,108 @@ export default function PresentationMode({
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full max-w-xl mb-4 md:mb-6">
+        <div className="w-full max-w-xl mb-4">
           <div className={`h-2 md:h-3 rounded-full ${t.progressBg} overflow-hidden`}>
             <div 
               className={`h-full rounded-full transition-all duration-500 ${isLowTime ? 'bg-red-500' : 'bg-green-500'}`}
               style={{ width: `${Math.min(100, progressPercentage)}%` }}
             />
           </div>
-          <p className={`text-center text-sm md:text-lg font-bold mt-2 ${isLowTime ? t.danger : t.success}`}>
+          <p className={`text-center text-sm font-bold mt-2 ${isLowTime ? t.danger : t.success}`}>
             {progressPercentage.toFixed(0)}%
           </p>
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-3 md:gap-4 flex-wrap justify-center">
-          {/* Start Study Button (only before starting) */}
-          {studyPhase === PHASES.INTRO && !isTimerRunning && (
-            <Button
-              onClick={handleStartStudy}
-              size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 md:px-8 py-3 text-base md:text-lg"
-            >
-              <Play className="w-5 h-5 mr-2" />
-              Iniciar Estudio
-            </Button>
-          )}
-          
-          {/* Navigation Controls (when running) */}
-          {isTimerRunning && studyPhase !== PHASES.FINISHED && (
-            <>
-              {/* Previous */}
-              {studyPhase !== PHASES.INTRO && (
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex items-center gap-3 md:gap-4">
+            {/* Start Study Button */}
+            {studyPhase === PHASES.INTRO && !isTimerRunning && (
+              <Button
+                onClick={handleStartStudy}
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 md:px-8 py-3 text-base md:text-lg"
+              >
+                <Play className="w-5 h-5 mr-2" />
+                Iniciar Estudio
+              </Button>
+            )}
+            
+            {/* Navigation Controls */}
+            {isTimerRunning && studyPhase !== PHASES.FINISHED && (
+              <>
+                {/* Previous */}
+                {studyPhase !== PHASES.INTRO && (
+                  <Button
+                    onClick={handlePrevStep}
+                    variant="outline"
+                    size="lg"
+                    className={`rounded-full ${t.buttonOutline}`}
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-1" />
+                    Anterior
+                  </Button>
+                )}
+                
+                {/* Play/Pause */}
                 <Button
-                  onClick={handlePrevStep}
-                  variant="outline"
+                  onClick={onToggleTimer}
                   size="lg"
-                  className={`rounded-full ${t.buttonOutline}`}
+                  className={`rounded-full p-0 text-white shadow-lg ${
+                    isTimerRunning ? t.accentBg + ' hover:opacity-90' : 'bg-green-600 hover:bg-green-700'
+                  }`}
+                  style={{ width: '56px', height: '56px' }}
                 >
-                  Anterior
+                  {isTimerRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
                 </Button>
-              )}
-              
-              {/* Play/Pause */}
+                
+                {/* Next with alerts */}
+                <div className="flex flex-col items-center gap-1">
+                  <Button
+                    onClick={handleNextStep}
+                    size="lg"
+                    className={`rounded-full px-5 ${nextBtnInfo.buttonColor} text-white`}
+                  >
+                    {nextBtnInfo.text}
+                    <ChevronRight className="w-5 h-5 ml-1" />
+                  </Button>
+                  {/* Alert badges under button */}
+                  {(nextBtnInfo.hasImage || nextBtnInfo.hasScripture) && (
+                    <div className="flex items-center gap-1 animate-pulse">
+                      <AlertCircle className="w-3 h-3 text-yellow-400" />
+                      {nextBtnInfo.hasImage && (
+                        <span className="text-[10px] text-purple-400 flex items-center gap-0.5">
+                          <Image className="w-3 h-3" /> Imagen
+                        </span>
+                      )}
+                      {nextBtnInfo.hasScripture && (
+                        <span className="text-[10px] text-blue-400 flex items-center gap-0.5">
+                          <BookOpen className="w-3 h-3" /> Texto
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+            
+            {/* Reset */}
+            {(isTimerRunning || studyPhase !== PHASES.INTRO) && (
               <Button
-                onClick={onToggleTimer}
-                size="lg"
-                className={`rounded-full p-0 text-white shadow-lg ${
-                  isTimerRunning ? t.accentBg + ' hover:opacity-90' : 'bg-green-600 hover:bg-green-700'
-                }`}
-                style={{ width: '56px', height: '56px' }}
+                onClick={() => {
+                  onResetTimer();
+                  setStudyPhase(PHASES.INTRO);
+                  setCurrentReviewQuestion(0);
+                  setPhaseElapsed(0);
+                }}
+                variant="outline"
+                size="sm"
+                className={`rounded-full ${t.buttonOutline}`}
               >
-                {isTimerRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
+                <RotateCcw className="w-4 h-4" />
               </Button>
-              
-              {/* Next */}
-              <Button
-                onClick={handleNextStep}
-                size="lg"
-                className={`rounded-full px-6 ${
-                  studyPhase === PHASES.CONCLUSION 
-                    ? 'bg-green-600 hover:bg-green-700' 
-                    : studyPhase === PHASES.REVIEW && currentReviewQuestion >= (analysisResult?.final_questions?.length || 1) - 1
-                      ? 'bg-purple-600 hover:bg-purple-700'
-                      : studyPhase === PHASES.PARAGRAPHS && currentParagraphIndex >= (analysisResult?.paragraphs?.length || 1) - 1
-                        ? 'bg-red-600 hover:bg-red-700'
-                        : 'bg-green-600 hover:bg-green-700'
-                } text-white`}
-              >
-                {getNextButtonText()}
-                <ChevronRight className="w-5 h-5 ml-1" />
-              </Button>
-            </>
-          )}
-          
-          {/* Reset (always visible when not initial) */}
-          {(isTimerRunning || studyPhase !== PHASES.INTRO) && (
-            <Button
-              onClick={() => {
-                onResetTimer();
-                setStudyPhase(PHASES.INTRO);
-                setCurrentReviewQuestion(0);
-                setPhaseElapsed(0);
-              }}
-              variant="outline"
-              size="sm"
-              className={`rounded-full ${t.buttonOutline}`}
-            >
-              <RotateCcw className="w-4 h-4" />
-            </Button>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Keyboard shortcuts */}
@@ -615,15 +790,6 @@ export default function PresentationMode({
           <kbd className={`px-2 py-1 ${t.kbd} rounded mx-1`}>←</kbd>/<kbd className={`px-2 py-1 ${t.kbd} rounded`}>→</kbd> navegar · 
           <kbd className={`px-2 py-1 ${t.kbd} rounded ml-1`}>ESC</kbd> salir
         </p>
-      </div>
-
-      {/* Bottom Stats */}
-      <div className={`flex items-center justify-center gap-3 md:gap-6 px-4 py-2 border-t ${t.border} text-xs ${t.textDimmed} shrink-0`}>
-        <span>{analysisResult.total_paragraphs} párrafos</span>
-        <span>·</span>
-        <span>{analysisResult.total_questions} preguntas</span>
-        <span>·</span>
-        <span>{analysisResult.final_questions?.length || 0} repaso</span>
       </div>
     </div>
   );
