@@ -1108,6 +1108,7 @@ export default function HomePage() {
                         onStartReview={startReviewMode}
                         hasReviewQuestions={analysisResult.final_questions?.length > 0}
                         darkMode={darkMode}
+                        showContentGlobal={showAllParagraphContent}
                       />
                     );
                   })}
