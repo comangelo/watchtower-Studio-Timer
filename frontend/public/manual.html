@@ -439,10 +439,29 @@
         <section class="section" id="configuracion">
             <div class="section-header">
                 <div class="section-icon">⚙️</div>
-                <h2>Configuración de Tiempos <span class="badge-new">NUEVO</span></h2>
+                <h2>Configuración de Tiempos <span class="badge-new">MEJORADO</span></h2>
             </div>
             
             <p>Antes de cargar el PDF, puedes personalizar los parámetros de cálculo de tiempo según tu ritmo de conducción.</p>
+
+            <h3>Duración Total <span class="badge-new">NUEVO</span></h3>
+            <p>Configura cuánto tiempo durará tu estudio:</p>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">⏱️</div>
+                    <div class="text">
+                        <strong>Rango: 5 a 60 minutos</strong>
+                        <span>Usa el slider para ajustar. El valor predeterminado es 60 minutos.</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🔗</div>
+                    <div class="text">
+                        <strong>La hora de fin se calcula automáticamente</strong>
+                        <span>Hora de Inicio + Duración = Hora de Fin. Al cambiar la duración, la hora de fin se actualiza al instante.</span>
+                    </div>
+                </li>
+            </ul>
 
             <h3>Velocidad de Lectura</h3>
             <p>Selecciona qué tan rápido lees los párrafos en voz alta:</p>
@@ -490,8 +509,61 @@
 
             <div class="tip-box">
                 <h4>💡 Consejo</h4>
-                <p>Si normalmente terminas antes de los 60 minutos, prueba con velocidad "Lento" o aumenta el tiempo por respuesta. Si te pasas de tiempo, usa "Rápido" y reduce el tiempo base.</p>
+                <p>Si normalmente terminas antes de tiempo, prueba con velocidad "Lento" o aumenta el tiempo por respuesta. Si te pasas de tiempo, usa "Rápido" y reduce el tiempo base.</p>
             </div>
+        </section>
+
+        <!-- HORARIOS -->
+        <section class="section" id="horarios">
+            <div class="section-header">
+                <div class="section-icon">🕐</div>
+                <h2>Horarios de Inicio y Fin <span class="badge-new">NUEVO</span></h2>
+            </div>
+            
+            <p>La aplicación muestra de forma prominente las horas de inicio y fin del estudio.</p>
+
+            <h3>Visualización de Horarios</h3>
+            <p>Los horarios se muestran en un panel oscuro con colores distintivos:</p>
+            
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0;">
+                <div class="color-indicator" style="background: #064e3b;">
+                    <span class="dot" style="background: #34d399;"></span>
+                    <span style="color: #34d399; font-weight: bold;">INICIO - Color Esmeralda</span>
+                </div>
+                <div class="color-indicator" style="background: #78350f;">
+                    <span class="dot" style="background: #fbbf24;"></span>
+                    <span style="color: #fbbf24; font-weight: bold;">FIN - Color Ámbar</span>
+                </div>
+            </div>
+
+            <h3>Relación con la Duración</h3>
+            <p>La hora de fin está directamente vinculada a la duración configurada:</p>
+            <div class="tip-box">
+                <h4>📐 Fórmula</h4>
+                <p><strong>Hora de Inicio + Duración = Hora de Fin</strong><br>
+                Ejemplo: Si empiezas a las 7:00 PM con duración de 45 min → Fin a las 7:45 PM</p>
+            </div>
+
+            <h3>Vista Previa</h3>
+            <p>Antes de iniciar el cronómetro, verás una <strong>vista previa</strong> de los horarios (con opacidad reducida). Al presionar ▶ para iniciar, los horarios se confirman y se muestran con brillo completo.</p>
+
+            <h3>Ubicación</h3>
+            <ul class="icon-list">
+                <li>
+                    <div class="icon">📱</div>
+                    <div class="text">
+                        <strong>Vista Principal</strong>
+                        <span>Arriba del cronómetro de lectura, después de cargar un PDF</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="icon">🖥️</div>
+                    <div class="text">
+                        <strong>Modo Presentación</strong>
+                        <span>En la parte superior del panel, siempre visible</span>
+                    </div>
+                </li>
+            </ul>
         </section>
 
         <!-- CARGAR PDF -->
