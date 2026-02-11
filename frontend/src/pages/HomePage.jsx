@@ -439,9 +439,18 @@ export default function HomePage() {
     }
   }, [currentReviewQuestion, analysisResult]);
 
+  // Start closing words mode
+  const startClosingWordsMode = useCallback(() => {
+    setIsInClosingWordsMode(true);
+    setClosingWordsStartTime(Date.now());
+    toast.success("Iniciando Palabras de Conclusión");
+  }, []);
+
   // Finish study
   const finishStudy = useCallback(() => {
     setIsTimerRunning(false);
+    setIsInClosingWordsMode(false);
+    setIsInReviewMode(false);
     toast.success("¡Estudio finalizado! 🎉");
   }, []);
 
