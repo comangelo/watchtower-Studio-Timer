@@ -248,8 +248,8 @@ export function ParagraphCard({
                       ? 'bg-orange-600 hover:bg-orange-700 text-white' 
                       : 'bg-orange-500 hover:bg-orange-600 text-white'
                     : darkMode 
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
-                      : 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                      ? 'bg-green-500 hover:bg-green-600 text-white' 
+                      : 'bg-green-400 hover:bg-green-500 text-white'
                 }`}
                 title={showContent ? 'Ocultar contenido' : 'Mostrar contenido'}
                 data-testid={`toggle-content-${paragraph.number}`}
