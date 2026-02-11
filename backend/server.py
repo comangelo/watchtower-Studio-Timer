@@ -821,7 +821,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
             if num_match:
                 # Save previous question if exists
                 if current_question_parts and current_question_nums:
-                    full_question = ' '.join(current_question_parts)
+                    full_question = join_hyphenated_lines(current_question_parts)
                     grouped_lines.append(('question', current_question_nums, full_question))
                 
                 # Start new question
@@ -1089,7 +1089,7 @@ def analyze_pdf_with_font_info_configurable(
             num_match = re.match(r'^([\d,\s]+)\.\s*$', text)
             if num_match:
                 if current_question_parts and current_question_nums:
-                    full_question = ' '.join(current_question_parts)
+                    full_question = join_hyphenated_lines(current_question_parts)
                     grouped_lines.append(('question', current_question_nums, full_question))
                 
                 numbers_str = num_match.group(1)
