@@ -455,9 +455,18 @@ export default function PresentationMode({
     let hasScripture = false;
     let buttonColor = "bg-green-600 hover:bg-green-700";
     
+    // Debug log
+    console.log('getNextButtonInfo:', { 
+      studyPhase, 
+      paragraphGroupsLength: paragraphGroups.length,
+      currentGroupIndex,
+      firstGroupNumbers: paragraphGroups[0]?.numbers,
+      nextGroupNumbers: paragraphGroups[currentGroupIndex + 1]?.numbers
+    });
+    
     switch (studyPhase) {
       case PHASES.INTRO:
-        // Check first group
+        // Check first group - show what paragraphs we'll start with
         if (paragraphGroups.length > 0) {
           const firstGroup = paragraphGroups[0];
           const isGrouped = firstGroup.numbers.length > 1;
@@ -469,6 +478,7 @@ export default function PresentationMode({
         }
         break;
       case PHASES.PARAGRAPHS:
+        // Show what's next after current group
         if (currentGroupIndex < paragraphGroups.length - 1) {
           // Next group info
           const nextGrp = paragraphGroups[currentGroupIndex + 1];
