@@ -190,3 +190,23 @@ Construir una aplicación en español para introducir un artículo en PDF y dete
 - ✅ **Manejo robusto de conexión a MongoDB** con timeouts y fallbacks
 - ✅ **Variables de entorno con valores por defecto** para evitar crashes
 - ✅ **Operaciones de base de datos con try-catch** para manejar errores de conexión
+
+## Escalado Proporcional de Tiempos (12-Feb-2026)
+- ✅ **Hook `useScheduleCalculator.js`**: Lógica central para calcular el factor de escala
+  - `originalTotalTime`: Suma de tiempos de párrafos + preguntas finales + introducción + conclusión base
+  - `scaleFactor = totalDurationSeconds / originalTotalTime` (limitado entre 0.5x y 2.0x)
+  - Funciones: `getScaledIntroductionTime()`, `getScaledConclusionTime()`, `getAdjustedParagraphTimes()`
+- ✅ **Componente `DurationAdjuster.jsx`**: Control de duración post-análisis
+  - Slider de 15 a 90 minutos para ajustar la duración total
+  - Muestra el factor de escala como porcentaje (ej: 109%, 73%)
+  - Colores distintivos: verde para extensión (>105%), naranja para reducción (<95%)
+  - Información del tiempo original vs configurado
+  - Mensaje informativo sobre el ajuste aplicado
+- ✅ **Integración en `ParagraphCard.jsx`**:
+  - Prop `scaleFactor` para recibir el factor de escala
+  - `estimatedTime` calculado multiplicando por el `scaleFactor`
+  - Badge de tiempo muestra el tiempo escalado
+- ✅ **Integración en `HomePage.jsx`**:
+  - Importa y usa el hook `useScheduleCalculator`
+  - Renderiza `DurationAdjuster` en el panel lateral derecho
+  - Pasa `scaleFactor` y tiempos escalados a todos los componentes
