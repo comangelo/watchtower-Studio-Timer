@@ -1653,7 +1653,12 @@ def analyze_pdf_content(text: str, filename: str) -> PDFAnalysisResult:
         final_questions_start_time=round(final_questions_start_time, 2),
         final_questions=final_questions,
         final_questions_title=final_questions_title,
-        paragraphs=analyzed_paragraphs
+        paragraphs=analyzed_paragraphs,
+        total_paragraph_questions=total_questions - len(final_questions),
+        total_review_questions=len(final_questions),
+        total_images=0,
+        total_scriptures=0,
+        total_notes=0
     )
 
 
@@ -1756,7 +1761,12 @@ def analyze_pdf_content_configurable(
         final_questions_start_time=round(final_questions_start_time, 2),
         final_questions=final_questions,
         final_questions_title=final_questions_title,
-        paragraphs=analyzed_paragraphs
+        paragraphs=analyzed_paragraphs,
+        total_paragraph_questions=total_questions - len(final_questions),
+        total_review_questions=len(final_questions),
+        total_images=0,
+        total_scriptures=0,
+        total_notes=0
     )
 
 
