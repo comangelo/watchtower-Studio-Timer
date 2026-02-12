@@ -526,6 +526,7 @@ export default function HomePage() {
   const startClosingWordsMode = useCallback(() => {
     setIsInClosingWordsMode(true);
     setClosingWordsStartTime(Date.now());
+    setPresentationPhase('conclusion'); // Sync presentation phase
     toast.success("Iniciando Palabras de Conclusión");
   }, []);
 
@@ -534,6 +535,7 @@ export default function HomePage() {
     setIsTimerRunning(false);
     setIsInClosingWordsMode(false);
     setIsInReviewMode(false);
+    setPresentationPhase('finished'); // Sync presentation phase
     toast.success("¡Estudio finalizado! 🎉");
   }, []);
 
