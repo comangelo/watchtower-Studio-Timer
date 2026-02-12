@@ -132,7 +132,7 @@ export default function PresentationMode({
   onStartReview,
   onStartConclusion,
   onFinishStudy,
-  studyPhase: externalStudyPhase = 'intro',
+  studyPhase = 'intro',
   onPhaseChange,
   externalReviewQuestion = 0,
   onReviewQuestionChange
@@ -140,11 +140,15 @@ export default function PresentationMode({
   const [phaseElapsed, setPhaseElapsed] = useState(0);
   
   // Use external state - the phase is managed by HomePage
-  const studyPhase = externalStudyPhase;
   const setStudyPhase = onPhaseChange || (() => {});
   
   const currentReviewQuestion = externalReviewQuestion;
   const setCurrentReviewQuestion = onReviewQuestionChange || (() => {});
+  
+  // Debug: Log when props change
+  useEffect(() => {
+    console.log('PresentationMode mounted/updated with studyPhase:', studyPhase, 'currentParagraphIndex:', currentParagraphIndex);
+  }, [studyPhase, currentParagraphIndex]);
   
   useEffect(() => {
     let interval;
