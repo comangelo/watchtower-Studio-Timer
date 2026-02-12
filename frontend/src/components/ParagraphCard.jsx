@@ -457,13 +457,18 @@ export function ParagraphCard({
             )}
             </div>
             
-            {/* Questions Toggle - Right side */}
+            {/* Questions Toggle - Circle button with outline */}
             {hasQuestions && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsOpen(!isOpen);
                 }}
+                className={`flex items-center justify-center transition-all ${
+                  isOpen 
+                    ? 'rounded-full px-4 py-2' 
+                    : 'rounded-full w-11 h-11'
+                }`}
                 style={{
                   backgroundColor: isOpen 
                     ? (hasFinalQuestions ? '#ef4444' : '#f97316')
@@ -473,34 +478,22 @@ export function ParagraphCard({
                     : (hasFinalQuestions 
                         ? (darkMode ? '#f87171' : '#dc2626')
                         : (darkMode ? '#fb923c' : '#ea580c')),
-                  borderColor: isOpen
-                    ? (hasFinalQuestions ? '#f87171' : '#fdba74')
-                    : (hasFinalQuestions 
-                        ? (darkMode ? '#dc2626' : '#fca5a5')
-                        : (darkMode ? '#ea580c' : '#fdba74')),
-                  borderWidth: '3px',
+                  borderColor: hasFinalQuestions 
+                    ? (darkMode ? '#dc2626' : '#fca5a5')
+                    : (darkMode ? '#ea580c' : '#fdba74'),
+                  borderWidth: '2.5px',
                   borderStyle: 'solid',
-                  borderRadius: '9999px',
-                  padding: '0.75rem 1rem',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
                 }}
+                title={isOpen ? 'Ocultar preguntas' : `Ver ${allQuestions.length} pregunta${allQuestions.length > 1 ? 's' : ''}`}
                 data-testid={`toggle-questions-${paragraph.number}`}
               >
                 {isOpen ? (
                   <>
                     <ChevronUp className="w-4 h-4 mr-1" />
-                    Ocultar preguntas
+                    <span className="text-sm font-semibold">Ocultar</span>
                   </>
                 ) : (
-                  <>
-                    <ChevronDown className="w-4 h-4 mr-1" />
-                    Ver {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
-                  </>
+                  <MessageCircleQuestion className="w-5 h-5" />
                 )}
               </button>
             )}
