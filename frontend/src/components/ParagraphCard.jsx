@@ -314,10 +314,7 @@ export function ParagraphCard({
                 }`}
                 data-testid={`paragraph-time-${paragraph.number}`}
               >
-                {isGrouped 
-                  ? formatTimeText(estimatedTime)
-                  : (paragraphTimes.adjustedDuration ? formatTimeText(paragraphTimes.adjustedDuration) : formatTimeText(paragraph.total_time_seconds))
-                }
+                {formatTimeText(Math.round(estimatedTime))}
               </Badge>
             </div>
           </div>
