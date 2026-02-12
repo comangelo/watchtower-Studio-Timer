@@ -139,6 +139,10 @@ export default function HomePage() {
   const [closingWordsStartTime, setClosingWordsStartTime] = useState(null);
   const [closingWordsDuration, setClosingWordsDuration] = useLocalStorage('pdfTimer_closingWordsDuration', 60); // 1 minute default
   
+  // Presentation mode phase state (persists when exiting/entering presentation mode)
+  const [presentationPhase, setPresentationPhase] = useState('intro');
+  const [presentationReviewQuestion, setPresentationReviewQuestion] = useState(0);
+  
   // State for editing end time on initial screen (before PDF upload)
   const [isEditingInitialEndTime, setIsEditingInitialEndTime] = useState(false);
   const [initialEditHours, setInitialEditHours] = useState('');
