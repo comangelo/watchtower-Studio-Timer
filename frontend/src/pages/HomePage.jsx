@@ -1206,7 +1206,7 @@ export default function HomePage() {
                   onNextReviewQuestion={goToNextReviewQuestion}
                   onStartClosingWords={startClosingWordsMode}
                   isInClosingWordsMode={isInClosingWordsMode}
-                  closingWordsDuration={getScaledConclusionTime()}
+                  closingWordsDuration={closingWordsDuration}
                   onFinishStudy={finishStudy}
                   overtimeAlertEnabled={overtimeAlertEnabled}
                   soundEnabled={soundEnabled}
