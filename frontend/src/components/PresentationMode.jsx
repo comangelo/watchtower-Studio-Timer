@@ -146,6 +146,14 @@ export default function PresentationMode({
   const currentReviewQuestion = externalReviewQuestion;
   const setCurrentReviewQuestion = onReviewQuestionChange || (() => {});
   
+  // Debug log
+  console.log('PresentationMode render:', { 
+    externalStudyPhase, 
+    studyPhase, 
+    currentParagraphIndex,
+    externalReviewQuestion 
+  });
+  
   useEffect(() => {
     let interval;
     if (isTimerRunning) {
