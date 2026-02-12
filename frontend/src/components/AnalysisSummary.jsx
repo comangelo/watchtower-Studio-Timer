@@ -85,7 +85,20 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
             </div>
           )}
           
-          {/* 5. Cantidad de preguntas de repaso */}
+          {/* 5. Cantidad de notas */}
+          {totalNotes > 0 && (
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+              darkMode 
+                ? 'bg-amber-900/60 text-amber-200 border border-amber-700' 
+                : 'bg-amber-50 text-amber-700 border border-amber-200'
+            }`} data-testid="notes-count">
+              <StickyNote className="w-4 h-4" />
+              <span>{totalNotes}</span>
+              <span className={`${darkMode ? 'text-amber-300/70' : 'text-amber-600/70'}`}>{totalNotes === 1 ? 'nota' : 'notas'}</span>
+            </div>
+          )}
+          
+          {/* 6. Cantidad de preguntas de repaso */}
           {reviewQuestions > 0 && (
             <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
               darkMode 
