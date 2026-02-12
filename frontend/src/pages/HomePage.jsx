@@ -210,13 +210,30 @@ export default function HomePage() {
 
   // Presentation mode functions
   const enterPresentationMode = useCallback(() => {
+    // Sync presentation phase with current HomePage state before entering
+    if (isInIntroductionMode) {
+      setPresentationPhase('intro');
+    } else if (isInReviewMode) {
+      setPresentationPhase('review');
+      setPresentationReviewQuestion(currentReviewQuestion);
+    } else if (isInClosingWordsMode) {
+      setPresentationPhase('conclusion');
+    } else if (isTimerRunning && currentManualParagraph >= 0) {
+      // Timer is running and we're on a paragraph
+      setPresentationPhase('paragraphs');
+    } else if (!isTimerRunning && currentManualParagraph > 0) {
+      // Timer stopped but we've made progress - stay on paragraphs
+      setPresentationPhase('paragraphs');
+    }
+    // If none of the above, keep current presentationPhase (could be 'intro' or 'finished')
+    
     setIsPresentationMode(true);
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen().catch(err => {
         console.log('Fullscreen not supported:', err);
       });
     }
-  }, []);
+  }, [isInIntroductionMode, isInReviewMode, isInClosingWordsMode, isTimerRunning, currentManualParagraph, currentReviewQuestion]);
 
   const exitPresentationMode = useCallback(() => {
     setIsPresentationMode(false);
