@@ -371,6 +371,8 @@ export default function PresentationMode({
     switch (studyPhase) {
       case PHASES.INTRO:
         setStudyPhase(PHASES.PARAGRAPHS);
+        // Sync with HomePage - exit introduction mode
+        if (onStartParagraphs) onStartParagraphs();
         // Start with first group's first paragraph index
         if (onParagraphChange && paragraphGroups.length > 0) {
           onParagraphChange(paragraphGroups[0].indices[0]);
@@ -387,8 +389,12 @@ export default function PresentationMode({
           if (analysisResult?.final_questions?.length > 0) {
             setStudyPhase(PHASES.REVIEW);
             setCurrentReviewQuestion(0);
+            // Sync with HomePage
+            if (onStartReview) onStartReview();
           } else {
             setStudyPhase(PHASES.CONCLUSION);
+            // Sync with HomePage
+            if (onStartConclusion) onStartConclusion();
           }
         }
         break;
@@ -397,11 +403,14 @@ export default function PresentationMode({
           setCurrentReviewQuestion(prev => prev + 1);
         } else {
           setStudyPhase(PHASES.CONCLUSION);
+          // Sync with HomePage
+          if (onStartConclusion) onStartConclusion();
         }
         break;
       case PHASES.CONCLUSION:
         setStudyPhase(PHASES.FINISHED);
-        onToggleTimer();
+        // Sync with HomePage
+        if (onFinishStudy) onFinishStudy();
         break;
       default:
         break;
