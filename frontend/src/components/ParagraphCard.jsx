@@ -22,6 +22,7 @@ export function ParagraphCard({
   onGoToNext, 
   isLastParagraph,
   adjustedQuestionTime,
+  scaleFactor = 1, // Scale factor for proportional time adjustment
   overtimeAlertEnabled,
   soundEnabled,
   vibrationEnabled,
@@ -61,10 +62,10 @@ export function ParagraphCard({
   const hasScriptureContent = allQuestions.some(q => q.content_type === 'scripture' || q.content_type === 'both');
   const hasNoteContent = allQuestions.some(q => q.content_type === 'note');
 
-  // Get estimated time for this paragraph group
+  // Get estimated time for this paragraph group (apply scale factor for proportional adjustment)
   const estimatedTime = isGrouped 
-    ? allParagraphs.reduce((sum, p) => sum + (p.total_time_seconds || 0), 0)
-    : (paragraphTimes.adjustedDuration || paragraph.total_time_seconds);
+    ? allParagraphs.reduce((sum, p) => sum + ((p.total_time_seconds || 0) * scaleFactor), 0)
+    : (paragraphTimes.adjustedDuration || (paragraph.total_time_seconds * scaleFactor));
   const isOverTime = paragraphElapsed > estimatedTime;
 
   // Auto-scroll to current paragraph
