@@ -224,7 +224,7 @@ export function ParagraphCard({
         {/* Content Container */}
         <div className={isCurrentParagraph ? (isOverTime ? 'mt-12' : 'mt-8') : isCompletedParagraph ? 'mt-8' : ''}>
           {/* Header Row */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 flex-wrap">
               <span className={`text-sm font-bold ${
                 isCompletedParagraph 
@@ -262,8 +262,8 @@ export function ParagraphCard({
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              {/* Individual show/hide content button */}
+            <div className="flex items-center gap-3">
+              {/* Individual show/hide content button - more spacing */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -271,7 +271,7 @@ export function ParagraphCard({
                   e.stopPropagation();
                   setShowContent(!showContent);
                 }}
-                className={`rounded-full p-2 h-auto transition-all ${
+                className={`rounded-full p-2.5 h-auto transition-all ${
                   showContent
                     ? darkMode 
                       ? 'bg-orange-600 hover:bg-orange-700 text-white' 
@@ -286,7 +286,7 @@ export function ParagraphCard({
                 {showContent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </Button>
               <Badge 
-                className={`font-mono text-sm px-3 py-1 ${
+                className={`font-mono text-sm px-3 py-1.5 ${
                   isCompletedParagraph 
                     ? darkMode ? 'bg-zinc-600 text-zinc-300' : 'bg-slate-200 text-slate-600' 
                     : isCurrentParagraph ? 'bg-green-500 text-white' : 
