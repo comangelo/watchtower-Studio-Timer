@@ -1049,7 +1049,7 @@ export default function HomePage() {
               <IntroductionWordsSection
                 isActive={isInIntroductionMode}
                 isTimerRunning={isTimerRunning}
-                estimatedTime={introductionDuration}
+                estimatedTime={getScaledIntroductionTime()}
                 onStartIntroduction={startIntroductionMode}
                 onGoToFirstParagraph={goToFirstParagraph}
                 hasStarted={startTime !== null}
