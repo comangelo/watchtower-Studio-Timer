@@ -161,6 +161,7 @@ export default function HomePage() {
     getScaleFactor,
     getScaledIntroductionTime,
     getScaledConclusionTime,
+    originalTotalTime,
   } = useScheduleCalculator(
     analysisResult, 
     startTime, 
