@@ -327,7 +327,7 @@ function ReviewQuestionCard({
             : 'bg-gradient-to-r from-green-500 to-green-600'
         }`}>
           {/* Main row - always visible */}
-          <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center justify-between px-3 py-2.5">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
                 <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
@@ -338,17 +338,16 @@ function ReviewQuestionCard({
               </span>
             </div>
             
-            {/* Timer display - compact */}
+            {/* Timer display - elegant style */}
             {isTimerRunning && (
-              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] ${
-                isOverTime ? 'bg-red-400/40' : 'bg-white/20'
+              <div className={`flex items-baseline gap-1 px-3 py-1.5 rounded-full backdrop-blur-sm ${
+                isOverTime ? 'bg-red-500/40' : 'bg-black/20'
               }`}>
-                <Timer className="w-3 h-3" />
-                <span className="font-mono font-bold">
+                <span className="font-light text-lg tracking-wide tabular-nums">
                   {formatTime(questionElapsed)}
                 </span>
-                <span className="opacity-70">/</span>
-                <span className="opacity-70">
+                <span className="text-sm opacity-50 mx-0.5">/</span>
+                <span className="font-light text-lg tracking-wide tabular-nums opacity-70">
                   {formatTime(Math.round(estimatedTime))}
                 </span>
               </div>
