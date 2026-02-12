@@ -690,21 +690,19 @@ export function FinalQuestionsSection({
           ))
         )}
         
-        {/* Closing Words Section */}
-        {isInReviewMode && (
-          <ClosingWordsSection 
-            isActive={isInClosingWordsMode}
-            isTimerRunning={isTimerRunning}
-            estimatedTime={closingWordsDuration}
-            onFinishStudy={onFinishStudy}
-            overtimeAlertEnabled={overtimeAlertEnabled}
-            soundEnabled={soundEnabled}
-            vibrationEnabled={vibrationEnabled}
-            playNotificationSound={playNotificationSound}
-            triggerVibration={triggerVibration}
-            darkMode={darkMode}
-          />
-        )}
+        {/* Closing Words Section - Always visible */}
+        <ClosingWordsSection 
+          isActive={isInClosingWordsMode}
+          isTimerRunning={isTimerRunning}
+          estimatedTime={closingWordsDuration}
+          onFinishStudy={onFinishStudy}
+          overtimeAlertEnabled={overtimeAlertEnabled}
+          soundEnabled={soundEnabled}
+          vibrationEnabled={vibrationEnabled}
+          playNotificationSound={playNotificationSound}
+          triggerVibration={triggerVibration}
+          darkMode={darkMode}
+        />
       </CardContent>
     </Card>
   );
