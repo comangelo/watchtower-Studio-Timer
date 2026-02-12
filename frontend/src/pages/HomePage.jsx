@@ -1294,13 +1294,14 @@ export default function HomePage() {
           totalDurationSeconds={totalDurationSeconds}
           startTime={startTime}
           endTime={endTime}
-          introductionTime={introductionDuration}
-          conclusionTime={conclusionDuration}
+          introductionTime={getScaledIntroductionTime()}
+          conclusionTime={getScaledConclusionTime()}
           onStartStudy={startIntroductionMode}
           studyPhase={presentationPhase}
           onPhaseChange={setPresentationPhase}
           externalReviewQuestion={presentationReviewQuestion}
           onReviewQuestionChange={setPresentationReviewQuestion}
+          scaleFactor={getScaleFactor()}
         />
       )}
     </div>
