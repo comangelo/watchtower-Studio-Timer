@@ -488,36 +488,6 @@ export function ParagraphCard({
               </Button>
             )}
           </div>
-                }`}
-                style={{
-                  backgroundColor: isOpen 
-                    ? (hasFinalQuestions ? '#ef4444' : '#f97316')
-                    : 'transparent',
-                  color: isOpen 
-                    ? '#ffffff' 
-                    : (hasFinalQuestions 
-                        ? (darkMode ? '#f87171' : '#dc2626')
-                        : (darkMode ? '#fb923c' : '#ea580c')),
-                  borderColor: hasFinalQuestions 
-                    ? (darkMode ? '#dc2626' : '#fca5a5')
-                    : (darkMode ? '#ea580c' : '#fdba74'),
-                  borderWidth: '2.5px',
-                  borderStyle: 'solid',
-                }}
-                title={isOpen ? 'Ocultar preguntas' : `Ver ${allQuestions.length} pregunta${allQuestions.length > 1 ? 's' : ''}`}
-                data-testid={`toggle-questions-${paragraph.number}`}
-              >
-                {isOpen ? (
-                  <>
-                    <ChevronUp className="w-4 h-4 mr-1" />
-                    <span className="text-sm font-semibold">Ocultar</span>
-                  </>
-                ) : (
-                  <MessageCircleQuestion className="w-5 h-5" />
-                )}
-              </button>
-            )}
-          </div>
 
           {/* Questions Section */}
           {hasQuestions && (
