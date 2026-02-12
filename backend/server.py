@@ -1466,6 +1466,8 @@ def analyze_pdf_with_font_info_configurable(
             total_images += 1
         elif q.content_type == 'scripture':
             total_scriptures += 1
+        elif q.content_type == 'note':
+            total_notes += 1
     
     # Calculate paragraph questions (total - final)
     total_paragraph_questions = total_questions - len(final_questions)
