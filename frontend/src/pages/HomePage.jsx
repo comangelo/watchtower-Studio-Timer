@@ -1083,8 +1083,10 @@ export default function HomePage() {
                   {groupedParagraphs.map((group, groupIndex) => {
                     const firstIndex = group.indices[0];
                     const lastIndex = group.indices[group.indices.length - 1];
+                    // Show as current if timer is running and we're on this group
                     const isCurrentGroup = isTimerRunning && !isInIntroductionMode && group.indices.includes(currentManualParagraph);
-                    const isCompletedGroup = isTimerRunning && !isInIntroductionMode && lastIndex < currentManualParagraph;
+                    // Show as completed if we've passed this group (regardless of timer state)
+                    const isCompletedGroup = !isInIntroductionMode && lastIndex < currentManualParagraph;
                     
                     return (
                       <ParagraphCard
