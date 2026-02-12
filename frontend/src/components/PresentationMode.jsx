@@ -133,14 +133,18 @@ export default function PresentationMode({
   onStartConclusion,
   onFinishStudy,
   studyPhase: externalStudyPhase,
-  onPhaseChange
+  onPhaseChange,
+  externalReviewQuestion = 0,
+  onReviewQuestionChange
 }) {
-  const [internalPhase, setInternalPhase] = useState(PHASES.INTRO);
-  const [currentReviewQuestion, setCurrentReviewQuestion] = useState(0);
   const [phaseElapsed, setPhaseElapsed] = useState(0);
   
-  const studyPhase = externalStudyPhase || internalPhase;
-  const setStudyPhase = onPhaseChange || setInternalPhase;
+  // Use external state if provided, otherwise fall back to internal
+  const studyPhase = externalStudyPhase || PHASES.INTRO;
+  const setStudyPhase = onPhaseChange || (() => {});
+  
+  const currentReviewQuestion = externalReviewQuestion;
+  const setCurrentReviewQuestion = onReviewQuestionChange || (() => {});
   
   useEffect(() => {
     let interval;
