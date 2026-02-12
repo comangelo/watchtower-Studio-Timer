@@ -1250,6 +1250,14 @@ export default function HomePage() {
                   isTimerRunning={isTimerRunning}
                 />
 
+                <DurationAdjuster
+                  totalDuration={totalDuration}
+                  setTotalDuration={setTotalDuration}
+                  originalTotalTime={originalTotalTime}
+                  scaleFactor={getScaleFactor()}
+                  darkMode={darkMode}
+                />
+
                 <QuickStats
                   analysisResult={analysisResult}
                   currentManualParagraph={currentManualParagraph}
