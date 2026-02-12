@@ -267,6 +267,16 @@ export function ParagraphCard({
                   Texto para leer
                 </span>
               )}
+              {hasNoteContent && (
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  darkMode 
+                    ? 'bg-amber-900/70 text-amber-200 border border-amber-700' 
+                    : 'bg-amber-100 text-amber-700 border border-amber-200'
+                }`} data-testid={`note-badge-${paragraph.number}`}>
+                  <MessageCircleQuestion className="w-3.5 h-3.5" />
+                  Nota para comentar
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-3">
               {/* Individual show/hide content button - more spacing */}
