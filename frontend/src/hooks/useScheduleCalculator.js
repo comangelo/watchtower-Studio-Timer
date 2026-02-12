@@ -248,5 +248,6 @@ export function useScheduleCalculator(
     getScaleFactor,
     getScaledIntroductionTime,
     getScaledConclusionTime,
+    originalTotalTime,
   };
 }
