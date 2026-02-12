@@ -1297,8 +1297,8 @@ export default function HomePage() {
           totalDurationSeconds={totalDurationSeconds}
           startTime={startTime}
           endTime={endTime}
-          introductionTime={getScaledIntroductionTime()}
-          conclusionTime={getScaledConclusionTime()}
+          introductionTime={introductionDuration}
+          conclusionTime={closingWordsDuration}
           onStartStudy={startIntroductionMode}
           studyPhase={presentationPhase}
           onPhaseChange={setPresentationPhase}
