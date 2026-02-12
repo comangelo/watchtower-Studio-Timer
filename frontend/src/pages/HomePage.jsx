@@ -334,20 +334,26 @@ export default function HomePage() {
     
     const timeUntilFinalQuestions = finalQuestionsSeconds - elapsedTime;
     
-    const firstAlertSeconds = alertTimes.firstAlert * 60;
-    if (timeUntilFinalQuestions <= firstAlertSeconds && timeUntilFinalQuestions > firstAlertSeconds - 5 && !notificationPlayed.fiveMin) {
-      playNotificationSound('warning');
-      triggerVibration([200, 100, 200]);
-      setNotificationPlayed(prev => ({ ...prev, fiveMin: true }));
-      toast.warning(`⏰ ${alertTimes.firstAlert} minuto${alertTimes.firstAlert > 1 ? 's' : ''} para las preguntas de repaso`, { duration: 5000 });
+    // First alert - only if value > 0
+    if (alertTimes.firstAlert > 0) {
+      const firstAlertSeconds = alertTimes.firstAlert * 60;
+      if (timeUntilFinalQuestions <= firstAlertSeconds && timeUntilFinalQuestions > firstAlertSeconds - 5 && !notificationPlayed.fiveMin) {
+        playNotificationSound('warning');
+        triggerVibration([200, 100, 200]);
+        setNotificationPlayed(prev => ({ ...prev, fiveMin: true }));
+        toast.warning(`⏰ ${alertTimes.firstAlert} minuto${alertTimes.firstAlert > 1 ? 's' : ''} para las preguntas de repaso`, { duration: 5000 });
+      }
     }
     
-    const secondAlertSeconds = alertTimes.secondAlert * 60;
-    if (timeUntilFinalQuestions <= secondAlertSeconds && timeUntilFinalQuestions > secondAlertSeconds - 5 && !notificationPlayed.oneMin) {
-      playNotificationSound('urgent');
-      triggerVibration([200, 100, 200, 100, 200]);
-      setNotificationPlayed(prev => ({ ...prev, oneMin: true }));
-      toast.warning(`⚠️ ${alertTimes.secondAlert} minuto${alertTimes.secondAlert > 1 ? 's' : ''} para las preguntas de repaso`, { duration: 5000 });
+    // Second alert - only if value > 0
+    if (alertTimes.secondAlert > 0) {
+      const secondAlertSeconds = alertTimes.secondAlert * 60;
+      if (timeUntilFinalQuestions <= secondAlertSeconds && timeUntilFinalQuestions > secondAlertSeconds - 5 && !notificationPlayed.oneMin) {
+        playNotificationSound('urgent');
+        triggerVibration([200, 100, 200, 100, 200]);
+        setNotificationPlayed(prev => ({ ...prev, oneMin: true }));
+        toast.warning(`⚠️ ${alertTimes.secondAlert} minuto${alertTimes.secondAlert > 1 ? 's' : ''} para las preguntas de repaso`, { duration: 5000 });
+      }
     }
     
     if (timeUntilFinalQuestions <= 0 && timeUntilFinalQuestions > -5 && !notificationPlayed.now) {
