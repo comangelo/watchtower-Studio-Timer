@@ -49,6 +49,7 @@ import { ParagraphCard } from "@/components/ParagraphCard";
 import { FinalQuestionsSection } from "@/components/FinalQuestionsSection";
 import { ParagraphStatsPanel } from "@/components/ParagraphStatsPanel";
 import { IntroductionWordsSection } from "@/components/IntroductionWordsSection";
+import { DurationAdjuster } from "@/components/DurationAdjuster";
 
 // Import hooks
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
