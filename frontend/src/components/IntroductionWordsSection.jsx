@@ -168,7 +168,7 @@ export function IntroductionWordsSection({
           : 'bg-gradient-to-r from-blue-500 to-blue-600'
       }`}>
         {/* Main row */}
-        <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center justify-between px-4 py-2.5">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2.5 w-2.5">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
@@ -180,17 +180,16 @@ export function IntroductionWordsSection({
             </span>
           </div>
           
-          {/* Timer display */}
+          {/* Timer display - elegant style */}
           {isTimerRunning && (
-            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${
-              isOverTime ? 'bg-red-400/40' : 'bg-white/20'
+            <div className={`flex items-baseline gap-1 px-3 py-1.5 rounded-full backdrop-blur-sm ${
+              isOverTime ? 'bg-red-500/40' : 'bg-black/20'
             }`}>
-              <Timer className="w-3.5 h-3.5" />
-              <span className="font-mono font-bold text-sm">
+              <span className="font-light text-lg tracking-wide tabular-nums">
                 {formatTime(elapsedTime)}
               </span>
-              <span className="opacity-70">/</span>
-              <span className="opacity-70">
+              <span className="text-sm opacity-50 mx-0.5">/</span>
+              <span className="font-light text-lg tracking-wide tabular-nums opacity-70">
                 {formatTime(estimatedTime)}
               </span>
             </div>
@@ -208,7 +207,7 @@ export function IntroductionWordsSection({
       </div>
 
       {/* Content */}
-      <div className={`p-5 ${isOverTime ? 'pt-16' : 'pt-14'}`}>
+      <div className={`p-5 ${isOverTime ? 'pt-20' : 'pt-16'}`}>
         <div className="flex items-start gap-4">
           <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${
             isOverTime 
