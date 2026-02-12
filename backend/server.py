@@ -1187,7 +1187,8 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         total_paragraph_questions=total_paragraph_questions,
         total_review_questions=len(final_questions),
         total_images=total_images,
-        total_scriptures=total_scriptures
+        total_scriptures=total_scriptures,
+        total_notes=total_notes
     )
 
 
@@ -1485,7 +1486,8 @@ def analyze_pdf_with_font_info_configurable(
         total_paragraph_questions=total_paragraph_questions,
         total_review_questions=len(final_questions),
         total_images=total_images,
-        total_scriptures=total_scriptures
+        total_scriptures=total_scriptures,
+        total_notes=total_notes
     )
 
 
