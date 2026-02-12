@@ -376,16 +376,16 @@ export function ParagraphCard({
             </>
           )}
           
-          {/* Stats Row */}
-          <div className={`flex items-center gap-3 mt-4 text-xs ${
+          {/* Stats Row - Centered on mobile */}
+          <div className={`flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mt-4 text-xs ${
             isCompletedParagraph 
               ? darkMode ? 'text-zinc-400' : 'text-slate-400' 
               : darkMode ? 'text-zinc-300' : 'text-slate-500'
           }`}>
-            <span className={`px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{totalWordCount} palabras</span>
-            <span className={`px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{formatTimeText(totalReadingTime)} lectura</span>
+            <span className={`px-2.5 py-1.5 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{totalWordCount} palabras</span>
+            <span className={`px-2.5 py-1.5 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{formatTimeText(totalReadingTime)} lectura</span>
             {hasQuestions && (
-              <span className={`px-2 py-1 rounded-full font-medium ${
+              <span className={`px-2.5 py-1.5 rounded-full font-medium ${
                 hasFinalQuestions 
                   ? darkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-600' 
                   : darkMode ? 'bg-orange-900 text-orange-200' : 'bg-orange-100 text-orange-600'
@@ -394,7 +394,7 @@ export function ParagraphCard({
               </span>
             )}
             {isGrouped && (
-              <span className={`px-2 py-1 rounded-full font-medium ${
+              <span className={`px-2.5 py-1.5 rounded-full font-medium ${
                 darkMode ? 'bg-blue-900 text-blue-200' : 'bg-blue-100 text-blue-600'
               }`}>
                 {allParagraphs.length} párrafos agrupados
