@@ -182,7 +182,7 @@ export function ParagraphCard({
               : 'bg-gradient-to-r from-green-500 to-green-600'
           }`}>
             {/* Main row */}
-            <div className="flex items-center justify-between px-4 py-2">
+            <div className="flex items-center justify-between px-4 py-2.5">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
                   <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
@@ -195,14 +195,14 @@ export function ParagraphCard({
               
               {/* Timer display - elegant and minimal */}
               {isTimerRunning && (
-                <div className={`flex items-baseline gap-1 px-4 py-2 rounded-full backdrop-blur-sm ${
+                <div className={`flex items-baseline gap-1 px-3 py-1.5 rounded-full backdrop-blur-sm ${
                   isOverTime ? 'bg-red-500/40' : 'bg-black/20'
                 }`}>
-                  <span className="font-light text-xl tracking-wide tabular-nums">
+                  <span className="font-light text-lg tracking-wide tabular-nums">
                     {formatParagraphTime(paragraphElapsed)}
                   </span>
-                  <span className="text-base opacity-50 mx-0.5">/</span>
-                  <span className="font-light text-xl tracking-wide tabular-nums opacity-70">
+                  <span className="text-sm opacity-50 mx-0.5">/</span>
+                  <span className="font-light text-lg tracking-wide tabular-nums opacity-70">
                     {formatParagraphTime(Math.round(estimatedTime))}
                   </span>
                 </div>
@@ -220,8 +220,14 @@ export function ParagraphCard({
           </div>
         )}
 
-        {/* Content Container */}
-        <div className={isCurrentParagraph ? (isOverTime ? 'mt-12' : 'mt-8') : isCompletedParagraph ? 'mt-8' : ''}>
+        {/* Content Container - Dynamic padding based on header state */}
+        <div className={
+          isCurrentParagraph 
+            ? (isOverTime ? 'pt-20' : 'pt-16') 
+            : isCompletedParagraph 
+              ? 'pt-10' 
+              : ''
+        }>
           {/* Header Row */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 flex-wrap">
