@@ -91,7 +91,7 @@ export default function HomePage() {
   // Settings with localStorage persistence
   const [soundEnabled, setSoundEnabled] = useLocalStorage('pdfTimer_soundEnabled', true);
   const [vibrationEnabled, setVibrationEnabled] = useLocalStorage('pdfTimer_vibrationEnabled', true);
-  const [alertTimes, setAlertTimes] = useLocalStorage('pdfTimer_alertTimes', { firstAlert: 5, secondAlert: 1 });
+  const [alertTimes, setAlertTimes] = useLocalStorage('pdfTimer_alertTimes', { firstAlert: 0, secondAlert: 0 });
   const [presentationTheme, setPresentationTheme] = useLocalStorageString('pdfTimer_presentationTheme', 'dark');
   const [overtimeAlertEnabled, setOvertimeAlertEnabled] = useLocalStorage('pdfTimer_overtimeAlert', true);
   const [darkMode, setDarkMode] = useLocalStorage('pdfTimer_darkMode', false);
