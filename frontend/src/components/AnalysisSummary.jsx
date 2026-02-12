@@ -1,4 +1,4 @@
-import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers } from "lucide-react";
+import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeCompact } from "../utils/timeFormatters";
 
@@ -12,6 +12,7 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
   const reviewQuestions = analysisResult.total_review_questions || analysisResult.final_questions?.length || 0;
   const totalImages = analysisResult.total_images || 0;
   const totalScriptures = analysisResult.total_scriptures || 0;
+  const totalNotes = analysisResult.total_notes || 0;
   const totalParagraphs = analysisResult.total_paragraphs || 0;
 
   return (
