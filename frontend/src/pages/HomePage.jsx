@@ -157,7 +157,18 @@ export default function HomePage() {
     getAdjustedParagraphTimes,
     getFinalQuestionsTimeSeconds,
     getFinalQuestionsTime,
-  } = useScheduleCalculator(analysisResult, startTime, remainingTime, currentManualParagraph);
+    getScaleFactor,
+    getScaledIntroductionTime,
+    getScaledConclusionTime,
+  } = useScheduleCalculator(
+    analysisResult, 
+    startTime, 
+    remainingTime, 
+    currentManualParagraph,
+    totalDurationSeconds,
+    introductionDuration,
+    conclusionDuration
+  );
 
   // Group paragraphs that belong together based on "grouped_with" field
   const groupedParagraphs = React.useMemo(() => {
