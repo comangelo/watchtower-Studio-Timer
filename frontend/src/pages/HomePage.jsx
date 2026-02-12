@@ -1159,17 +1159,18 @@ export default function HomePage() {
                           if (lastIndex < analysisResult.paragraphs.length - 1) {
                             setCurrentManualParagraph(lastIndex + 1);
                             setParagraphStartTime(Date.now());
-                            // Save stats for all paragraphs in group
+                            // Save stats for all paragraphs in group (using scaled time)
                             if (paragraphStartTime) {
                               const actualTimeSpent = Math.round((Date.now() - paragraphStartTime) / 1000);
-                              const totalEstimated = group.paragraphs.reduce((sum, p) => sum + p.total_time_seconds, 0);
+                              const scaledEstimated = getAdjustedParagraphTimes(firstIndex).adjustedDuration || 
+                                group.paragraphs.reduce((sum, p) => sum + p.total_time_seconds, 0);
                               setParagraphStats(prev => ({
                                 ...prev,
                                 [firstIndex]: {
                                   paragraphNumber: group.paragraphs.map(p => p.number).join(', '),
-                                  estimatedTime: Math.round(totalEstimated),
+                                  estimatedTime: Math.round(scaledEstimated),
                                   actualTime: actualTimeSpent,
-                                  difference: actualTimeSpent - Math.round(totalEstimated),
+                                  difference: actualTimeSpent - Math.round(scaledEstimated),
                                   wordCount: group.paragraphs.reduce((sum, p) => sum + p.word_count, 0),
                                   questionsCount: group.paragraphs.reduce((sum, p) => sum + p.questions.length, 0)
                                 }
@@ -1180,6 +1181,7 @@ export default function HomePage() {
                         }}
                         isLastParagraph={lastIndex === analysisResult.paragraphs.length - 1}
                         adjustedQuestionTime={adjustedFinalTimes.perQuestion}
+                        scaleFactor={getScaleFactor()}
                         overtimeAlertEnabled={overtimeAlertEnabled}
                         soundEnabled={soundEnabled}
                         vibrationEnabled={vibrationEnabled}
