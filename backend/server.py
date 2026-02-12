@@ -1393,6 +1393,7 @@ def analyze_pdf_with_font_info_configurable(
     cumulative_time = 0.0
     total_images = 0
     total_scriptures = 0
+    total_notes = 0
     
     # Extra time for paragraphs with image or scripture references (40 seconds)
     EXTRA_CONTENT_TIME = 40
