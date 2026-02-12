@@ -193,17 +193,16 @@ export function ParagraphCard({
                 </span>
               </div>
               
-              {/* Timer display - larger and more readable */}
+              {/* Timer display - minimalist and visible */}
               {isTimerRunning && (
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
-                  isOverTime ? 'bg-red-400/40' : 'bg-white/20'
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
+                  isOverTime ? 'bg-red-400/50' : 'bg-white/30'
                 }`}>
-                  <Timer className="w-4 h-4" />
-                  <span className="font-mono font-bold text-base">
+                  <span className="font-mono font-semibold text-lg tracking-wider">
                     {formatParagraphTime(paragraphElapsed)}
                   </span>
-                  <span className="opacity-70 text-base">/</span>
-                  <span className="opacity-70 font-mono text-base">
+                  <span className="text-lg opacity-60">/</span>
+                  <span className="font-mono text-lg tracking-wider opacity-80">
                     {formatParagraphTime(Math.round(estimatedTime))}
                   </span>
                 </div>
