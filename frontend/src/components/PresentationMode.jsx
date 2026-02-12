@@ -128,6 +128,10 @@ export default function PresentationMode({
   introductionTime = 60,
   conclusionTime = 60,
   onStartStudy,
+  onStartParagraphs,
+  onStartReview,
+  onStartConclusion,
+  onFinishStudy,
   studyPhase: externalStudyPhase,
   onPhaseChange
 }) {
