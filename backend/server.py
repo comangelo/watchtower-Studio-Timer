@@ -1085,8 +1085,9 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
     cumulative_time = 0.0
     total_images = 0
     total_scriptures = 0
+    total_notes = 0
     
-    # Extra time for paragraphs with image or scripture references (40 seconds)
+    # Extra time for paragraphs with image, scripture or note references (40 seconds)
     EXTRA_CONTENT_TIME = 40
     
     # Sort paragraphs by number
@@ -1103,6 +1104,7 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         # Count extra content and add time
         para_has_image = False
         para_has_scripture = False
+        para_has_note = False
         for q in questions:
             if q.content_type == 'both':
                 # Both image and scripture in the same parenthesis
@@ -1116,12 +1118,17 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
             elif q.content_type == 'scripture':
                 total_scriptures += 1
                 para_has_scripture = True
+            elif q.content_type == 'note':
+                total_notes += 1
+                para_has_note = True
         
         # Add 40 seconds for each type of extra content
         extra_time = 0
         if para_has_image:
             extra_time += EXTRA_CONTENT_TIME
         if para_has_scripture:
+            extra_time += EXTRA_CONTENT_TIME
+        if para_has_note:
             extra_time += EXTRA_CONTENT_TIME
         
         reading_time += extra_time
