@@ -473,6 +473,7 @@ export default function HomePage() {
   const startIntroductionMode = useCallback(() => {
     setIsInIntroductionMode(true);
     setIntroductionStartTime(Date.now());
+    setPresentationPhase('intro'); // Sync presentation phase
     
     // Start main timer
     const now = new Date();
@@ -494,6 +495,7 @@ export default function HomePage() {
     setIsInIntroductionMode(false);
     setCurrentManualParagraph(0);
     setParagraphStartTime(Date.now());
+    setPresentationPhase('paragraphs'); // Sync presentation phase
     toast.success("Pasando al Párrafo 1");
   }, []);
 
@@ -502,6 +504,8 @@ export default function HomePage() {
     setIsInReviewMode(true);
     setCurrentReviewQuestion(0);
     setReviewQuestionStartTime(Date.now());
+    setPresentationPhase('review'); // Sync presentation phase
+    setPresentationReviewQuestion(0);
     toast.success("Iniciando Preguntas de Repaso");
   }, []);
 
@@ -513,6 +517,7 @@ export default function HomePage() {
     if (nextQuestion < analysisResult.final_questions.length) {
       setCurrentReviewQuestion(nextQuestion);
       setReviewQuestionStartTime(Date.now());
+      setPresentationReviewQuestion(nextQuestion); // Sync presentation review question
       toast.success(`Pregunta de repaso ${nextQuestion + 1}`);
     }
   }, [currentReviewQuestion, analysisResult]);
