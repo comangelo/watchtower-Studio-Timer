@@ -375,7 +375,7 @@ function ReviewQuestionCard({
         </div>
       )}
 
-      <div className={`p-4 ${isCurrentQuestion ? (isOverTime ? 'pt-16' : 'pt-12') : isCompletedQuestion ? 'pt-10' : ''}`}>
+      <div className={`p-4 ${isCurrentQuestion ? (isOverTime ? 'pt-20' : 'pt-16') : isCompletedQuestion ? 'pt-10' : ''}`}>
         <div className="flex items-start gap-3">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
             isCompletedQuestion
