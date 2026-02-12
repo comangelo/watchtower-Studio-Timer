@@ -1245,6 +1245,10 @@ export default function HomePage() {
           introductionTime={introductionDuration}
           conclusionTime={conclusionDuration}
           onStartStudy={startIntroductionMode}
+          onStartParagraphs={goToFirstParagraph}
+          onStartReview={startReviewMode}
+          onStartConclusion={startClosingWordsMode}
+          onFinishStudy={finishStudy}
         />
       )}
     </div>
