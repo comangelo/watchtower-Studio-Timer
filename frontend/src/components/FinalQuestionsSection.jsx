@@ -162,7 +162,7 @@ function ClosingWordsSection({
       </div>
 
       {/* Content */}
-      <div className={`p-5 ${isOverTime ? 'pt-16' : 'pt-14'}`}>
+      <div className={`p-5 ${isOverTime ? 'pt-20' : 'pt-16'}`}>
         <div className="flex items-start gap-4">
           <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${
             isOverTime 
