@@ -401,20 +401,73 @@ export function ParagraphCard({
             )}
           </div>
 
-          {/* Action Buttons - Improved Visibility */}
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            {/* Questions Toggle - Large button with thick outline - FIRST */}
+          {/* Action Buttons */}
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+            {/* Left side - Action buttons */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Next Paragraph Button - Primary Action */}
+              {isCurrentParagraph && !isLastParagraph && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onGoToNext();
+                  }}
+                  className="rounded-full px-6 py-5 text-sm font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 hover:shadow-green-300 transition-all active:scale-95"
+                  data-testid={`next-from-paragraph-${paragraph.number}`}
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Siguiente Párrafo
+                </Button>
+              )}
+
+              {/* Go to Review Questions Button - For Last Paragraph */}
+              {isCurrentParagraph && isLastParagraph && hasReviewQuestions && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onStartReview?.();
+                  }}
+                  className="rounded-full px-6 py-5 text-sm font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-200 hover:shadow-red-300 transition-all active:scale-95"
+                  data-testid="start-review-questions"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Pasar a Preguntas de Repaso
+                </Button>
+              )}
+
+              {/* Start from here Button - Secondary Action */}
+              {!isCurrentParagraph && !isCompletedParagraph && (
+                <Button
+                  variant="outline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onStartFromHere();
+                  }}
+                  className={`rounded-full px-5 py-4 text-sm font-semibold border-2 transition-all ${
+                    darkMode 
+                      ? 'border-zinc-500 text-zinc-100 hover:border-orange-500 hover:text-orange-400 hover:bg-orange-500/10' 
+                      : 'border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
+                  }`}
+                  data-testid={`start-from-paragraph-${paragraph.number}`}
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Iniciar desde aquí
+                </Button>
+              )}
+            </div>
+
+            {/* Right side - Questions Toggle button */}
             {hasQuestions && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsOpen(!isOpen);
                 }}
-                className={`flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-all ${
+                className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition-all ${
                   isOpen 
                     ? hasFinalQuestions 
-                      ? 'bg-red-500 text-white border-red-500' 
-                      : 'bg-orange-500 text-white border-orange-500'
+                      ? 'bg-red-500 text-white' 
+                      : 'bg-orange-500 text-white'
                     : ''
                 }`}
                 style={{
@@ -427,64 +480,14 @@ export function ParagraphCard({
                   borderColor: hasFinalQuestions 
                     ? (darkMode ? '#f87171' : '#ef4444')
                     : (darkMode ? '#fb923c' : '#f97316'),
-                  borderWidth: '3px',
+                  borderWidth: '2.5px',
                   borderStyle: 'solid',
                 }}
                 data-testid={`toggle-questions-${paragraph.number}`}
               >
-                <MessageCircleQuestion className="w-5 h-5" />
-                {isOpen ? 'Ocultar' : `Ver ${allQuestions.length} pregunta${allQuestions.length > 1 ? 's' : ''}`}
+                <MessageCircleQuestion className="w-4 h-4" />
+                {isOpen ? 'Ocultar' : `${allQuestions.length} pregunta${allQuestions.length > 1 ? 's' : ''}`}
               </button>
-            )}
-
-            {/* Next Paragraph Button - Primary Action */}
-            {isCurrentParagraph && !isLastParagraph && (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onGoToNext();
-                }}
-                className="rounded-full px-6 py-5 text-sm font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 hover:shadow-green-300 transition-all active:scale-95"
-                data-testid={`next-from-paragraph-${paragraph.number}`}
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Siguiente Párrafo
-              </Button>
-            )}
-
-            {/* Go to Review Questions Button - For Last Paragraph */}
-            {isCurrentParagraph && isLastParagraph && hasReviewQuestions && (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onStartReview?.();
-                }}
-                className="rounded-full px-6 py-5 text-sm font-bold bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-200 hover:shadow-red-300 transition-all active:scale-95"
-                data-testid="start-review-questions"
-              >
-                <ArrowRight className="w-4 h-4 mr-2" />
-                Pasar a Preguntas de Repaso
-              </Button>
-            )}
-
-            {/* Start from here Button - Secondary Action */}
-            {!isCurrentParagraph && !isCompletedParagraph && (
-              <Button
-                variant="outline"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onStartFromHere();
-                }}
-                className={`rounded-full px-5 py-4 text-sm font-semibold border-2 transition-all ${
-                  darkMode 
-                    ? 'border-zinc-500 text-zinc-100 hover:border-orange-500 hover:text-orange-400 hover:bg-orange-500/10' 
-                    : 'border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
-                }`}
-                data-testid={`start-from-paragraph-${paragraph.number}`}
-              >
-                <Play className="w-4 h-4 mr-2" />
-                Iniciar desde aquí
-              </Button>
             )}
           </div>
 
