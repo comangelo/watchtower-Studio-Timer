@@ -83,15 +83,15 @@ export function NotificationSettings({
 
           {/* Alert Times */}
           <div className="space-y-3">
-            <Label className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Alertas antes de preguntas de repaso</Label>
+            <Label className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Alertas antes de preguntas de repaso (0 = desactivado)</Label>
             <div className="flex items-center gap-2">
               <Label className={`text-xs w-20 ${darkMode ? 'text-zinc-300' : ''}`}>1er aviso:</Label>
               <Input
                 type="number"
-                min="1"
+                min="0"
                 max="30"
                 value={alertTimes.firstAlert}
-                onChange={(e) => setAlertTimes(prev => ({ ...prev, firstAlert: parseInt(e.target.value) || 5 }))}
+                onChange={(e) => setAlertTimes(prev => ({ ...prev, firstAlert: parseInt(e.target.value) || 0 }))}
                 className={`w-16 h-8 text-sm ${darkMode ? 'bg-zinc-700 border-zinc-500 text-zinc-100' : ''}`}
                 data-testid="first-alert-input"
               />
@@ -101,10 +101,10 @@ export function NotificationSettings({
               <Label className={`text-xs w-20 ${darkMode ? 'text-zinc-300' : ''}`}>2do aviso:</Label>
               <Input
                 type="number"
-                min="1"
+                min="0"
                 max="10"
                 value={alertTimes.secondAlert}
-                onChange={(e) => setAlertTimes(prev => ({ ...prev, secondAlert: parseInt(e.target.value) || 1 }))}
+                onChange={(e) => setAlertTimes(prev => ({ ...prev, secondAlert: parseInt(e.target.value) || 0 }))}
                 className={`w-16 h-8 text-sm ${darkMode ? 'bg-zinc-700 border-zinc-500 text-zinc-100' : ''}`}
                 data-testid="second-alert-input"
               />
