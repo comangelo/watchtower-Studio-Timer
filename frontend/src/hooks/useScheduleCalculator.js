@@ -11,18 +11,23 @@ export function useScheduleCalculator(
   conclusionDuration = 60
 ) {
   
+  // Base durations for intro/conclusion (used to calculate original time)
+  const BASE_INTRO_DURATION = 60;
+  const BASE_CONCLUSION_DURATION = 60;
+  
   // Calculate the original total time of the article (without scaling)
+  // This uses base durations for intro/conclusion to avoid circular dependency
   const originalTotalTime = useMemo(() => {
     if (!analysisResult) return 3600;
     
-    // Sum of all paragraph times + final questions time + intro + conclusion
+    // Sum of all paragraph times + final questions time + base intro + base conclusion
     const paragraphsTime = analysisResult.paragraphs.reduce(
       (sum, p) => sum + p.total_time_seconds, 0
     );
     const finalQuestionsTime = (analysisResult.final_questions?.length || 0) * 35;
     
-    return paragraphsTime + finalQuestionsTime + introductionDuration + conclusionDuration;
-  }, [analysisResult, introductionDuration, conclusionDuration]);
+    return paragraphsTime + finalQuestionsTime + BASE_INTRO_DURATION + BASE_CONCLUSION_DURATION;
+  }, [analysisResult]);
 
   // Calculate scale factor: how much to scale all times
   const getScaleFactor = useCallback(() => {
