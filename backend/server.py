@@ -1411,6 +1411,7 @@ def analyze_pdf_with_font_info_configurable(
         # Count extra content and add time
         para_has_image = False
         para_has_scripture = False
+        para_has_note = False
         for q in questions:
             if q.content_type == 'both':
                 # Both image and scripture in the same parenthesis
@@ -1424,12 +1425,17 @@ def analyze_pdf_with_font_info_configurable(
             elif q.content_type == 'scripture':
                 total_scriptures += 1
                 para_has_scripture = True
+            elif q.content_type == 'note':
+                total_notes += 1
+                para_has_note = True
         
         # Add 40 seconds for each type of extra content
         extra_time = 0
         if para_has_image:
             extra_time += EXTRA_CONTENT_TIME
         if para_has_scripture:
+            extra_time += EXTRA_CONTENT_TIME
+        if para_has_note:
             extra_time += EXTRA_CONTENT_TIME
         
         reading_time += extra_time
