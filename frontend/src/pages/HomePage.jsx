@@ -1272,7 +1272,6 @@ export default function HomePage() {
           onResetTimer={resetTimer}
           onExit={exitPresentationMode}
           currentParagraphIndex={currentManualParagraph}
-          onParagraphChange={setCurrentManualParagraph}
           theme={presentationTheme}
           onThemeChange={setPresentationTheme}
           totalDurationSeconds={totalDurationSeconds}
@@ -1281,10 +1280,6 @@ export default function HomePage() {
           introductionTime={introductionDuration}
           conclusionTime={conclusionDuration}
           onStartStudy={startIntroductionMode}
-          onStartParagraphs={goToFirstParagraph}
-          onStartReview={startReviewMode}
-          onStartConclusion={startClosingWordsMode}
-          onFinishStudy={finishStudy}
           studyPhase={presentationPhase}
           onPhaseChange={setPresentationPhase}
           externalReviewQuestion={presentationReviewQuestion}
