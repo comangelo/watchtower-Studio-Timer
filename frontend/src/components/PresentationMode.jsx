@@ -536,19 +536,12 @@ export default function PresentationMode({
           onToggleTimer();
         }
       }
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        if (isTimerRunning) handleNextStep();
-      }
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        if (isTimerRunning) handlePrevStep();
-      }
+      // Removed arrow key navigation - navigation is done from main screen
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onExit, onToggleTimer, studyPhase, isTimerRunning, currentParagraphIndex, currentReviewQuestion]);
+  }, [onExit, onToggleTimer, studyPhase, isTimerRunning]);
 
   const formatRemainingTime = (seconds) => {
     const isNegative = seconds < 0;
@@ -562,8 +555,6 @@ export default function PresentationMode({
     }
     return `${isNegative ? '-' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
-
-  const nextBtnInfo = getNextButtonInfo();
 
   return (
     <div 
