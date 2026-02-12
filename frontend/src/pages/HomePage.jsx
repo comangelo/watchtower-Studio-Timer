@@ -1253,6 +1253,10 @@ export default function HomePage() {
           onStartReview={startReviewMode}
           onStartConclusion={startClosingWordsMode}
           onFinishStudy={finishStudy}
+          studyPhase={presentationPhase}
+          onPhaseChange={setPresentationPhase}
+          externalReviewQuestion={presentationReviewQuestion}
+          onReviewQuestionChange={setPresentationReviewQuestion}
         />
       )}
     </div>
