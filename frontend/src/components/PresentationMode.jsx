@@ -7,8 +7,6 @@ import {
   X,
   Timer,
   Palette,
-  ChevronRight,
-  ChevronLeft,
   Mic,
   BookOpen,
   HelpCircle,
@@ -16,8 +14,7 @@ import {
   CheckCircle2,
   Image,
   Layers,
-  MessageCircle,
-  AlertCircle
+  MessageCircle
 } from "lucide-react";
 import {
   DropdownMenu,
