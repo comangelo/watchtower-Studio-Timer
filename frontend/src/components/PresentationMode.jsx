@@ -116,7 +116,6 @@ export default function PresentationMode({
   onResetTimer,
   onExit,
   currentParagraphIndex = 0,
-  onParagraphChange,
   theme = 'dark',
   onThemeChange,
   totalDurationSeconds = 3600,
@@ -125,10 +124,6 @@ export default function PresentationMode({
   introductionTime = 60,
   conclusionTime = 60,
   onStartStudy,
-  onStartParagraphs,
-  onStartReview,
-  onStartConclusion,
-  onFinishStudy,
   studyPhase = 'intro',
   onPhaseChange,
   externalReviewQuestion = 0,
@@ -141,11 +136,6 @@ export default function PresentationMode({
   
   const currentReviewQuestion = externalReviewQuestion;
   const setCurrentReviewQuestion = onReviewQuestionChange || (() => {});
-  
-  // Debug: Log when props change
-  useEffect(() => {
-    console.log('PresentationMode mounted/updated with studyPhase:', studyPhase, 'currentParagraphIndex:', currentParagraphIndex);
-  }, [studyPhase, currentParagraphIndex]);
   
   useEffect(() => {
     let interval;
