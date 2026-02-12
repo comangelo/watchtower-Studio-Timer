@@ -115,6 +115,7 @@ class PDFAnalysisResult(BaseModel):
     total_review_questions: int = 0  # Final review questions
     total_images: int = 0  # Questions with image references
     total_scriptures: int = 0  # Questions with scripture references
+    total_notes: int = 0  # Questions with note references
 
 class StatusCheck(BaseModel):
     model_config = ConfigDict(extra="ignore")
