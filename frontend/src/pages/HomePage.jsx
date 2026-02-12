@@ -210,22 +210,35 @@ export default function HomePage() {
 
   // Presentation mode functions
   const enterPresentationMode = useCallback(() => {
+    // Debug log
+    console.log('enterPresentationMode called:', {
+      isInIntroductionMode,
+      isInReviewMode,
+      isInClosingWordsMode,
+      isTimerRunning,
+      currentManualParagraph,
+      currentPresentationPhase: presentationPhase
+    });
+    
     // Sync presentation phase with current HomePage state before entering
+    let newPhase = presentationPhase;
     if (isInIntroductionMode) {
-      setPresentationPhase('intro');
+      newPhase = 'intro';
     } else if (isInReviewMode) {
-      setPresentationPhase('review');
+      newPhase = 'review';
       setPresentationReviewQuestion(currentReviewQuestion);
     } else if (isInClosingWordsMode) {
-      setPresentationPhase('conclusion');
+      newPhase = 'conclusion';
     } else if (isTimerRunning && currentManualParagraph >= 0) {
       // Timer is running and we're on a paragraph
-      setPresentationPhase('paragraphs');
+      newPhase = 'paragraphs';
     } else if (!isTimerRunning && currentManualParagraph > 0) {
       // Timer stopped but we've made progress - stay on paragraphs
-      setPresentationPhase('paragraphs');
+      newPhase = 'paragraphs';
     }
-    // If none of the above, keep current presentationPhase (could be 'intro' or 'finished')
+    
+    console.log('Setting presentationPhase to:', newPhase);
+    setPresentationPhase(newPhase);
     
     setIsPresentationMode(true);
     if (document.documentElement.requestFullscreen) {
@@ -233,7 +246,7 @@ export default function HomePage() {
         console.log('Fullscreen not supported:', err);
       });
     }
-  }, [isInIntroductionMode, isInReviewMode, isInClosingWordsMode, isTimerRunning, currentManualParagraph, currentReviewQuestion]);
+  }, [isInIntroductionMode, isInReviewMode, isInClosingWordsMode, isTimerRunning, currentManualParagraph, currentReviewQuestion, presentationPhase]);
 
   const exitPresentationMode = useCallback(() => {
     setIsPresentationMode(false);
