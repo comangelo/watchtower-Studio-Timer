@@ -450,19 +450,10 @@ export default function HomePage() {
   // Timer controls
   const toggleTimer = () => {
     if (!isTimerRunning) {
-      const now = new Date();
+      // If this is the first time starting, use startIntroductionMode to begin with introduction
       if (!startTime) {
-        setStartTime(now);
-        // Use manual end time if set, otherwise calculate from duration
-        if (manualEndTime) {
-          setEndTime(manualEndTime);
-          // Calculate remaining time based on manual end time
-          const diffSeconds = Math.floor((manualEndTime.getTime() - now.getTime()) / 1000);
-          setRemainingTime(Math.max(0, diffSeconds));
-        } else {
-          setEndTime(addSecondsToDate(now, totalDurationSeconds));
-        }
-        setParagraphStartTime(Date.now()); // Start timing first paragraph
+        startIntroductionMode();
+        return; // startIntroductionMode already sets isTimerRunning to true
       }
     }
     setIsTimerRunning(!isTimerRunning);
