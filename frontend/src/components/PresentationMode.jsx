@@ -867,69 +867,18 @@ export default function PresentationMode({
               </Button>
             )}
             
-            {/* Navigation Controls */}
+            {/* Play/Pause Control Only */}
             {isTimerRunning && studyPhase !== PHASES.FINISHED && (
-              <>
-                {/* Previous */}
-                {studyPhase !== PHASES.INTRO && (
-                  <Button
-                    onClick={handlePrevStep}
-                    variant="outline"
-                    size="lg"
-                    className={`rounded-full ${t.buttonOutline}`}
-                  >
-                    <ChevronLeft className="w-4 h-4 mr-1" />
-                    Anterior
-                  </Button>
-                )}
-                
-                {/* Play/Pause */}
-                <Button
-                  onClick={onToggleTimer}
-                  size="lg"
-                  className={`rounded-full p-0 text-white shadow-lg ${
-                    isTimerRunning ? t.accentBg + ' hover:opacity-90' : 'bg-green-600 hover:bg-green-700'
-                  }`}
-                  style={{ width: '56px', height: '56px' }}
-                >
-                  {isTimerRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
-                </Button>
-                
-                {/* Next with PROMINENT alerts */}
-                <div className="flex flex-col items-center gap-2">
-                  {/* Alert badges ABOVE button - MORE VISIBLE */}
-                  {(nextBtnInfo.hasImage || nextBtnInfo.hasScripture) && (
-                    <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-dashed animate-pulse ${
-                      nextBtnInfo.hasImage && nextBtnInfo.hasScripture
-                        ? 'bg-gradient-to-r from-purple-500/30 to-blue-500/30 border-yellow-400'
-                        : nextBtnInfo.hasImage
-                          ? 'bg-purple-500/30 border-purple-400'
-                          : 'bg-blue-500/30 border-blue-400'
-                    }`}>
-                      <AlertCircle className="w-5 h-5 text-yellow-400" />
-                      <span className="text-sm font-bold text-yellow-300">¡ATENCIÓN!</span>
-                      {nextBtnInfo.hasImage && (
-                        <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-purple-600 text-white text-xs font-bold">
-                          <Image className="w-4 h-4" /> IMAGEN
-                        </span>
-                      )}
-                      {nextBtnInfo.hasScripture && (
-                        <span className="flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold">
-                          <BookOpen className="w-4 h-4" /> TEXTO
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <Button
-                    onClick={handleNextStep}
-                    size="lg"
-                    className={`rounded-full px-6 py-3 text-base ${nextBtnInfo.buttonColor} text-white shadow-lg`}
-                  >
-                    {nextBtnInfo.text}
-                    <ChevronRight className="w-5 h-5 ml-1" />
-                  </Button>
-                </div>
-              </>
+              <Button
+                onClick={onToggleTimer}
+                size="lg"
+                className={`rounded-full p-0 text-white shadow-lg ${
+                  isTimerRunning ? t.accentBg + ' hover:opacity-90' : 'bg-green-600 hover:bg-green-700'
+                }`}
+                style={{ width: '56px', height: '56px' }}
+              >
+                {isTimerRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
+              </Button>
             )}
             
             {/* Reset */}
@@ -951,10 +900,9 @@ export default function PresentationMode({
           </div>
         </div>
 
-        {/* Keyboard shortcuts */}
+        {/* Keyboard shortcuts - simplified */}
         <p className={`text-xs ${t.textDimmed} mt-4 hidden md:block`}>
           <kbd className={`px-2 py-1 ${t.kbd} rounded`}>Espacio</kbd> iniciar/pausar · 
-          <kbd className={`px-2 py-1 ${t.kbd} rounded mx-1`}>←</kbd>/<kbd className={`px-2 py-1 ${t.kbd} rounded`}>→</kbd> navegar · 
           <kbd className={`px-2 py-1 ${t.kbd} rounded ml-1`}>ESC</kbd> salir
         </p>
       </div>
