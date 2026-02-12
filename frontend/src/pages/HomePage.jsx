@@ -210,23 +210,12 @@ export default function HomePage() {
 
   // Presentation mode functions
   const enterPresentationMode = useCallback(() => {
-    // Debug log
-    console.log('enterPresentationMode called:', {
-      isInIntroductionMode,
-      isInReviewMode,
-      isInClosingWordsMode,
-      isTimerRunning,
-      currentManualParagraph,
-      currentPresentationPhase: presentationPhase
-    });
-    
     // Sync presentation phase with current HomePage state before entering
     let newPhase = presentationPhase;
     if (isInIntroductionMode) {
       newPhase = 'intro';
     } else if (isInReviewMode) {
       newPhase = 'review';
-      setPresentationReviewQuestion(currentReviewQuestion);
     } else if (isInClosingWordsMode) {
       newPhase = 'conclusion';
     } else if (isTimerRunning && currentManualParagraph >= 0) {
@@ -237,15 +226,21 @@ export default function HomePage() {
       newPhase = 'paragraphs';
     }
     
-    console.log('Setting presentationPhase to:', newPhase);
+    // Update states synchronously - phase first, then show modal
     setPresentationPhase(newPhase);
-    
-    setIsPresentationMode(true);
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(err => {
-        console.log('Fullscreen not supported:', err);
-      });
+    if (isInReviewMode) {
+      setPresentationReviewQuestion(currentReviewQuestion);
     }
+    
+    // Use setTimeout to ensure state is updated before showing modal
+    setTimeout(() => {
+      setIsPresentationMode(true);
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('Fullscreen not supported:', err);
+        });
+      }
+    }, 0);
   }, [isInIntroductionMode, isInReviewMode, isInClosingWordsMode, isTimerRunning, currentManualParagraph, currentReviewQuestion, presentationPhase]);
 
   const exitPresentationMode = useCallback(() => {
