@@ -403,23 +403,55 @@ export function ParagraphCard({
           </div>
 
           {/* Action Buttons - Improved Visibility */}
-          <div className="mt-5 flex items-center justify-between gap-3">
-            {/* Left side buttons */}
-            <div className="flex flex-wrap items-center gap-3 flex-1">
-              {/* Next Paragraph Button - Primary Action */}
-              {isCurrentParagraph && !isLastParagraph && (
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onGoToNext();
-                  }}
-                  className="rounded-full px-6 py-5 text-sm font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 hover:shadow-green-300 transition-all active:scale-95"
-                  data-testid={`next-from-paragraph-${paragraph.number}`}
-                >
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                  Siguiente Párrafo
-                </Button>
-              )}
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            {/* Questions Toggle - Large button with thick outline - FIRST */}
+            {hasQuestions && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(!isOpen);
+                }}
+                className={`flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-all ${
+                  isOpen 
+                    ? hasFinalQuestions 
+                      ? 'bg-red-500 text-white border-red-500' 
+                      : 'bg-orange-500 text-white border-orange-500'
+                    : ''
+                }`}
+                style={{
+                  backgroundColor: isOpen ? undefined : 'transparent',
+                  color: isOpen 
+                    ? '#ffffff' 
+                    : (hasFinalQuestions 
+                        ? (darkMode ? '#f87171' : '#dc2626')
+                        : (darkMode ? '#fb923c' : '#ea580c')),
+                  borderColor: hasFinalQuestions 
+                    ? (darkMode ? '#f87171' : '#ef4444')
+                    : (darkMode ? '#fb923c' : '#f97316'),
+                  borderWidth: '3px',
+                  borderStyle: 'solid',
+                }}
+                data-testid={`toggle-questions-${paragraph.number}`}
+              >
+                <MessageCircleQuestion className="w-5 h-5" />
+                {isOpen ? 'Ocultar' : `Ver ${allQuestions.length} pregunta${allQuestions.length > 1 ? 's' : ''}`}
+              </button>
+            )}
+
+            {/* Next Paragraph Button - Primary Action */}
+            {isCurrentParagraph && !isLastParagraph && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onGoToNext();
+                }}
+                className="rounded-full px-6 py-5 text-sm font-bold bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200 hover:shadow-green-300 transition-all active:scale-95"
+                data-testid={`next-from-paragraph-${paragraph.number}`}
+              >
+                <ArrowRight className="w-4 h-4 mr-2" />
+                Siguiente Párrafo
+              </Button>
+            )}
 
             {/* Go to Review Questions Button - For Last Paragraph */}
             {isCurrentParagraph && isLastParagraph && hasReviewQuestions && (
@@ -455,19 +487,7 @@ export function ParagraphCard({
                 Iniciar desde aquí
               </Button>
             )}
-            </div>
-            
-            {/* Questions Toggle - Circle button with outline */}
-            {hasQuestions && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsOpen(!isOpen);
-                }}
-                className={`flex items-center justify-center transition-all ${
-                  isOpen 
-                    ? 'rounded-full px-4 py-2' 
-                    : 'rounded-full w-11 h-11'
+          </div>
                 }`}
                 style={{
                   backgroundColor: isOpen 
