@@ -952,7 +952,13 @@ export default function HomePage() {
           <div ref={exportRef} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column - Analysis */}
             <div className="lg:col-span-8 space-y-6">
-              <AnalysisSummary analysisResult={analysisResult} darkMode={darkMode} />
+              <AnalysisSummary 
+                analysisResult={analysisResult} 
+                darkMode={darkMode} 
+                totalDurationMinutes={totalDuration}
+                introductionDuration={introductionDuration}
+                closingWordsDuration={closingWordsDuration}
+              />
 
               {/* Paragraph Progress Indicator */}
               {isTimerRunning && !isInIntroductionMode && (
