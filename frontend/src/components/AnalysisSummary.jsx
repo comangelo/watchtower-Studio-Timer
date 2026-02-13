@@ -120,8 +120,8 @@ export function AnalysisSummary({
           )}
         </div>
 
-        {/* Time Cards - Modern Grid */}
-        <div className="grid grid-cols-4 gap-3">
+        {/* Time Cards - Modern Grid (2x2 en móvil, 4 columnas en desktop) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {/* Lectura */}
           <div className={`relative overflow-hidden rounded-2xl p-4 ${
             darkMode 
