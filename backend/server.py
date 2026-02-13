@@ -252,7 +252,7 @@ def extract_question_with_parenthesis(question_text: str) -> dict:
     """
     Extract question text and any content in parentheses after the question.
     Classifies the parenthesis content:
-    - "image" if contains "Vea también la imagen", "ilustración"
+    - "image" if contains "Vea también la imagen", "Vea también las imágenes", "ilustración"
     - "scripture" if contains bible reference pattern (e.g., Salmos 32:17, Juan 3:16)
     - "note" if contains "Vea también la nota", "nota"
     - "both" if contains BOTH image reference AND scripture
