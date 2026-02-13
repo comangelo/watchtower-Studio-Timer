@@ -1156,6 +1156,8 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
         para_has_image = False
         para_has_scripture = False
         para_has_note = False
+        
+        # First, check questions for extra content
         for q in questions:
             if q.content_type == 'both':
                 # Both image and scripture in the same parenthesis
@@ -1172,6 +1174,30 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
             elif q.content_type == 'note':
                 total_notes += 1
                 para_has_note = True
+        
+        # Second, check for "lea" scripture references in the paragraph text itself
+        lea_scriptures = extract_lea_scriptures_from_text(para_text)
+        for lea_scripture in lea_scriptures:
+            # Only count if not already counted from a question
+            # Check if this scripture reference is already in one of the questions
+            already_counted = False
+            lea_content = lea_scripture["parenthesis_content"].lower()
+            for q in questions:
+                if q.parenthesis_content and lea_content in q.parenthesis_content.lower():
+                    already_counted = True
+                    break
+            
+            if not already_counted:
+                total_scriptures += 1
+                para_has_scripture = True
+                # Add as a virtual question to show in UI
+                questions.append(QuestionInfo(
+                    text="",  # No question text, just scripture reference
+                    answer_time=0,
+                    is_final_question=False,
+                    parenthesis_content=lea_scripture["parenthesis_content"],
+                    content_type="scripture"
+                ))
         
         # Add 40 seconds for each type of extra content
         extra_time = 0
