@@ -1071,7 +1071,7 @@ export default function HomePage() {
                       </div>
                       <div>
                         <h3 className={`font-heading font-bold text-base ${darkMode ? 'text-zinc-100' : 'text-zinc-900'}`}>
-                          Desglose por párrafo
+                          Desglose de párrafos
                         </h3>
                         <p className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
                           {analysisResult.total_paragraphs} párrafos · {analysisResult.total_words} palabras
@@ -1096,12 +1096,12 @@ export default function HomePage() {
                       {showAllParagraphContent ? (
                         <>
                           <EyeOff className="w-4 h-4 mr-1.5" />
-                          Ocultar contenido de párrafos
+                          Ocultar contenido
                         </>
                       ) : (
                         <>
                           <Eye className="w-4 h-4 mr-1.5" />
-                          Mostrar contenido de párrafos
+                          Mostrar contenido
                         </>
                       )}
                     </Button>
