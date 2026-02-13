@@ -12,13 +12,17 @@ function parseFilename(filename) {
   // Replace underscores and hyphens with spaces
   name = name.replace(/[_-]/g, ' ');
   
-  // Try to extract number and title
-  // Pattern: "Articulo 50 Humildad" or similar
-  const match = name.match(/^(?:articulo|article|art)?\s*(\d+)\s*(.*)$/i);
+  // Try to extract: "Articulo de Estudio XX resto del titulo"
+  // Pattern matches variations like "Articulo de Estudio 49 Como nos ayuda..."
+  const match = name.match(/^(?:articulo\s*(?:de\s*)?(?:estudio\s*)?|article\s*|art\s*)(\d+)\s*(.*)$/i);
   
   if (match) {
     const number = match[1];
-    const title = match[2].trim().toUpperCase();
+    let title = match[2].trim();
+    
+    // Capitalize first letter, rest lowercase, then capitalize after spaces
+    title = title.toLowerCase().replace(/(?:^|\s)\S/g, char => char.toUpperCase());
+    
     return {
       articleLine: `ARTÍCULO DE ESTUDIO ${number}`,
       titleLine: title
@@ -26,9 +30,10 @@ function parseFilename(filename) {
   }
   
   // If no match, just return the whole name as title
+  let title = name.toLowerCase().replace(/(?:^|\s)\S/g, char => char.toUpperCase());
   return {
     articleLine: 'ARTÍCULO DE ESTUDIO',
-    titleLine: name.toUpperCase()
+    titleLine: title
   };
 }
 
