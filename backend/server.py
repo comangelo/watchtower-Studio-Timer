@@ -328,15 +328,15 @@ def classify_parenthesis_content(paren_content: str) -> str:
             has_image = bool(re.search(r'^[Vv]ea\s+también\s*$', paren_content.strip(), re.IGNORECASE))
     
     # Check for scripture reference with multiple patterns:
-    # 1. "lea/Lea/léalo" followed by book name and chapter:verse - e.g., "lea 2 Pedro 3:9", "Lea Salmo 138:6"
+    # 1. "lea/Lea/LEA/léalo/Léalo" followed by book name and chapter:verse - e.g., "lea 2 Pedro 3:9", "Lea Salmo 138:6"
     # 2. Standard format - "Salmos 32:17", "Juan 3:16", "1 Corintios 13:4"
     # 3. Format without space - "Salmo62:8", "Marcos3:1-6"
     has_scripture = False
     
-    # Pattern 1: Starts with "lea", "Lea", "léalo", "Léalo" followed by scripture
-    if re.search(r'^[Ll][ée]a(lo)?\s+', paren_content):
+    # Pattern 1: Starts with "lea", "Lea", "LEA", "léalo", "Léalo", "LÉALO" followed by scripture
+    if re.search(r'^[Ll][EeÉé][Aa](lo|LO)?\s+', paren_content):
         # Extract the part after "lea/léalo" and check if it looks like a scripture
-        scripture_part = re.sub(r'^[Ll][ée]a(lo)?\s+', '', paren_content)
+        scripture_part = re.sub(r'^[Ll][EeÉé][Aa](lo|LO)?\s+', '', paren_content)
         # Check for chapter:verse pattern (with or without space before numbers)
         if re.search(r'\d+:\d+', scripture_part):
             has_scripture = True
