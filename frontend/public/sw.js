@@ -1,8 +1,7 @@
-const CACHE_NAME = 'atalaya-timer-v1';
+const CACHE_NAME = 'atalaya-timer-v2';
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/manifest.json'
+  '/index.html'
 ];
 
 // Install event
@@ -17,8 +16,19 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Fetch event
+// Fetch event - Network first for manifest.json to ensure orientation updates
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  
+  // Always fetch manifest.json from network to get latest orientation settings
+  if (url.pathname.endsWith('manifest.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
