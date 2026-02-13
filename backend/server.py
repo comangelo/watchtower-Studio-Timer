@@ -315,10 +315,10 @@ def classify_parenthesis_content(paren_content: str) -> str:
     has_note = bool(re.search(r'[Vv]ea\s*(también\s+)?la\s+nota', paren_content, re.IGNORECASE))
     
     # Check for image reference - but NOT if it's a note
-    # "vea también la imagen", "vea la ilustración", "imagen"
+    # "vea también la imagen", "vea también las imágenes", "vea la ilustración", "imagen"
     has_image = False
     if not has_note:
-        has_image = bool(re.search(r'([Vv]ea\s*(también\s+)?(la\s+)?(imagen|ilustraci[oó]n))|^(imagen|ilustraci[oó]n)', paren_content, re.IGNORECASE))
+        has_image = bool(re.search(r'([Vv]ea\s*(también\s+)?(la\s+|las\s+)?(imagen(es)?|ilustraci[oó]n(es)?))|^(imagen(es)?|ilustraci[oó]n(es)?)', paren_content, re.IGNORECASE))
         # Also check for generic "Vea también" without specific word (usually means image)
         if not has_image:
             has_image = bool(re.search(r'^[Vv]ea\s+también\s*$', paren_content.strip(), re.IGNORECASE))
