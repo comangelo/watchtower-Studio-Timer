@@ -2,9 +2,9 @@ import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNot
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeCompact } from "../utils/timeFormatters";
 
-// Format filename to a nice title
-function formatFilename(filename) {
-  if (!filename) return '';
+// Format filename to extract article number and title
+function parseFilename(filename) {
+  if (!filename) return { articleLine: '', titleLine: '' };
   
   // Remove extension
   let name = filename.replace(/\.[^/.]+$/, '');
@@ -12,10 +12,24 @@ function formatFilename(filename) {
   // Replace underscores and hyphens with spaces
   name = name.replace(/[_-]/g, ' ');
   
-  // Capitalize first letter of each word
-  name = name.replace(/\b\w/g, char => char.toUpperCase());
+  // Try to extract number and title
+  // Pattern: "Articulo 50 Humildad" or similar
+  const match = name.match(/^(?:articulo|article|art)?\s*(\d+)\s*(.*)$/i);
   
-  return name;
+  if (match) {
+    const number = match[1];
+    const title = match[2].trim().toUpperCase();
+    return {
+      articleLine: `ARTÍCULO DE ESTUDIO ${number}`,
+      titleLine: title
+    };
+  }
+  
+  // If no match, just return the whole name as title
+  return {
+    articleLine: 'ARTÍCULO DE ESTUDIO',
+    titleLine: name.toUpperCase()
+  };
 }
 
 export function AnalysisSummary({ 
