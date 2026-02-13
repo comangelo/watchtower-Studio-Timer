@@ -1,4 +1,4 @@
-import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNote, Clock, Plus, Minus, Equal } from "lucide-react";
+import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNote, Clock, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeCompact } from "../utils/timeFormatters";
 
@@ -24,10 +24,10 @@ export function AnalysisSummary({
   // Time calculations
   const readingTimeSeconds = analysisResult.total_reading_time_seconds || 0;
   const questionTimeSeconds = analysisResult.total_question_time_seconds || 0;
-  const articleTimeSeconds = readingTimeSeconds + questionTimeSeconds; // Lectura + Respuestas
+  const articleTimeSeconds = readingTimeSeconds + questionTimeSeconds;
   const totalDurationSeconds = totalDurationMinutes * 60;
-  const fixedTimeSeconds = introductionDuration + closingWordsDuration; // Intro + Conclusión
-  const availableTimeSeconds = totalDurationSeconds - articleTimeSeconds - fixedTimeSeconds; // Tiempo para preguntas adicionales
+  const fixedTimeSeconds = introductionDuration + closingWordsDuration;
+  const availableTimeSeconds = totalDurationSeconds - articleTimeSeconds - fixedTimeSeconds;
 
   return (
     <Card className={`mb-8 shadow-sm ${darkMode ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-100'}`} data-testid="analysis-summary">
@@ -120,116 +120,95 @@ export function AnalysisSummary({
           )}
         </div>
 
-        {/* Time Breakdown Section - Redesigned */}
-        <div className={`rounded-2xl p-5 ${darkMode ? 'bg-zinc-900/50 border border-zinc-700' : 'bg-gradient-to-br from-slate-50 to-white border border-slate-200'}`}>
-          
-          {/* Row 1: Lectura + Respuestas = Tiempo del Artículo */}
-          <div className="grid grid-cols-7 gap-2 items-center mb-4">
-            {/* Lectura */}
-            <div className={`col-span-2 rounded-xl p-3 text-center ${darkMode ? 'bg-zinc-800 border border-zinc-700' : 'bg-white border border-slate-200 shadow-sm'}`}>
-              <p className={`text-xs mb-1 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>Lectura</p>
-              <p className={`text-xl font-semibold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`} data-testid="reading-time">
-                {formatTimeCompact(readingTimeSeconds)}
-              </p>
-            </div>
-            
-            {/* Plus sign */}
-            <div className="col-span-1 flex justify-center">
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${darkMode ? 'bg-zinc-700' : 'bg-slate-200'}`}>
-                <Plus className={`w-4 h-4 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`} />
-              </div>
-            </div>
-            
-            {/* Respuestas */}
-            <div className={`col-span-2 rounded-xl p-3 text-center ${darkMode ? 'bg-orange-900/30 border border-orange-800' : 'bg-orange-50 border border-orange-200 shadow-sm'}`}>
-              <p className={`text-xs mb-1 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>Respuestas</p>
-              <p className={`text-xl font-semibold ${darkMode ? 'text-orange-300' : 'text-orange-600'}`} data-testid="question-time">
-                {formatTimeCompact(questionTimeSeconds)}
-              </p>
-            </div>
-            
-            {/* Equals sign */}
-            <div className="col-span-1 flex justify-center">
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${darkMode ? 'bg-zinc-700' : 'bg-slate-200'}`}>
-                <Equal className={`w-4 h-4 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`} />
-              </div>
-            </div>
-            
-            {/* Tiempo del Artículo */}
-            <div className={`col-span-1 rounded-xl p-3 text-center ${darkMode ? 'bg-blue-900/30 border border-blue-800' : 'bg-blue-50 border border-blue-200 shadow-sm'}`}>
-              <p className={`text-xs mb-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>Artículo</p>
-              <p className={`text-xl font-bold ${darkMode ? 'text-blue-300' : 'text-blue-600'}`} data-testid="article-time">
-                {formatTimeCompact(articleTimeSeconds)}
-              </p>
-            </div>
+        {/* Time Cards - Modern Grid */}
+        <div className="grid grid-cols-4 gap-3">
+          {/* Lectura */}
+          <div className={`relative overflow-hidden rounded-2xl p-4 ${
+            darkMode 
+              ? 'bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700' 
+              : 'bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200'
+          }`}>
+            <div className={`absolute top-0 right-0 w-16 h-16 rounded-full blur-2xl opacity-30 ${
+              darkMode ? 'bg-slate-500' : 'bg-slate-400'
+            }`}></div>
+            <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${
+              darkMode ? 'text-slate-400' : 'text-slate-500'
+            }`}>Lectura</p>
+            <p className={`text-2xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`} data-testid="reading-time">
+              {formatTimeCompact(readingTimeSeconds)}
+            </p>
           </div>
 
-          {/* Divider */}
-          <div className={`border-t my-4 ${darkMode ? 'border-zinc-700' : 'border-slate-200'}`}></div>
+          {/* Respuestas */}
+          <div className={`relative overflow-hidden rounded-2xl p-4 ${
+            darkMode 
+              ? 'bg-gradient-to-br from-orange-950 to-orange-900 border border-orange-800' 
+              : 'bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200'
+          }`}>
+            <div className={`absolute top-0 right-0 w-16 h-16 rounded-full blur-2xl opacity-30 ${
+              darkMode ? 'bg-orange-500' : 'bg-orange-400'
+            }`}></div>
+            <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${
+              darkMode ? 'text-orange-400' : 'text-orange-600'
+            }`}>Respuestas</p>
+            <p className={`text-2xl font-bold ${darkMode ? 'text-orange-300' : 'text-orange-600'}`} data-testid="question-time">
+              {formatTimeCompact(questionTimeSeconds)}
+            </p>
+          </div>
 
-          {/* Row 2: Duración Total - Artículo - Intro/Conclusión = Tiempo Disponible */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Left: Calculation breakdown */}
-            <div className={`rounded-xl p-4 ${darkMode ? 'bg-zinc-800/50' : 'bg-slate-100/50'}`}>
-              <p className={`text-xs font-medium mb-3 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-                Cálculo del tiempo disponible
-              </p>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className={`text-sm ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>Duración total</span>
-                  <span className={`text-sm font-mono font-semibold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{totalDurationMinutes} min</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className={`text-sm ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>− Artículo</span>
-                  <span className={`text-sm font-mono ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>{formatTimeCompact(articleTimeSeconds)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className={`text-sm ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>− Intro + Conclusión</span>
-                  <span className={`text-sm font-mono ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>{formatTimeCompact(fixedTimeSeconds)}</span>
-                </div>
-                <div className={`border-t pt-2 mt-2 ${darkMode ? 'border-zinc-700' : 'border-slate-300'}`}>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm font-medium ${darkMode ? 'text-zinc-200' : 'text-slate-700'}`}>= Disponible</span>
-                    <span className={`text-sm font-mono font-bold ${availableTimeSeconds >= 0 ? (darkMode ? 'text-green-400' : 'text-green-600') : (darkMode ? 'text-red-400' : 'text-red-600')}`}>
-                      {availableTimeSeconds >= 0 ? formatTimeCompact(availableTimeSeconds) : `-${formatTimeCompact(Math.abs(availableTimeSeconds))}`}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          {/* Artículo (Total) */}
+          <div className={`relative overflow-hidden rounded-2xl p-4 ${
+            darkMode 
+              ? 'bg-gradient-to-br from-blue-950 to-blue-900 border border-blue-800' 
+              : 'bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200'
+          }`}>
+            <div className={`absolute top-0 right-0 w-16 h-16 rounded-full blur-2xl opacity-30 ${
+              darkMode ? 'bg-blue-500' : 'bg-blue-400'
+            }`}></div>
+            <p className={`text-xs font-bold uppercase tracking-wider mb-2 ${
+              darkMode ? 'text-blue-400' : 'text-blue-600'
+            }`}>Artículo</p>
+            <p className={`text-2xl font-bold ${darkMode ? 'text-blue-300' : 'text-blue-600'}`} data-testid="article-time">
+              {formatTimeCompact(articleTimeSeconds)}
+            </p>
+          </div>
 
-            {/* Right: Available time highlight */}
-            <div className={`rounded-xl p-4 flex flex-col justify-center items-center text-center ${
+          {/* Tiempo Disponible */}
+          <div className={`relative overflow-hidden rounded-2xl p-4 ${
+            availableTimeSeconds >= 0
+              ? darkMode 
+                ? 'bg-gradient-to-br from-emerald-950 to-emerald-900 border-2 border-emerald-600' 
+                : 'bg-gradient-to-br from-emerald-50 to-emerald-100 border-2 border-emerald-300'
+              : darkMode 
+                ? 'bg-gradient-to-br from-red-950 to-red-900 border-2 border-red-600' 
+                : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
+          }`}>
+            <div className={`absolute top-0 right-0 w-16 h-16 rounded-full blur-2xl opacity-40 ${
               availableTimeSeconds >= 0 
-                ? darkMode ? 'bg-green-900/30 border-2 border-green-700' : 'bg-green-50 border-2 border-green-300'
-                : darkMode ? 'bg-red-900/30 border-2 border-red-700' : 'bg-red-50 border-2 border-red-300'
-            }`}>
-              <Clock className={`w-6 h-6 mb-2 ${
-                availableTimeSeconds >= 0 
-                  ? darkMode ? 'text-green-400' : 'text-green-600'
+                ? darkMode ? 'bg-emerald-500' : 'bg-emerald-400'
+                : darkMode ? 'bg-red-500' : 'bg-red-400'
+            }`}></div>
+            <div className="flex items-center gap-1.5 mb-2">
+              <Sparkles className={`w-3 h-3 ${
+                availableTimeSeconds >= 0
+                  ? darkMode ? 'text-emerald-400' : 'text-emerald-600'
                   : darkMode ? 'text-red-400' : 'text-red-600'
               }`} />
-              <p className={`text-xs mb-1 ${
-                availableTimeSeconds >= 0 
-                  ? darkMode ? 'text-green-400' : 'text-green-600'
+              <p className={`text-xs font-bold uppercase tracking-wider ${
+                availableTimeSeconds >= 0
+                  ? darkMode ? 'text-emerald-400' : 'text-emerald-600'
                   : darkMode ? 'text-red-400' : 'text-red-600'
-              }`}>
-                {availableTimeSeconds >= 0 ? 'Tiempo disponible' : 'Tiempo excedido'}
-              </p>
-              <p className={`text-3xl font-bold ${
-                availableTimeSeconds >= 0 
-                  ? darkMode ? 'text-green-300' : 'text-green-600'
-                  : darkMode ? 'text-red-300' : 'text-red-600'
-              }`} data-testid="available-time">
-                {availableTimeSeconds >= 0 ? formatTimeCompact(availableTimeSeconds) : `-${formatTimeCompact(Math.abs(availableTimeSeconds))}`}
-              </p>
-              <p className={`text-xs mt-2 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-                {availableTimeSeconds >= 0 
-                  ? 'Para preguntas adicionales'
-                  : 'Considera aumentar la duración'
-                }
-              </p>
+              }`}>Disponible</p>
             </div>
+            <p className={`text-2xl font-bold ${
+              availableTimeSeconds >= 0
+                ? darkMode ? 'text-emerald-300' : 'text-emerald-600'
+                : darkMode ? 'text-red-300' : 'text-red-600'
+            }`} data-testid="available-time">
+              {availableTimeSeconds >= 0 
+                ? formatTimeCompact(availableTimeSeconds) 
+                : `-${formatTimeCompact(Math.abs(availableTimeSeconds))}`}
+            </p>
           </div>
         </div>
       </CardContent>
