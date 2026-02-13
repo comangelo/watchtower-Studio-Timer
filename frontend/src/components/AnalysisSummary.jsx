@@ -2,6 +2,22 @@ import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNot
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeCompact } from "../utils/timeFormatters";
 
+// Format filename to a nice title
+function formatFilename(filename) {
+  if (!filename) return '';
+  
+  // Remove extension
+  let name = filename.replace(/\.[^/.]+$/, '');
+  
+  // Replace underscores and hyphens with spaces
+  name = name.replace(/[_-]/g, ' ');
+  
+  // Capitalize first letter of each word
+  name = name.replace(/\b\w/g, char => char.toUpperCase());
+  
+  return name;
+}
+
 export function AnalysisSummary({ 
   analysisResult, 
   darkMode = false,
@@ -29,24 +45,20 @@ export function AnalysisSummary({
   const fixedTimeSeconds = introductionDuration + closingWordsDuration;
   const availableTimeSeconds = totalDurationSeconds - articleTimeSeconds - fixedTimeSeconds;
 
+  // Format the filename nicely
+  const displayTitle = formatFilename(analysisResult.filename);
+
   return (
     <Card className={`mb-8 shadow-sm ${darkMode ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-100'}`} data-testid="analysis-summary">
       <CardContent className="p-6">
-        {/* Header with filename */}
-        <div className="flex items-start gap-4 mb-6">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-            darkMode ? 'bg-orange-900/50' : 'bg-orange-100'
-          }`}>
-            <FileText className={`w-5 h-5 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} />
-          </div>
-          <div className="flex-1">
-            <h3 className={`font-heading font-semibold text-lg ${darkMode ? 'text-zinc-50' : 'text-zinc-900'}`} data-testid="pdf-filename">
-              {analysisResult.filename}
-            </h3>
-            <p className={`text-sm ${darkMode ? 'text-zinc-300' : 'text-zinc-500'}`}>
-              {analysisResult.total_words} palabras
-            </p>
-          </div>
+        {/* Header with formatted title */}
+        <div className="mb-6">
+          <h3 className={`font-heading font-bold text-xl leading-tight ${darkMode ? 'text-zinc-50' : 'text-zinc-900'}`} data-testid="pdf-filename">
+            {displayTitle}
+          </h3>
+          <p className={`text-sm mt-1 ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
+            {analysisResult.total_words} palabras
+          </p>
         </div>
 
         {/* Stats Pills Row */}
