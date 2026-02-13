@@ -362,6 +362,34 @@ def classify_parenthesis_content(paren_content: str) -> str:
     return ""
 
 
+def extract_lea_scriptures_from_text(text: str) -> List[dict]:
+    """
+    Extract scripture references that start with "lea/Lea/LEA/léalo" from paragraph text.
+    These are inline scripture references that should be counted as extra content.
+    
+    Returns a list of dicts with:
+    - parenthesis_content: the full content (e.g., "lea Salmo 62:8")
+    - content_type: "scripture"
+    """
+    scriptures = []
+    
+    # Pattern to find (lea/Lea/léalo followed by scripture reference)
+    # Matches: (lea Salmo 62:8), (Lea Salmo 138:6), (lea 2 Pedro 3:9), (lea Marcos3:1-6)
+    pattern = r'\(([Ll][EeÉé][Aa](?:lo|LO)?\s+[^)]+\d+:\d+[^)]*)\)'
+    
+    matches = re.findall(pattern, text)
+    
+    for match in matches:
+        # Verify it contains a scripture reference (chapter:verse pattern)
+        if re.search(r'\d+:\d+', match):
+            scriptures.append({
+                "parenthesis_content": match.strip(),
+                "content_type": "scripture"
+            })
+    
+    return scriptures
+
+
 def create_question_info(question_text: str, answer_time: int, is_final_question: bool = False) -> QuestionInfo:
     """
     Helper function to create QuestionInfo with parenthesis extraction.
