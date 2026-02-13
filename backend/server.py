@@ -315,10 +315,14 @@ def classify_parenthesis_content(paren_content: str) -> str:
     has_note = bool(re.search(r'[Vv]ea\s*(también\s+)?la\s+nota', paren_content, re.IGNORECASE))
     
     # Check for image reference - but NOT if it's a note
-    # "vea también la imagen", "vea también las imágenes", "vea la ilustración", "imagen"
+    # "vea también la imagen", "vea también las imágenes", "vea la ilustración", "imagen", "imágenes"
     has_image = False
     if not has_note:
-        has_image = bool(re.search(r'([Vv]ea\s*(también\s+)?(la\s+|las\s+)?(imagen(es)?|ilustraci[oó]n(es)?))|^(imagen(es)?|ilustraci[oó]n(es)?)', paren_content, re.IGNORECASE))
+        # Pattern for "Vea (también) (la/las) imagen/imágenes/ilustración/ilustraciones"
+        has_image = bool(re.search(r'[Vv]ea\s*(también\s+)?(la\s+|las\s+)?(im[aá]gen(es)?|ilustraci[oó]n(es)?)', paren_content, re.IGNORECASE))
+        # Also check for standalone words
+        if not has_image:
+            has_image = bool(re.search(r'^(im[aá]gen(es)?|ilustraci[oó]n(es)?)$', paren_content.strip(), re.IGNORECASE))
         # Also check for generic "Vea también" without specific word (usually means image)
         if not has_image:
             has_image = bool(re.search(r'^[Vv]ea\s+también\s*$', paren_content.strip(), re.IGNORECASE))
