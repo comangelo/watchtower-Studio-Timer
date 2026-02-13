@@ -59,18 +59,21 @@ export function AnalysisSummary({
   const fixedTimeSeconds = introductionDuration + closingWordsDuration;
   const availableTimeSeconds = totalDurationSeconds - articleTimeSeconds - fixedTimeSeconds;
 
-  // Format the filename nicely
-  const displayTitle = formatFilename(analysisResult.filename);
+  // Parse the filename into article line and title
+  const { articleLine, titleLine } = parseFilename(analysisResult.filename);
 
   return (
     <Card className={`mb-8 shadow-sm ${darkMode ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-100'}`} data-testid="analysis-summary">
       <CardContent className="p-6">
         {/* Header with formatted title */}
         <div className="mb-6">
-          <h3 className={`font-heading font-bold text-xl leading-tight ${darkMode ? 'text-zinc-50' : 'text-zinc-900'}`} data-testid="pdf-filename">
-            {displayTitle}
+          <p className={`text-sm font-bold tracking-wide mb-1 ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
+            {articleLine}
+          </p>
+          <h3 className={`font-heading font-bold text-2xl leading-tight ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} data-testid="pdf-filename">
+            {titleLine}
           </h3>
-          <p className={`text-sm mt-1 ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
+          <p className={`text-sm mt-2 ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
             {analysisResult.total_words} palabras
           </p>
         </div>
