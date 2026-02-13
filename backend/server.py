@@ -16,9 +16,24 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+mongo_url = os.environ.get('MONGO_URL')
+db_name = os.environ.get('DB_NAME', 'watchtower')
+
+if not mongo_url:
+    print("⚠️ MONGO_URL no definido. Backend arrancará sin base de datos.")
+
+# Optional DB (Mongo) or in-memory fallback
+client = None
+db = None
+
+# Fallback storage when Mongo is not available
+PDF_ANALYSES_MEMORY = []
+STATUS_CHECKS_MEMORY = []
+
+if mongo_url:
+    client = AsyncIOMotorClient(mongo_url)
+    db = client[db_name]
+
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -1688,13 +1703,17 @@ async def analyze_pdf(
             if not text.strip():
                 raise HTTPException(status_code=400, detail="No se pudo extraer texto del PDF")
             result = analyze_pdf_content_configurable(text, file.filename, wpm, answer_time_seconds)
-        
+
         # Save to database
         doc = result.model_dump()
         doc['timestamp'] = doc['timestamp'].isoformat()
         doc['settings'] = {'wpm': wpm, 'answer_time_seconds': answer_time_seconds}
-        await db.pdf_analyses.insert_one(doc)
-        
+
+        if db:
+            await db.pdf_analyses.insert_one(doc)
+        else:
+            PDF_ANALYSES_MEMORY.insert(0, doc)  # newest first
+
         return result
         
     except Exception as e:
@@ -1705,14 +1724,22 @@ async def analyze_pdf(
 @api_router.get("/analyses", response_model=List[PDFAnalysisResult])
 async def get_analyses():
     """Get all PDF analyses"""
-    analyses = await db.pdf_analyses.find(
-        {}, 
-        {"_id": 0}
-    ).sort("timestamp", -1).to_list(50)
-    for analysis in analyses:
-        if isinstance(analysis.get('timestamp'), str):
-            analysis['timestamp'] = datetime.fromisoformat(analysis['timestamp'])
-    return analyses
+    if db:
+        analyses = await db.pdf_analyses.find({}, {"_id": 0}).sort("timestamp", -1).to_list(50)
+        for analysis in analyses:
+            if isinstance(analysis.get('timestamp'), str):
+                analysis['timestamp'] = datetime.fromisoformat(analysis['timestamp'])
+        return analyses
+    else:
+        # Convert timestamps back to datetime for the response model
+        items = []
+        for a in PDF_ANALYSES_MEMORY[:50]:
+            b = dict(a)
+            if isinstance(b.get("timestamp"), str):
+                b["timestamp"] = datetime.fromisoformat(b["timestamp"])
+            items.append(b)
+        return items
+
 
 
 @api_router.post("/status", response_model=StatusCheck)
@@ -1721,20 +1748,31 @@ async def create_status_check(input: StatusCheckCreate):
     status_obj = StatusCheck(**status_dict)
     doc = status_obj.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
-    _ = await db.status_checks.insert_one(doc)
+    if db:
+        _ = await db.status_checks.insert_one(doc)
+    else:
+        STATUS_CHECKS_MEMORY.insert(0, doc)
+
     return status_obj
 
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-    status_checks = await db.status_checks.find(
-        {}, 
-        {"_id": 0}
-    ).sort("timestamp", -1).to_list(100)
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    return status_checks
+    if db:
+        status_checks = await db.status_checks.find({}, {"_id": 0}).sort("timestamp", -1).to_list(100)
+        for check in status_checks:
+            if isinstance(check['timestamp'], str):
+                check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+        return status_checks
+    else:
+        items = []
+        for c in STATUS_CHECKS_MEMORY[:100]:
+            b = dict(c)
+            if isinstance(b.get("timestamp"), str):
+                b["timestamp"] = datetime.fromisoformat(b["timestamp"])
+            items.append(b)
+        return items
+
 
 
 # Include the router in the main app
@@ -1759,11 +1797,17 @@ logger = logging.getLogger(__name__)
 @app.on_event("startup")
 async def startup_db_client():
     """Create database indexes on startup"""
-    await db.pdf_analyses.create_index([("timestamp", -1)])
-    await db.status_checks.create_index([("timestamp", -1)])
-    logger.info("Database indexes created successfully")
+    if db:
+        await db.pdf_analyses.create_index([("timestamp", -1)])
+        await db.status_checks.create_index([("timestamp", -1)])
+        logger.info("Database indexes created successfully")
+    else:
+        logger.info("MongoDB not configured. Running with in-memory storage.")
+
 
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    if client:
+        client.close()
+
