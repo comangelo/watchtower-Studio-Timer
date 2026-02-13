@@ -1,8 +1,14 @@
-import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNote } from "lucide-react";
+import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNote, Clock, Plus, Minus, Equal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeCompact } from "../utils/timeFormatters";
 
-export function AnalysisSummary({ analysisResult, darkMode = false }) {
+export function AnalysisSummary({ 
+  analysisResult, 
+  darkMode = false,
+  totalDurationMinutes = 60,
+  introductionDuration = 60,
+  closingWordsDuration = 60
+}) {
   if (!analysisResult) return null;
 
   const paragraphQuestions = analysisResult.total_paragraph_questions || 
@@ -14,6 +20,14 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
   const totalScriptures = analysisResult.total_scriptures || 0;
   const totalNotes = analysisResult.total_notes || 0;
   const totalParagraphs = analysisResult.total_paragraphs || 0;
+
+  // Time calculations
+  const readingTimeSeconds = analysisResult.total_reading_time_seconds || 0;
+  const questionTimeSeconds = analysisResult.total_question_time_seconds || 0;
+  const articleTimeSeconds = readingTimeSeconds + questionTimeSeconds; // Lectura + Respuestas
+  const totalDurationSeconds = totalDurationMinutes * 60;
+  const fixedTimeSeconds = introductionDuration + closingWordsDuration; // Intro + Conclusión
+  const availableTimeSeconds = totalDurationSeconds - articleTimeSeconds - fixedTimeSeconds; // Tiempo para preguntas adicionales
 
   return (
     <Card className={`mb-8 shadow-sm ${darkMode ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-100'}`} data-testid="analysis-summary">
@@ -35,10 +49,9 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
           </div>
         </div>
 
-        {/* Stats Pills Row - Ordenados según solicitud */}
+        {/* Stats Pills Row */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {/* 1. Cantidad de párrafos */}
-          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
             darkMode 
               ? 'bg-zinc-700 text-zinc-200 border border-zinc-600' 
               : 'bg-zinc-100 text-zinc-700 border border-zinc-200'
@@ -48,8 +61,7 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
             <span className={`${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>{totalParagraphs === 1 ? 'párrafo' : 'párrafos'}</span>
           </div>
 
-          {/* 2. Cantidad de preguntas */}
-          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
             darkMode 
               ? 'bg-orange-900/60 text-orange-200 border border-orange-700' 
               : 'bg-orange-50 text-orange-700 border border-orange-200'
@@ -59,9 +71,8 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
             <span className={`${darkMode ? 'text-orange-300/70' : 'text-orange-600/70'}`}>{paragraphQuestions === 1 ? 'pregunta' : 'preguntas'}</span>
           </div>
           
-          {/* 3. Cantidad de textos para leer */}
           {totalScriptures > 0 && (
-            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
               darkMode 
                 ? 'bg-blue-900/60 text-blue-200 border border-blue-700' 
                 : 'bg-blue-50 text-blue-700 border border-blue-200'
@@ -72,9 +83,8 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
             </div>
           )}
 
-          {/* 4. Cantidad de imágenes */}
           {totalImages > 0 && (
-            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
               darkMode 
                 ? 'bg-purple-900/60 text-purple-200 border border-purple-700' 
                 : 'bg-purple-50 text-purple-700 border border-purple-200'
@@ -85,9 +95,8 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
             </div>
           )}
           
-          {/* 5. Cantidad de notas */}
           {totalNotes > 0 && (
-            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
               darkMode 
                 ? 'bg-amber-900/60 text-amber-200 border border-amber-700' 
                 : 'bg-amber-50 text-amber-700 border border-amber-200'
@@ -98,9 +107,8 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
             </div>
           )}
           
-          {/* 6. Cantidad de preguntas de repaso */}
           {reviewQuestions > 0 && (
-            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
               darkMode 
                 ? 'bg-red-900/60 text-red-200 border border-red-700' 
                 : 'bg-red-50 text-red-700 border border-red-200'
@@ -112,25 +120,116 @@ export function AnalysisSummary({ analysisResult, darkMode = false }) {
           )}
         </div>
 
-        {/* Time Cards Grid */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className={`rounded-xl p-5 text-center ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-zinc-50'}`}>
-            <p className={`text-sm mb-2 ${darkMode ? 'text-zinc-300' : 'text-zinc-500'}`}>Lectura</p>
-            <p className={`text-3xl font-light ${darkMode ? 'text-zinc-50' : 'text-zinc-900'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="reading-time">
-              {formatTimeCompact(analysisResult.total_reading_time_seconds)}
-            </p>
+        {/* Time Breakdown Section - Redesigned */}
+        <div className={`rounded-2xl p-5 ${darkMode ? 'bg-zinc-900/50 border border-zinc-700' : 'bg-gradient-to-br from-slate-50 to-white border border-slate-200'}`}>
+          
+          {/* Row 1: Lectura + Respuestas = Tiempo del Artículo */}
+          <div className="grid grid-cols-7 gap-2 items-center mb-4">
+            {/* Lectura */}
+            <div className={`col-span-2 rounded-xl p-3 text-center ${darkMode ? 'bg-zinc-800 border border-zinc-700' : 'bg-white border border-slate-200 shadow-sm'}`}>
+              <p className={`text-xs mb-1 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>Lectura</p>
+              <p className={`text-xl font-semibold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`} data-testid="reading-time">
+                {formatTimeCompact(readingTimeSeconds)}
+              </p>
+            </div>
+            
+            {/* Plus sign */}
+            <div className="col-span-1 flex justify-center">
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${darkMode ? 'bg-zinc-700' : 'bg-slate-200'}`}>
+                <Plus className={`w-4 h-4 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`} />
+              </div>
+            </div>
+            
+            {/* Respuestas */}
+            <div className={`col-span-2 rounded-xl p-3 text-center ${darkMode ? 'bg-orange-900/30 border border-orange-800' : 'bg-orange-50 border border-orange-200 shadow-sm'}`}>
+              <p className={`text-xs mb-1 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>Respuestas</p>
+              <p className={`text-xl font-semibold ${darkMode ? 'text-orange-300' : 'text-orange-600'}`} data-testid="question-time">
+                {formatTimeCompact(questionTimeSeconds)}
+              </p>
+            </div>
+            
+            {/* Equals sign */}
+            <div className="col-span-1 flex justify-center">
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${darkMode ? 'bg-zinc-700' : 'bg-slate-200'}`}>
+                <Equal className={`w-4 h-4 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`} />
+              </div>
+            </div>
+            
+            {/* Tiempo del Artículo */}
+            <div className={`col-span-1 rounded-xl p-3 text-center ${darkMode ? 'bg-blue-900/30 border border-blue-800' : 'bg-blue-50 border border-blue-200 shadow-sm'}`}>
+              <p className={`text-xs mb-1 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>Artículo</p>
+              <p className={`text-xl font-bold ${darkMode ? 'text-blue-300' : 'text-blue-600'}`} data-testid="article-time">
+                {formatTimeCompact(articleTimeSeconds)}
+              </p>
+            </div>
           </div>
-          <div className={`rounded-xl p-5 text-center ${darkMode ? 'bg-orange-900/50 border border-orange-800' : 'bg-orange-50'}`}>
-            <p className={`text-sm mb-2 ${darkMode ? 'text-orange-300' : 'text-orange-600'}`}>Respuestas</p>
-            <p className={`text-3xl font-light ${darkMode ? 'text-orange-300' : 'text-orange-600'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="question-time">
-              {formatTimeCompact(analysisResult.total_question_time_seconds)}
-            </p>
-          </div>
-          <div className="bg-zinc-900 rounded-xl p-5 text-center">
-            <p className="text-sm text-zinc-400 mb-2">Total</p>
-            <p className="text-3xl font-light text-white" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }} data-testid="total-time">
-              60 min
-            </p>
+
+          {/* Divider */}
+          <div className={`border-t my-4 ${darkMode ? 'border-zinc-700' : 'border-slate-200'}`}></div>
+
+          {/* Row 2: Duración Total - Artículo - Intro/Conclusión = Tiempo Disponible */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Left: Calculation breakdown */}
+            <div className={`rounded-xl p-4 ${darkMode ? 'bg-zinc-800/50' : 'bg-slate-100/50'}`}>
+              <p className={`text-xs font-medium mb-3 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
+                Cálculo del tiempo disponible
+              </p>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className={`text-sm ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>Duración total</span>
+                  <span className={`text-sm font-mono font-semibold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{totalDurationMinutes} min</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className={`text-sm ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>− Artículo</span>
+                  <span className={`text-sm font-mono ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>{formatTimeCompact(articleTimeSeconds)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className={`text-sm ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>− Intro + Conclusión</span>
+                  <span className={`text-sm font-mono ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>{formatTimeCompact(fixedTimeSeconds)}</span>
+                </div>
+                <div className={`border-t pt-2 mt-2 ${darkMode ? 'border-zinc-700' : 'border-slate-300'}`}>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm font-medium ${darkMode ? 'text-zinc-200' : 'text-slate-700'}`}>= Disponible</span>
+                    <span className={`text-sm font-mono font-bold ${availableTimeSeconds >= 0 ? (darkMode ? 'text-green-400' : 'text-green-600') : (darkMode ? 'text-red-400' : 'text-red-600')}`}>
+                      {availableTimeSeconds >= 0 ? formatTimeCompact(availableTimeSeconds) : `-${formatTimeCompact(Math.abs(availableTimeSeconds))}`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Available time highlight */}
+            <div className={`rounded-xl p-4 flex flex-col justify-center items-center text-center ${
+              availableTimeSeconds >= 0 
+                ? darkMode ? 'bg-green-900/30 border-2 border-green-700' : 'bg-green-50 border-2 border-green-300'
+                : darkMode ? 'bg-red-900/30 border-2 border-red-700' : 'bg-red-50 border-2 border-red-300'
+            }`}>
+              <Clock className={`w-6 h-6 mb-2 ${
+                availableTimeSeconds >= 0 
+                  ? darkMode ? 'text-green-400' : 'text-green-600'
+                  : darkMode ? 'text-red-400' : 'text-red-600'
+              }`} />
+              <p className={`text-xs mb-1 ${
+                availableTimeSeconds >= 0 
+                  ? darkMode ? 'text-green-400' : 'text-green-600'
+                  : darkMode ? 'text-red-400' : 'text-red-600'
+              }`}>
+                {availableTimeSeconds >= 0 ? 'Tiempo disponible' : 'Tiempo excedido'}
+              </p>
+              <p className={`text-3xl font-bold ${
+                availableTimeSeconds >= 0 
+                  ? darkMode ? 'text-green-300' : 'text-green-600'
+                  : darkMode ? 'text-red-300' : 'text-red-600'
+              }`} data-testid="available-time">
+                {availableTimeSeconds >= 0 ? formatTimeCompact(availableTimeSeconds) : `-${formatTimeCompact(Math.abs(availableTimeSeconds))}`}
+              </p>
+              <p className={`text-xs mt-2 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
+                {availableTimeSeconds >= 0 
+                  ? 'Para preguntas adicionales'
+                  : 'Considera aumentar la duración'
+                }
+              </p>
+            </div>
           </div>
         </div>
       </CardContent>
