@@ -1182,10 +1182,24 @@ def analyze_pdf_with_font_info(pdf_bytes: bytes, filename: str) -> PDFAnalysisRe
             # Check if this scripture reference is already in one of the questions
             already_counted = False
             lea_content = lea_scripture["parenthesis_content"].lower()
+            
+            # Extract just the book and chapter:verse from the lea reference
+            # e.g., "lea Marcos 3:1-6" -> "marcos 3:1-6"
+            lea_scripture_ref = re.sub(r'^[Ll][EeÉé][Aa](?:lo|LO)?\s+', '', lea_content).strip()
+            
             for q in questions:
-                if q.parenthesis_content and lea_content in q.parenthesis_content.lower():
-                    already_counted = True
-                    break
+                if q.parenthesis_content:
+                    q_content = q.parenthesis_content.lower()
+                    # Check if the scripture reference (without "lea") matches
+                    if lea_scripture_ref in q_content or q_content in lea_scripture_ref:
+                        already_counted = True
+                        break
+                    # Also check if it's the same reference with different format
+                    # e.g., "Marcos 3:1-6" vs "lea Marcos 3:1-6"
+                    q_scripture_ref = re.sub(r'^[Ll][EeÉé][Aa](?:lo|LO)?\s+', '', q_content).strip()
+                    if lea_scripture_ref == q_scripture_ref:
+                        already_counted = True
+                        break
             
             if not already_counted:
                 total_scriptures += 1
@@ -1515,10 +1529,24 @@ def analyze_pdf_with_font_info_configurable(
             # Check if this scripture reference is already in one of the questions
             already_counted = False
             lea_content = lea_scripture["parenthesis_content"].lower()
+            
+            # Extract just the book and chapter:verse from the lea reference
+            # e.g., "lea Marcos 3:1-6" -> "marcos 3:1-6"
+            lea_scripture_ref = re.sub(r'^[Ll][EeÉé][Aa](?:lo|LO)?\s+', '', lea_content).strip()
+            
             for q in questions:
-                if q.parenthesis_content and lea_content in q.parenthesis_content.lower():
-                    already_counted = True
-                    break
+                if q.parenthesis_content:
+                    q_content = q.parenthesis_content.lower()
+                    # Check if the scripture reference (without "lea") matches
+                    if lea_scripture_ref in q_content or q_content in lea_scripture_ref:
+                        already_counted = True
+                        break
+                    # Also check if it's the same reference with different format
+                    # e.g., "Marcos 3:1-6" vs "lea Marcos 3:1-6"
+                    q_scripture_ref = re.sub(r'^[Ll][EeÉé][Aa](?:lo|LO)?\s+', '', q_content).strip()
+                    if lea_scripture_ref == q_scripture_ref:
+                        already_counted = True
+                        break
             
             if not already_counted:
                 total_scriptures += 1
