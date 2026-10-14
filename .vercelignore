@@ -1,0 +1,12 @@
+# Ficheros que no hace falta subir a Vercel (pruebas y PDFs de ejemplo)
+*.pdf
+!frontend/public/*.pdf
+tests/
+test_reports/
+backend/tests/
+backend_test.py
+create_test_pdf.py
+test_*.py
+.emergent/
+memory/
+frontend/node_modules/

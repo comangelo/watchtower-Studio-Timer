@@ -1,0 +1,7 @@
+# Dependencias mínimas de la API para el hosting gratuito (Vercel).
+# El fichero backend/requirements.txt original (entorno Emergent) se conserva aparte.
+fastapi==0.110.1
+python-multipart==0.0.22
+PyMuPDF==1.26.7
+pydantic==2.12.5
+python-dotenv==1.2.1
