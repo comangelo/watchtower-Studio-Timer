@@ -1,7 +1,10 @@
 from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+try:
+    from motor.motor_asyncio import AsyncIOMotorClient
+except ImportError:  # MongoDB es opcional (no se usa en el hosting gratuito)
+    AsyncIOMotorClient = None
 from contextlib import asynccontextmanager
 import os
 import logging
@@ -23,12 +26,14 @@ logger = logging.getLogger(__name__)
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection - use get() with defaults to avoid crashes
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+# MongoDB es OPCIONAL: solo se usa para guardar un historial de análisis que la
+# web no muestra. Si MONGO_URL no está definida, la app funciona sin base de datos
+# (así es como corre en el hosting gratuito, sin esperas de conexión al arrancar).
+mongo_url = os.environ.get('MONGO_URL')
 db_name = os.environ.get('DB_NAME', 'pdf_timer_db')
 
 # Global variables for database connection
-client: AsyncIOMotorClient = None
+client = None
 db = None
 
 
@@ -36,7 +41,12 @@ db = None
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown events"""
     global client, db
-    
+
+    if not mongo_url or AsyncIOMotorClient is None:
+        logger.info("MONGO_URL no definida: la app funciona sin base de datos.")
+        yield
+        return
+
     # Startup
     try:
         logger.info("Connecting to MongoDB...")
