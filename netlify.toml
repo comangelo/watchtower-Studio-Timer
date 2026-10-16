@@ -1,0 +1,28 @@
+# Despliegue en Netlify: web estática (el PDF se analiza en el navegador, sin servidor)
+[build]
+  base = "frontend"
+  command = "CI=false yarn build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # pdfjs-dist trae dependencias opcionales solo para Node (canvas); no hacen falta en la web
+  YARN_FLAGS = "--ignore-optional"
+
+# Aplicación de una sola página: cualquier ruta carga index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# El service worker debe actualizarse siempre
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# Archivos con huella en el nombre: caché larga
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
