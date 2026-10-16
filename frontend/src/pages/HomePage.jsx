@@ -107,6 +107,8 @@ export default function HomePage() {
   const [readingSpeed, setReadingSpeed] = useLocalStorage('pdfTimer_readingSpeed', 180);
   const [answerTime, setAnswerTime] = useLocalStorage('pdfTimer_answerTime', 35);
   const [totalDuration, setTotalDuration] = useLocalStorage('pdfTimer_totalDuration', 60);
+  // Comentarios extra en párrafos largos o agrupados: 0 = sin extra, 1 = normal, 1.5 = más
+  const [longParagraphWeight, setLongParagraphWeight] = useLocalStorage('pdfTimer_longParagraphWeight', 1);
   
   // Calculate total seconds from duration in minutes
   const totalDurationSeconds = totalDuration * 60;
@@ -158,6 +160,7 @@ export default function HomePage() {
     getAdjustedFinalQuestionsTime,
     getAdjustedFinalQuestionTime,
     getAdjustedParagraphTimes,
+    getPlannedParagraphDuration,
     getFinalQuestionsTimeSeconds,
     getSecondsUntilReview,
     getScaleFactor,
@@ -181,6 +184,7 @@ export default function HomePage() {
     reviewQuestionStartTime,
     isInClosingWordsMode,
     paragraphStartTime,
+    longParagraphWeight,
   });
 
   // Group paragraphs that belong together based on "grouped_with" field
@@ -943,6 +947,8 @@ export default function HomePage() {
               setIntroductionDuration={setIntroductionDuration}
               closingWordsDuration={closingWordsDuration}
               setClosingWordsDuration={setClosingWordsDuration}
+              longParagraphWeight={longParagraphWeight}
+              setLongParagraphWeight={setLongParagraphWeight}
               darkMode={darkMode}
             />
             <UploadZone
@@ -1326,6 +1332,9 @@ export default function HomePage() {
           externalReviewQuestion={presentationReviewQuestion}
           onReviewQuestionChange={setPresentationReviewQuestion}
           perQuestionTime={isTimerRunning && adjustedFinalTimes.perQuestion ? adjustedFinalTimes.perQuestion : plannedPerQuestion}
+          estimateSpanSeconds={(a, b) => isTimerRunning
+            ? getAdjustedParagraphTimes(a, b).adjustedDuration
+            : getPlannedParagraphDuration(a, b)}
         />
       )}
     </div>
