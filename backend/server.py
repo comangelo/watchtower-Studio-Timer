@@ -1496,7 +1496,8 @@ def analyze_pdf_with_font_info_configurable(
     total_scriptures = 0
     total_notes = 0
     
-    # Extra time for paragraphs with image or scripture references (40 seconds)
+    # Tiempo extra por CADA elemento de apoyo (imagen, texto bíblico o nota): 40 s.
+    # Antes se sumaba una sola vez por tipo, de modo que dos imágenes contaban como una.
     EXTRA_CONTENT_TIME = 40
     
     for para_num in sorted(paragraphs_data.keys()):
@@ -1509,28 +1510,23 @@ def analyze_pdf_with_font_info_configurable(
         reading_time = calculate_reading_time(word_count, wpm)
         question_time = len(questions) * answer_time
         
-        # Count extra content and add time
-        para_has_image = False
-        para_has_scripture = False
-        para_has_note = False
+        # Contar elementos de apoyo del párrafo (cada uno suma tiempo)
+        para_images = 0
+        para_scriptures = 0
+        para_notes = 0
         
         # First, check questions for extra content
         for q in questions:
             if q.content_type == 'both':
                 # Both image and scripture in the same parenthesis
-                total_images += 1
-                total_scriptures += 1
-                para_has_image = True
-                para_has_scripture = True
+                para_images += 1
+                para_scriptures += 1
             elif q.content_type == 'image':
-                total_images += 1
-                para_has_image = True
+                para_images += 1
             elif q.content_type == 'scripture':
-                total_scriptures += 1
-                para_has_scripture = True
+                para_scriptures += 1
             elif q.content_type == 'note':
-                total_notes += 1
-                para_has_note = True
+                para_notes += 1
         
         # Second, check for "lea" scripture references in the paragraph text itself
         lea_scriptures = extract_lea_scriptures_from_text(para_text)
@@ -1559,8 +1555,7 @@ def analyze_pdf_with_font_info_configurable(
                         break
             
             if not already_counted:
-                total_scriptures += 1
-                para_has_scripture = True
+                para_scriptures += 1
                 # Add as a virtual question to show in UI
                 questions.append(QuestionInfo(
                     text="",  # No question text, just scripture reference
@@ -1570,14 +1565,12 @@ def analyze_pdf_with_font_info_configurable(
                     content_type="scripture"
                 ))
         
-        # Add 40 seconds for each type of extra content
-        extra_time = 0
-        if para_has_image:
-            extra_time += EXTRA_CONTENT_TIME
-        if para_has_scripture:
-            extra_time += EXTRA_CONTENT_TIME
-        if para_has_note:
-            extra_time += EXTRA_CONTENT_TIME
+        total_images += para_images
+        total_scriptures += para_scriptures
+        total_notes += para_notes
+
+        # 40 s por cada elemento de apoyo (imagen, texto bíblico o nota)
+        extra_time = (para_images + para_scriptures + para_notes) * EXTRA_CONTENT_TIME
         
         reading_time += extra_time
         
