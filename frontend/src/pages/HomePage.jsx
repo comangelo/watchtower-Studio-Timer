@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import axios from "axios";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
@@ -55,15 +54,13 @@ import { DurationAdjuster } from "@/components/DurationAdjuster";
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
 import { useNotifications } from "@/hooks/useNotifications";
 import { countQuestions } from "@/utils/timePlan";
+import { analyzeFile } from "@/analysis/analyzeFile";
 import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
 
 // Import utils
 import { addSecondsToDate } from "@/utils/timeFormatters";
 import { darkThemes, defaultDarkTheme } from "@/utils/darkThemes";
 
-// Vacío = misma web (la API se sirve en /api del mismo dominio)
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
-const API = `${BACKEND_URL}/api`;
 
 export default function HomePage() {
   // Core state
@@ -426,19 +423,12 @@ export default function HomePage() {
     }
 
     setIsLoading(true);
-    const formData = new FormData();
-    formData.append('file', file);
 
     try {
-      const response = await axios.post(
-        `${API}/analyze-pdf?wpm=${readingSpeed}&answer_time_seconds=${answerTime}`, 
-        formData, 
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }
-      );
+      // El PDF se analiza en el propio dispositivo: no se envía a ningún servidor
+      const result = await analyzeFile(file, readingSpeed, answerTime);
       
-      setAnalysisResult(response.data);
+      setAnalysisResult(result);
       setElapsedTime(0);
       setIsTimerRunning(false);
       setStartTime(null);
@@ -447,7 +437,7 @@ export default function HomePage() {
       toast.success("PDF analizado correctamente");
     } catch (error) {
       console.error("Error uploading PDF:", error);
-      toast.error(error.response?.data?.detail || "Error al procesar el PDF");
+      toast.error(error?.message ? `Error al procesar el PDF: ${error.message}` : "Error al procesar el PDF");
     } finally {
       setIsLoading(false);
     }
