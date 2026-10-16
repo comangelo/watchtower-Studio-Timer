@@ -26,6 +26,7 @@ export function useScheduleCalculator({
   reviewQuestionStartTime = null,
   isInClosingWordsMode = false,
   paragraphStartTime = null,
+  longParagraphWeight = 1,
 }) {
   // ---------- Plan estático (antes de empezar) ----------
   const staticPlan = useMemo(() => buildStaticPlan({
@@ -34,7 +35,8 @@ export function useScheduleCalculator({
     introSeconds: introductionDuration,
     conclusionSeconds: conclusionDuration,
     answerTime,
-  }), [analysisResult, totalDurationSeconds, introductionDuration, conclusionDuration, answerTime]);
+    longParagraphWeight,
+  }), [analysisResult, totalDurationSeconds, introductionDuration, conclusionDuration, answerTime, longParagraphWeight]);
 
   // ---------- Plan en vivo (se recalcula cada segundo con remainingTime) ----------
   const phase = isInClosingWordsMode ? 'conclusion'
@@ -59,11 +61,12 @@ export function useScheduleCalculator({
       phaseSpent,
       introSeconds: introductionDuration,
       conclusionSeconds: conclusionDuration,
+      longParagraphWeight,
       now: new Date(nowMs),
     });
     // remainingTime cambia cada segundo y fuerza el recálculo
   }, [analysisResult, startTime, phase, phaseStartMs, remainingTime, currentManualParagraph,
-      currentReviewQuestion, introductionDuration, conclusionDuration]);
+      currentReviewQuestion, introductionDuration, conclusionDuration, longParagraphWeight]);
 
   // Compatibilidad: "factor" = tiempo de comentario planificado ÷ tiempo de respuesta configurado
   const getScaleFactor = useCallback(() => staticPlan?.questionFactor ?? 1, [staticPlan]);
@@ -111,20 +114,38 @@ export function useScheduleCalculator({
   }, [analysisResult, staticPlan]);
 
   const getAdjustedParagraphTimes = useCallback((paragraphIndex, lastIndex = paragraphIndex) => {
-    if (!startTime || !analysisResult || !staticPlan) {
+    if (!analysisResult || !staticPlan) {
       return { start: null, end: null, adjustedDuration: 0 };
     }
     const paragraphs = analysisResult.paragraphs;
+
+    // Antes de empezar: duración según el plan inicial (sin horas)
+    if (!startTime) {
+      let extra = 0;
+      for (let i = paragraphIndex; i <= lastIndex; i++) extra += (staticPlan.commentUnits.extra[i] || 0) * staticPlan.perQuestion;
+      return {
+        start: null,
+        end: null,
+        adjustedDuration: Math.round(staticSpan(paragraphIndex, lastIndex)),
+        extraCommentSeconds: Math.round(extra),
+        adjustedQuestionTime: plannedPerQuestion,
+        isCompleted: false,
+        scaleFactor: staticPlan.questionFactor,
+      };
+    }
 
     // Ya completado (o fase de repaso/conclusión): horario planificado desde el inicio
     const completed = lastIndex < currentManualParagraph || isInReviewMode || isInClosingWordsMode;
     if (completed || !livePlan) {
       const start = addSecondsToDate(startTime, staticPlan.paragraphOffsets[paragraphIndex] || 0);
       const duration = staticSpan(paragraphIndex, lastIndex);
+      let extra = 0;
+      for (let i = paragraphIndex; i <= lastIndex; i++) extra += (staticPlan.commentUnits.extra[i] || 0) * staticPlan.perQuestion;
       return {
         start,
         end: addSecondsToDate(start, duration),
         adjustedDuration: Math.round(duration),
+        extraCommentSeconds: Math.round(extra),
         adjustedQuestionTime: plannedPerQuestion,
         isCompleted: true,
         scaleFactor: staticPlan.questionFactor,
@@ -134,11 +155,16 @@ export function useScheduleCalculator({
     // Pendiente o actual: horario en vivo
     const start = livePlan.paragraphStart(Math.max(paragraphIndex, livePlan.fromIndex));
     let duration = 0;
-    for (let i = paragraphIndex; i <= lastIndex; i++) duration += livePlan.paragraphDuration(paragraphs[i]);
+    let extra = 0;
+    for (let i = paragraphIndex; i <= lastIndex; i++) {
+      duration += livePlan.paragraphDuration(paragraphs[i]);
+      extra += livePlan.extraCommentSeconds(i);
+    }
     return {
       start,
       end: start ? addSecondsToDate(start, duration) : null,
       adjustedDuration: Math.round(duration),
+      extraCommentSeconds: Math.round(extra),
       adjustedQuestionTime: Math.round(livePlan.perQuestion),
       isCompleted: false,
       isCurrent: paragraphIndex <= currentManualParagraph && currentManualParagraph <= lastIndex,
