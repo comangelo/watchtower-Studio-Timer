@@ -129,6 +129,7 @@ export default function PresentationMode({
   onPhaseChange,
   externalReviewQuestion = 0,
   perQuestionTime = 35,
+  estimateSpanSeconds = null, // (primerIndice, ultimoIndice) => segundos previstos (lectura + comentarios)
   onReviewQuestionChange
 }) {
   const [phaseElapsed, setPhaseElapsed] = useState(0);
@@ -186,7 +187,11 @@ export default function PresentationMode({
             numbers: groupParagraphs.map(p => p.number),
             indices: groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number)),
             // Combined stats
-            totalTime: groupParagraphs.reduce((sum, p) => sum + (p.reading_time_seconds || 0) + countQuestions(p) * perQuestionTime, 0),
+            totalTime: estimateSpanSeconds
+              ? estimateSpanSeconds(
+                  Math.min(...groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number))),
+                  Math.max(...groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number))))
+              : groupParagraphs.reduce((sum, p) => sum + (p.reading_time_seconds || 0) + countQuestions(p) * perQuestionTime, 0),
             totalWords: groupParagraphs.reduce((sum, p) => sum + (p.word_count || 0), 0),
             allQuestions: groupParagraphs.flatMap(p => p.questions || [])
           });
@@ -199,7 +204,9 @@ export default function PresentationMode({
           paragraphs: [para],
           numbers: [para.number],
           indices: [index],
-          totalTime: (para.reading_time_seconds || 0) + countQuestions(para) * perQuestionTime,
+          totalTime: estimateSpanSeconds
+            ? estimateSpanSeconds(index, index)
+            : (para.reading_time_seconds || 0) + countQuestions(para) * perQuestionTime,
           totalWords: para.word_count || 0,
           allQuestions: para.questions || []
         });
@@ -207,7 +214,7 @@ export default function PresentationMode({
     });
     
     return groups;
-  }, [analysisResult?.paragraphs, perQuestionTime]);
+  }, [analysisResult?.paragraphs, perQuestionTime, estimateSpanSeconds]);
 
   // Current group index based on currentParagraphIndex
   const currentGroupIndex = useMemo(() => {

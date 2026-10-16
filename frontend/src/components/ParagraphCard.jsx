@@ -400,6 +400,15 @@ export function ParagraphCard({
           }`}>
             <span className={`px-2.5 py-1.5 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{totalWordCount} palabras</span>
             <span className={`px-2.5 py-1.5 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{formatTimeText(totalReadingTime)} lectura</span>
+            {paragraphTimes.extraCommentSeconds >= 5 && (
+              <span
+                className={`px-2.5 py-1.5 rounded-full font-medium ${darkMode ? 'bg-emerald-900 text-emerald-200' : 'bg-emerald-50 text-emerald-700'}`}
+                title="Párrafo largo: tiempo para preguntas adicionales o más comentarios"
+                data-testid={`extra-comments-${paragraph.number}`}
+              >
+                +{formatTimeText(paragraphTimes.extraCommentSeconds)} comentarios extra
+              </span>
+            )}
             {hasQuestions && (
               <span className={`px-2.5 py-1.5 rounded-full font-medium ${
                 hasFinalQuestions 

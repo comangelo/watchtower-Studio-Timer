@@ -1,4 +1,4 @@
-import { Clock, MessageCircleQuestion, Settings, Timer, Mic, Sparkles } from "lucide-react";
+import { Clock, MessageCircleQuestion, Settings, Timer, Mic, Sparkles, MessagesSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 
@@ -13,8 +13,16 @@ export function SettingsPanel({
   setIntroductionDuration,
   closingWordsDuration,
   setClosingWordsDuration,
+  longParagraphWeight = 1,
+  setLongParagraphWeight = () => {},
   darkMode = false
 }) {
+  const longParagraphOptions = [
+    { value: 0, label: "Sin extra", description: "Solo preguntas" },
+    { value: 1, label: "Normal", description: "Recomendado" },
+    { value: 1.5, label: "Más", description: "Muchos comentarios" }
+  ];
+
   const speedOptions = [
     { value: 150, label: "Lento", description: "150 PPM" },
     { value: 180, label: "Normal", description: "180 PPM" },
@@ -178,6 +186,44 @@ export function SettingsPanel({
                 <span>3 min</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Tercera fila: comentarios extra en párrafos largos o agrupados */}
+        <div className={`pt-4 sm:pt-6 mt-4 sm:mt-6 border-t ${darkMode ? 'border-zinc-700' : 'border-slate-200'}`}>
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+            <MessagesSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
+            <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>
+              Comentarios extra en párrafos largos o agrupados
+            </span>
+          </div>
+          <p className={`text-[10px] sm:text-xs mb-2 sm:mb-3 ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
+            Los párrafos con más palabras de lo normal reciben tiempo para preguntas adicionales o más comentarios.
+          </p>
+          <div className="flex gap-1.5 sm:gap-2">
+            {longParagraphOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setLongParagraphWeight(option.value)}
+                className={`flex-1 py-1.5 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 rounded-lg sm:rounded-xl text-center transition-all ${
+                  longParagraphWeight === option.value
+                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200'
+                    : darkMode 
+                      ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+                data-testid={`long-paragraph-${option.value}`}
+              >
+                <span className="block text-[10px] sm:text-xs md:text-sm font-semibold">{option.label}</span>
+                <span className={`block text-[8px] sm:text-[10px] md:text-xs mt-0.5 ${
+                  longParagraphWeight === option.value 
+                    ? 'text-emerald-100' 
+                    : darkMode ? 'text-zinc-500' : 'text-slate-400'
+                }`}>
+                  {option.description}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       </CardContent>
