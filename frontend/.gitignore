@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Copiado automáticamente desde pdfjs-dist al compilar
+/public/pdf.worker.min.js
