@@ -1,0 +1,5 @@
+# Verificación de la app Android (también para subidas manuales, que omiten .well-known)
+/.well-known/assetlinks.json  /assetlinks.json  200!
+
+# Aplicación de una sola página
+/*  /index.html  200
