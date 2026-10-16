@@ -262,7 +262,7 @@ def extract_question_with_parenthesis(question_text: str) -> dict:
     """
     Extract question text and any content in parentheses after the question.
     Classifies the parenthesis content:
-    - "image" if contains "Vea también la imagen", "Vea también las imágenes", "ilustración"
+    - "image" if contains "Vea/Mira también la imagen", "Vea/Mira también las imágenes", "ilustración"
     - "scripture" if contains bible reference pattern (e.g., Salmos 32:17, Juan 3:16)
     - "note" if contains "Vea también la nota", "nota"
     - "both" if contains BOTH image reference AND scripture
@@ -320,22 +320,26 @@ def classify_parenthesis_content(paren_content: str) -> str:
     Returns: "image", "scripture", "note", "both", or ""
     """
     paren_lower = paren_content.lower()
+
+    # Verbos con los que La Atalaya remite a una imagen o nota:
+    # "Vea también…", "Mira también…", "Mire…", "Observe…", "Observa…"
+    VERB = r'(?:vea|mira|mire|observe|observa)'
     
-    # Check for note reference - "vea también la nota", "vea la nota"
-    has_note = bool(re.search(r'[Vv]ea\s*(también\s+)?la\s+nota', paren_content, re.IGNORECASE))
+    # Check for note reference - "vea también la nota", "mira la nota"
+    has_note = bool(re.search(VERB + r'\s*(también\s+)?la\s+nota', paren_content, re.IGNORECASE))
     
     # Check for image reference - but NOT if it's a note
     # "vea también la imagen", "vea también las imágenes", "vea la ilustración", "imagen", "imágenes"
     has_image = False
     if not has_note:
         # Pattern for "Vea (también) (la/las) imagen/imágenes/ilustración/ilustraciones"
-        has_image = bool(re.search(r'[Vv]ea\s*(también\s+)?(la\s+|las\s+)?(im[aá]gen(es)?|ilustraci[oó]n(es)?)', paren_content, re.IGNORECASE))
+        has_image = bool(re.search(VERB + r'\s*(también\s+)?(la\s+|las\s+)?(im[aá]gen(es)?|ilustraci[oó]n(es)?)', paren_content, re.IGNORECASE))
         # Also check for standalone words
         if not has_image:
             has_image = bool(re.search(r'^(im[aá]gen(es)?|ilustraci[oó]n(es)?)$', paren_content.strip(), re.IGNORECASE))
         # Also check for generic "Vea también" without specific word (usually means image)
         if not has_image:
-            has_image = bool(re.search(r'^[Vv]ea\s+también\s*$', paren_content.strip(), re.IGNORECASE))
+            has_image = bool(re.search(r'^' + VERB + r'\s+también\s*$', paren_content.strip(), re.IGNORECASE))
     
     # Check for scripture reference with multiple patterns:
     # 1. "lea/Lea/LEA/léalo/Léalo" followed by book name and chapter:verse - e.g., "lea 2 Pedro 3:9", "Lea Salmo 138:6"
@@ -1701,6 +1705,15 @@ def extract_multiple_questions(text: str) -> list:
     # If no questions found but text ends with ? or has parentheses, use whole text
     if not questions and ('?' in text.strip()):
         questions.append(text.strip())
+
+    # Preguntas en forma de instrucción, sin signos de interrogación:
+    # "6, 7. Mencione alguna ocasión en la que…", "Explique…", "Dé un ejemplo…".
+    # Esta función solo recibe el texto de las líneas numeradas de preguntas,
+    # así que si no hay "¿…?" el texto completo es la pregunta.
+    if not questions:
+        whole = re.sub(r'\s+', ' ', text).strip()
+        if len(re.findall(r'\w+', whole)) >= 3:
+            questions.append(whole)
     
     return questions
 
