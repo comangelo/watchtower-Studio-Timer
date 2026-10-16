@@ -1,253 +1,194 @@
 import { useCallback, useMemo } from 'react';
 import { addSecondsToDate } from '../utils/timeFormatters';
+import { buildStaticPlan, buildLivePlan, countQuestions } from '../utils/timePlan';
 
-export function useScheduleCalculator(
-  analysisResult, 
-  startTime, 
-  remainingTime, 
+/**
+ * Calcula el plan de tiempos del estudio (ver utils/timePlan.js para los criterios).
+ *
+ * - Lectura fija, introducción y conclusión reservadas.
+ * - El tiempo restante se reparte a partes iguales entre las preguntas reales pendientes.
+ * - En vivo, el plan del párrafo actual se mantiene mientras se está en él y se
+ *   recalcula al avanzar.
+ */
+export function useScheduleCalculator({
+  analysisResult,
+  startTime,
+  remainingTime,
   currentManualParagraph,
   totalDurationSeconds = 3600,
   introductionDuration = 60,
-  conclusionDuration = 60
-) {
-  
-  // Base durations for intro/conclusion (used to calculate original time)
-  const BASE_INTRO_DURATION = 60;
-  const BASE_CONCLUSION_DURATION = 60;
-  
-  // Calculate the original total time of the article (without scaling)
-  // This uses base durations for intro/conclusion to avoid circular dependency
-  const originalTotalTime = useMemo(() => {
-    if (!analysisResult) return 3600;
-    
-    // Sum of all paragraph times + final questions time + base intro + base conclusion
-    const paragraphsTime = analysisResult.paragraphs.reduce(
-      (sum, p) => sum + p.total_time_seconds, 0
-    );
-    const finalQuestionsTime = (analysisResult.final_questions?.length || 0) * 35;
-    
-    return paragraphsTime + finalQuestionsTime + BASE_INTRO_DURATION + BASE_CONCLUSION_DURATION;
-  }, [analysisResult]);
+  conclusionDuration = 60,
+  answerTime = 35,
+  isInIntroductionMode = false,
+  introductionStartTime = null,
+  isInReviewMode = false,
+  currentReviewQuestion = 0,
+  reviewQuestionStartTime = null,
+  isInClosingWordsMode = false,
+  paragraphStartTime = null,
+}) {
+  // ---------- Plan estático (antes de empezar) ----------
+  const staticPlan = useMemo(() => buildStaticPlan({
+    analysis: analysisResult,
+    totalSeconds: totalDurationSeconds,
+    introSeconds: introductionDuration,
+    conclusionSeconds: conclusionDuration,
+    answerTime,
+  }), [analysisResult, totalDurationSeconds, introductionDuration, conclusionDuration, answerTime]);
 
-  // Calculate scale factor: how much to scale all times
-  const getScaleFactor = useCallback(() => {
-    if (!analysisResult || originalTotalTime === 0) return 1;
-    
-    // Scale factor = desired duration / original duration
-    const factor = totalDurationSeconds / originalTotalTime;
-    
-    // Limit to reasonable bounds (0.5x to 2x)
-    return Math.max(0.5, Math.min(2, factor));
-  }, [analysisResult, totalDurationSeconds, originalTotalTime]);
+  // ---------- Plan en vivo (se recalcula cada segundo con remainingTime) ----------
+  const phase = isInClosingWordsMode ? 'conclusion'
+    : isInReviewMode ? 'review'
+    : isInIntroductionMode ? 'intro'
+    : 'paragraphs';
 
-  // Get scaled introduction time
-  const getScaledIntroductionTime = useCallback(() => {
-    const factor = getScaleFactor();
-    return Math.round(introductionDuration * factor);
-  }, [getScaleFactor, introductionDuration]);
+  const phaseStartMs = phase === 'review' ? reviewQuestionStartTime
+    : phase === 'intro' ? introductionStartTime
+    : paragraphStartTime;
 
-  // Get scaled conclusion time
-  const getScaledConclusionTime = useCallback(() => {
-    const factor = getScaleFactor();
-    return Math.round(conclusionDuration * factor);
-  }, [getScaleFactor, conclusionDuration]);
+  const livePlan = useMemo(() => {
+    if (!analysisResult || !startTime) return null;
+    const nowMs = Date.now();
+    const phaseSpent = phaseStartMs ? Math.max(0, (nowMs - phaseStartMs) / 1000) : 0;
+    return buildLivePlan({
+      analysis: analysisResult,
+      phase,
+      remainingTime,
+      currentParagraph: currentManualParagraph,
+      currentReviewQuestion,
+      phaseSpent,
+      introSeconds: introductionDuration,
+      conclusionSeconds: conclusionDuration,
+      now: new Date(nowMs),
+    });
+    // remainingTime cambia cada segundo y fuerza el recálculo
+  }, [analysisResult, startTime, phase, phaseStartMs, remainingTime, currentManualParagraph,
+      currentReviewQuestion, introductionDuration, conclusionDuration]);
 
-  // Calculate adjusted time for final questions based on manual progress and scale factor
+  // Compatibilidad: "factor" = tiempo de comentario planificado ÷ tiempo de respuesta configurado
+  const getScaleFactor = useCallback(() => staticPlan?.questionFactor ?? 1, [staticPlan]);
+
+  // Introducción y conclusión duran lo configurado (ya no se escalan)
+  const getScaledIntroductionTime = useCallback(() => introductionDuration, [introductionDuration]);
+  const getScaledConclusionTime = useCallback(() => conclusionDuration, [conclusionDuration]);
+
+  const plannedPerQuestion = staticPlan ? Math.round(staticPlan.perQuestion) : answerTime;
+
+  // ---------- Preguntas de repaso ----------
   const getAdjustedFinalQuestionsTime = useCallback(() => {
-    if (!startTime || !analysisResult) return { start: null, end: null };
-    
-    const finalQuestionsCount = analysisResult.final_questions?.length || 0;
-    if (finalQuestionsCount === 0) return { start: null, end: null };
-    
-    const scaleFactor = getScaleFactor();
-    
-    // Calculate remaining paragraphs
-    const remainingParagraphs = analysisResult.paragraphs.slice(currentManualParagraph);
-    
-    // Scaled reading time for remaining paragraphs
-    const scaledReadingTime = remainingParagraphs.reduce(
-      (sum, p) => sum + (p.reading_time_seconds * scaleFactor), 0
-    );
-    
-    // Count total questions (paragraphs + final questions)
-    const remainingParagraphsQuestionCount = remainingParagraphs.reduce(
-      (sum, p) => sum + p.questions.length, 0
-    );
-    const totalQuestionCount = remainingParagraphsQuestionCount + finalQuestionsCount;
-    
-    // Time available for ALL questions = remaining time - scaled reading time
-    const timeForAllQuestions = Math.max(0, remainingTime - scaledReadingTime);
-    
-    // Adjusted time per question (distributed equally among all remaining questions)
-    const adjustedTimePerQuestion = totalQuestionCount > 0 
-      ? Math.round(timeForAllQuestions / totalQuestionCount)
-      : Math.round(35 * scaleFactor);
-    
-    // Time for final questions specifically
-    const totalFinalQuestionsTime = finalQuestionsCount * adjustedTimePerQuestion;
-    
-    // Calculate when final questions start (after reading time + paragraph questions)
-    const paragraphsQuestionTime = remainingParagraphsQuestionCount * adjustedTimePerQuestion;
-    const timeUntilFinalQuestions = scaledReadingTime + paragraphsQuestionTime;
-    
-    const now = new Date();
-    const adjustedStart = addSecondsToDate(now, timeUntilFinalQuestions);
-    const adjustedEnd = addSecondsToDate(adjustedStart, totalFinalQuestionsTime);
-    
-    return { 
-      start: adjustedStart, 
-      end: adjustedEnd,
-      totalTime: totalFinalQuestionsTime,
-      perQuestion: adjustedTimePerQuestion,
-      originalPerQuestion: Math.round(35 * scaleFactor),
-      scaleFactor
+    const finals = analysisResult?.final_questions?.length || 0;
+    if (!livePlan || finals === 0) {
+      return { start: null, end: null, plannedPerQuestion };
+    }
+    const perQuestion = Math.round(livePlan.perQuestion);
+    return {
+      start: livePlan.reviewStart,
+      end: livePlan.reviewEnd,
+      totalTime: Math.round(finals * livePlan.perQuestion),
+      perQuestion,
+      originalPerQuestion: plannedPerQuestion,
+      plannedPerQuestion,
+      secondsUntilStart: livePlan.secondsUntilReview,
+      readingFitsInTime: livePlan.readingFitsInTime,
+      scaleFactor: staticPlan?.questionFactor ?? 1,
     };
-  }, [startTime, analysisResult, currentManualParagraph, remainingTime, getScaleFactor]);
+  }, [livePlan, analysisResult, plannedPerQuestion, staticPlan]);
 
-  // Get adjusted time for each individual final question
   const getAdjustedFinalQuestionTime = useCallback((questionIndex) => {
-    if (!startTime || !analysisResult) return null;
-    
     const adjusted = getAdjustedFinalQuestionsTime();
     if (!adjusted.start) return null;
-    
-    return addSecondsToDate(adjusted.start, questionIndex * adjusted.perQuestion);
-  }, [startTime, analysisResult, getAdjustedFinalQuestionsTime]);
+    const done = isInReviewMode ? currentReviewQuestion : 0;
+    const offsetIndex = Math.max(0, questionIndex - done);
+    return addSecondsToDate(adjusted.start, offsetIndex * (livePlan?.perQuestion || 0));
+  }, [getAdjustedFinalQuestionsTime, isInReviewMode, currentReviewQuestion, livePlan]);
 
-  // Calculate adjusted paragraph times based on remaining time and scale factor
-  const getAdjustedParagraphTimes = useCallback((paragraphIndex) => {
-    if (!startTime || !analysisResult) return { start: null, end: null, adjustedDuration: 0 };
-    
-    const paragraph = analysisResult.paragraphs[paragraphIndex];
-    const scaleFactor = getScaleFactor();
-    
-    // If paragraph is before current, it's completed - use scaled original times
-    if (paragraphIndex < currentManualParagraph) {
-      let cumulativeTime = 0;
-      for (let i = 0; i < paragraphIndex; i++) {
-        cumulativeTime += analysisResult.paragraphs[i].total_time_seconds * scaleFactor;
-      }
-      const scaledDuration = paragraph.total_time_seconds * scaleFactor;
-      const paragraphStart = addSecondsToDate(startTime, cumulativeTime);
-      const paragraphEnd = addSecondsToDate(startTime, cumulativeTime + scaledDuration);
-      return { 
-        start: paragraphStart, 
-        end: paragraphEnd, 
-        adjustedDuration: Math.round(scaledDuration),
-        adjustedQuestionTime: Math.round(35 * scaleFactor),
+  // ---------- Párrafos (admite grupos: índice inicial y final) ----------
+  const staticSpan = useCallback((fromIdx, toIdx) => {
+    const paragraphs = analysisResult.paragraphs;
+    let seconds = 0;
+    for (let i = fromIdx; i <= toIdx; i++) seconds += staticPlan.paragraphDuration(paragraphs[i]);
+    return seconds;
+  }, [analysisResult, staticPlan]);
+
+  const getAdjustedParagraphTimes = useCallback((paragraphIndex, lastIndex = paragraphIndex) => {
+    if (!startTime || !analysisResult || !staticPlan) {
+      return { start: null, end: null, adjustedDuration: 0 };
+    }
+    const paragraphs = analysisResult.paragraphs;
+
+    // Ya completado (o fase de repaso/conclusión): horario planificado desde el inicio
+    const completed = lastIndex < currentManualParagraph || isInReviewMode || isInClosingWordsMode;
+    if (completed || !livePlan) {
+      const start = addSecondsToDate(startTime, staticPlan.paragraphOffsets[paragraphIndex] || 0);
+      const duration = staticSpan(paragraphIndex, lastIndex);
+      return {
+        start,
+        end: addSecondsToDate(start, duration),
+        adjustedDuration: Math.round(duration),
+        adjustedQuestionTime: plannedPerQuestion,
         isCompleted: true,
-        scaleFactor
+        scaleFactor: staticPlan.questionFactor,
       };
     }
-    
-    // Calculate remaining content
-    const remainingParagraphs = analysisResult.paragraphs.slice(currentManualParagraph);
-    const finalQuestionsCount = analysisResult.final_questions?.length || 0;
-    
-    // Scaled total reading time for remaining paragraphs
-    const totalScaledReadingTime = remainingParagraphs.reduce(
-      (sum, p) => sum + (p.reading_time_seconds * scaleFactor), 0
-    );
-    
-    // Total question count (paragraphs + final questions)
-    const totalQuestionCount = remainingParagraphs.reduce(
-      (sum, p) => sum + p.questions.length, 0
-    ) + finalQuestionsCount;
-    
-    // Time available for ALL questions
-    const timeForAllQuestions = Math.max(0, remainingTime - totalScaledReadingTime);
-    
-    // Adjusted time per question
-    const adjustedTimePerQuestion = totalQuestionCount > 0 
-      ? timeForAllQuestions / totalQuestionCount
-      : 35 * scaleFactor;
-    
-    // Calculate start time for this paragraph
-    let cumulativeTime = 0;
-    for (let i = currentManualParagraph; i < paragraphIndex; i++) {
-      const p = analysisResult.paragraphs[i];
-      // Scaled reading time + adjusted question time
-      cumulativeTime += (p.reading_time_seconds * scaleFactor) + (p.questions.length * adjustedTimePerQuestion);
-    }
-    
-    const now = new Date();
-    const adjustedStart = addSecondsToDate(now, cumulativeTime);
-    
-    // This paragraph's duration: scaled reading + adjusted questions
-    const thisParaDuration = (paragraph.reading_time_seconds * scaleFactor) + (paragraph.questions.length * adjustedTimePerQuestion);
-    const adjustedEnd = addSecondsToDate(adjustedStart, thisParaDuration);
-    
-    return { 
-      start: adjustedStart, 
-      end: adjustedEnd, 
-      adjustedDuration: Math.round(thisParaDuration),
-      adjustedQuestionTime: Math.round(adjustedTimePerQuestion),
+
+    // Pendiente o actual: horario en vivo
+    const start = livePlan.paragraphStart(Math.max(paragraphIndex, livePlan.fromIndex));
+    let duration = 0;
+    for (let i = paragraphIndex; i <= lastIndex; i++) duration += livePlan.paragraphDuration(paragraphs[i]);
+    return {
+      start,
+      end: start ? addSecondsToDate(start, duration) : null,
+      adjustedDuration: Math.round(duration),
+      adjustedQuestionTime: Math.round(livePlan.perQuestion),
       isCompleted: false,
-      isCurrent: paragraphIndex === currentManualParagraph,
-      scaleFactor
+      isCurrent: paragraphIndex <= currentManualParagraph && currentManualParagraph <= lastIndex,
+      scaleFactor: staticPlan.questionFactor,
     };
-  }, [startTime, analysisResult, currentManualParagraph, remainingTime, getScaleFactor]);
+  }, [startTime, analysisResult, staticPlan, livePlan, currentManualParagraph, isInReviewMode,
+      isInClosingWordsMode, staticSpan, plannedPerQuestion]);
 
-  // Calculate paragraph times based on start time (scaled, not adjusted by progress)
+  // Duración planificada (estática) de un párrafo o grupo, para estadísticas
+  const getPlannedParagraphDuration = useCallback((fromIdx, toIdx = fromIdx) => {
+    if (!analysisResult || !staticPlan) return 0;
+    return staticSpan(fromIdx, toIdx);
+  }, [analysisResult, staticPlan, staticSpan]);
+
   const getParagraphTimes = useCallback((paragraphIndex) => {
-    if (!startTime || !analysisResult) return { start: null, end: null };
-    
-    const scaleFactor = getScaleFactor();
-    
-    let cumulativeTime = 0;
-    for (let i = 0; i < paragraphIndex; i++) {
-      cumulativeTime += analysisResult.paragraphs[i].total_time_seconds * scaleFactor;
-    }
-    
-    const scaledDuration = analysisResult.paragraphs[paragraphIndex].total_time_seconds * scaleFactor;
-    const paragraphStart = addSecondsToDate(startTime, cumulativeTime);
-    const paragraphEnd = addSecondsToDate(startTime, cumulativeTime + scaledDuration);
-    
-    return { start: paragraphStart, end: paragraphEnd, scaleFactor };
-  }, [startTime, analysisResult, getScaleFactor]);
+    if (!startTime || !analysisResult || !staticPlan) return { start: null, end: null };
+    const start = addSecondsToDate(startTime, staticPlan.paragraphOffsets[paragraphIndex] || 0);
+    const end = addSecondsToDate(start, staticPlan.paragraphDuration(analysisResult.paragraphs[paragraphIndex]));
+    return { start, end, scaleFactor: staticPlan.questionFactor };
+  }, [startTime, analysisResult, staticPlan]);
 
-  // Get final questions time in seconds from start (scaled)
-  const getFinalQuestionsTimeSeconds = useCallback(() => {
-    if (!analysisResult) return 0;
-    
-    const scaleFactor = getScaleFactor();
-    
-    let cumulativeTime = 0;
-    for (const para of analysisResult.paragraphs) {
-      cumulativeTime += para.reading_time_seconds * scaleFactor;
-      if (para.questions.some(q => q.is_final_question)) {
-        return cumulativeTime;
-      }
-      cumulativeTime += para.questions.length * 35 * scaleFactor;
-    }
-    
-    if (analysisResult.final_questions_start_time > 0) {
-      return analysisResult.final_questions_start_time * scaleFactor;
-    }
-    
-    return 0;
-  }, [analysisResult, getScaleFactor]);
+  // Segundos desde el inicio hasta el repaso según el plan inicial
+  const getFinalQuestionsTimeSeconds = useCallback(() => staticPlan?.reviewOffset || 0, [staticPlan]);
 
-  // Get final questions time as Date
   const getFinalQuestionsTime = useCallback(() => {
-    if (!startTime || !analysisResult) return null;
-    const seconds = getFinalQuestionsTimeSeconds();
-    if (seconds > 0) {
-      return addSecondsToDate(startTime, seconds);
-    }
-    return null;
-  }, [startTime, analysisResult, getFinalQuestionsTimeSeconds]);
+    if (!startTime || !staticPlan) return null;
+    return addSecondsToDate(startTime, staticPlan.reviewOffset);
+  }, [startTime, staticPlan]);
+
+  // Segundos que faltan para el repaso según el plan recalculado
+  const getSecondsUntilReview = useCallback(() => {
+    if (!livePlan || isInReviewMode || isInClosingWordsMode) return null;
+    return livePlan.secondsUntilReview;
+  }, [livePlan, isInReviewMode, isInClosingWordsMode]);
 
   return {
     getAdjustedFinalQuestionsTime,
     getAdjustedFinalQuestionTime,
     getAdjustedParagraphTimes,
+    getPlannedParagraphDuration,
     getParagraphTimes,
     getFinalQuestionsTimeSeconds,
     getFinalQuestionsTime,
+    getSecondsUntilReview,
     getScaleFactor,
     getScaledIntroductionTime,
     getScaledConclusionTime,
-    originalTotalTime,
+    originalTotalTime: staticPlan?.naturalTotal || totalDurationSeconds,
+    plannedPerQuestion,
+    staticPlan,
+    countQuestions,
   };
 }
