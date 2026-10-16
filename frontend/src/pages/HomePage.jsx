@@ -54,6 +54,7 @@ import { DurationAdjuster } from "@/components/DurationAdjuster";
 // Import hooks
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
 import { useNotifications } from "@/hooks/useNotifications";
+import { countQuestions } from "@/utils/timePlan";
 import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
 
 // Import utils
@@ -158,20 +159,29 @@ export default function HomePage() {
     getAdjustedFinalQuestionTime,
     getAdjustedParagraphTimes,
     getFinalQuestionsTimeSeconds,
-    getFinalQuestionsTime,
+    getSecondsUntilReview,
     getScaleFactor,
-    getScaledIntroductionTime,
-    getScaledConclusionTime,
     originalTotalTime,
-  } = useScheduleCalculator(
-    analysisResult, 
-    startTime, 
-    remainingTime, 
+    plannedPerQuestion,
+    staticPlan,
+  } = useScheduleCalculator({
+    analysisResult,
+    startTime,
+    remainingTime,
     currentManualParagraph,
     totalDurationSeconds,
     introductionDuration,
-    conclusionDuration
-  );
+    // La conclusión que se configura en Ajustes es "closingWordsDuration"
+    conclusionDuration: closingWordsDuration,
+    answerTime,
+    isInIntroductionMode,
+    introductionStartTime,
+    isInReviewMode,
+    currentReviewQuestion,
+    reviewQuestionStartTime,
+    isInClosingWordsMode,
+    paragraphStartTime,
+  });
 
   // Group paragraphs that belong together based on "grouped_with" field
   const groupedParagraphs = React.useMemo(() => {
@@ -285,7 +295,8 @@ export default function HomePage() {
     if (paragraphStartTime) {
       const actualTimeSpent = Math.round((Date.now() - paragraphStartTime) / 1000);
       const currentParagraph = analysisResult.paragraphs[currentManualParagraph];
-      const estimatedTime = currentParagraph.total_time_seconds;
+      const estimatedTime = getAdjustedParagraphTimes(currentManualParagraph).adjustedDuration
+        || currentParagraph.total_time_seconds;
       
       setParagraphStats(prev => ({
         ...prev,
@@ -295,7 +306,7 @@ export default function HomePage() {
           actualTime: actualTimeSpent,
           difference: actualTimeSpent - Math.round(estimatedTime),
           wordCount: currentParagraph.word_count,
-          questionsCount: currentParagraph.questions.length
+          questionsCount: countQuestions(currentParagraph)
         }
       }));
     }
@@ -306,7 +317,7 @@ export default function HomePage() {
     const now = new Date();
     setParagraphStartTimes(prev => ({ ...prev, [nextIndex]: now }));
     toast.success(`Avanzando al Párrafo ${nextIndex + 1}`);
-  }, [currentManualParagraph, analysisResult, paragraphStartTime]);
+  }, [currentManualParagraph, analysisResult, paragraphStartTime, getAdjustedParagraphTimes]);
 
   const goToPreviousParagraph = useCallback(() => {
     if (currentManualParagraph <= 0) return;
@@ -320,7 +331,7 @@ export default function HomePage() {
     if (!isTimerRunning || !analysisResult) return;
     
     const adjustedTimes = getAdjustedFinalQuestionsTime();
-    if (!adjustedTimes || !adjustedTimes.perQuestion) return;
+    if (!adjustedTimes || adjustedTimes.perQuestion === undefined || isInClosingWordsMode) return;
     
     const timePerQuestion = adjustedTimes.perQuestion;
     
@@ -337,21 +348,20 @@ export default function HomePage() {
     if (timePerQuestion >= 25 && lowTimeAlertShown) {
       setLowTimeAlertShown(false);
     }
-  }, [isTimerRunning, analysisResult, getAdjustedFinalQuestionsTime, lowTimeAlertShown, playNotificationSound, triggerVibration]);
+  }, [isTimerRunning, analysisResult, getAdjustedFinalQuestionsTime, lowTimeAlertShown, playNotificationSound, triggerVibration, isInClosingWordsMode]);
 
   // Check for notification triggers
   useEffect(() => {
     if (!isTimerRunning || !analysisResult) return;
     
-    const finalQuestionsSeconds = getFinalQuestionsTimeSeconds();
-    if (finalQuestionsSeconds <= 0) return;
-    
-    const timeUntilFinalQuestions = finalQuestionsSeconds - elapsedTime;
+    // Segundos hasta el repaso según el plan RECALCULADO (no el inicial)
+    const timeUntilFinalQuestions = getSecondsUntilReview();
+    if (timeUntilFinalQuestions === null) return;
     
     // First alert - only if value > 0
     if (alertTimes.firstAlert > 0) {
       const firstAlertSeconds = alertTimes.firstAlert * 60;
-      if (timeUntilFinalQuestions <= firstAlertSeconds && timeUntilFinalQuestions > firstAlertSeconds - 5 && !notificationPlayed.fiveMin) {
+      if (timeUntilFinalQuestions <= firstAlertSeconds && timeUntilFinalQuestions > 0 && !notificationPlayed.fiveMin) {
         playNotificationSound('warning');
         triggerVibration([200, 100, 200]);
         setNotificationPlayed(prev => ({ ...prev, fiveMin: true }));
@@ -362,7 +372,7 @@ export default function HomePage() {
     // Second alert - only if value > 0
     if (alertTimes.secondAlert > 0) {
       const secondAlertSeconds = alertTimes.secondAlert * 60;
-      if (timeUntilFinalQuestions <= secondAlertSeconds && timeUntilFinalQuestions > secondAlertSeconds - 5 && !notificationPlayed.oneMin) {
+      if (timeUntilFinalQuestions <= secondAlertSeconds && timeUntilFinalQuestions > 0 && !notificationPlayed.oneMin) {
         playNotificationSound('urgent');
         triggerVibration([200, 100, 200, 100, 200]);
         setNotificationPlayed(prev => ({ ...prev, oneMin: true }));
@@ -370,13 +380,13 @@ export default function HomePage() {
       }
     }
     
-    if (timeUntilFinalQuestions <= 0 && timeUntilFinalQuestions > -5 && !notificationPlayed.now) {
+    if (timeUntilFinalQuestions <= 0 && !notificationPlayed.now) {
       playNotificationSound('final');
       triggerVibration([500, 200, 500, 200, 500]);
       setNotificationPlayed(prev => ({ ...prev, now: true }));
       toast.success("🎯 ¡Es hora de las preguntas de repaso!", { duration: 8000 });
     }
-  }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getFinalQuestionsTimeSeconds, alertTimes, triggerVibration]);
+  }, [elapsedTime, isTimerRunning, analysisResult, notificationPlayed, playNotificationSound, getSecondsUntilReview, alertTimes, triggerVibration]);
 
   // Initialize remaining time when analysis is complete or duration changes
   useEffect(() => {
@@ -560,11 +570,10 @@ export default function HomePage() {
 
   // Start from specific paragraph
   const startFromParagraph = useCallback((paragraphIndex) => {
-    let cumulativeTime = 0;
-    for (let i = 0; i < paragraphIndex; i++) {
-      cumulativeTime += analysisResult.paragraphs[i].total_time_seconds;
-    }
+    // Como si la introducción y los párrafos anteriores hubieran durado lo planificado
+    const cumulativeTime = staticPlan?.paragraphOffsets?.[paragraphIndex] ?? 0;
     
+    setIsInIntroductionMode(false);
     setElapsedTime(Math.floor(cumulativeTime));
     setRemainingTime(totalDurationSeconds - Math.floor(cumulativeTime));
     
@@ -578,7 +587,7 @@ export default function HomePage() {
     setParagraphStartTime(Date.now()); // Start timing this paragraph
     
     toast.success(`Iniciando desde Párrafo ${paragraphIndex + 1}`);
-  }, [analysisResult, totalDurationSeconds]);
+  }, [totalDurationSeconds, staticPlan]);
 
   // Export functions
   const exportToImage = async () => {
@@ -1013,7 +1022,7 @@ export default function HomePage() {
                     </div>
                     
                     {/* Adjusted Times Summary */}
-                    {adjustedFinalTimes.perQuestion && adjustedFinalTimes.perQuestion !== 35 && (
+                    {isTimerRunning && adjustedFinalTimes.perQuestion > 0 && Math.abs(adjustedFinalTimes.perQuestion - plannedPerQuestion) >= 1 && (
                       <div className={`mt-4 p-4 rounded-xl border-2 ${
                         adjustedFinalTimes.perQuestion < 20 
                           ? darkMode ? 'bg-orange-950/50 border-orange-800' : 'bg-orange-100 border-orange-300' 
@@ -1036,7 +1045,7 @@ export default function HomePage() {
                             }`}>
                               {Math.round(adjustedFinalTimes.perQuestion)} seg
                             </span>
-                            <span className={`text-sm ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>(orig: 35s)</span>
+                            <span className={`text-sm ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>(plan: {plannedPerQuestion}s)</span>
                           </div>
                         </div>
                       </div>
@@ -1148,7 +1157,7 @@ export default function HomePage() {
                         groupedParagraphs={group.paragraphs}
                         index={firstIndex}
                         startTime={startTime}
-                        paragraphTimes={getAdjustedParagraphTimes(firstIndex)}
+                        paragraphTimes={getAdjustedParagraphTimes(firstIndex, lastIndex)}
                         onStartFromHere={() => startFromParagraph(firstIndex)}
                         isTimerRunning={isTimerRunning && !isInIntroductionMode}
                         isCurrentParagraph={isCurrentGroup}
@@ -1162,7 +1171,7 @@ export default function HomePage() {
                             // Save stats for all paragraphs in group (using scaled time)
                             if (paragraphStartTime) {
                               const actualTimeSpent = Math.round((Date.now() - paragraphStartTime) / 1000);
-                              const scaledEstimated = getAdjustedParagraphTimes(firstIndex).adjustedDuration || 
+                              const scaledEstimated = getAdjustedParagraphTimes(firstIndex, lastIndex).adjustedDuration || 
                                 group.paragraphs.reduce((sum, p) => sum + p.total_time_seconds, 0);
                               setParagraphStats(prev => ({
                                 ...prev,
@@ -1172,7 +1181,7 @@ export default function HomePage() {
                                   actualTime: actualTimeSpent,
                                   difference: actualTimeSpent - Math.round(scaledEstimated),
                                   wordCount: group.paragraphs.reduce((sum, p) => sum + p.word_count, 0),
-                                  questionsCount: group.paragraphs.reduce((sum, p) => sum + p.questions.length, 0)
+                                  questionsCount: group.paragraphs.reduce((sum, p) => sum + countQuestions(p), 0)
                                 }
                               }));
                             }
@@ -1181,7 +1190,7 @@ export default function HomePage() {
                         }}
                         isLastParagraph={lastIndex === analysisResult.paragraphs.length - 1}
                         adjustedQuestionTime={adjustedFinalTimes.perQuestion}
-                        scaleFactor={getScaleFactor()}
+                        plannedQuestionTime={plannedPerQuestion}
                         overtimeAlertEnabled={overtimeAlertEnabled}
                         soundEnabled={soundEnabled}
                         vibrationEnabled={vibrationEnabled}
@@ -1205,6 +1214,7 @@ export default function HomePage() {
                   startTime={startTime}
                   isTimerRunning={isTimerRunning}
                   adjustedTimes={adjustedFinalTimes}
+                  plannedPerQuestion={plannedPerQuestion}
                   getQuestionTime={getAdjustedFinalQuestionTime}
                   originalStartTime={getFinalQuestionsTimeSeconds()}
                   isInReviewMode={isInReviewMode}
@@ -1246,6 +1256,7 @@ export default function HomePage() {
                   remainingTime={remainingTime}
                   adjustedTimes={adjustedFinalTimes}
                   isTimerRunning={isTimerRunning}
+                  plannedPerQuestion={plannedPerQuestion}
                 />
 
                 <DurationAdjuster
@@ -1253,6 +1264,9 @@ export default function HomePage() {
                   setTotalDuration={setTotalDuration}
                   originalTotalTime={originalTotalTime}
                   scaleFactor={getScaleFactor()}
+                  plannedPerQuestion={plannedPerQuestion}
+                  answerTime={answerTime}
+                  readingFitsInTime={staticPlan?.readingFitsInTime ?? true}
                   darkMode={darkMode}
                 />
 
@@ -1311,7 +1325,7 @@ export default function HomePage() {
           onPhaseChange={setPresentationPhase}
           externalReviewQuestion={presentationReviewQuestion}
           onReviewQuestionChange={setPresentationReviewQuestion}
-          scaleFactor={getScaleFactor()}
+          perQuestionTime={isTimerRunning && adjustedFinalTimes.perQuestion ? adjustedFinalTimes.perQuestion : plannedPerQuestion}
         />
       )}
     </div>
