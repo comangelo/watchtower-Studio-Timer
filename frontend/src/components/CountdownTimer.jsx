@@ -2,12 +2,12 @@ import { AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatTime } from "../utils/timeFormatters";
 
-export function CountdownTimer({ remainingTime, adjustedTimes, isTimerRunning }) {
+export function CountdownTimer({ remainingTime, adjustedTimes, isTimerRunning, plannedPerQuestion = 35 }) {
   const timePerQuestion = isTimerRunning && adjustedTimes?.perQuestion 
     ? adjustedTimes.perQuestion 
-    : 35;
-  const isAdjusted = isTimerRunning && timePerQuestion !== 35;
-  const timeDiff = timePerQuestion - 35;
+    : plannedPerQuestion;
+  const isAdjusted = isTimerRunning && Math.abs(timePerQuestion - plannedPerQuestion) >= 1;
+  const timeDiff = timePerQuestion - plannedPerQuestion;
   const isLowTime = isTimerRunning && timePerQuestion < 20;
   const isCritical = isTimerRunning && timePerQuestion < 15;
 

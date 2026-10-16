@@ -459,6 +459,7 @@ export function FinalQuestionsSection({
   onStartClosingWords,
   isInClosingWordsMode,
   closingWordsDuration = 60,
+  plannedPerQuestion = 35,
   onFinishStudy,
   overtimeAlertEnabled,
   soundEnabled,
@@ -471,14 +472,14 @@ export function FinalQuestionsSection({
   
   const totalTime = isTimerRunning && adjustedTimes.totalTime 
     ? adjustedTimes.totalTime 
-    : finalQuestions.length * 35;
+    : finalQuestions.length * plannedPerQuestion;
   
   const perQuestionTime = isTimerRunning && adjustedTimes.perQuestion
     ? adjustedTimes.perQuestion
-    : 35;
+    : plannedPerQuestion;
   
-  const isAdjusted = isTimerRunning && perQuestionTime !== 35;
-  const timeDiff = perQuestionTime - 35;
+  const isAdjusted = isTimerRunning && Math.abs(perQuestionTime - plannedPerQuestion) >= 1;
+  const timeDiff = perQuestionTime - plannedPerQuestion;
   const isLowTime = isTimerRunning && perQuestionTime < 20;
   const isCriticalTime = isTimerRunning && perQuestionTime < 10;
 
@@ -558,7 +559,7 @@ export function FinalQuestionsSection({
               <span className={`text-lg font-light ${darkMode ? 'text-red-400' : 'text-red-700'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                 {isTimerRunning && adjustedTimes.end
                   ? formatClockTime(adjustedTimes.end)
-                  : formatClockTime(addSecondsToDate(startTime, originalStartTime + (finalQuestions.length * 35)))
+                  : formatClockTime(addSecondsToDate(startTime, originalStartTime + (finalQuestions.length * plannedPerQuestion)))
                 }
               </span>
             </div>
@@ -680,7 +681,7 @@ export function FinalQuestionsSection({
                     <span className={`text-xs ${darkMode ? 'text-red-400' : 'text-red-500'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
                       {isTimerRunning && getQuestionTime
                         ? formatClockTime(getQuestionTime(idx))
-                        : formatClockTime(addSecondsToDate(startTime, originalStartTime + (idx * 35)))
+                        : formatClockTime(addSecondsToDate(startTime, originalStartTime + (idx * plannedPerQuestion)))
                       }
                     </span>
                   )}

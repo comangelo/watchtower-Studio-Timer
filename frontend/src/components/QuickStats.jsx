@@ -1,3 +1,4 @@
+import { countAllQuestions } from "../utils/timePlan";
 import { formatTimeText } from "../utils/timeFormatters";
 import { Card, CardContent } from "@/components/ui/card";
 import { Gauge, MessageCircleQuestion, BookOpen } from "lucide-react";
@@ -5,9 +6,7 @@ import { Gauge, MessageCircleQuestion, BookOpen } from "lucide-react";
 export function QuickStats({ analysisResult, currentManualParagraph, readingSpeed = 180, darkMode = false }) {
   if (!analysisResult) return null;
 
-  const totalQuestions = analysisResult.paragraphs.reduce(
-    (sum, p) => sum + p.questions.length, 0
-  ) + (analysisResult.final_questions?.length || 0);
+  const totalQuestions = countAllQuestions(analysisResult);
 
   const stats = [
     {

@@ -1,3 +1,4 @@
+import { countQuestions } from "../utils/timePlan";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -127,6 +128,7 @@ export default function PresentationMode({
   studyPhase = 'intro',
   onPhaseChange,
   externalReviewQuestion = 0,
+  perQuestionTime = 35,
   onReviewQuestionChange
 }) {
   const [phaseElapsed, setPhaseElapsed] = useState(0);
@@ -184,7 +186,7 @@ export default function PresentationMode({
             numbers: groupParagraphs.map(p => p.number),
             indices: groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number)),
             // Combined stats
-            totalTime: groupParagraphs.reduce((sum, p) => sum + (p.total_time_seconds || 0), 0),
+            totalTime: groupParagraphs.reduce((sum, p) => sum + (p.reading_time_seconds || 0) + countQuestions(p) * perQuestionTime, 0),
             totalWords: groupParagraphs.reduce((sum, p) => sum + (p.word_count || 0), 0),
             allQuestions: groupParagraphs.flatMap(p => p.questions || [])
           });
@@ -197,7 +199,7 @@ export default function PresentationMode({
           paragraphs: [para],
           numbers: [para.number],
           indices: [index],
-          totalTime: para.total_time_seconds || 0,
+          totalTime: (para.reading_time_seconds || 0) + countQuestions(para) * perQuestionTime,
           totalWords: para.word_count || 0,
           allQuestions: para.questions || []
         });
@@ -205,7 +207,7 @@ export default function PresentationMode({
     });
     
     return groups;
-  }, [analysisResult?.paragraphs]);
+  }, [analysisResult?.paragraphs, perQuestionTime]);
 
   // Current group index based on currentParagraphIndex
   const currentGroupIndex = useMemo(() => {
@@ -320,7 +322,7 @@ export default function PresentationMode({
           icon: HelpCircle,
           color: "text-red-400",
           bgColor: "bg-red-500",
-          estimatedTime: currentReviewQuestionData?.answer_time || 35,
+          estimatedTime: Math.round(perQuestionTime),
           subtitle: `de ${analysisResult?.final_questions?.length || 0} preguntas`
         };
       case PHASES.CONCLUSION:

@@ -8,13 +8,15 @@ export function DurationAdjuster({
   setTotalDuration, 
   originalTotalTime,
   scaleFactor,
+  plannedPerQuestion = 35,
+  answerTime = 35,
+  readingFitsInTime = true,
   darkMode = false 
 }) {
-  // Calculate effective scale percentage
-  const scalePercentage = Math.round(scaleFactor * 100);
-  
-  // Determine if scaling is active (not 1x)
-  const isScaling = Math.abs(scaleFactor - 1) > 0.05;
+  // La lectura es fija; lo que cambia con la duración es el tiempo de comentario por pregunta
+  const diff = plannedPerQuestion - answerTime;
+  const isScaling = Math.abs(diff) >= 1;
+  const isShorter = diff < 0;
   
   return (
     <Card className={`border shadow-sm overflow-hidden ${
@@ -34,7 +36,7 @@ export function DurationAdjuster({
               Ajuste de Duración
             </h4>
             <p className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-              Los tiempos se ajustan proporcionalmente
+              La lectura es fija; se ajusta el tiempo de comentarios
             </p>
           </div>
         </div>
@@ -66,54 +68,60 @@ export function DurationAdjuster({
           </div>
         </div>
 
-        {/* Scale Factor Info */}
+        {/* Comment time info */}
         <div className={`mt-4 p-3 rounded-xl border-2 ${
-          isScaling
-            ? scaleFactor < 1
-              ? darkMode ? 'bg-orange-950/50 border-orange-800' : 'bg-orange-50 border-orange-200'
-              : darkMode ? 'bg-green-950/50 border-green-800' : 'bg-green-50 border-green-200'
-            : darkMode ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-50 border-slate-200'
+          !readingFitsInTime
+            ? darkMode ? 'bg-red-950/50 border-red-800' : 'bg-red-50 border-red-200'
+            : isScaling
+              ? isShorter
+                ? darkMode ? 'bg-orange-950/50 border-orange-800' : 'bg-orange-50 border-orange-200'
+                : darkMode ? 'bg-green-950/50 border-green-800' : 'bg-green-50 border-green-200'
+              : darkMode ? 'bg-zinc-700/50 border-zinc-600' : 'bg-slate-50 border-slate-200'
         }`}>
           <div className="flex items-center gap-2 mb-2">
             <Scale className={`w-4 h-4 ${
               isScaling
-                ? scaleFactor < 1
-                  ? 'text-orange-500'
-                  : 'text-green-500'
+                ? isShorter ? 'text-orange-500' : 'text-green-500'
                 : darkMode ? 'text-zinc-400' : 'text-slate-500'
             }`} />
             <span className={`text-sm font-semibold ${
               isScaling
-                ? scaleFactor < 1
-                  ? 'text-orange-600'
-                  : 'text-green-600'
+                ? isShorter ? 'text-orange-600' : 'text-green-600'
                 : darkMode ? 'text-zinc-300' : 'text-slate-600'
             }`}>
-              Factor de escala: {scalePercentage}%
+              Comentarios: {plannedPerQuestion} s por pregunta
             </span>
           </div>
           
           <div className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
             <div className="flex justify-between mb-1">
-              <span>Tiempo original:</span>
+              <span>Tiempo natural del artículo:</span>
               <span className="font-mono">{formatTimeCompact(originalTotalTime)}</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between mb-1">
               <span>Tiempo configurado:</span>
               <span className="font-mono font-bold">{totalDuration} min</span>
             </div>
+            <div className="flex justify-between">
+              <span>Respuesta configurada:</span>
+              <span className="font-mono">{answerTime} s</span>
+            </div>
           </div>
           
-          {isScaling && (
+          {(isScaling || !readingFitsInTime) && (
             <div className={`mt-2 pt-2 border-t text-xs flex items-center gap-1.5 ${
-              scaleFactor < 1
-                ? darkMode ? 'border-orange-800 text-orange-300' : 'border-orange-200 text-orange-600'
-                : darkMode ? 'border-green-800 text-green-300' : 'border-green-200 text-green-600'
+              !readingFitsInTime
+                ? darkMode ? 'border-red-800 text-red-300' : 'border-red-200 text-red-600'
+                : isShorter
+                  ? darkMode ? 'border-orange-800 text-orange-300' : 'border-orange-200 text-orange-600'
+                  : darkMode ? 'border-green-800 text-green-300' : 'border-green-200 text-green-600'
             }`}>
-              <Info className="w-3.5 h-3.5" />
-              {scaleFactor < 1 
-                ? 'Los tiempos se han reducido para ajustarse a la duración.'
-                : 'Los tiempos se han extendido para ajustarse a la duración.'
+              <Info className="w-3.5 h-3.5 shrink-0" />
+              {!readingFitsInTime
+                ? 'La lectura, la introducción y la conclusión no caben en esta duración.'
+                : isShorter
+                  ? 'Hay menos tiempo del configurado para cada comentario.'
+                  : 'Sobra tiempo: cada pregunta tendrá más tiempo de comentarios.'
               }
             </div>
           )}

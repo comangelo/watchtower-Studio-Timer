@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { isRealQuestion } from "../utils/timePlan";
 import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff, Image, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ export function ParagraphCard({
   onGoToNext, 
   isLastParagraph,
   adjustedQuestionTime,
-  scaleFactor = 1, // Scale factor for proportional time adjustment
+  plannedQuestionTime = 35, // Tiempo por pregunta según el plan inicial
   overtimeAlertEnabled,
   soundEnabled,
   vibrationEnabled,
@@ -53,6 +54,8 @@ export function ParagraphCard({
   const totalWordCount = allParagraphs.reduce((sum, p) => sum + p.word_count, 0);
   const totalReadingTime = allParagraphs.reduce((sum, p) => sum + p.reading_time_seconds, 0);
   const allQuestions = allParagraphs.flatMap(p => p.questions);
+  // Solo las preguntas reales (las referencias "lea …" sin pregunta no cuentan)
+  const realQuestionCount = allQuestions.filter(isRealQuestion).length;
   const hasQuestions = allQuestions.length > 0;
   const hasFinalQuestions = allQuestions.some(q => q.is_final_question);
 
@@ -62,10 +65,9 @@ export function ParagraphCard({
   const hasScriptureContent = allQuestions.some(q => q.content_type === 'scripture' || q.content_type === 'both');
   const hasNoteContent = allQuestions.some(q => q.content_type === 'note');
 
-  // Get estimated time for this paragraph group (apply scale factor for proportional adjustment)
-  const estimatedTime = isGrouped 
-    ? allParagraphs.reduce((sum, p) => sum + ((p.total_time_seconds || 0) * scaleFactor), 0)
-    : (paragraphTimes.adjustedDuration || (paragraph.total_time_seconds * scaleFactor));
+  // Tiempo previsto del párrafo o grupo (lectura fija + preguntas al tiempo planificado)
+  const estimatedTime = paragraphTimes.adjustedDuration
+    || allParagraphs.reduce((sum, p) => sum + (p.total_time_seconds || 0), 0);
   const isOverTime = paragraphElapsed > estimatedTime;
 
   // Auto-scroll to current paragraph
@@ -340,7 +342,7 @@ export function ParagraphCard({
                   {formatClockTime(paragraphTimes.start)} - {formatClockTime(paragraphTimes.end)}
                 </span>
               </div>
-              {paragraphTimes.adjustedDuration !== paragraph.total_time_seconds && (
+              {!paragraphTimes.isCompleted && adjustedQuestionTime && Math.abs(adjustedQuestionTime - plannedQuestionTime) >= 1 && (
                 <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
                   darkMode ? 'text-orange-300 bg-orange-900' : 'text-orange-500 bg-orange-50'
                 }`}>
@@ -404,7 +406,7 @@ export function ParagraphCard({
                   ? darkMode ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-600' 
                   : darkMode ? 'bg-orange-900 text-orange-200' : 'bg-orange-100 text-orange-600'
               }`}>
-                {allQuestions.length} pregunta{allQuestions.length > 1 ? 's' : ''}
+                {realQuestionCount} pregunta{realQuestionCount !== 1 ? 's' : ''}
               </span>
             )}
             {isGrouped && (
@@ -501,7 +503,7 @@ export function ParagraphCard({
                 data-testid={`toggle-questions-${paragraph.number}`}
               >
                 <MessageCircleQuestion className="w-4 h-4" />
-                {isOpen ? 'Ocultar' : `${allQuestions.length} pregunta${allQuestions.length > 1 ? 's' : ''}`}
+                {isOpen ? 'Ocultar' : (realQuestionCount > 0 ? `${realQuestionCount} pregunta${realQuestionCount !== 1 ? 's' : ''}` : 'Ver textos')}
               </button>
             )}
           </div>
@@ -511,10 +513,11 @@ export function ParagraphCard({
             <CollapsibleContent>
               <div className={`mt-4 space-y-2 pl-2 border-l-2 ${darkMode ? 'border-orange-700' : 'border-orange-200'}`}>
                 {allQuestions.map((q, qIndex) => {
-                  const displayTime = isTimerRunning && adjustedQuestionTime ? adjustedQuestionTime : q.answer_time;
-                  const isAdjusted = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime !== 35;
-                  const timeDiff = adjustedQuestionTime ? adjustedQuestionTime - 35 : 0;
-                  const isLowTime = isTimerRunning && adjustedQuestionTime && adjustedQuestionTime < 20;
+                  const isQuestion = isRealQuestion(q);
+                  const displayTime = isTimerRunning && adjustedQuestionTime ? adjustedQuestionTime : plannedQuestionTime;
+                  const isAdjusted = isQuestion && isTimerRunning && adjustedQuestionTime && Math.abs(adjustedQuestionTime - plannedQuestionTime) >= 1;
+                  const timeDiff = adjustedQuestionTime ? adjustedQuestionTime - plannedQuestionTime : 0;
+                  const isLowTime = isQuestion && isTimerRunning && adjustedQuestionTime && adjustedQuestionTime < 20;
                   const formattedTime = formatTimeCompact(displayTime);
                   const hasExtraContent = q.parenthesis_content && q.parenthesis_content.length > 0;
                   
@@ -555,7 +558,7 @@ export function ParagraphCard({
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center gap-1 ml-2 shrink-0">
+                            {isQuestion && <div className="flex items-center gap-1 ml-2 shrink-0">
                               <span className={`text-xs font-light px-2 py-0.5 rounded-full ${
                                 isLowTime 
                                   ? darkMode ? 'bg-orange-800 text-orange-200' : 'bg-orange-200 text-orange-700' 
@@ -575,10 +578,10 @@ export function ParagraphCard({
                                     ? darkMode ? 'text-green-400' : 'text-green-600' 
                                     : darkMode ? 'text-orange-400' : 'text-orange-600'
                                 }`}>
-                                  ({timeDiff > 0 ? '+' : ''}{formatTimeCompact(Math.abs(timeDiff))})
+                                  ({timeDiff > 0 ? '+' : '−'}{formatTimeCompact(Math.abs(timeDiff))})
                                 </span>
                               )}
-                            </div>
+                            </div>}
                           </div>
                         </div>
                       </div>
