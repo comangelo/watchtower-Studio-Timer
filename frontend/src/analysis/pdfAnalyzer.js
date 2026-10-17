@@ -104,8 +104,15 @@ export function extractQuestionWithParenthesis(questionText) {
   return result;
 }
 
+// Cita bíblica dentro del propio texto de la pregunta ("Según Mateo 5:43, 44, ¿…?")
+const SCRIPTURE_IN_TEXT = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\.?\s+\d+:\d+/u;
+
 export function createQuestionInfo(questionText, answerTime, isFinal = false) {
   const e = extractQuestionWithParenthesis(questionText);
+  if (SCRIPTURE_IN_TEXT.test(e.text)) {
+    if (e.content_type === '') e.content_type = 'scripture';
+    else if (e.content_type === 'image') e.content_type = 'both';
+  }
   return {
     text: e.text,
     answer_time: answerTime,
@@ -118,7 +125,8 @@ export function createQuestionInfo(questionText, answerTime, isFinal = false) {
 /** Separa varias preguntas de una misma línea; acepta preguntas sin "¿?" ("Mencione…"). */
 export function extractMultipleQuestions(text) {
   const questions = [];
-  const re = /¿[^?]+\?\s*(?:\([^)]+\))?|[^?¿]+\?\s*(?:\([^)]+\))?/gu;
+  // Incluye lo que va antes del "¿" ("Según Mateo 5:43, 44, ¿cómo…?")
+  const re = /[^?¿]*¿[^?]+\?\s*(?:\([^)]+\))?|[^?¿]+\?\s*(?:\([^)]+\))?/gu;
   for (const m of text.matchAll(re)) {
     const part = m[0].trim();
     if (part && part.length > 3) questions.push(part);
@@ -131,12 +139,27 @@ export function extractMultipleQuestions(text) {
   return questions;
 }
 
+/**
+ * "Ideas importantes": textos entre comillas dentro del paréntesis de una pregunta,
+ * p. ej. (Vea también el recuadro "Lo que aprendemos de Job"). Cada uno suma tiempo.
+ */
+export function extractHighlights(parenthesisContent) {
+  if (!parenthesisContent) return [];
+  const out = [];
+  for (const m of parenthesisContent.matchAll(/"([^"]+)"|“([^”]+)”|«([^»]+)»/g)) {
+    const t = (m[1] || m[2] || m[3] || '').replace(/\s+/g, ' ').trim();
+    if (t.length > 1) out.push(t);
+  }
+  return out;
+}
+
 /** Referencias "(lea Salmo 62:8)" dentro del texto del párrafo. */
 export function extractLeaScripturesFromText(text) {
   const out = [];
   const re = /\(([Ll][EeÉé][Aa](?:lo|LO)?\s+[^)]+\d+:\d+[^)]*)\)/gu;
   for (const m of text.matchAll(re)) {
-    if (/\d+:\d+/.test(m[1])) out.push({ parenthesis_content: m[1].trim(), content_type: 'scripture' });
+    // "lea Prover- bios 27:9" -> "lea Proverbios 27:9"
+    if (/\d+:\d+/.test(m[1])) out.push({ parenthesis_content: cleanHyphenatedText(m[1]).trim(), content_type: 'scripture' });
   }
   return out;
 }
@@ -395,7 +418,17 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     throw new Error('No se pudo extraer texto del PDF. ¿Es un PDF escaneado (imagen)?');
   }
 
-  // Primera pasada: agrupar líneas de pregunta (tamaño ~9)
+  // Tamaño de letra de las preguntas: el de los números "N." (normalmente 9).
+  // Así los pies de imagen (8,5) no se confunden con preguntas.
+  const qSizeCounts = {};
+  for (const ln of lines) {
+    const sz = Math.round(ln.size * 10) / 10;
+    if (sz >= 8 && sz <= 10 && /^[\d,\s]+\.$/.test(ln.text.trim())) qSizeCounts[sz] = (qSizeCounts[sz] || 0) + 1;
+  }
+  const qSizes = Object.keys(qSizeCounts).map(Number);
+  const questionSize = qSizes.length ? qSizes.sort((a, b) => qSizeCounts[b] - qSizeCounts[a])[0] : 9.0;
+
+  // Primera pasada: agrupar líneas de pregunta
   const grouped = [];
   let qParts = [];
   let qNums = null;
@@ -403,7 +436,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     const text = ln.text.trim();
     const size = Math.round(ln.size * 10) / 10;
     if (!text) continue;
-    const isQuestionSize = size >= 8.5 && size <= 9.5;
+    const isQuestionSize = Math.abs(size - questionSize) <= 0.25;
     if (isQuestionSize) {
       const numMatch = /^([\d,\s]+)\.\s*$/.exec(text);
       if (numMatch) {
@@ -516,7 +549,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
   const analyzed = [];
   let totalWords = 0, realQuestions = 0, totalEntries = 0;
   let totalReading = 0, totalQuestionTime = 0, cumulative = 0;
-  let totalImages = 0, totalScriptures = 0, totalNotes = 0;
+  let totalImages = 0, totalScriptures = 0, totalNotes = 0, totalHighlights = 0;
   const leaPrefix = /^[Ll][EeÉé][Aa](?:lo|LO)?\s+/u;
 
   for (const num of [...paragraphs.keys()].sort((a, b) => a - b)) {
@@ -528,7 +561,12 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     const questionTime = questions.length * answerTime;
     realQuestions += questions.length;
 
-    let imgs = 0, scr = 0, notes = 0;
+    let imgs = 0, scr = 0, notes = 0, highlights = 0;
+    // Ideas importantes (textos entre comillas en el paréntesis de la pregunta)
+    for (const q of questions) {
+      const hs = extractHighlights(q.parenthesis_content);
+      if (hs.length) { q.highlight_contents = hs; highlights += hs.length; }
+    }
     for (const q of questions) {
       if (q.content_type === 'both') { imgs++; scr++; }
       else if (q.content_type === 'image') imgs++;
@@ -544,13 +582,16 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
         if (qc.includes(leaRef) || leaRef.includes(qc)) { counted = true; break; }
         if (leaRef === qc.replace(leaPrefix, '').trim()) { counted = true; break; }
       }
+      for (const q of questions) {
+        if (q.text && q.text.toLowerCase().includes(leaRef)) { counted = true; break; }
+      }
       if (!counted) {
         scr++;
         questions.push({ text: '', answer_time: 0, is_final_question: false, parenthesis_content: lea.parenthesis_content, content_type: 'scripture' });
       }
     }
-    totalImages += imgs; totalScriptures += scr; totalNotes += notes;
-    reading += (imgs + scr + notes) * EXTRA_CONTENT_TIME;
+    totalImages += imgs; totalScriptures += scr; totalNotes += notes; totalHighlights += highlights;
+    reading += (imgs + scr + notes + highlights) * EXTRA_CONTENT_TIME;
 
     totalWords += wordCount;
     totalEntries += questions.length;
@@ -604,5 +645,6 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     total_images: totalImages,
     total_scriptures: totalScriptures,
     total_notes: totalNotes,
+    total_highlights: totalHighlights,
   };
 }
