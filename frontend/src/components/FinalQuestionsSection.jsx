@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Clock, Timer, MessageCircleQuestion, AlertCircle, ArrowRight, Check, Sparkles, PartyPopper } from "lucide-react";
+import { Clock, Timer, MessageCircleQuestion, AlertCircle, ArrowRight, Check, Sparkles, PartyPopper, Hand } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -224,7 +224,9 @@ function ReviewQuestionCard({
   playNotificationSound,
   triggerVibration,
   isTimerRunning,
-  darkMode = false
+  darkMode = false,
+  onAddComment,
+  commentCount = 0
 }) {
   const [questionElapsed, setQuestionElapsed] = useState(0);
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
@@ -415,7 +417,18 @@ function ReviewQuestionCard({
 
         {/* Next Button */}
         {isCurrentQuestion && (
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
+            {isTimerRunning && onAddComment && (
+              <Button
+                onClick={onAddComment}
+                className="rounded-full px-6 py-2 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-lg active:scale-95 [&_svg]:size-5"
+                data-testid={`add-comment-review-${index}`}
+              >
+                <Hand fill="white" className="mr-1" />
+                Comentario
+                <span className="ml-2 min-w-[1.75rem] rounded-full bg-white/25 px-2 py-0.5 text-center tabular-nums" data-testid={`comment-count-review-${index}`}>{commentCount}</span>
+              </Button>
+            )}
             <Button
               onClick={onGoToNext}
               className={`rounded-full px-6 py-2 text-sm font-semibold ${
@@ -466,7 +479,9 @@ export function FinalQuestionsSection({
   vibrationEnabled,
   playNotificationSound,
   triggerVibration,
-  darkMode = false
+  darkMode = false,
+  onAddComment,
+  reviewCommentStats = {}
 }) {
   if (!finalQuestions || finalQuestions.length === 0) return null;
   
@@ -636,6 +651,8 @@ export function FinalQuestionsSection({
               triggerVibration={triggerVibration}
               isTimerRunning={isTimerRunning}
               darkMode={darkMode}
+              onAddComment={idx === currentReviewQuestion && !isInClosingWordsMode ? onAddComment : undefined}
+              commentCount={reviewCommentStats[idx] || 0}
             />
           ))
         ) : (

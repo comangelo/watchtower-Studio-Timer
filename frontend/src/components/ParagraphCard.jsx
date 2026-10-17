@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { isRealQuestion } from "../utils/timePlan";
-import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff, Image, BookOpen, Star } from "lucide-react";
+import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff, Image, BookOpen, Star, Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,7 +32,9 @@ export function ParagraphCard({
   onStartReview,
   hasReviewQuestions,
   darkMode = false,
-  showContentGlobal = true
+  showContentGlobal = true,
+  onAddComment,
+  commentCount = 0
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showContent, setShowContent] = useState(true); // Individual content visibility
@@ -443,6 +445,22 @@ export function ParagraphCard({
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
             {/* Left side - Action buttons */}
             <div className="flex flex-wrap items-center gap-3">
+              {/* Marcar participación (comentario) */}
+              {isCurrentParagraph && isTimerRunning && onAddComment && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddComment();
+                  }}
+                  className="rounded-full px-6 py-5 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-200 transition-all active:scale-95 [&_svg]:size-5"
+                  data-testid={`add-comment-paragraph-${paragraph.number}`}
+                >
+                  <Hand fill="white" className="mr-1" />
+                  Comentario
+                  <span className="ml-2 min-w-[1.75rem] rounded-full bg-white/25 px-2 py-0.5 text-center tabular-nums" data-testid={`comment-count-paragraph-${paragraph.number}`}>{commentCount}</span>
+                </Button>
+              )}
+
               {/* Next Paragraph Button - Primary Action */}
               {isCurrentParagraph && !isLastParagraph && (
                 <Button
