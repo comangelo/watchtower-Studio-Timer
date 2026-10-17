@@ -1,4 +1,4 @@
-import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNote, Clock, Sparkles } from "lucide-react";
+import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNote, Clock, Sparkles, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeCompact } from "../utils/timeFormatters";
 
@@ -54,6 +54,7 @@ export function AnalysisSummary({
   const totalImages = analysisResult.total_images || 0;
   const totalScriptures = analysisResult.total_scriptures || 0;
   const totalNotes = analysisResult.total_notes || 0;
+  const totalHighlights = analysisResult.total_highlights || 0;
   const totalParagraphs = analysisResult.total_paragraphs || 0;
 
   // Time calculations
@@ -141,6 +142,18 @@ export function AnalysisSummary({
             </div>
           )}
           
+          {totalHighlights > 0 && (
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
+              darkMode 
+                ? 'bg-cyan-900/60 text-cyan-200 border border-cyan-700' 
+                : 'bg-cyan-50 text-cyan-700 border border-cyan-200'
+            }`} data-testid="highlights-count">
+              <Star className="w-4 h-4" />
+              <span>{totalHighlights}</span>
+              <span className={`${darkMode ? 'text-cyan-300/70' : 'text-cyan-600/70'}`}>{totalHighlights === 1 ? 'idea importante' : 'ideas importantes'}</span>
+            </div>
+          )}
+
           {reviewQuestions > 0 && (
             <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
               darkMode 

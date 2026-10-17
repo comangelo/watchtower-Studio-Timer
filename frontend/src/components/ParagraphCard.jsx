@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { isRealQuestion } from "../utils/timePlan";
-import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff, Image, BookOpen } from "lucide-react";
+import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff, Image, BookOpen, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -64,6 +64,8 @@ export function ParagraphCard({
   const hasImageContent = allQuestions.some(q => q.content_type === 'image' || q.content_type === 'both');
   const hasScriptureContent = allQuestions.some(q => q.content_type === 'scripture' || q.content_type === 'both');
   const hasNoteContent = allQuestions.some(q => q.content_type === 'note');
+  // "Ideas importantes": textos entre comillas en el paréntesis de la pregunta
+  const highlightTexts = [...new Set(allQuestions.flatMap(q => q.highlight_contents || []))];
 
   // Tiempo previsto del párrafo o grupo (lectura fija + preguntas al tiempo planificado)
   const estimatedTime = paragraphTimes.adjustedDuration
@@ -280,6 +282,16 @@ export function ParagraphCard({
                   Nota para comentar
                 </span>
               )}
+              {highlightTexts.map((h, i) => (
+                <span key={i} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold max-w-[16rem] ${
+                  darkMode 
+                    ? 'bg-cyan-900/70 text-cyan-200 border border-cyan-700' 
+                    : 'bg-cyan-50 text-cyan-800 border border-cyan-200'
+                }`} title="Idea importante" data-testid={`highlight-badge-${paragraph.number}-${i}`}>
+                  <Star className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{h}</span>
+                </span>
+              ))}
             </div>
             <div className="flex items-center gap-3">
               {/* Individual show/hide content button - more spacing */}

@@ -15,6 +15,7 @@ import {
   MessageCircleQuestion,
   AlertCircle,
   MessagesSquare,
+  Star,
 } from "lucide-react";
 import { formatTime, formatClockTime } from "@/utils/timeFormatters";
 import { isRealQuestion } from "@/utils/timePlan";
@@ -157,6 +158,7 @@ export default function PresentationMode({
       image: qs.some((q) => q.content_type === "image" || q.content_type === "both"),
       scripture: qs.some((q) => q.content_type === "scripture" || q.content_type === "both"),
       note: qs.some((q) => q.content_type === "note"),
+      highlights: [...new Set(qs.flatMap((q) => q.highlight_contents || []))],
       questions: qs.filter(isRealQuestion).length,
     };
   }, [phase, currentParagraphGroup]);
@@ -325,6 +327,11 @@ export default function PresentationMode({
                   <MessageCircleQuestion className="w-3.5 h-3.5" /> Nota de estudio
                 </span>
               )}
+              {(badges.highlights || []).map((h, i) => (
+                <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-900/70 text-cyan-200 border border-cyan-700 max-w-[18rem]">
+                  <Star className="w-3.5 h-3.5 shrink-0" /> <span className="truncate">{h}</span>
+                </span>
+              ))}
             </div>
           )}
         </div>
