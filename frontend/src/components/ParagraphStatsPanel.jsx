@@ -97,6 +97,11 @@ export function ParagraphStatsPanel({ paragraphStats, totalParagraphs }) {
                         {stat.questionsCount} preg
                       </Badge>
                     )}
+                    {stat.comments > 0 && (
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 border-orange-300 text-orange-600" title="Participaciones marcadas">
+                        ✋ {stat.comments}
+                      </Badge>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-3">

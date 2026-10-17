@@ -16,6 +16,8 @@ export function NotificationSettings({
   onTestVibration,
   overtimeAlertEnabled,
   setOvertimeAlertEnabled,
+  fiveMinuteWarningEnabled = true,
+  setFiveMinuteWarningEnabled = () => {},
   darkMode = false,
 }) {
   return (
@@ -78,6 +80,27 @@ export function NotificationSettings({
               checked={overtimeAlertEnabled}
               onCheckedChange={setOvertimeAlertEnabled}
               data-testid="overtime-alert-toggle"
+            />
+          </div>
+
+          {/* Aviso de 5 minutos para el final */}
+          <div className={`flex items-center justify-between p-2 rounded-lg ${
+            darkMode 
+              ? 'bg-red-900/40 border border-red-800' 
+              : 'bg-red-50 border border-red-100'
+          }`}>
+            <div className="flex items-center gap-2">
+              <Timer className={`w-4 h-4 ${fiveMinuteWarningEnabled ? 'text-red-500' : 'text-zinc-400'}`} />
+              <div>
+                <Label htmlFor="five-minute" className={`text-sm ${darkMode ? 'text-zinc-100' : ''}`}>Aviso de 5 minutos</Label>
+                <p className={`text-[10px] ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Avisa cuando faltan 5 min para la hora de fin</p>
+              </div>
+            </div>
+            <Switch
+              id="five-minute"
+              checked={fiveMinuteWarningEnabled}
+              onCheckedChange={setFiveMinuteWarningEnabled}
+              data-testid="five-minute-warning-toggle"
             />
           </div>
 

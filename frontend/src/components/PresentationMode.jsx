@@ -1,112 +1,49 @@
-import { countQuestions } from "../utils/timePlan";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
+import {
+  Play,
+  Pause,
   X,
-  Timer,
-  Palette,
   Mic,
   BookOpen,
   HelpCircle,
   Sparkles,
   CheckCircle2,
+  ArrowRight,
+  Hand,
   Image,
-  Layers,
-  MessageCircle
+  MessageCircleQuestion,
+  AlertCircle,
+  MessagesSquare,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { formatTime, formatClockTime, formatTimeCompact } from "../utils/timeFormatters";
+import { formatTime, formatClockTime } from "@/utils/timeFormatters";
+import { isRealQuestion } from "@/utils/timePlan";
 
-// Theme configurations
-const THEMES = {
-  dark: {
-    name: "🌙 Oscuro",
-    bg: "bg-zinc-900",
-    text: "text-white",
-    textMuted: "text-zinc-400",
-    textDimmed: "text-zinc-500",
-    border: "border-zinc-800",
-    card: "bg-zinc-800/50",
-    accent: "text-orange-500",
-    accentBg: "bg-orange-500",
-    success: "text-green-400",
-    warning: "text-orange-400",
-    danger: "text-red-400",
-    progressBg: "bg-zinc-800",
-    buttonOutline: "border-zinc-600 text-zinc-400 hover:text-white hover:border-zinc-500",
-    kbd: "bg-zinc-800 text-zinc-400"
-  },
-  light: {
-    name: "☀️ Claro",
-    bg: "bg-white",
-    text: "text-zinc-900",
-    textMuted: "text-zinc-600",
-    textDimmed: "text-zinc-400",
-    border: "border-zinc-200",
-    card: "bg-zinc-100",
-    accent: "text-orange-600",
-    accentBg: "bg-orange-500",
-    success: "text-green-600",
-    warning: "text-orange-600",
-    danger: "text-red-600",
-    progressBg: "bg-zinc-200",
-    buttonOutline: "border-zinc-300 text-zinc-600 hover:text-zinc-900 hover:border-zinc-400",
-    kbd: "bg-zinc-200 text-zinc-600"
-  },
-  blue: {
-    name: "🌊 Azul Océano",
-    bg: "bg-slate-900",
-    text: "text-white",
-    textMuted: "text-slate-400",
-    textDimmed: "text-slate-500",
-    border: "border-slate-700",
-    card: "bg-slate-800/50",
-    accent: "text-cyan-400",
-    accentBg: "bg-cyan-500",
-    success: "text-emerald-400",
-    warning: "text-amber-400",
-    danger: "text-rose-400",
-    progressBg: "bg-slate-800",
-    buttonOutline: "border-slate-600 text-slate-400 hover:text-white hover:border-slate-500",
-    kbd: "bg-slate-800 text-slate-400"
-  },
-  amoled: {
-    name: "📱 AMOLED Negro",
-    bg: "bg-black",
-    text: "text-white",
-    textMuted: "text-zinc-400",
-    textDimmed: "text-zinc-500",
-    border: "border-zinc-800",
-    card: "bg-zinc-950",
-    accent: "text-orange-500",
-    accentBg: "bg-orange-500",
-    success: "text-green-500",
-    warning: "text-orange-500",
-    danger: "text-red-500",
-    progressBg: "bg-zinc-950",
-    buttonOutline: "border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-600",
-    kbd: "bg-zinc-950 text-zinc-400"
-  }
+/**
+ * Modo presentación (diseño recuperado de app-wt-time-controler, marzo 2026),
+ * conectado al cálculo de tiempos actual.
+ *
+ * - Recuadro de color según el tiempo del tramo actual (párrafo, pregunta de repaso…):
+ *     verde  = dentro del tiempo previsto
+ *     naranja = prórroga (hasta un 30 % más)
+ *     rojo   = tiempo excedido
+ * - Aviso cuando faltan 5 minutos para la hora de fin y cuenta del tiempo excedido.
+ * - Botón inteligente para pasar al siguiente párrafo / repaso / conclusión / fin.
+ * - Botón para marcar cada comentario (participaciones).
+ *
+ * Todo el control del estudio vive en HomePage; este componente solo lo muestra.
+ */
+
+export const PHASES = {
+  INITIAL: "initial",
+  INTRO: "intro",
+  PARAGRAPHS: "paragraphs",
+  REVIEW: "review",
+  CONCLUSION: "conclusion",
+  FINISHED: "finished",
 };
 
-// Study phases
-const PHASES = {
-  INTRO: 'intro',
-  PARAGRAPHS: 'paragraphs',
-  REVIEW: 'review',
-  CONCLUSION: 'conclusion',
-  FINISHED: 'finished'
-};
+const GRACE_RATIO = 1.3; // 30 % de prórroga
 
 export default function PresentationMode({
   analysisResult,
@@ -114,635 +51,313 @@ export default function PresentationMode({
   remainingTime,
   isTimerRunning,
   onToggleTimer,
-  onResetTimer,
   onExit,
-  currentParagraphIndex = 0,
-  theme = 'dark',
-  onThemeChange,
-  totalDurationSeconds = 3600,
-  startTime,
+  phase = PHASES.INITIAL,
+  currentParagraphGroup,
+  groupedParagraphs = [],
+  currentReviewQuestion = 0,
+  phaseElapsedTime = 0,
+  estimatedTime = 0,
   endTime,
-  introductionTime = 60,
-  conclusionTime = 60,
+  totalDurationSeconds = 3600,
+  totalComments = 0,
+  phaseComments = 0,
+  onAddComment,
+  fiveMinuteWarningEnabled = true,
   onStartStudy,
-  studyPhase = 'intro',
-  onPhaseChange,
-  externalReviewQuestion = 0,
-  perQuestionTime = 35,
-  estimateSpanSeconds = null, // (primerIndice, ultimoIndice) => segundos previstos (lectura + comentarios)
-  onReviewQuestionChange
+  onGoToFirstParagraph,
+  onGoToNextGroup,
+  onStartReview,
+  onNextReviewQuestion,
+  onStartClosingWords,
+  onFinishStudy,
 }) {
-  const [phaseElapsed, setPhaseElapsed] = useState(0);
-  
-  // Use external state - the phase is managed by HomePage
-  const setStudyPhase = onPhaseChange || (() => {});
-  
-  const currentReviewQuestion = externalReviewQuestion;
-  const setCurrentReviewQuestion = onReviewQuestionChange || (() => {});
-  
+  const [currentTime, setCurrentTime] = useState(new Date());
+
   useEffect(() => {
-    let interval;
-    if (isTimerRunning) {
-      interval = setInterval(() => {
-        setPhaseElapsed(prev => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isTimerRunning]);
-  
+    const t = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Salir con Esc (también cuando el navegador no está en pantalla completa)
   useEffect(() => {
-    setPhaseElapsed(0);
-  }, [studyPhase, currentParagraphIndex, currentReviewQuestion]);
+    const onKey = (e) => { if (e.key === "Escape") onExit?.(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onExit]);
 
-  // Group paragraphs that belong together based on "grouped_with" field
-  const paragraphGroups = useMemo(() => {
-    if (!analysisResult?.paragraphs) return [];
-    
-    const paragraphs = analysisResult.paragraphs;
-    const groups = [];
-    const processedIndices = new Set();
-    
-    paragraphs.forEach((para, index) => {
-      if (processedIndices.has(index)) return;
-      
-      const groupedWith = para.grouped_with || [];
-      
-      if (groupedWith.length > 1) {
-        // This paragraph is part of a group
-        const groupParagraphs = groupedWith
-          .map(num => paragraphs.find(p => p.number === num))
-          .filter(Boolean);
-        
-        // Mark all paragraphs in this group as processed
-        groupParagraphs.forEach(gp => {
-          const gIndex = paragraphs.findIndex(p => p.number === gp.number);
-          processedIndices.add(gIndex);
-        });
-        
-        // Only add the group once (when we encounter the first paragraph of the group)
-        if (para.number === Math.min(...groupedWith)) {
-          groups.push({
-            type: 'group',
-            paragraphs: groupParagraphs,
-            numbers: groupParagraphs.map(p => p.number),
-            indices: groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number)),
-            // Combined stats
-            totalTime: estimateSpanSeconds
-              ? estimateSpanSeconds(
-                  Math.min(...groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number))),
-                  Math.max(...groupParagraphs.map(gp => paragraphs.findIndex(p => p.number === gp.number))))
-              : groupParagraphs.reduce((sum, p) => sum + (p.reading_time_seconds || 0) + countQuestions(p) * perQuestionTime, 0),
-            totalWords: groupParagraphs.reduce((sum, p) => sum + (p.word_count || 0), 0),
-            allQuestions: groupParagraphs.flatMap(p => p.questions || [])
-          });
-        }
-      } else {
-        // Single paragraph
-        processedIndices.add(index);
-        groups.push({
-          type: 'single',
-          paragraphs: [para],
-          numbers: [para.number],
-          indices: [index],
-          totalTime: estimateSpanSeconds
-            ? estimateSpanSeconds(index, index)
-            : (para.reading_time_seconds || 0) + countQuestions(para) * perQuestionTime,
-          totalWords: para.word_count || 0,
-          allQuestions: para.questions || []
-        });
-      }
-    });
-    
-    return groups;
-  }, [analysisResult?.paragraphs, perQuestionTime, estimateSpanSeconds]);
+  const finals = analysisResult?.final_questions || [];
+  const totalParagraphs = analysisResult?.paragraphs?.length || 0;
+  const studyStarted = phase !== PHASES.INITIAL;
 
-  // Current group index based on currentParagraphIndex
-  const currentGroupIndex = useMemo(() => {
-    for (let i = 0; i < paragraphGroups.length; i++) {
-      if (paragraphGroups[i].indices.includes(currentParagraphIndex)) {
-        return i;
-      }
+  const progressPercentage = totalDurationSeconds > 0
+    ? Math.min(100, (elapsedTime / totalDurationSeconds) * 100)
+    : 0;
+
+  // Aviso de los últimos 5 minutos y tiempo excedido
+  const warning = useMemo(() => {
+    if (!fiveMinuteWarningEnabled || !studyStarted || phase === PHASES.FINISHED) return null;
+    if (remainingTime <= 300 && remainingTime > 0) {
+      const m = Math.floor(remainingTime / 60);
+      const s = remainingTime % 60;
+      return { isOvertime: false, prefix: "EN", number: `${m}:${String(s).padStart(2, "0")}`, suffix: "DEBE CONCLUIR" };
     }
-    return 0;
-  }, [paragraphGroups, currentParagraphIndex]);
+    if (remainingTime <= 0 && elapsedTime > 0) {
+      const over = elapsedTime - totalDurationSeconds;
+      if (over <= 0) return null;
+      const m = Math.floor(over / 60);
+      const s = over % 60;
+      return { isOvertime: true, prefix: null, number: `${m}:${String(s).padStart(2, "0")}`, suffix: "MINUTOS EXCEDIDOS" };
+    }
+    return null;
+  }, [remainingTime, elapsedTime, totalDurationSeconds, fiveMinuteWarningEnabled, studyStarted, phase]);
 
-  // Current group
-  const currentGroup = useMemo(() => {
-    return paragraphGroups[currentGroupIndex] || null;
-  }, [paragraphGroups, currentGroupIndex]);
-
-  // Next group (for showing alerts)
-  const nextGroup = useMemo(() => {
-    return paragraphGroups[currentGroupIndex + 1] || null;
-  }, [paragraphGroups, currentGroupIndex]);
-
-  // Current paragraph (first of current group for compatibility)
-  const currentParagraph = useMemo(() => {
-    if (!currentGroup) return null;
-    return currentGroup.paragraphs[0] || null;
-  }, [currentGroup]);
-  
-  // Next paragraph (first of next group for alerts)
-  const nextParagraph = useMemo(() => {
-    if (!nextGroup) return null;
-    return nextGroup.paragraphs[0] || null;
-  }, [nextGroup]);
-  
-  // Check if next GROUP has special content ("both" means image AND scripture)
-  const nextParagraphHasImage = useMemo(() => {
-    if (!nextGroup) return false;
-    return nextGroup.allQuestions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
-  }, [nextGroup]);
-  
-  const nextParagraphHasScripture = useMemo(() => {
-    if (!nextGroup) return false;
-    return nextGroup.allQuestions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
-  }, [nextGroup]);
-  
-  // Current GROUP has special content
-  const currentParagraphHasImage = useMemo(() => {
-    if (!currentGroup) return false;
-    return currentGroup.allQuestions?.some(q => q.content_type === 'image' || q.content_type === 'both') || false;
-  }, [currentGroup]);
-  
-  const currentParagraphHasScripture = useMemo(() => {
-    if (!currentGroup) return false;
-    return currentGroup.allQuestions?.some(q => q.content_type === 'scripture' || q.content_type === 'both') || false;
-  }, [currentGroup]);
-  
-  const currentReviewQuestionData = useMemo(() => {
-    if (!analysisResult || !analysisResult.final_questions) return null;
-    return analysisResult.final_questions[currentReviewQuestion] || null;
-  }, [analysisResult, currentReviewQuestion]);
-  
-  const progressPercentage = useMemo(() => {
-    return Math.min(100, (elapsedTime / totalDurationSeconds) * 100);
-  }, [elapsedTime, totalDurationSeconds]);
-  
-  // Article stats
-  const articleStats = useMemo(() => {
-    if (!analysisResult) return { paragraphs: 0, questions: 0, images: 0, scriptures: 0, review: 0 };
-    return {
-      paragraphs: analysisResult.total_paragraphs || 0,
-      questions: analysisResult.total_paragraph_questions || analysisResult.paragraphs?.reduce((sum, p) => sum + p.questions?.length || 0, 0) || 0,
-      images: analysisResult.total_images || 0,
-      scriptures: analysisResult.total_scriptures || 0,
-      review: analysisResult.final_questions?.length || 0
-    };
-  }, [analysisResult]);
-  
-  const isLowTime = remainingTime <= 300;
-  const isOvertime = remainingTime <= 0;
-  
-  const t = THEMES[theme] || THEMES.dark;
-  
-  // Get phase-specific info - using groups for paragraphs
-  const getPhaseInfo = () => {
-    switch (studyPhase) {
+  // Título del tramo actual
+  const phaseInfo = useMemo(() => {
+    switch (phase) {
       case PHASES.INTRO:
+        return { title: "Introducción", icon: Mic, subtitle: "Presentando el tema" };
+      case PHASES.PARAGRAPHS: {
+        if (!currentParagraphGroup) return { title: "Párrafos", icon: BookOpen, subtitle: "" };
+        const nums = currentParagraphGroup.paragraphs.map((p) => p.number);
         return {
-          title: "Palabras de Introducción",
-          icon: Mic,
-          color: "text-blue-400",
-          bgColor: "bg-blue-500",
-          estimatedTime: introductionTime,
-          subtitle: "El conductor introduce el tema del artículo"
-        };
-      case PHASES.PARAGRAPHS:
-        // Use group info for title and time
-        const groupNumbers = currentGroup?.numbers || [currentParagraph?.number || 1];
-        const isGrouped = groupNumbers.length > 1;
-        const groupTitle = isGrouped 
-          ? `Párrafos ${groupNumbers.join(', ')}` 
-          : `Párrafo ${groupNumbers[0]}`;
-        return {
-          title: groupTitle,
+          title: nums.length > 1 ? `Párrafos ${nums.join(", ")}` : `Párrafo ${nums[0]}`,
           icon: BookOpen,
-          color: "text-green-400",
-          bgColor: "bg-green-500",
-          estimatedTime: currentGroup?.totalTime || currentParagraph?.total_time_seconds || 60,
-          subtitle: `de ${analysisResult?.total_paragraphs || 0} párrafos`
+          subtitle: `de ${analysisResult?.total_paragraphs || totalParagraphs} párrafos`,
         };
+      }
       case PHASES.REVIEW:
-        return {
-          title: `Pregunta de Repaso ${currentReviewQuestion + 1}`,
-          icon: HelpCircle,
-          color: "text-red-400",
-          bgColor: "bg-red-500",
-          estimatedTime: Math.round(perQuestionTime),
-          subtitle: `de ${analysisResult?.final_questions?.length || 0} preguntas`
-        };
+        return { title: `Pregunta de repaso ${currentReviewQuestion + 1}`, icon: HelpCircle, subtitle: `de ${finals.length} preguntas` };
       case PHASES.CONCLUSION:
-        return {
-          title: "Palabras de Conclusión",
-          icon: Sparkles,
-          color: "text-purple-400",
-          bgColor: "bg-purple-500",
-          estimatedTime: conclusionTime,
-          subtitle: "El conductor resume y anima a la congregación"
-        };
+        return { title: "Conclusión", icon: Sparkles, subtitle: "Resumen y aplicación" };
       case PHASES.FINISHED:
-        return {
-          title: "¡Estudio Finalizado!",
-          icon: CheckCircle2,
-          color: "text-green-400",
-          bgColor: "bg-green-500",
-          estimatedTime: 0,
-          subtitle: "Gracias por tu dedicación"
-        };
+        return { title: "¡Estudio finalizado!", icon: CheckCircle2, subtitle: "Buen trabajo" };
       default:
-        return { title: "", icon: Timer, color: "", bgColor: "", estimatedTime: 0, subtitle: "" };
+        return { title: "Esperando para iniciar", icon: Play, subtitle: "Pulsa «Iniciar estudio»" };
     }
-  };
-  
-  const phaseInfo = getPhaseInfo();
-  const PhaseIcon = phaseInfo.icon;
-  const isPhaseOvertime = phaseElapsed > phaseInfo.estimatedTime;
-  
-  // Navigation handlers
-  const handleStartStudy = () => {
-    if (onStartStudy) {
-      onStartStudy();
-    } else {
-      onToggleTimer();
-    }
-    setStudyPhase(PHASES.INTRO);
-  };
-  
-  // Handle keyboard
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onExit();
-      }
-      if (e.key === ' ' || e.key === 'Space') {
-        e.preventDefault();
-        if (studyPhase === PHASES.INTRO && !isTimerRunning) {
-          handleStartStudy();
-        } else {
-          onToggleTimer();
-        }
-      }
-      // Removed arrow key navigation - navigation is done from main screen
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onExit, onToggleTimer, studyPhase, isTimerRunning]);
+  }, [phase, currentParagraphGroup, currentReviewQuestion, analysisResult, totalParagraphs, finals.length]);
 
-  const formatRemainingTime = (seconds) => {
-    const isNegative = seconds < 0;
-    const absSeconds = Math.abs(seconds);
-    const hours = Math.floor(absSeconds / 3600);
-    const mins = Math.floor((absSeconds % 3600) / 60);
-    const secs = absSeconds % 60;
-    
-    if (hours > 0) {
-      return `${isNegative ? '-' : ''}${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  // Color del recuadro según el tiempo del tramo
+  const { colorClass, indicatorText } = useMemo(() => {
+    if (phase === PHASES.FINISHED) return { colorClass: "bg-emerald-700", indicatorText: "FINALIZADO" };
+    if (!studyStarted) return { colorClass: "bg-zinc-600", indicatorText: "LISTO" };
+    if (!isTimerRunning) return { colorClass: "bg-zinc-600", indicatorText: "EN PAUSA" };
+    if (!estimatedTime) return { colorClass: "bg-green-600", indicatorText: "EN TIEMPO" };
+    const ratio = phaseElapsedTime / estimatedTime;
+    if (ratio <= 1) return { colorClass: "bg-green-600", indicatorText: "EN TIEMPO" };
+    if (ratio <= GRACE_RATIO) return { colorClass: "bg-orange-500", indicatorText: "TIEMPO DE PRÓRROGA" };
+    return { colorClass: "bg-red-600", indicatorText: "TIEMPO EXCEDIDO" };
+  }, [phase, studyStarted, isTimerRunning, estimatedTime, phaseElapsedTime]);
+
+  // Etiquetas del párrafo actual (imagen, texto, nota)
+  const badges = useMemo(() => {
+    if (phase !== PHASES.PARAGRAPHS || !currentParagraphGroup) return {};
+    const qs = currentParagraphGroup.paragraphs.flatMap((p) => p.questions || []);
+    return {
+      image: qs.some((q) => q.content_type === "image" || q.content_type === "both"),
+      scripture: qs.some((q) => q.content_type === "scripture" || q.content_type === "both"),
+      note: qs.some((q) => q.content_type === "note"),
+      questions: qs.filter(isRealQuestion).length,
+    };
+  }, [phase, currentParagraphGroup]);
+
+  // Botón inteligente
+  const lastIndexOfGroup = currentParagraphGroup
+    ? currentParagraphGroup.indices[currentParagraphGroup.indices.length - 1]
+    : -1;
+  const isLastGroup = lastIndexOfGroup >= totalParagraphs - 1;
+
+  const handleSmartButton = () => {
+    switch (phase) {
+      case PHASES.INITIAL: onStartStudy?.(); break;
+      case PHASES.INTRO: onGoToFirstParagraph?.(); break;
+      case PHASES.PARAGRAPHS:
+        if (isLastGroup) {
+          if (finals.length > 0) onStartReview?.();
+          else onStartClosingWords?.();
+        } else {
+          onGoToNextGroup?.();
+        }
+        break;
+      case PHASES.REVIEW:
+        if (currentReviewQuestion >= finals.length - 1) onStartClosingWords?.();
+        else onNextReviewQuestion?.();
+        break;
+      case PHASES.CONCLUSION: onFinishStudy?.(); break;
+      default: break;
     }
-    return `${isNegative ? '-' : ''}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const smartButtonText = (() => {
+    switch (phase) {
+      case PHASES.INITIAL: return "Iniciar estudio";
+      case PHASES.INTRO: {
+        const g = groupedParagraphs[0];
+        if (g && g.paragraphs.length > 1) return `Pasar a los párrafos ${g.paragraphs.map((p) => p.number).join(", ")}`;
+        return `Pasar al párrafo ${g?.firstParagraph?.number || 1}`;
+      }
+      case PHASES.PARAGRAPHS: {
+        if (isLastGroup) return finals.length > 0 ? "Pregunta de repaso 1" : "Ir a la conclusión";
+        const next = groupedParagraphs.find((g) => g.indices.includes(lastIndexOfGroup + 1));
+        if (!next) return "Siguiente párrafo";
+        return next.paragraphs.length > 1
+          ? `Siguientes párrafos ${next.paragraphs.map((p) => p.number).join(", ")}`
+          : `Siguiente párrafo ${next.firstParagraph.number}`;
+      }
+      case PHASES.REVIEW:
+        return currentReviewQuestion >= finals.length - 1 ? "Ir a la conclusión" : `Siguiente pregunta ${currentReviewQuestion + 2}`;
+      case PHASES.CONCLUSION: return "Finalizar estudio";
+      default: return null;
+    }
+  })();
+
+  const canComment = phase === PHASES.PARAGRAPHS || phase === PHASES.REVIEW;
+  const PhaseIcon = phaseInfo.icon;
 
   return (
-    <div 
-      className={`fixed inset-0 z-[9999] ${t.bg} ${t.text} flex flex-col`}
-      data-testid="presentation-mode"
-    >
-      {/* Top Bar with Stats */}
-      <div className={`flex items-center justify-between px-4 md:px-8 py-2 border-b ${t.border} shrink-0`}>
-        <div className="flex items-center gap-4">
-          <div className={`w-8 h-8 md:w-10 md:h-10 ${t.accentBg} rounded-xl flex items-center justify-center`}>
-            <Timer className="w-4 h-4 md:w-5 md:h-5 text-white" />
+    <div className="fixed inset-0 z-[9999] bg-zinc-800 text-white flex flex-col p-4 md:p-6 landscape:py-2 landscape:px-4" data-testid="presentation-mode">
+      {/* Barra superior */}
+      <div className="flex justify-between items-start">
+        {studyStarted && phase !== PHASES.FINISHED ? (
+          <Button
+            onClick={onToggleTimer}
+            variant="ghost"
+            className="text-zinc-400 hover:text-white hover:bg-zinc-700 [&_svg]:size-7"
+            aria-label={isTimerRunning ? "Pausar" : "Reanudar"}
+            data-testid="presentation-toggle-timer"
+          >
+            {isTimerRunning ? <Pause /> : <Play />}
+          </Button>
+        ) : <span />}
+        <Button onClick={onExit} variant="ghost" className="text-zinc-400 hover:text-white hover:bg-zinc-700 [&_svg]:size-8" aria-label="Salir" data-testid="presentation-exit">
+          <X />
+        </Button>
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto py-2">
+        {/* Horas y tiempos */}
+        <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-4">
+          <div className="text-center">
+            <p className="text-sm md:text-base font-semibold text-zinc-400">Hora actual</p>
+            <p className="text-3xl md:text-5xl landscape:text-3xl font-bold text-white tabular-nums">{formatClockTime(currentTime)}</p>
           </div>
-          <div>
-            <h1 className="font-heading font-bold text-sm md:text-lg truncate max-w-[150px] md:max-w-none">{analysisResult.filename}</h1>
-            {/* Mini Stats Row */}
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className={`text-[10px] md:text-xs ${t.textMuted} flex items-center gap-1`}>
-                <Layers className="w-3 h-3" />{articleStats.paragraphs}
-              </span>
-              <span className={`text-[10px] md:text-xs text-orange-400 flex items-center gap-1`}>
-                <MessageCircle className="w-3 h-3" />{articleStats.questions}
-              </span>
-              {articleStats.images > 0 && (
-                <span className={`text-[10px] md:text-xs text-purple-400 flex items-center gap-1`}>
-                  <Image className="w-3 h-3" />{articleStats.images}
-                </span>
-              )}
-              {articleStats.scriptures > 0 && (
-                <span className={`text-[10px] md:text-xs text-blue-400 flex items-center gap-1`}>
-                  <BookOpen className="w-3 h-3" />{articleStats.scriptures}
-                </span>
-              )}
-              {articleStats.review > 0 && (
-                <span className={`text-[10px] md:text-xs text-red-400 flex items-center gap-1`}>
-                  <HelpCircle className="w-3 h-3" />{articleStats.review}
-                </span>
-              )}
+          <div className="text-center">
+            <p className="text-sm md:text-base font-semibold text-cyan-400">Hora de fin</p>
+            <p className="text-3xl md:text-5xl landscape:text-3xl font-bold text-cyan-400 tabular-nums">{endTime ? formatClockTime(endTime) : "--:--"}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm md:text-base font-semibold text-zinc-400">Transcurrido</p>
+            <p className="text-3xl md:text-5xl landscape:text-3xl font-light text-green-400 tabular-nums">{formatTime(elapsedTime)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm md:text-base font-semibold text-zinc-400">Restante</p>
+            <p className="text-3xl md:text-5xl landscape:text-3xl font-light text-orange-400 tabular-nums">{formatTime(Math.max(0, remainingTime))}</p>
+          </div>
+        </div>
+
+        {/* Progreso total */}
+        <div className="w-full max-w-[17rem] mb-4">
+          <div className="relative w-full bg-zinc-700/50 rounded-full h-5 overflow-hidden">
+            <div className="bg-yellow-500 h-5 rounded-full transition-all duration-1000 ease-linear" style={{ width: `${progressPercentage}%` }} />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="font-bold text-white text-xs drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">{Math.round(progressPercentage)}%</span>
             </div>
           </div>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className={`${t.textMuted} hover:${t.text}`}>
-                <Palette className="w-4 h-4 md:mr-2" />
-                <span className="hidden md:inline">Tema</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuLabel>Seleccionar Tema</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {Object.entries(THEMES).map(([key, value]) => (
-                <DropdownMenuItem key={key} onClick={() => onThemeChange(key)} className={theme === key ? 'bg-accent' : ''}>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded-full ${value.accentBg}`} />
-                    <span>{value.name}</span>
-                    {theme === key && <span className="ml-auto">✓</span>}
-                  </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
 
-          <Button variant="ghost" size="sm" onClick={onExit} className={`${t.textMuted} hover:${t.text}`}>
-            <X className="w-4 h-4 md:mr-2" />
-            <span className="hidden md:inline">Salir</span>
-          </Button>
+        {/* Participaciones */}
+        {studyStarted && (
+          <div className="text-center bg-gradient-to-br from-zinc-700 to-zinc-800 border border-zinc-600 rounded-2xl px-5 py-3 landscape:p-2 mb-4 shadow-lg" data-testid="presentation-comments">
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Participaciones</p>
+            <p className="text-4xl md:text-5xl landscape:text-3xl font-black text-orange-500 tabular-nums">{totalComments}</p>
+            {canComment && (
+              <p className="text-[11px] text-zinc-400 mt-0.5 flex items-center justify-center gap-1">
+                <MessagesSquare className="w-3 h-3" /> {phaseComments} en este {phase === PHASES.REVIEW ? "repaso" : "párrafo"}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Recuadro de color */}
+        <div className={`w-full max-w-[17rem] rounded-2xl flex flex-col items-center justify-center transition-colors duration-500 py-8 px-6 landscape:py-3 landscape:px-2 shadow-2xl ${colorClass}`} data-testid="presentation-status-box">
+          <p className="text-white text-lg md:text-2xl landscape:text-base font-bold tracking-widest text-center">{indicatorText}</p>
+          <p className="text-white text-4xl md:text-6xl landscape:text-4xl font-light tabular-nums">{formatTime(phaseElapsedTime)}</p>
+          {estimatedTime > 0 && (
+            <p className="text-white/70 text-lg md:text-2xl landscape:text-base font-light tabular-nums">/ {formatTime(Math.round(estimatedTime))}</p>
+          )}
+
+          {warning && (
+            <div className="mt-4 pt-4 border-t border-white/20 w-full text-center" data-testid="presentation-five-minute-warning">
+              <div className={`flex items-center justify-center gap-2 animate-pulse ${warning.isOvertime ? "text-red-200" : "text-yellow-200"}`}>
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <div className="font-bold text-sm uppercase tracking-wider">
+                  {warning.prefix && <span>{warning.prefix} </span>}
+                  <span className="text-2xl text-white font-black mx-1 tabular-nums">{warning.number}</span>
+                  <span> {warning.suffix}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Tramo actual */}
+        <div className="text-center mt-4 landscape:mt-2">
+          <p className="text-2xl md:text-3xl landscape:text-xl font-black uppercase tracking-wider flex items-center justify-center gap-2">
+            <PhaseIcon className="w-6 h-6 text-zinc-400" />
+            {phaseInfo.title}
+          </p>
+          {phaseInfo.subtitle && <p className="text-lg md:text-xl landscape:text-base text-zinc-400 mt-1">{phaseInfo.subtitle}</p>}
+
+          {phase === PHASES.PARAGRAPHS && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-4 landscape:mt-2">
+              {badges.image && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-900/70 text-purple-200 border border-purple-700">
+                  <Image className="w-3.5 h-3.5" /> Contiene imagen
+                </span>
+              )}
+              {badges.scripture && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-900/70 text-blue-200 border border-blue-700">
+                  <BookOpen className="w-3.5 h-3.5" /> Texto para leer
+                </span>
+              )}
+              {badges.note && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-900/70 text-amber-200 border border-amber-700">
+                  <MessageCircleQuestion className="w-3.5 h-3.5" /> Nota de estudio
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Botones */}
+        <div className="flex flex-col items-center gap-6 mt-8 landscape:mt-3 landscape:gap-3">
+          {canComment && (
+            <Button
+              onClick={onAddComment}
+              className="bg-orange-500 hover:bg-orange-600 text-white rounded-full w-20 h-20 landscape:w-16 landscape:h-16 flex items-center justify-center shadow-lg transition-all active:scale-90 p-0 [&_svg]:size-10 landscape:[&_svg]:size-8"
+              aria-label="Marcar un comentario"
+              title="Marcar un comentario"
+              data-testid="presentation-add-comment"
+            >
+              <Hand fill="white" />
+            </Button>
+          )}
+          {smartButtonText && (
+            <Button
+              onClick={handleSmartButton}
+              size="lg"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full px-5 py-3 landscape:py-2 text-sm font-bold tracking-wider uppercase h-auto transition-all active:scale-95 shadow-lg shadow-blue-500/30 flex items-center gap-2"
+              data-testid="presentation-smart-button"
+            >
+              <span>{smartButtonText}</span>
+              <ArrowRight className="w-4 h-4" strokeWidth={3} />
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 py-4 overflow-auto">
-        
-        {/* Time Schedule */}
-        <div className={`${t.card} rounded-2xl px-6 md:px-12 py-4 md:py-5 mb-4 border ${t.border} w-full max-w-xl`}>
-          <div className="flex items-center justify-center gap-6 md:gap-14">
-            <div className="text-center">
-              <span className="text-[10px] md:text-xs font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
-              <p className={`text-2xl md:text-4xl font-bold mt-1 ${startTime ? 'text-emerald-400' : 'text-emerald-400/60'}`}
-                style={{ fontFamily: 'system-ui' }}>
-                {startTime ? formatClockTime(startTime) : '--:--'}
-              </p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className={`w-8 md:w-14 h-px ${t.border.replace('border-', 'bg-')} opacity-60`}></div>
-              <span className="text-xs md:text-sm font-bold text-orange-400 my-1">{Math.round(totalDurationSeconds / 60)} min</span>
-              <div className={`w-8 md:w-14 h-px ${t.border.replace('border-', 'bg-')} opacity-60`}></div>
-            </div>
-            <div className="text-center">
-              <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${isOvertime ? 'text-rose-400' : isLowTime ? 'text-rose-400' : 'text-amber-400'}`}>Fin</span>
-              <p className={`text-2xl md:text-4xl font-bold mt-1 ${
-                !endTime ? 'text-amber-400/60' : isOvertime ? 'text-rose-400 animate-pulse' : isLowTime ? 'text-rose-400' : 'text-amber-400'
-              }`} style={{ fontFamily: 'system-ui' }}>
-                {endTime ? formatClockTime(endTime) : '--:--'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Current Phase Card with Progress Indicator */}
-        <div className={`w-full max-w-xl ${t.card} rounded-2xl p-4 md:p-5 mb-4 border ${t.border}`}>
-          {/* Paragraph Progress Indicator (only for paragraphs phase) */}
-          {studyPhase === PHASES.PARAGRAPHS && (
-            <div className="mb-5">
-              <div className="flex items-center justify-between mb-3">
-                <span className={`text-sm font-semibold ${t.textMuted}`}>Progreso de párrafos</span>
-                <span className={`text-sm font-bold ${phaseInfo.color} bg-green-500/20 px-3 py-1 rounded-full`}>
-                  {currentGroup?.numbers?.length > 1 
-                    ? `${currentGroup.numbers.join(', ')} de ${articleStats.paragraphs}`
-                    : `${currentGroup?.numbers?.[0] || currentParagraphIndex + 1} de ${articleStats.paragraphs}`
-                  }
-                </span>
-              </div>
-              {/* Visual paragraph progress bar - shows GROUPS, not individual paragraphs */}
-              <div className="flex gap-1.5 flex-wrap">
-                {paragraphGroups.map((group, groupIdx) => {
-                  const hasImg = group.allQuestions?.some(q => q.content_type === 'image' || q.content_type === 'both');
-                  const hasTxt = group.allQuestions?.some(q => q.content_type === 'scripture' || q.content_type === 'both');
-                  const isCurrent = groupIdx === currentGroupIndex;
-                  const isCompleted = groupIdx < currentGroupIndex;
-                  const isGrouped = group.numbers.length > 1;
-                  
-                  return (
-                    <div 
-                      key={groupIdx}
-                      className={`h-3 rounded-full transition-all relative ${
-                        isCurrent 
-                          ? `${isGrouped ? 'w-14' : 'w-10'} bg-green-500 shadow-lg shadow-green-500/50` 
-                          : isCompleted 
-                            ? `${isGrouped ? 'w-6' : 'w-4'} bg-green-500/60` 
-                            : hasImg && hasTxt
-                              ? `${isGrouped ? 'w-6' : 'w-4'} bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 animate-pulse`
-                              : hasImg
-                                ? `${isGrouped ? 'w-6' : 'w-4'} bg-purple-500/80`
-                                : hasTxt
-                                  ? `${isGrouped ? 'w-6' : 'w-4'} bg-blue-500/80`
-                                  : `${isGrouped ? 'w-6' : 'w-4'} ${t.progressBg}`
-                      }`}
-                      title={`${isGrouped ? 'Párrafos' : 'Párrafo'} ${group.numbers.join(', ')}${hasImg ? ' 🖼️' : ''}${hasTxt ? ' 📖' : ''}`}
-                    >
-                      {isCurrent && (
-                        <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-green-400 whitespace-nowrap">
-                          {group.numbers.join(',')}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              {/* Legend */}
-              <div className="flex items-center gap-4 mt-3 justify-center">
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                  <span className={`text-[10px] ${t.textMuted}`}>Imagen</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span className={`text-[10px] ${t.textMuted}`}>Texto</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className={`text-[10px] ${t.textMuted}`}>Actual</span>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Review Progress (for review phase) */}
-          {studyPhase === PHASES.REVIEW && (
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs font-medium ${t.textMuted}`}>Progreso de repaso</span>
-                <span className={`text-xs font-bold text-red-400`}>
-                  {currentReviewQuestion + 1} / {articleStats.review}
-                </span>
-              </div>
-              <div className="flex gap-1">
-                {Array.from({ length: articleStats.review }).map((_, idx) => (
-                  <div 
-                    key={idx}
-                    className={`h-2 rounded-full transition-all ${
-                      idx === currentReviewQuestion 
-                        ? 'w-6 bg-red-500' 
-                        : idx < currentReviewQuestion 
-                          ? 'w-2 bg-red-500/50' 
-                          : `w-2 ${t.progressBg}`
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Phase Info */}
-          <div className="flex items-center gap-4">
-            <div className={`w-14 h-14 ${phaseInfo.bgColor} rounded-xl flex items-center justify-center shadow-lg`}>
-              <PhaseIcon className="w-7 h-7 text-white" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h2 className={`text-2xl md:text-3xl font-bold ${phaseInfo.color}`}>{phaseInfo.title}</h2>
-                {/* Current paragraph badges - MORE VISIBLE */}
-                {studyPhase === PHASES.PARAGRAPHS && (currentParagraphHasImage || currentParagraphHasScripture) && (
-                  <div className="flex gap-2">
-                    {currentParagraphHasImage && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-600 text-white shadow-lg shadow-purple-500/30">
-                        <Image className="w-4 h-4" />
-                        MOSTRAR IMAGEN
-                      </span>
-                    )}
-                    {currentParagraphHasScripture && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-lg shadow-blue-500/30">
-                        <BookOpen className="w-4 h-4" />
-                        LEER TEXTO
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-              <p className={`text-sm ${t.textMuted} mt-1`}>{phaseInfo.subtitle}</p>
-            </div>
-            {studyPhase !== PHASES.FINISHED && (
-              <div className="text-right">
-                <p className={`text-3xl md:text-4xl font-bold ${isPhaseOvertime ? 'text-red-400' : t.text}`}>
-                  {formatTimeCompact(phaseElapsed)}
-                </p>
-                <p className={`text-sm ${t.textDimmed}`}>/ {formatTimeCompact(phaseInfo.estimatedTime)}</p>
-              </div>
-            )}
-          </div>
-          
-          {/* Phase Progress Bar */}
-          {studyPhase !== PHASES.FINISHED && phaseInfo.estimatedTime > 0 && (
-            <div className={`h-2 rounded-full ${t.progressBg} overflow-hidden mt-4`}>
-              <div 
-                className={`h-full rounded-full transition-all duration-500 ${
-                  isPhaseOvertime ? 'bg-red-500' : phaseInfo.bgColor
-                }`}
-                style={{ width: `${Math.min(100, (phaseElapsed / phaseInfo.estimatedTime) * 100)}%` }}
-              />
-            </div>
-          )}
-          
-          {/* Question text for review phase */}
-          {studyPhase === PHASES.REVIEW && currentReviewQuestionData && (
-            <div className={`mt-4 p-4 rounded-xl ${t.progressBg}`}>
-              <p className={`text-sm md:text-base ${t.text}`}>{currentReviewQuestionData.text}</p>
-              {currentReviewQuestionData.parenthesis_content && (
-                <p className={`text-xs mt-2 ${t.textMuted}`}>({currentReviewQuestionData.parenthesis_content})</p>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Main Timers - BIGGER */}
-        <div className="flex items-center justify-center gap-8 md:gap-16 mb-6 w-full">
-          <div className="text-center flex-1 max-w-xs">
-            <p className={`text-sm md:text-base font-medium ${t.textDimmed} mb-2`}>Transcurrido</p>
-            <div className={`text-5xl md:text-7xl font-light tracking-tight ${isTimerRunning ? t.accent : t.text}`}
-              style={{ fontFamily: 'system-ui' }}>
-              {formatTime(elapsedTime)}
-            </div>
-          </div>
-          <div className={`w-px h-16 md:h-24 ${t.border.replace('border-', 'bg-')} opacity-30`} />
-          <div className="text-center flex-1 max-w-xs">
-            <p className={`text-sm md:text-base font-medium ${t.textDimmed} mb-2`}>Restante</p>
-            <div className={`text-5xl md:text-7xl font-light tracking-tight ${
-              isOvertime ? 'text-red-500 animate-pulse' : isLowTime ? t.danger : t.success
-            }`} style={{ fontFamily: 'system-ui' }}>
-              {formatRemainingTime(remainingTime)}
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full max-w-xl mb-4">
-          <div className={`h-2 md:h-3 rounded-full ${t.progressBg} overflow-hidden`}>
-            <div 
-              className={`h-full rounded-full transition-all duration-500 ${isLowTime ? 'bg-red-500' : 'bg-green-500'}`}
-              style={{ width: `${Math.min(100, progressPercentage)}%` }}
-            />
-          </div>
-          <p className={`text-center text-sm font-bold mt-2 ${isLowTime ? t.danger : t.success}`}>
-            {progressPercentage.toFixed(0)}%
-          </p>
-        </div>
-
-        {/* Controls */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="flex items-center gap-3 md:gap-4">
-            {/* Start Study Button */}
-            {studyPhase === PHASES.INTRO && !isTimerRunning && (
-              <Button
-                onClick={handleStartStudy}
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 md:px-8 py-3 text-base md:text-lg"
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Iniciar Estudio
-              </Button>
-            )}
-            
-            {/* Play/Pause Control Only */}
-            {isTimerRunning && studyPhase !== PHASES.FINISHED && (
-              <Button
-                onClick={onToggleTimer}
-                size="lg"
-                className={`rounded-full p-0 text-white shadow-lg ${
-                  isTimerRunning ? t.accentBg + ' hover:opacity-90' : 'bg-green-600 hover:bg-green-700'
-                }`}
-                style={{ width: '56px', height: '56px' }}
-              >
-                {isTimerRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
-              </Button>
-            )}
-            
-            {/* Reset */}
-            {(isTimerRunning || studyPhase !== PHASES.INTRO) && (
-              <Button
-                onClick={() => {
-                  onResetTimer();
-                  setStudyPhase(PHASES.INTRO);
-                  setCurrentReviewQuestion(0);
-                  setPhaseElapsed(0);
-                }}
-                variant="outline"
-                size="sm"
-                className={`rounded-full ${t.buttonOutline}`}
-              >
-                <RotateCcw className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {/* Keyboard shortcuts - simplified */}
-        <p className={`text-xs ${t.textDimmed} mt-4 hidden md:block`}>
-          <kbd className={`px-2 py-1 ${t.kbd} rounded`}>Espacio</kbd> iniciar/pausar · 
-          <kbd className={`px-2 py-1 ${t.kbd} rounded ml-1`}>ESC</kbd> salir
-        </p>
+      <div className="flex-shrink-0 pt-2 h-8 flex items-center justify-center">
+        {studyStarted && <span className="text-zinc-500 text-xs">Pulsa «Esc» para salir</span>}
       </div>
     </div>
   );
