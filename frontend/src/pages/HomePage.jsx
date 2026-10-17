@@ -41,7 +41,6 @@ import { UploadZone } from "@/components/UploadZone";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { AnalysisSummary } from "@/components/AnalysisSummary";
 import { TimerDisplay } from "@/components/TimerDisplay";
-import { CountdownTimer } from "@/components/CountdownTimer";
 import { QuickStats } from "@/components/QuickStats";
 import { NotificationSettings } from "@/components/NotificationSettings";
 import { ParagraphCard } from "@/components/ParagraphCard";
@@ -55,6 +54,7 @@ import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage"
 import { useNotifications } from "@/hooks/useNotifications";
 import { countQuestions } from "@/utils/timePlan";
 import { analyzeFile } from "@/analysis/analyzeFile";
+import { useUpdateNotifier } from "@/hooks/useUpdateNotifier";
 import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
 
 // Import utils
@@ -149,7 +149,7 @@ export default function HomePage() {
   // Participaciones (comentarios) marcadas durante el estudio
   const [commentStats, setCommentStats] = useState({ paragraphs: {}, review: {} });
   // Segundos transcurridos en el tramo actual (párrafo, pregunta de repaso, etc.)
-  const [segmentElapsed, setSegmentElapsed] = useState(0);
+  const [segmentTimer, setSegmentTimer] = useState({ key: '', elapsed: 0 });
   
   // State for editing end time on initial screen (before PDF upload)
   const [isEditingInitialEndTime, setIsEditingInitialEndTime] = useState(false);
@@ -158,6 +158,7 @@ export default function HomePage() {
 
 
   // Custom hooks
+  useUpdateNotifier();
   const { playNotificationSound, triggerVibration } = useNotifications(soundEnabled, vibrationEnabled);
   const {
     getAdjustedFinalQuestionsTime,
@@ -257,8 +258,11 @@ export default function HomePage() {
     : currentManualParagraph;
 
   // El cronómetro del tramo vuelve a 0 cada vez que cambia el tramo
+  // (se calcula en el mismo render para que el color no "parpadee" al cambiar de párrafo)
   const segmentKey = `${studyPhase}-${currentGroupFirst}-${currentReviewQuestion}`;
-  useEffect(() => { setSegmentElapsed(0); }, [segmentKey]);
+  const segmentElapsed = segmentTimer.key === segmentKey ? segmentTimer.elapsed : 0;
+  const segmentKeyRef = useRef(segmentKey);
+  segmentKeyRef.current = segmentKey;
 
   // Marcar un comentario en el párrafo (o pregunta de repaso) actual
   const handleAddComment = useCallback(() => {
@@ -439,7 +443,8 @@ export default function HomePage() {
       }
     }
     
-    if (timeUntilFinalQuestions <= 0 && !notificationPlayed.now) {
+    const reviewAlertsOn = alertTimes.firstAlert > 0 || alertTimes.secondAlert > 0;
+    if (reviewAlertsOn && timeUntilFinalQuestions <= 0 && !notificationPlayed.now) {
       playNotificationSound('final');
       triggerVibration([500, 200, 500, 200, 500]);
       setNotificationPlayed(prev => ({ ...prev, now: true }));
@@ -472,7 +477,9 @@ export default function HomePage() {
       timerRef.current = setInterval(() => {
         setElapsedTime(prev => prev + 1);
         setRemainingTime(prev => Math.max(0, prev - 1));
-        setSegmentElapsed(prev => prev + 1);
+        setSegmentTimer(prev => prev.key === segmentKeyRef.current
+          ? { key: prev.key, elapsed: prev.elapsed + 1 }
+          : { key: segmentKeyRef.current, elapsed: 1 });
       }, 1000);
     } else {
       if (timerRef.current) {
@@ -556,7 +563,7 @@ export default function HomePage() {
     setIsInClosingWordsMode(false);
     setClosingWordsStartTime(null);
     setCommentStats({ paragraphs: {}, review: {} });
-    setSegmentElapsed(0);
+    setSegmentTimer({ key: '', elapsed: 0 });
     setPresentationPhase('intro');
   };
 
@@ -1296,12 +1303,8 @@ export default function HomePage() {
                   totalDuration={totalDuration}
                   manualEndTime={manualEndTime}
                   onManualEndTimeChange={setManualEndTime}
-                />
-
-                <CountdownTimer
-                  remainingTime={remainingTime}
-                  adjustedTimes={adjustedFinalTimes}
-                  isTimerRunning={isTimerRunning}
+                  fiveMinuteWarningEnabled={fiveMinuteWarningEnabled}
+                  perQuestion={isTimerRunning && adjustedFinalTimes.perQuestion !== undefined ? adjustedFinalTimes.perQuestion : plannedPerQuestion}
                   plannedPerQuestion={plannedPerQuestion}
                 />
 
