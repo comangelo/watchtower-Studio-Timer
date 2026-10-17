@@ -1,4 +1,4 @@
-const CACHE_NAME = 'atalaya-timer-v4';
+const CACHE_NAME = 'atalaya-timer-v5';
 // El análisis del PDF se hace en el dispositivo; se guarda también el motor de pdf.js
 // para que la app funcione sin conexión.
 const urlsToCache = [
@@ -16,7 +16,15 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
   );
-  self.skipWaiting();
+  // La nueva versión espera: la app avisa y se activa cuando el usuario pulsa "Actualizar"
+  // (así nunca se recarga sola en mitad de un estudio).
+});
+
+// La app pide activar la nueva versión
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Fetch event - Network first for manifest.json to ensure orientation updates
