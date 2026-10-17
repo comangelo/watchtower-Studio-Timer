@@ -1253,6 +1253,8 @@ export default function HomePage() {
                         hasReviewQuestions={analysisResult.final_questions?.length > 0}
                         darkMode={darkMode}
                         showContentGlobal={showAllParagraphContent}
+                        onAddComment={isCurrentGroup ? handleAddComment : undefined}
+                        commentCount={commentStats.paragraphs[firstIndex] || 0}
                       />
                     );
                   })}
@@ -1284,6 +1286,8 @@ export default function HomePage() {
                   playNotificationSound={playNotificationSound}
                   triggerVibration={triggerVibration}
                   darkMode={darkMode}
+                  onAddComment={handleAddComment}
+                  reviewCommentStats={commentStats.review}
                 />
               )}
             </div>
