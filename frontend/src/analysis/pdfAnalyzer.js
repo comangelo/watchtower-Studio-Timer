@@ -61,6 +61,25 @@ export function joinHyphenatedLines(parts) {
   return result.join(' ');
 }
 
+/**
+ * Une las líneas de un párrafo como en la revista impresa:
+ *  - "Sa-" + "tanás"   -> "Satanás"   (palabra partida al final de la línea)
+ *  - "18:9-" + "11"    -> "18:9-11"   (guion de un rango: se conserva, sin espacio)
+ *  - resto             -> separado por un espacio
+ */
+export function joinParagraphLines(lines) {
+  let out = '';
+  for (let line of lines) {
+    line = line.trim();
+    if (!line) continue;
+    if (!out) { out = line; continue; }
+    if (/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]-$/u.test(out) && /^[a-záéíóúüñ]/u.test(line)) out = out.slice(0, -1) + line;
+    else if (/[-:]$/.test(out) && /^\d/.test(line)) out += line;
+    else out += ' ' + line;
+  }
+  return out;
+}
+
 /** Clasifica el contenido entre paréntesis: image | scripture | note | both | "" */
 export function classifyParenthesisContent(paren) {
   const VERB = '(?:vea|mira|mire|observe|observa)';
@@ -510,7 +529,15 @@ export async function analyzePdf(pdfjsLib, data, filename, wpm = WORDS_PER_MINUT
 }
 
 export function analyzeSpans(pages, line, filename, wpm, answerTime) {
-  const lines = pages.flatMap(p => p.spans);
+  // El texto temático de la portada ("No tenemos una lucha…") va en la misma letra que
+  // los párrafos pero ENCIMA del primer párrafo; el PDF lo trae después en el flujo y se
+  // colaba en mitad de un párrafo. Se descartan las líneas de párrafo de la primera
+  // página situadas por encima de la primera línea del texto.
+  const isBodySize = (sz) => sz >= 10.5 && sz <= 11.5;
+  const firstBody = pages[0]?.spans.find(sp => isBodySize(sp.size) && sp.text.trim().length > 20);
+  const lines = pages.flatMap((p, i) => (i === 0 && firstBody)
+    ? p.spans.filter(sp => !(isBodySize(sp.size) && sp.top < firstBody.top - 3))
+    : p.spans);
   if (!lines.length) {
     throw new Error('No se pudo extraer texto del PDF. ¿Es un PDF escaneado (imagen)?');
   }
@@ -656,7 +683,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
 
   for (const num of [...paragraphs.keys()].sort((a, b) => a - b)) {
     const pd = paragraphs.get(num);
-    const text = pd.text_lines.join(' ');
+    const text = joinParagraphLines(pd.text_lines);
     const questions = pd.questions;
     const wordCount = countWords(text);
     let reading = calculateReadingTime(wordCount, wpm);
