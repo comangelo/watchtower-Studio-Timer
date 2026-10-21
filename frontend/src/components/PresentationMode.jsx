@@ -45,6 +45,7 @@ export const PHASES = {
 };
 
 const GRACE_RATIO = 1.3; // 30 % de prórroga
+const FINAL_STRETCH_SECONDS = 300; // últimos 5 minutos: sin prórroga
 
 export default function PresentationMode({
   analysisResult,
@@ -143,12 +144,17 @@ export default function PresentationMode({
     if (phase === PHASES.FINISHED) return { colorClass: "bg-emerald-700", indicatorText: "FINALIZADO" };
     if (!studyStarted) return { colorClass: "bg-zinc-600", indicatorText: "LISTO" };
     if (!isTimerRunning) return { colorClass: "bg-zinc-600", indicatorText: "EN PAUSA" };
+    // Pasada la hora de fin del estudio: siempre rojo
+    if (remainingTime <= 0 && elapsedTime > 0) return { colorClass: "bg-red-600", indicatorText: "TIEMPO EXCEDIDO" };
+    // Últimos 5 minutos: misma regla que en los párrafos pero SIN prórroga
+    // (verde mientras el tramo va en su tiempo; al pasarse, rojo directamente)
+    const finalStretch = remainingTime <= FINAL_STRETCH_SECONDS;
     if (!estimatedTime) return { colorClass: "bg-green-600", indicatorText: "EN TIEMPO" };
     const ratio = phaseElapsedTime / estimatedTime;
     if (ratio <= 1) return { colorClass: "bg-green-600", indicatorText: "EN TIEMPO" };
-    if (ratio <= GRACE_RATIO) return { colorClass: "bg-orange-500", indicatorText: "TIEMPO DE PRÓRROGA" };
+    if (!finalStretch && ratio <= GRACE_RATIO) return { colorClass: "bg-orange-500", indicatorText: "TIEMPO DE PRÓRROGA" };
     return { colorClass: "bg-red-600", indicatorText: "TIEMPO EXCEDIDO" };
-  }, [phase, studyStarted, isTimerRunning, estimatedTime, phaseElapsedTime]);
+  }, [phase, studyStarted, isTimerRunning, estimatedTime, phaseElapsedTime, remainingTime, elapsedTime]);
 
   // Etiquetas del párrafo actual (imagen, texto, nota)
   const badges = useMemo(() => {
