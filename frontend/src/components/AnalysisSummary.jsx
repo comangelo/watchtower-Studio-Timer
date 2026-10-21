@@ -2,39 +2,26 @@ import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNot
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeCompact } from "../utils/timeFormatters";
 
-// Format filename to extract article number and title
-function parseFilename(filename) {
-  if (!filename) return { articleLine: '', titleLine: '' };
-  
-  // Remove extension
+// Número del artículo (sale del nombre del archivo, p. ej. "Articulo_de_Estudio_83_…")
+// y título (el impreso en el PDF; si no se encontró, el del nombre del archivo).
+function getArticleHeading(analysisResult) {
+  const filename = analysisResult?.filename || '';
   let name = filename.replace(/\.[^/.]+$/, '');
-  
-  // Replace underscores and hyphens with spaces
-  name = name.replace(/[_-]/g, ' ');
-  
-  // Try to extract: "Articulo de Estudio XX resto del titulo"
-  // Pattern matches variations like "Articulo de Estudio 49 Como nos ayuda..."
-  const match = name.match(/^(?:articulo\s*(?:de\s*)?(?:estudio\s*)?|article\s*|art\s*)(\d+)\s*(.*)$/i);
-  
-  if (match) {
-    const number = match[1];
-    let title = match[2].trim();
-    
-    // Capitalize first letter, rest lowercase, then capitalize after spaces
-    title = title.toLowerCase().replace(/(?:^|\s)\S/g, char => char.toUpperCase());
-    
-    return {
-      articleLine: `ARTÍCULO DE ESTUDIO ${number}`,
-      titleLine: title
-    };
+  // Prefijos añadidos por algunos sistemas al subir el archivo ("24046e1c-…")
+  name = name.replace(/^[0-9a-f]{6,}[-_ ]+/i, '');
+  const num = /art[ií]culo[\s_-]*(?:de[\s_-]*)?(?:estudio[\s_-]*)?(\d{1,3})(?!\d)/i.exec(name);
+  const articleLine = num ? `ARTÍCULO DE ESTUDIO ${num[1]}` : 'ARTÍCULO DE ESTUDIO';
+
+  let titleLine = (analysisResult?.article_title || '').trim();
+  if (!titleLine) {
+    titleLine = name
+      .replace(/^art[ií]culo[\s_-]*(?:de[\s_-]*)?(?:estudio[\s_-]*)?\d*[\s_-]*/i, '')
+      .replace(/[_-]+/g, ' ')
+      .trim()
+      .toLowerCase();
+    titleLine = titleLine.charAt(0).toUpperCase() + titleLine.slice(1);
   }
-  
-  // If no match, just return the whole name as title
-  let title = name.toLowerCase().replace(/(?:^|\s)\S/g, char => char.toUpperCase());
-  return {
-    articleLine: 'ARTÍCULO DE ESTUDIO',
-    titleLine: title
-  };
+  return { articleLine, titleLine };
 }
 
 export function AnalysisSummary({ 
@@ -66,7 +53,7 @@ export function AnalysisSummary({
   const availableTimeSeconds = totalDurationSeconds - articleTimeSeconds - fixedTimeSeconds;
 
   // Parse the filename into article line and title
-  const { articleLine, titleLine } = parseFilename(analysisResult.filename);
+  const { articleLine, titleLine } = getArticleHeading(analysisResult);
 
   return (
     <Card className={`mb-8 shadow-sm ${darkMode ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-100'}`} data-testid="analysis-summary">
