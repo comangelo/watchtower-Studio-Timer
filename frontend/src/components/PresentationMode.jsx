@@ -158,6 +158,7 @@ export default function PresentationMode({
       image: qs.some((q) => q.content_type === "image" || q.content_type === "both"),
       scripture: qs.some((q) => q.content_type === "scripture" || q.content_type === "both"),
       note: qs.some((q) => q.content_type === "note"),
+      scriptureRefs: [...new Set(currentParagraphGroup.paragraphs.flatMap((p) => p.scripture_refs || []))],
       highlights: [...new Set(qs.flatMap((q) => q.highlight_contents || []))],
       questions: qs.filter(isRealQuestion).length,
     };
@@ -319,7 +320,7 @@ export default function PresentationMode({
               )}
               {badges.scripture && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-900/70 text-blue-200 border border-blue-700">
-                  <BookOpen className="w-3.5 h-3.5" /> Texto para leer
+                  <BookOpen className="w-3.5 h-3.5 shrink-0" /> {badges.scriptureRefs?.length ? `Leer ${badges.scriptureRefs.join(" · ")}` : "Texto para leer"}
                 </span>
               )}
               {badges.note && (

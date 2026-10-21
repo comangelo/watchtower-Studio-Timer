@@ -66,6 +66,8 @@ export function ParagraphCard({
   const hasImageContent = allQuestions.some(q => q.content_type === 'image' || q.content_type === 'both');
   const hasScriptureContent = allQuestions.some(q => q.content_type === 'scripture' || q.content_type === 'both');
   const hasNoteContent = allQuestions.some(q => q.content_type === 'note');
+  // Citas concretas que hay que leer ("lee Efesios 4:25-27", "léelo", …)
+  const scriptureRefs = [...new Set(allParagraphs.flatMap(p => p.scripture_refs || []))];
   // "Ideas importantes": textos entre comillas en el paréntesis de la pregunta
   const highlightTexts = [...new Set(allQuestions.flatMap(q => q.highlight_contents || []))];
 
@@ -270,8 +272,8 @@ export function ParagraphCard({
                     ? 'bg-blue-900/70 text-blue-200 border border-blue-700' 
                     : 'bg-blue-100 text-blue-700 border border-blue-200'
                 }`} data-testid={`scripture-badge-${paragraph.number}`}>
-                  <BookOpen className="w-3.5 h-3.5" />
-                  Texto para leer
+                  <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                  {scriptureRefs.length ? `Leer ${scriptureRefs.join(' · ')}` : 'Texto para leer'}
                 </span>
               )}
               {hasNoteContent && (
