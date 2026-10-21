@@ -39,6 +39,14 @@ const isUpperChar = (c) => !!c && c === c.toUpperCase() && c !== c.toLowerCase()
 // "ima- gen" -> "imagen"
 export const cleanHyphenatedText = (text) => text.replace(/-\s+([a-záéíóúñ])/g, '$1');
 
+/** Verbo de lectura al inicio: "lea", "léalo", "lee", "léelo", "lean", "léanlo" (forma de usted y de tú). */
+export const READ_VERB = '[Ll][EeÉé](?:[Aa]|[Ee])[Nn]?(?:[Ll][Oo][Ss]?)?';
+const READ_PREFIX = new RegExp('^' + READ_VERB + '\\s+', 'u');
+/** "Efesios 6: 11, 12" (cita partida entre dos líneas) -> "Efesios 6:11, 12" */
+export const joinVerseColon = (text) => text.replace(/(\d+):\s+(\d+)/g, '$1:$2');
+// Cita bíblica: "Santiago 3:14-16", "1 Sam. 18:9-11", "Mat. 5:43, 44"
+const BIBLE_REF = /(?:[1-3]\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\.?\s+\d+:\d+(?:\s?[-–,]\s?\d+(?::\d+)?)*/gu;
+
 export function joinHyphenatedLines(parts) {
   const result = [];
   for (let part of parts) {
@@ -66,8 +74,9 @@ export function classifyParenthesisContent(paren) {
   }
 
   let hasScripture = false;
-  if (/^[Ll][EeÉé][Aa](lo|LO)?\s+/u.test(paren)) {
-    const part = paren.replace(/^[Ll][EeÉé][Aa](lo|LO)?\s+/u, '');
+  paren = joinVerseColon(paren);
+  if (READ_PREFIX.test(paren)) {
+    const part = paren.replace(READ_PREFIX, '');
     if (/\d+:\d+/.test(part)) hasScripture = true;
   }
   if (!hasScripture) hasScripture = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+/u.test(paren);
@@ -153,13 +162,27 @@ export function extractHighlights(parenthesisContent) {
   return out;
 }
 
-/** Referencias "(lea Salmo 62:8)" dentro del texto del párrafo. */
+/**
+ * Textos para leer dentro del párrafo:
+ *  - "(lea Salmo 62:8)", "(lee Efesios 4:25-27)", "(léanlo …)"
+ *  - "… Santiago 3:14-16, donde … (léelo)": la cita va antes del paréntesis.
+ */
 export function extractLeaScripturesFromText(text) {
   const out = [];
-  const re = /\(([Ll][EeÉé][Aa](?:lo|LO)?\s+[^)]+\d+:\d+[^)]*)\)/gu;
-  for (const m of text.matchAll(re)) {
-    // "lea Prover- bios 27:9" -> "lea Proverbios 27:9"
-    if (/\d+:\d+/.test(m[1])) out.push({ parenthesis_content: cleanHyphenatedText(m[1]).trim(), content_type: 'scripture' });
+  const clean = joinVerseColon(cleanHyphenatedText(text));
+  const withRef = new RegExp('\\((' + READ_VERB + '\\s+[^)]+\\d+:\\d+[^)]*)\\)', 'gu');
+  for (const m of clean.matchAll(withRef)) {
+    out.push({ parenthesis_content: m[1].replace(/\s+/g, ' ').trim(), content_type: 'scripture' });
+  }
+  // "(léelo)" / "(léalo)" / "(léanlo)" sin cita: se toma la última cita de la misma frase
+  const bare = new RegExp('\\((' + READ_VERB + ')\\)', 'gu');
+  for (const m of clean.matchAll(bare)) {
+    const before = clean.slice(Math.max(0, m.index - 300), m.index);
+    const sentence = before.split(/[.!?](?=\s+[A-ZÁÉÍÓÚ¿¡])/u).pop();
+    const refs = [...sentence.matchAll(BIBLE_REF)];
+    if (refs.length) {
+      out.push({ parenthesis_content: m[1].toLowerCase() + ' ' + refs[refs.length - 1][0].trim(), content_type: 'scripture' });
+    }
   }
   return out;
 }
@@ -550,7 +573,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
   let totalWords = 0, realQuestions = 0, totalEntries = 0;
   let totalReading = 0, totalQuestionTime = 0, cumulative = 0;
   let totalImages = 0, totalScriptures = 0, totalNotes = 0, totalHighlights = 0;
-  const leaPrefix = /^[Ll][EeÉé][Aa](?:lo|LO)?\s+/u;
+  const leaPrefix = READ_PREFIX;
 
   for (const num of [...paragraphs.keys()].sort((a, b) => a - b)) {
     const pd = paragraphs.get(num);
@@ -574,22 +597,37 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
       else if (q.content_type === 'note') notes++;
     }
     for (const lea of extractLeaScripturesFromText(text)) {
-      const leaRef = lea.parenthesis_content.toLowerCase().replace(leaPrefix, '').trim();
+      const norm = (x) => joinVerseColon(x).toLowerCase().replace(leaPrefix, '').replace(/[\s.]+/g, '');
+      const leaRef = norm(lea.parenthesis_content);
       let counted = false;
       for (const q of questions) {
         if (!q.parenthesis_content) continue;
-        const qc = q.parenthesis_content.toLowerCase();
-        if (qc.includes(leaRef) || leaRef.includes(qc)) { counted = true; break; }
-        if (leaRef === qc.replace(leaPrefix, '').trim()) { counted = true; break; }
+        const qc = norm(q.parenthesis_content);
+        if (qc && (qc.includes(leaRef) || leaRef.includes(qc))) { counted = true; break; }
       }
       for (const q of questions) {
-        if (q.text && q.text.toLowerCase().includes(leaRef)) { counted = true; break; }
+        if (q.text && norm(q.text).includes(leaRef)) { counted = true; break; }
       }
       if (!counted) {
         scr++;
         questions.push({ text: '', answer_time: 0, is_final_question: false, parenthesis_content: lea.parenthesis_content, content_type: 'scripture' });
       }
     }
+    // Citas concretas que hay que leer (para mostrarlas en la tarjeta)
+    const scriptureRefs = [];
+    const addRef = (r) => {
+      const ref = joinVerseColon(r).replace(READ_PREFIX, '').replace(/\s+/g, ' ').trim();
+      const k = ref.toLowerCase().replace(/[\s.]+/g, '');
+      if (ref && !scriptureRefs.some((x) => x.toLowerCase().replace(/[\s.]+/g, '') === k)) scriptureRefs.push(ref);
+    };
+    for (const lea of extractLeaScripturesFromText(text)) addRef(lea.parenthesis_content);
+    for (const q of questions) {
+      if (q.content_type !== 'scripture' && q.content_type !== 'both') continue;
+      const refs = [...joinVerseColon(cleanHyphenatedText(q.parenthesis_content || '')).matchAll(BIBLE_REF)];
+      const fromText = refs.length ? [] : [...joinVerseColon(q.text || '').matchAll(BIBLE_REF)];
+      for (const m of [...refs, ...fromText]) addRef(m[0]);
+    }
+
     totalImages += imgs; totalScriptures += scr; totalNotes += notes; totalHighlights += highlights;
     reading += (imgs + scr + notes + highlights) * EXTRA_CONTENT_TIME;
 
@@ -605,6 +643,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
       word_count: wordCount,
       reading_time_seconds: round2(reading),
       questions,
+      scripture_refs: scriptureRefs,
       total_time_seconds: round2(reading + questionTime),
       cumulative_time_seconds: round2(cumulative),
       grouped_with: pd.grouped_with || [],
