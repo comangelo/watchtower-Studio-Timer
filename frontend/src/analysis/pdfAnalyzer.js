@@ -528,6 +528,25 @@ export async function analyzePdf(pdfjsLib, data, filename, wpm = WORDS_PER_MINUT
   }
 }
 
+/**
+ * Título del artículo tal como está impreso: la letra más grande de la primera página
+ * (puede ocupar varias líneas: "Imitemos la humildad" + "de Jehová").
+ * Si viniera todo en mayúsculas, se deja con mayúscula solo al principio.
+ */
+export function extractArticleTitle(pages) {
+  const spans = (pages[0]?.spans || []).filter(sp => sp.text.trim());
+  if (!spans.length) return '';
+  const maxSize = Math.max(...spans.map(sp => sp.size));
+  if (maxSize < 14) return '';
+  const title = spans
+    .filter(sp => sp.size >= maxSize - 0.5)
+    .sort((a, b) => a.top - b.top)
+    .map(sp => sp.text.trim());
+  let t = joinParagraphLines(title).replace(/\s+/g, ' ').trim();
+  if (t && t === t.toUpperCase()) t = t.charAt(0) + t.slice(1).toLowerCase();
+  return t;
+}
+
 export function analyzeSpans(pages, line, filename, wpm, answerTime) {
   // El texto temático de la portada ("No tenemos una lucha…") va en la misma letra que
   // los párrafos pero ENCIMA del primer párrafo; el PDF lo trae después en el flujo y se
@@ -783,6 +802,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     final_questions_start_time: round2(finalStart),
     final_questions: finalQuestions,
     final_questions_title: finalTitle,
+    article_title: extractArticleTitle(pages),
     paragraphs: analyzed,
     timestamp: new Date().toISOString(),
     total_paragraph_questions: realQuestions,
