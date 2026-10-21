@@ -372,7 +372,66 @@ export function detectHorizontalLine(pages, OPS) {
       }
     }
   });
+  if (lastPage < 0) {
+    // Algunos PDF dibujan la línea con caracteres repetidos ("____" o glifos sin texto)
+    pages.forEach((pg, pageIndex) => {
+      for (const sp of pg.spans || []) {
+        if (/^[\u0001-\u0008_\u2014\u2015\u2500-]{20,}$/u.test(sp.text) && sp.top > (pg.height || 0) * 0.3) {
+          if (pageIndex > lastPage || (pageIndex === lastPage && sp.top > lastY)) { lastPage = pageIndex; lastY = sp.top; }
+        }
+      }
+    });
+  }
   return { found: lastPage >= 0, page: lastPage, y: lastY };
+}
+
+/**
+ * Preguntas de repaso por su forma en la página, sin depender de que sean preguntas:
+ * cada punto del recuadro final empieza con una casilla ("˛", "•", "■"…), va en la
+ * misma letra que la casilla y termina en la siguiente casilla o en "CANCIÓN N".
+ * El título es el texto en negrita justo encima de la primera casilla
+ * ("¿QUÉ RESPONDERÍAS?", "¿CÓMO NOS PUEDE AYUDAR…?", "REPASO", …).
+ * Sirve tanto si los puntos son preguntas como si son frases ("Ser más accesibles.").
+ */
+const BULLET_CHARS = '˛•·■□▪▫❑☐◻◼●○✓✔➢►';
+const REVIEW_BULLET = new RegExp('^[' + BULLET_CHARS + ']$', 'u');
+// Casilla pegada al texto: "• Explica por qué…"
+const INLINE_BULLET = new RegExp('^[' + BULLET_CHARS + ']\\s+(\\S.*)$', 'u');
+export function extractReviewByBullets(pages) {
+  const isBullet = (sp) => REVIEW_BULLET.test(sp.text.trim()) || INLINE_BULLET.test(sp.text.trim());
+  // Última página que tiene casillas
+  let pageIndex = -1;
+  pages.forEach((pg, i) => { if (pg.spans.some(isBullet)) pageIndex = i; });
+  if (pageIndex < 0) return [[], ''];
+  const spans = pages[pageIndex].spans;
+  const bullets = spans.filter(isBullet).sort((a, b) => a.top - b.top);
+  const size = bullets[0].size;
+  const firstTop = bullets[0].top;
+  const song = spans
+    .filter((sp) => /^CANCI[OÓ]N\s+\d+/u.test(sp.text.toUpperCase()) && sp.top > firstTop)
+    .sort((a, b) => a.top - b.top)[0];
+  const endTop = song ? song.top - 2 : Infinity;
+
+  const items = [];
+  bullets.forEach((b, i) => {
+    const from = b.top - 3;
+    const to = Math.min(i + 1 < bullets.length ? bullets[i + 1].top - 3 : Infinity, endTop);
+    const inline = INLINE_BULLET.exec(b.text.trim());
+    const parts = spans
+      .filter((sp) => sp !== b && !isBullet(sp) && !sp.bold
+        && Math.abs(sp.size - size) <= 0.3 && sp.top >= from && sp.top < to)
+      .sort((a, c) => a.top - c.top)
+      .map((sp) => sp.text);
+    if (inline) parts.unshift(inline[1]);
+    const text = joinHyphenatedLines(parts).replace(/\s+/g, ' ').trim();
+    if (text.length > 2) items.push(text);
+  });
+
+  // Título: texto en negrita más cercano por encima de la primera casilla
+  const title = spans
+    .filter((sp) => sp.bold && sp.top < firstTop && firstTop - sp.top < 60 && !/^CANCI[OÓ]N/u.test(sp.text.toUpperCase()))
+    .sort((a, b) => b.top - a.top)[0];
+  return [items.map((q) => createQuestionInfo(q, QUESTION_ANSWER_TIME, true)), title ? title.text.trim() : ''];
 }
 
 /** Preguntas de repaso debajo de la línea horizontal. Devuelve [preguntas, título]. */
@@ -396,17 +455,32 @@ function extractQuestionsAfterLine(pages, line) {
 
   const bullets = [];
   const numbered = [];
-  for (const { text, bold } of items) {
+  // Sin casillas: cada punto empieza tras un hueco vertical mayor que el interlineado,
+  // así un punto de dos líneas se une y las frases que no son preguntas también cuentan.
+  let lastY = null;
+  let gapLimit = null;
+  let reviewSize = null;
+  for (const { y, size, text, bold } of items) {
     if (/^CANCI[OÓ]N\s+\d+/u.test(text.toUpperCase())) break;
     if (text === '˛') continue;
-    if (bold && !boldTitle && text.includes('?')) { boldTitle = text; continue; }
+    if (/^[\u0001-\u0008_\u2014\u2015\u2500-]{5,}$/u.test(text)) continue;
+    // Título: primera línea en negrita o en mayúsculas ("¿QUÉ RESPONDERÍAS?", "REPASO"…)
+    if (!boldTitle && !bullets.length && !numbered.length && (bold || isUpperText(text))) { boldTitle = text; continue; }
     if (isUpperText(text) && text.includes('?')) continue;
     const m = /^(\d{1,2})\.\s*(.+\?)$/u.exec(text);
     if (m) {
       const q = m[2].trim();
       if (q.length > 3) numbered.push(q);
-    } else if (text.length > 2 && text.length < 150 && !/^\d/.test(text)) {
-      if (text.includes('?') || (text.length > 2 && isUpperChar(text[0]))) bullets.push(text);
+    } else if (text.length > 2 && text.length < 200 && !/^\d/.test(text)) {
+      // Solo la letra del recuadro de repaso (evita pies de imagen u otros textos)
+      if (reviewSize !== null && Math.abs(size - reviewSize) > 0.3) continue;
+      gapLimit = gapLimit || size * 1.6;
+      const continues = bullets.length && lastY !== null && (y - lastY) <= gapLimit
+        && !/[.?!]$/.test(bullets[bullets.length - 1]);
+      if (continues) bullets[bullets.length - 1] = joinHyphenatedLines([bullets[bullets.length - 1], text]);
+      else if (text.includes('?') || isUpperChar(text[0])) { bullets.push(text); if (reviewSize === null) reviewSize = size; }
+      else continue;
+      lastY = y;
     }
   }
   const list = numbered.length ? numbered : bullets;
@@ -499,7 +573,12 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
   let foundFinalSection = false;
   let skipFinalDetection = false;
 
-  if (line.found) {
+  const [byBullets, bulletTitle] = extractReviewByBullets(pages);
+  if (byBullets.length) {
+    finalTitle = bulletTitle;
+    finalQuestions = byBullets.map(q => ({ ...q, answer_time: answerTime, is_final_question: true }));
+    skipFinalDetection = true;
+  } else if (line.found) {
     const [raw, title] = extractQuestionsAfterLine(pages, line);
     finalTitle = title;
     finalQuestions = raw.map(q => ({ ...q, answer_time: answerTime, is_final_question: true }));
