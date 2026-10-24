@@ -45,7 +45,15 @@ const READ_PREFIX = new RegExp('^' + READ_VERB + '\\s+', 'u');
 /** "Efesios 6: 11, 12" (cita partida entre dos líneas) -> "Efesios 6:11, 12" */
 export const joinVerseColon = (text) => text.replace(/(\d+):\s+(\d+)/g, '$1:$2');
 // Cita bíblica: "Santiago 3:14-16", "1 Sam. 18:9-11", "Mat. 5:43, 44"
-const BIBLE_REF = /(?:[1-3]\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\.?\s+\d+:\d+(?:\s?[-–,]\s?\d+(?::\d+)?)*/gu;
+// Libros de un solo capítulo: sus citas no llevan "capítulo:" ("Filemón 8, 9, 17", "Judas 3")
+const SINGLE_CHAPTER = '(?:Abd[ií]as|Abd\\.|Filem[oó]n|Filem\\.|Flm\\.|[23]\\s?Juan|[23]\\s?Jn\\.|Judas|Jud\\.)';
+const SINGLE_CHAPTER_REF = new RegExp(SINGLE_CHAPTER + '\\s+\\d+(?:\\s?[-–,]\\s?\\d+)*', 'u');
+const BIBLE_REF = new RegExp(
+  '(?:[1-3]\\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\\.?\\s+\\d+:\\d+(?:\\s?[-–,]\\s?\\d+(?::\\d+)?)*'
+  + '|' + SINGLE_CHAPTER + '\\s+\\d+(?:\\s?[-–,]\\s?\\d+)*(?![\\d:])',
+  'gu');
+// Tras "lee/lea": nombre de libro + número basta ("lee Filemón 10-12", "lea Judas 3")
+const READ_BOOK_REF = /^(?:[1-3]\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\.?\s+\d+/u;
 
 export function joinHyphenatedLines(parts) {
   const result = [];
@@ -96,10 +104,11 @@ export function classifyParenthesisContent(paren) {
   paren = joinVerseColon(paren);
   if (READ_PREFIX.test(paren)) {
     const part = paren.replace(READ_PREFIX, '');
-    if (/\d+:\d+/.test(part)) hasScripture = true;
+    if (/\d+:\d+/.test(part) || READ_BOOK_REF.test(part)) hasScripture = true;
   }
   if (!hasScripture) hasScripture = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+/u.test(paren);
   if (!hasScripture) hasScripture = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\d+:\d+/u.test(paren);
+  if (!hasScripture) hasScripture = SINGLE_CHAPTER_REF.test(paren);
 
   if (hasNote) return 'note';
   if (hasImage && hasScripture) return 'both';
@@ -133,7 +142,8 @@ export function extractQuestionWithParenthesis(questionText) {
 }
 
 // Cita bíblica dentro del propio texto de la pregunta ("Según Mateo 5:43, 44, ¿…?")
-const SCRIPTURE_IN_TEXT = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\.?\s+\d+:\d+/u;
+const SCRIPTURE_IN_TEXT_CV = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\.?\s+\d+:\d+/u;
+const SCRIPTURE_IN_TEXT = { test: (t) => SCRIPTURE_IN_TEXT_CV.test(t) || SINGLE_CHAPTER_REF.test(t) };
 
 export function createQuestionInfo(questionText, answerTime, isFinal = false) {
   const e = extractQuestionWithParenthesis(questionText);
@@ -189,7 +199,7 @@ export function extractHighlights(parenthesisContent) {
 export function extractLeaScripturesFromText(text) {
   const out = [];
   const clean = joinVerseColon(cleanHyphenatedText(text));
-  const withRef = new RegExp('\\((' + READ_VERB + '\\s+[^)]+\\d+:\\d+[^)]*)\\)', 'gu');
+  const withRef = new RegExp('\\((' + READ_VERB + '\\s+(?:[^)]+\\d+:\\d+|(?:[1-3]\\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\\.?\\s+\\d+)[^)]*)\\)', 'gu');
   for (const m of clean.matchAll(withRef)) {
     out.push({ parenthesis_content: m[1].replace(/\s+/g, ' ').trim(), content_type: 'scripture' });
   }
