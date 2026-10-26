@@ -125,7 +125,7 @@ export default function PresentationMode({
         return {
           title: nums.length > 1 ? `Párrafos ${nums.join(", ")}` : `Párrafo ${nums[0]}`,
           icon: BookOpen,
-          subtitle: `de ${analysisResult?.total_paragraphs || totalParagraphs} párrafos`,
+          subtitle: `de ${analysisResult?.total_paragraphs || totalParagraphs} párrafos${analysisResult?.circuit_visit ? " · sin leer el párrafo" : ""}`,
         };
       }
       case PHASES.REVIEW:
@@ -238,6 +238,14 @@ export default function PresentationMode({
             {isTimerRunning ? <Pause /> : <Play />}
           </Button>
         ) : <span />}
+        {analysisResult?.circuit_visit && (
+          <div
+            className="mx-2 mt-1 px-3 py-1.5 rounded-full bg-indigo-600 text-white text-xs md:text-sm font-bold tracking-wide text-center leading-tight shadow-lg"
+            data-testid="presentation-circuit-visit"
+          >
+            VISITA DEL SUPERINTENDENTE · {Math.round((totalDurationSeconds || 1800) / 60)} MIN · SIN LECTURA DE PÁRRAFOS
+          </div>
+        )}
         <Button onClick={onExit} variant="ghost" className="text-zinc-400 hover:text-white hover:bg-zinc-700 [&_svg]:size-8" aria-label="Salir" data-testid="presentation-exit">
           <X />
         </Button>
