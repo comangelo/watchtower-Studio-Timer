@@ -69,6 +69,11 @@ export function AnalysisSummary({
           <p className={`text-sm mt-2 ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
             {analysisResult.total_words} palabras
           </p>
+          {analysisResult.circuit_visit && (
+            <p className={`inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-semibold ${darkMode ? 'bg-indigo-900/60 text-indigo-200 border border-indigo-600' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'}`} data-testid="circuit-visit-badge">
+              Visita del superintendente · {totalDurationMinutes} min · sin lectura de párrafos
+            </p>
+          )}
         </div>
 
         {/* Stats Pills Row */}

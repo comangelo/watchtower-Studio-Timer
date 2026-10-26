@@ -415,7 +415,9 @@ export function ParagraphCard({
               : darkMode ? 'text-zinc-300' : 'text-slate-500'
           }`}>
             <span className={`px-2.5 py-1.5 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{totalWordCount} palabras</span>
-            <span className={`px-2.5 py-1.5 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{formatTimeText(totalReadingTime)} lectura</span>
+            <span className={`px-2.5 py-1.5 rounded-full ${darkMode ? 'bg-zinc-700 border border-zinc-600' : 'bg-slate-50'}`}>{paragraph.skip_reading
+              ? (totalReadingTime > 0 ? `Sin lectura · ${formatTimeText(totalReadingTime)} textos/imágenes` : 'Sin lectura del párrafo')
+              : `${formatTimeText(totalReadingTime)} lectura`}</span>
             {paragraphTimes.extraCommentSeconds >= 5 && (
               <span
                 className={`px-2.5 py-1.5 rounded-full font-medium ${darkMode ? 'bg-emerald-900 text-emerald-200' : 'bg-emerald-50 text-emerald-700'}`}
