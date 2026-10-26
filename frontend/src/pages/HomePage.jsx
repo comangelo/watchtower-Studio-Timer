@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
@@ -53,6 +53,8 @@ import { DurationAdjuster } from "@/components/DurationAdjuster";
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
 import { useNotifications } from "@/hooks/useNotifications";
 import { countQuestions } from "@/utils/timePlan";
+import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
+import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
 import { analyzeFile } from "@/analysis/analyzeFile";
 import { useUpdateNotifier } from "@/hooks/useUpdateNotifier";
 import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
@@ -64,7 +66,8 @@ import { darkThemes, defaultDarkTheme } from "@/utils/darkThemes";
 
 export default function HomePage() {
   // Core state
-  const [analysisResult, setAnalysisResult] = useState(null);
+  // Análisis tal como sale del PDF (el que se ve puede ser la versión "visita del superintendente")
+  const [rawAnalysisResult, setAnalysisResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   
@@ -104,7 +107,18 @@ export default function HomePage() {
   // Configurable reading settings
   const [readingSpeed, setReadingSpeed] = useLocalStorage('pdfTimer_readingSpeed', 180);
   const [answerTime, setAnswerTime] = useLocalStorage('pdfTimer_answerTime', 35);
-  const [totalDuration, setTotalDuration] = useLocalStorage('pdfTimer_totalDuration', 60);
+  const [normalDuration, setNormalDuration] = useLocalStorage('pdfTimer_totalDuration', 60);
+  // Semana de la visita del superintendente de circuito: 30 min y sin lectura de párrafos
+  const [circuitVisitMode, setCircuitVisitMode] = useLocalStorage('pdfTimer_circuitVisitMode', false);
+  const [circuitVisitDuration, setCircuitVisitDuration] = useLocalStorage('pdfTimer_circuitVisitDuration', CIRCUIT_VISIT_MINUTES);
+  // Duración en uso: cada modo guarda la suya (al volver al modo normal se recuperan los 60 min)
+  const totalDuration = circuitVisitMode ? circuitVisitDuration : normalDuration;
+  const setTotalDuration = circuitVisitMode ? setCircuitVisitDuration : setNormalDuration;
+  // Análisis en uso: en la visita del superintendente, sin la lectura de los párrafos
+  const analysisResult = useMemo(
+    () => (circuitVisitMode ? withoutParagraphReading(rawAnalysisResult) : rawAnalysisResult),
+    [circuitVisitMode, rawAnalysisResult]
+  );
   // Comentarios extra en párrafos largos o agrupados: 0 = sin extra, 1 = normal, 1.5 = más
   const [longParagraphWeight, setLongParagraphWeight] = useLocalStorage('pdfTimer_longParagraphWeight', 1);
   
@@ -1007,6 +1021,12 @@ export default function HomePage() {
               </div>
             </div>
 
+            <CircuitVisitToggle
+              enabled={circuitVisitMode}
+              onChange={setCircuitVisitMode}
+              minutes={circuitVisitDuration}
+              darkMode={darkMode}
+            />
             <SettingsPanel
               readingSpeed={readingSpeed}
               setReadingSpeed={setReadingSpeed}
@@ -1310,6 +1330,14 @@ export default function HomePage() {
                   fiveMinuteWarningEnabled={fiveMinuteWarningEnabled}
                   perQuestion={isTimerRunning && adjustedFinalTimes.perQuestion !== undefined ? adjustedFinalTimes.perQuestion : plannedPerQuestion}
                   plannedPerQuestion={plannedPerQuestion}
+                />
+
+                <CircuitVisitToggle
+                  enabled={circuitVisitMode}
+                  onChange={setCircuitVisitMode}
+                  minutes={circuitVisitDuration}
+                  disabled={!!startTime}
+                  darkMode={darkMode}
                 />
 
                 <DurationAdjuster
