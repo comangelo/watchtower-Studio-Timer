@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { toast } from "sonner";
+import { toast } from "@/utils/notify";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { 
@@ -416,7 +416,7 @@ export default function HomePage() {
       setLowTimeAlertShown(true);
       playNotificationSound('urgent');
       triggerVibration([300, 100, 300, 100, 300]);
-      toast.error(`⚠️ ¡Alerta! Solo ${Math.round(timePerQuestion)} seg por pregunta. ¡Acelera la lectura!`, { 
+      toast.alert(`⚠️ ¡Alerta! Solo ${Math.round(timePerQuestion)} seg por pregunta. ¡Acelera la lectura!`, { 
         duration: 10000,
         important: true
       });
