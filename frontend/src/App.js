@@ -12,7 +12,8 @@ function App() {
           <Route path="/" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
-      <Toaster position="bottom-right" />
+      {/* Arriba, para no tapar los botones de la parte inferior */}
+      <Toaster position="top-center" />
     </div>
   );
 }
