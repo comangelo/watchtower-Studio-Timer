@@ -243,7 +243,7 @@ export default function PresentationMode({
             className="mx-2 mt-1 px-3 py-1.5 rounded-full bg-indigo-600 text-white text-xs md:text-sm font-bold tracking-wide text-center leading-tight shadow-lg"
             data-testid="presentation-circuit-visit"
           >
-            VISITA DEL SUPERINTENDENTE · {Math.round((totalDurationSeconds || 1800) / 60)} MIN · SIN LECTURA DE PÁRRAFOS
+            SIN LECTURA DE PÁRRAFOS · {Math.round((totalDurationSeconds || 1800) / 60)} MIN
           </div>
         )}
         <Button onClick={onExit} variant="ghost" className="text-zinc-400 hover:text-white hover:bg-zinc-700 [&_svg]:size-8" aria-label="Salir" data-testid="presentation-exit">
@@ -252,23 +252,15 @@ export default function PresentationMode({
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto py-2">
-        {/* Horas y tiempos */}
+        {/* Hora actual y tiempo restante (sin hora de fin ni transcurrido, para ganar espacio) */}
         <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-4">
           <div className="text-center">
             <p className="text-sm md:text-base font-semibold text-zinc-400">Hora actual</p>
             <p className="text-3xl md:text-5xl landscape:text-3xl font-bold text-white tabular-nums">{formatClockTime(currentTime)}</p>
           </div>
           <div className="text-center">
-            <p className="text-sm md:text-base font-semibold text-cyan-400">Hora de fin</p>
-            <p className="text-3xl md:text-5xl landscape:text-3xl font-bold text-cyan-400 tabular-nums">{endTime ? formatClockTime(endTime) : "--:--"}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm md:text-base font-semibold text-zinc-400">Transcurrido</p>
-            <p className="text-3xl md:text-5xl landscape:text-3xl font-light text-green-400 tabular-nums">{formatTime(elapsedTime)}</p>
-          </div>
-          <div className="text-center">
             <p className="text-sm md:text-base font-semibold text-zinc-400">Restante</p>
-            <p className="text-3xl md:text-5xl landscape:text-3xl font-light text-orange-400 tabular-nums">{formatTime(Math.max(0, remainingTime))}</p>
+            <p className="text-3xl md:text-5xl landscape:text-3xl font-light text-orange-400 tabular-nums" data-testid="presentation-remaining">{formatTime(Math.max(0, remainingTime))}</p>
           </div>
         </div>
 
