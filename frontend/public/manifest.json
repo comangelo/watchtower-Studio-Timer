@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "short_name": "Atalaya Timer",
-  "name": "Calculadora de Tiempo - Atalaya de Estudio",
-  "description": "Gestiona el tiempo necesario para conducir el artículo de estudio de La Atalaya en exactamente 60 minutos. Analiza PDFs, calcula tiempos de lectura y distribuye el tiempo entre párrafos y preguntas.",
+  "short_name": "Temporizador",
+  "name": "Temporizador de Estudio",
+  "description": "Gestiona el tiempo para conducir el artículo de estudio semanal en 60 minutos. Analiza el PDF, calcula la lectura y reparte el tiempo entre párrafos y preguntas.",
   "icons": [
     {
       "src": "icon-192.png",
@@ -37,7 +37,11 @@
   "scope": "/",
   "lang": "es",
   "dir": "ltr",
-  "categories": ["utilities", "productivity", "education"],
+  "categories": [
+    "utilities",
+    "productivity",
+    "education"
+  ],
   "prefer_related_applications": false,
   "screenshots": [
     {
@@ -55,7 +59,10 @@
       "label": "Vista móvil de la aplicación"
     }
   ],
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "handle_links": "preferred",
   "launch_handler": {
     "client_mode": "navigate-existing"
