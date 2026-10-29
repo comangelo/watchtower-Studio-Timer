@@ -1,8 +1,26 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.comangelo.atalayatimer",
-        "sha256_cert_fingerprints": ["3D:94:62:53:54:DE:AA:65:CF:02:CA:8D:24:E1:12:0F:D0:99:93:25:7D:37:06:17:34:D1:53:44:4B:07:B5:BF"]
-      }
-    }]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.comangelo.atalayatimer",
+      "sha256_cert_fingerprints": [
+        "3D:94:62:53:54:DE:AA:65:CF:02:CA:8D:24:E1:12:0F:D0:99:93:25:7D:37:06:17:34:D1:53:44:4B:07:B5:BF"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.comangelo.temporizadorestudio",
+      "sha256_cert_fingerprints": [
+        "3D:94:62:53:54:DE:AA:65:CF:02:CA:8D:24:E1:12:0F:D0:99:93:25:7D:37:06:17:34:D1:53:44:4B:07:B5:BF"
+      ]
+    }
+  }
+]
