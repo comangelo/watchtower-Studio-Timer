@@ -1,4 +1,4 @@
-const CACHE_NAME = 'atalaya-timer-v5';
+const CACHE_NAME = 'atalaya-timer-v6';
 // El análisis del PDF se hace en el dispositivo; se guarda también el motor de pdf.js
 // para que la app funcione sin conexión.
 const urlsToCache = [
@@ -40,6 +40,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // No interceptar peticiones a otros sitios (p. ej. el servicio de jw.org)
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
   // No interceptar llamadas a la API ni peticiones que no sean GET (subida de PDF)
   if (event.request.method !== 'GET' || url.pathname.startsWith('/api/')) {
     return;
