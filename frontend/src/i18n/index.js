@@ -11,6 +11,8 @@ const es = {
   appTagline: 'Para conducir el estudio a tiempo',
   uploadSubtitle: 'Reparte el tiempo del estudio entre párrafos y preguntas',
   weeklySource: 'Artículo de estudio · jw.org',
+  unofficialNotice: 'Aplicación no oficial, sin relación con jw.org',
+  privacyPolicy: 'Política de privacidad',
 };
 
 const dictionaries = { es };
