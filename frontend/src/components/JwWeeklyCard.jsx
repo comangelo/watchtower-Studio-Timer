@@ -12,6 +12,7 @@ import {
   findIssueForDate, getIssueFile, listIssues, deleteIssue,
   folderSupported, getSavedFolder, chooseFolder, forgetFolder, ensureFolderPermission, findIssueInFolder,
 } from "@/utils/pdfLibrary";
+import { t } from "@/i18n";
 
 const HELP = {
   android: "Se guardará en Descargas. Después pulsa el paso 2 y elige el archivo. La app guardará una copia y las próximas semanas ya no tendrás que elegirlo.",
@@ -116,7 +117,7 @@ export function JwWeeklyCard({
           </div>
           <div className="min-w-0">
             <p className={`font-bold ${strong}`}>{isThisWeek ? "Artículo de esta semana" : "Artículo de la semana"}</p>
-            <p className={`text-xs ${muted}`}>La Atalaya (edición de estudio) · jw.org</p>
+            <p className={`text-xs ${muted}`}>{t("weeklySource")}</p>
           </div>
         </div>
 

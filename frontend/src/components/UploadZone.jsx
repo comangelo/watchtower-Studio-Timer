@@ -1,4 +1,5 @@
 import { Upload, Clock, MessageCircleQuestion } from "lucide-react";
+import { t } from "@/i18n";
 
 export function UploadZone({ 
   onFileSelect, 
@@ -32,10 +33,10 @@ export function UploadZone({
       {/* Header */}
       <div className="text-center mb-10">
         <h2 className="font-heading font-extrabold text-4xl md:text-5xl text-orange-500 tracking-tight mb-4">
-          ATALAYA DE ESTUDIO
+          {t('appNameUpper')}
         </h2>
         <p className={`text-lg max-w-md mx-auto leading-relaxed ${darkMode ? 'text-zinc-400' : 'text-slate-700'}`}>
-          Calculadora de Tiempo de conducción
+          {t('uploadSubtitle')}
         </p>
       </div>
 
