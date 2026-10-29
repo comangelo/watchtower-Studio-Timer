@@ -52,6 +52,13 @@ const BIBLE_REF = new RegExp(
   '(?:[1-3]\\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\\.?\\s+\\d+:\\d+(?:\\s?[-–,]\\s?\\d+(?::\\d+)?)*'
   + '|' + SINGLE_CHAPTER + '\\s+\\d+(?:\\s?[-–,]\\s?\\d+)*(?![\\d:])',
   'gu');
+/** "Lucas 1:67-73" y "Luc. 1:69" -> "luc1" (libro abreviado + capítulo) */
+export function chapterKey(ref) {
+  const m = /^((?:[1-3]\s?)?[A-Za-zÁÉÍÓÚÑáéíóúñ]+)\.?\s+(\d+)(?=:)/u.exec((ref || '').trim());
+  if (!m) return null;
+  const book = m[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f\s]/g, '').slice(0, 4);
+  return book + m[2];
+}
 // Tras "lee/lea": nombre de libro + número basta ("lee Filemón 10-12", "lea Judas 3")
 const READ_BOOK_REF = /^(?:[1-3]\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\.?\s+\d+/u;
 
@@ -199,12 +206,12 @@ export function extractHighlights(parenthesisContent) {
 export function extractLeaScripturesFromText(text) {
   const out = [];
   const clean = joinVerseColon(cleanHyphenatedText(text));
-  const withRef = new RegExp('\\((' + READ_VERB + '\\s+(?:[^)]+\\d+:\\d+|(?:[1-3]\\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\\.?\\s+\\d+)[^)]*)\\)', 'gu');
+  const withRef = new RegExp('\\(\\s*(' + READ_VERB + '\\s+(?:[^)]+\\d+:\\d+|(?:[1-3]\\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\\.?\\s+\\d+)[^)]*)\\)', 'gu');
   for (const m of clean.matchAll(withRef)) {
     out.push({ parenthesis_content: m[1].replace(/\s+/g, ' ').trim(), content_type: 'scripture' });
   }
   // "(léelo)" / "(léalo)" / "(léanlo)" sin cita: se toma la última cita de la misma frase
-  const bare = new RegExp('\\((' + READ_VERB + ')\\)', 'gu');
+  const bare = new RegExp('\\(\\s*(' + READ_VERB + ')\\s*\\)', 'gu');
   for (const m of clean.matchAll(bare)) {
     const before = clean.slice(Math.max(0, m.index - 300), m.index);
     const sentence = before.split(/[.!?](?=\s+[A-ZÁÉÍÓÚ¿¡])/u).pop();
@@ -526,13 +533,102 @@ function extractQuestionsAfterLine(pages, line) {
  * @param pdfjsLib  módulo de pdf.js (para OPS y getDocument)
  * @param data      Uint8Array con el PDF
  */
-export async function analyzePdf(pdfjsLib, data, filename, wpm = WORDS_PER_MINUTE, answerTime = QUESTION_ANSWER_TIME) {
+/* ------------------------------------------------------------------ */
+/* Revista completa: varios artículos de estudio, uno por semana       */
+/* ------------------------------------------------------------------ */
+
+const MONTHS = {
+  ENERO: 0, FEBRERO: 1, MARZO: 2, ABRIL: 3, MAYO: 4, JUNIO: 5, JULIO: 6,
+  AGOSTO: 7, SEPTIEMBRE: 8, SETIEMBRE: 8, OCTUBRE: 9, NOVIEMBRE: 10, DICIEMBRE: 11,
+};
+// "12-18 DE OCTUBRE DE 2026", "5 -11 DE OCTUBRE DE 2026", "26 DE OCTUBRE-1 DE NOVIEMBRE DE 2026",
+// "28 DE DICIEMBRE DE 2026-3 DE ENERO DE 2027"
+const WEEK_RE = /^(\d{1,2})\s*(?:DE\s+([A-ZÁÉÍÓÚ]+)\s*)?(?:DE\s+(\d{4})\s*)?[-–—]\s*(\d{1,2})\s+DE\s+([A-ZÁÉÍÓÚ]+)\s+DE\s+(\d{4})$/u;
+
+/** Interpreta la cabecera de semana de un artículo. Devuelve {label, start, end} o null. */
+export function parseWeekHeader(text) {
+  const t = (text || '').toUpperCase().replace(/\s+/g, ' ').trim();
+  const m = WEEK_RE.exec(t);
+  if (!m) return null;
+  const endMonth = MONTHS[m[5]];
+  if (endMonth === undefined) return null;
+  const endYear = parseInt(m[6], 10);
+  const startMonth = m[2] ? MONTHS[m[2]] : endMonth;
+  if (startMonth === undefined) return null;
+  const startYear = m[3] ? parseInt(m[3], 10) : (startMonth > endMonth ? endYear - 1 : endYear);
+  const start = new Date(startYear, startMonth, parseInt(m[1], 10));
+  const end = new Date(endYear, endMonth, parseInt(m[4], 10));
+  if (isNaN(start) || isNaN(end) || end < start || (end - start) > 8 * 86400000) return null;
+  return { label: t.replace(/\s*-\s*/, '-'), start, end };
+}
+
+/**
+ * Artículos de estudio de una revista completa: cada uno empieza en la página que
+ * lleva arriba su semana ("12-18 DE OCTUBRE DE 2026") y termina en la página del
+ * recuadro de repaso (o justo antes del siguiente artículo).
+ */
+export function findStudyArticles(pages) {
+  const starts = [];
+  pages.forEach((pg, i) => {
+    const header = pg.spans
+      .filter((sp) => sp.top < 80)
+      .map((sp) => parseWeekHeader(sp.text))
+      .find(Boolean);
+    if (header && !starts.some((a) => a.label === header.label)) starts.push({ ...header, firstPage: i });
+  });
+  const hasReview = (pg) => pg.spans.some((sp) => /^[˛•■□▪❑☐]$/u.test(sp.text.trim()))
+    && pg.spans.some((sp) => /^CANCI[OÓ]N\s+\d+/u.test(sp.text.toUpperCase()));
+  return starts.map((a, k) => {
+    const limit = k + 1 < starts.length ? starts[k + 1].firstPage - 1 : pages.length - 1;
+    let lastPage = limit;
+    for (let i = a.firstPage; i <= limit; i++) { if (hasReview(pages[i])) { lastPage = i; break; } }
+    return { ...a, lastPage };
+  });
+}
+
+/** Lunes (00:00) de la semana de una fecha. */
+export function mondayOf(date) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const dow = (d.getDay() + 6) % 7; // lunes = 0
+  d.setDate(d.getDate() - dow);
+  return d;
+}
+
+/** Elige el artículo cuya semana contiene la fecha (o el más cercano). */
+export function pickArticleForDate(articles, date) {
+  const day = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const exact = articles.find((a) => day >= a.start && day <= a.end);
+  if (exact) return { article: exact, exact: true };
+  const monday = mondayOf(day);
+  const sorted = [...articles].sort((a, b) => Math.abs(a.start - monday) - Math.abs(b.start - monday));
+  return { article: sorted[0] || null, exact: false };
+}
+
+export async function analyzePdf(pdfjsLib, data, filename, wpm = WORDS_PER_MINUTE, answerTime = QUESTION_ANSWER_TIME, options = {}) {
   const OPS = pdfjsLib.OPS;
   const doc = await pdfjsLib.getDocument({ data, isEvalSupported: false, disableFontFace: true }).promise;
   try {
-    const pages = await extractSpans(doc, OPS);
+    let pages = await extractSpans(doc, OPS);
+    let weekInfo = null;
+    // ¿Revista completa? (más de un artículo de estudio con su semana)
+    const articles = findStudyArticles(pages);
+    if (articles.length >= 2) {
+      const date = options.targetDate ? new Date(options.targetDate) : new Date();
+      const { article, exact } = pickArticleForDate(articles, date);
+      pages = pages.slice(article.firstPage, article.lastPage + 1);
+      weekInfo = {
+        week_label: article.label,
+        week_start: article.start.toISOString(),
+        week_exact: exact,
+        from_issue: true,
+        issue_weeks: articles.map((a) => ({ label: a.label, start: a.start.toISOString(), title: '' })),
+      };
+    } else if (articles.length === 1) {
+      weekInfo = { week_label: articles[0].label, week_start: articles[0].start.toISOString(), week_exact: true, from_issue: false };
+    }
     const line = detectHorizontalLine(pages, OPS);
-    return analyzeSpans(pages, line, filename, wpm, answerTime);
+    const result = analyzeSpans(pages, line, filename, wpm, answerTime);
+    return weekInfo ? { ...result, ...weekInfo } : result;
   } finally {
     doc.destroy();
   }
@@ -725,10 +821,23 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
       const hs = extractHighlights(q.parenthesis_content);
       if (hs.length) { q.highlight_contents = hs; highlights += hs.length; }
     }
+    // Un mismo texto (libro + capítulo) solo se cuenta una vez por párrafo:
+    // "a) Según Lucas 1:67-73…" y "b) …del que habla Lucas 1:69?" son la misma lectura.
+    const seenChapters = new Set();
+    const chapterKeys = (q) => {
+      const src = joinVerseColon(cleanHyphenatedText(`${q.parenthesis_content || ''} ${q.text || ''}`));
+      return [...src.matchAll(BIBLE_REF)].map(m => chapterKey(m[0])).filter(Boolean);
+    };
+    const isRepeatedScripture = (q) => {
+      const keys = chapterKeys(q);
+      const repeated = keys.length > 0 && keys.every(k => seenChapters.has(k));
+      keys.forEach(k => seenChapters.add(k));
+      return repeated;
+    };
     for (const q of questions) {
-      if (q.content_type === 'both') { imgs++; scr++; }
+      if (q.content_type === 'both') { imgs++; if (!isRepeatedScripture(q)) scr++; }
       else if (q.content_type === 'image') imgs++;
-      else if (q.content_type === 'scripture') scr++;
+      else if (q.content_type === 'scripture') { if (!isRepeatedScripture(q)) scr++; }
       else if (q.content_type === 'note') notes++;
     }
     for (const lea of extractLeaScripturesFromText(text)) {
@@ -743,6 +852,12 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
       for (const q of questions) {
         if (q.text && norm(q.text).includes(leaRef)) { counted = true; break; }
       }
+      // Misma lectura citada por la pregunta ("Según Juan 10:29, ¿…?" y "(lee Juan 10:29; Sant. 4:7)")
+      if (!counted) {
+        const leaFirst = [...joinVerseColon(lea.parenthesis_content.replace(leaPrefix, '')).matchAll(BIBLE_REF)][0];
+        const lk = leaFirst ? chapterKey(leaFirst[0]) : null;
+        if (lk && questions.some(q => chapterKeys(q).includes(lk))) counted = true;
+      }
       if (!counted) {
         scr++;
         questions.push({ text: '', answer_time: 0, is_final_question: false, parenthesis_content: lea.parenthesis_content, content_type: 'scripture' });
@@ -753,7 +868,10 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     const addRef = (r) => {
       const ref = joinVerseColon(r).replace(READ_PREFIX, '').replace(/\s+/g, ' ').trim();
       const k = ref.toLowerCase().replace(/[\s.]+/g, '');
-      if (ref && !scriptureRefs.some((x) => x.toLowerCase().replace(/[\s.]+/g, '') === k)) scriptureRefs.push(ref);
+      const ck = chapterKey(ref);
+      const nk = (x) => x.toLowerCase().replace(/[\s.]+/g, '');
+      if (ref && !scriptureRefs.some((x) => nk(x) === k || nk(x).includes(k) || k.includes(nk(x))
+        || (ck && chapterKey(x) === ck))) scriptureRefs.push(ref);
     };
     for (const lea of extractLeaScripturesFromText(text)) addRef(lea.parenthesis_content);
     for (const q of questions) {

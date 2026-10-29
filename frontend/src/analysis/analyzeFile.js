@@ -17,7 +17,11 @@ function loadPdfjs() {
   return pdfjsPromise;
 }
 
-export async function analyzeFile(file, wpm, answerTime) {
+/**
+ * options.targetDate: si el PDF es la revista completa, se analiza el artículo
+ * de la semana que contiene esa fecha (por defecto, hoy).
+ */
+export async function analyzeFile(file, wpm, answerTime, options = {}) {
   const [pdfjsLib, buffer] = await Promise.all([loadPdfjs(), file.arrayBuffer()]);
-  return analyzePdf(pdfjsLib, new Uint8Array(buffer), file.name, wpm, answerTime);
+  return analyzePdf(pdfjsLib, new Uint8Array(buffer), file.name, wpm, answerTime, options);
 }
