@@ -10,7 +10,9 @@ function getArticleHeading(analysisResult) {
   // Prefijos añadidos por algunos sistemas al subir el archivo ("24046e1c-…")
   name = name.replace(/^[0-9a-f]{6,}[-_ ]+/i, '');
   const num = /art[ií]culo[\s_-]*(?:de[\s_-]*)?(?:estudio[\s_-]*)?(\d{1,3})(?!\d)/i.exec(name);
-  const articleLine = num ? `ARTÍCULO DE ESTUDIO ${num[1]}` : 'ARTÍCULO DE ESTUDIO';
+  let articleLine = num ? `ARTÍCULO DE ESTUDIO ${num[1]}` : 'ARTÍCULO DE ESTUDIO';
+  // Semana impresa en el artículo ("26 DE OCTUBRE-1 DE NOVIEMBRE DE 2026")
+  if (analysisResult?.week_label) articleLine += ` · ${analysisResult.week_label}`;
 
   let titleLine = (analysisResult?.article_title || '').trim();
   if (!titleLine) {
@@ -29,9 +31,11 @@ export function AnalysisSummary({
   darkMode = false,
   totalDurationMinutes = 60,
   introductionDuration = 60,
-  closingWordsDuration = 60
+  closingWordsDuration = 60,
+  onSelectIssueWeek
 }) {
   if (!analysisResult) return null;
+  const issueWeeks = analysisResult.from_issue ? (analysisResult.issue_weeks || []).filter(w => w && w.label) : [];
 
   const paragraphQuestions = analysisResult.total_paragraph_questions || 
     analysisResult.paragraphs.reduce(
@@ -69,6 +73,37 @@ export function AnalysisSummary({
           <p className={`text-sm mt-2 ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
             {analysisResult.total_words} palabras
           </p>
+          {analysisResult.from_issue && analysisResult.week_exact === false && (
+            <p className={`mt-2 text-xs font-medium ${darkMode ? 'text-amber-300' : 'text-amber-700'}`} data-testid="week-not-in-issue">
+              Esta revista no trae la semana elegida; se muestra el artículo más cercano. Elige otra semana abajo o descarga el número correcto.
+            </p>
+          )}
+          {issueWeeks.length > 1 && onSelectIssueWeek && (
+            <div className="mt-3" data-testid="issue-weeks">
+              <p className={`text-xs mb-1.5 ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Otros artículos de esta revista:</p>
+              <div className="flex flex-wrap gap-2">
+                {issueWeeks.map((w) => {
+                  const active = w.label === analysisResult.week_label;
+                  return (
+                    <button
+                      key={w.label}
+                      type="button"
+                      disabled={active}
+                      onClick={() => onSelectIssueWeek(w.start)}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                        active
+                          ? 'bg-sky-600 text-white border-sky-600'
+                          : darkMode ? 'border-zinc-500 text-zinc-200 hover:bg-zinc-700' : 'border-sky-200 text-sky-800 hover:bg-sky-50'
+                      }`}
+                      data-testid="issue-week-option"
+                    >
+                      {w.label.toLowerCase()}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           {analysisResult.circuit_visit && (
             <p className={`inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-semibold ${darkMode ? 'bg-indigo-900/60 text-indigo-200 border border-indigo-600' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'}`} data-testid="circuit-visit-badge">
               Visita del superintendente · {totalDurationMinutes} min · sin lectura de párrafos

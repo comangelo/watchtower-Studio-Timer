@@ -17,6 +17,8 @@ export function UploadZone({
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) onFileSelect(file);
+    // Permite volver a elegir el mismo archivo (p. ej. la revista para otra semana)
+    e.target.value = '';
   };
 
   const getSpeedLabel = (speed) => {
