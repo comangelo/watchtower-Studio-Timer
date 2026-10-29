@@ -53,6 +53,7 @@ import { DurationAdjuster } from "@/components/DurationAdjuster";
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
 import { useNotifications } from "@/hooks/useNotifications";
 import { countQuestions } from "@/utils/timePlan";
+import { t } from "@/i18n";
 import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
 import { JwWeeklyCard } from "@/components/JwWeeklyCard";
@@ -760,14 +761,14 @@ export default function HomePage() {
             <div className="flex items-center gap-2 sm:gap-3">
               <img 
                 src="/logo-icon.png" 
-                alt="Atalaya Timer" 
+                alt={t('appName')} 
                 className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl shadow-lg"
               />
               <div>
                 <h1 className="font-heading font-bold text-base sm:text-xl text-orange-500" data-testid="app-title">
-                  ATALAYA DE ESTUDIO
+                  {t('appNameUpper')}
                 </h1>
-                <p className={`text-xs font-semibold tracking-wide hidden sm:block ${darkMode ? currentTheme?.textMuted || 'text-zinc-400' : 'text-slate-700'}`}>Calculadora de Tiempo</p>
+                <p className={`text-xs font-semibold tracking-wide hidden sm:block ${darkMode ? currentTheme?.textMuted || 'text-zinc-400' : 'text-slate-700'}`}>{t('appTagline')}</p>
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
