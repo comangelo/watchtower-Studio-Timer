@@ -57,6 +57,7 @@ import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitV
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
 import { JwWeeklyCard } from "@/components/JwWeeklyCard";
 import { mondayOf } from "@/utils/jwWeekly";
+import { saveIssue } from "@/utils/pdfLibrary";
 import { analyzeFile } from "@/analysis/analyzeFile";
 import { useUpdateNotifier } from "@/hooks/useUpdateNotifier";
 import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
@@ -88,6 +89,8 @@ export default function HomePage() {
   const [jwWeekMonday, setJwWeekMonday] = useState(() => mondayOf(new Date()));
   // Último PDF analizado (para cambiar de semana sin volver a elegir el archivo)
   const lastFileRef = useRef(null);
+  // Cambia cada vez que se guarda una revista en la biblioteca de la app
+  const [libraryVersion, setLibraryVersion] = useState(0);
   const exportRef = useRef(null);
   
   // Notification state
@@ -527,6 +530,12 @@ export default function HomePage() {
       // Si es la revista completa, se analiza solo el artículo de la semana elegida
       const result = await analyzeFile(file, readingSpeed, answerTime, { targetDate });
       lastFileRef.current = file;
+      // Revista completa: guardar una copia en la app para las próximas semanas
+      if (result.from_issue && result.issue_weeks?.length > 1) {
+        saveIssue(file, result.issue_weeks)
+          .then(() => setLibraryVersion((v) => v + 1))
+          .catch((e) => console.warn('No se pudo guardar la revista en la app', e));
+      }
       
       setAnalysisResult(result);
       setElapsedTime(0);
@@ -1042,6 +1051,8 @@ export default function HomePage() {
               weekMonday={jwWeekMonday}
               onWeekChange={setJwWeekMonday}
               onChoosePdf={() => fileInputRef.current?.click()}
+              onOpenFile={(file, monday) => handleFileUpload(file, monday)}
+              libraryVersion={libraryVersion}
               isLoading={isLoading}
               darkMode={darkMode}
             />
