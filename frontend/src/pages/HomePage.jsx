@@ -55,6 +55,8 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { countQuestions } from "@/utils/timePlan";
 import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
+import { JwWeeklyCard } from "@/components/JwWeeklyCard";
+import { mondayOf } from "@/utils/jwWeekly";
 import { analyzeFile } from "@/analysis/analyzeFile";
 import { useUpdateNotifier } from "@/hooks/useUpdateNotifier";
 import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
@@ -82,6 +84,10 @@ export default function HomePage() {
   // Refs
   const timerRef = useRef(null);
   const fileInputRef = useRef(null);
+  // Semana elegida para buscar el artículo dentro de la revista completa (por defecto, la actual)
+  const [jwWeekMonday, setJwWeekMonday] = useState(() => mondayOf(new Date()));
+  // Último PDF analizado (para cambiar de semana sin volver a elegir el archivo)
+  const lastFileRef = useRef(null);
   const exportRef = useRef(null);
   
   // Notification state
@@ -508,8 +514,8 @@ export default function HomePage() {
   }, [isTimerRunning]);
 
   // File upload handler
-  const handleFileUpload = async (file) => {
-    if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
+  const handleFileUpload = async (file, targetDate = jwWeekMonday) => {
+    if (!file || !(file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf')) {
       toast.error("Por favor, selecciona un archivo PDF válido");
       return;
     }
@@ -518,7 +524,9 @@ export default function HomePage() {
 
     try {
       // El PDF se analiza en el propio dispositivo: no se envía a ningún servidor
-      const result = await analyzeFile(file, readingSpeed, answerTime);
+      // Si es la revista completa, se analiza solo el artículo de la semana elegida
+      const result = await analyzeFile(file, readingSpeed, answerTime, { targetDate });
+      lastFileRef.current = file;
       
       setAnalysisResult(result);
       setElapsedTime(0);
@@ -534,6 +542,15 @@ export default function HomePage() {
       setIsLoading(false);
     }
   };
+
+  // Con la revista completa cargada: analizar otro artículo (otra semana) del mismo PDF
+  const handleSelectIssueWeek = useCallback((weekStartIso) => {
+    if (!lastFileRef.current || startTime) return;
+    const d = new Date(weekStartIso);
+    setJwWeekMonday(mondayOf(d));
+    handleFileUpload(lastFileRef.current, d);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startTime, readingSpeed, answerTime]);
 
   // Drag and drop handlers
   const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
@@ -1021,6 +1038,13 @@ export default function HomePage() {
               </div>
             </div>
 
+            <JwWeeklyCard
+              weekMonday={jwWeekMonday}
+              onWeekChange={setJwWeekMonday}
+              onChoosePdf={() => fileInputRef.current?.click()}
+              isLoading={isLoading}
+              darkMode={darkMode}
+            />
             <CircuitVisitToggle
               enabled={circuitVisitMode}
               onChange={setCircuitVisitMode}
@@ -1061,6 +1085,7 @@ export default function HomePage() {
             <div className="lg:col-span-8 space-y-6">
               <AnalysisSummary 
                 analysisResult={analysisResult} 
+                onSelectIssueWeek={startTime ? undefined : handleSelectIssueWeek}
                 darkMode={darkMode} 
                 totalDurationMinutes={totalDuration}
                 introductionDuration={introductionDuration}
