@@ -112,6 +112,13 @@ export function UploadZone({
           </div>
         </div>
       </div>
+
+      {/* Aviso legal y privacidad */}
+      <p className={`mt-8 text-center text-xs leading-relaxed ${darkMode ? 'text-zinc-500' : 'text-slate-500'}`} data-testid="legal-footer">
+        {t('unofficialNotice')} ·{' '}
+        <a href="/privacidad" className="underline hover:text-orange-600" data-testid="privacy-link">{t('privacyPolicy')}</a>
+        {' '}· © safeSingleMark S.L.
+      </p>
     </div>
   );
 }
