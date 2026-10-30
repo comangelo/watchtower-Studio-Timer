@@ -7,7 +7,7 @@
  *
  * Mientras DONATION_URL esté vacío, el botón no aparece.
  */
-export const DONATION_URL = '';
+export const DONATION_URL = 'https://buy.stripe.com/00w3co8x958ngB2beb00000';
 
 const PLAY_PACKAGE = 'com.comangelo.temporizadorestudio';
 const PLAY_FLAG = 'pdfTimer_playStoreApp';
