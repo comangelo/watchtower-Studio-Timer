@@ -13,6 +13,8 @@ const es = {
   weeklySource: 'Artículo de estudio · jw.org',
   unofficialNotice: 'Aplicación no oficial, sin relación con jw.org',
   privacyPolicy: 'Política de privacidad',
+  donate: 'Apoya este proyecto',
+  donateHint: 'La app es gratuita. Si te resulta útil, puedes hacer una donación voluntaria.',
 };
 
 const dictionaries = { es };
