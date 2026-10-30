@@ -1,4 +1,5 @@
-import { Upload, Clock, MessageCircleQuestion } from "lucide-react";
+import { Upload, Clock, MessageCircleQuestion, Heart } from "lucide-react";
+import { DONATION_URL, donationAvailable } from "@/utils/donation";
 import { t } from "@/i18n";
 
 export function UploadZone({ 
@@ -112,6 +113,27 @@ export function UploadZone({
           </div>
         </div>
       </div>
+
+      {/* Donación voluntaria (solo web; nunca dentro de la app de Google Play) */}
+      {donationAvailable() && (
+        <div className="mt-8 text-center">
+          <a
+            href={DONATION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold transition-colors ${
+              darkMode
+                ? 'border-zinc-600 text-zinc-200 hover:border-orange-400 hover:text-orange-300'
+                : 'border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600'
+            }`}
+            data-testid="donation-button"
+          >
+            <Heart className="w-4 h-4 text-orange-500" />
+            {t('donate')}
+          </a>
+          <p className={`mt-2 text-xs ${darkMode ? 'text-zinc-500' : 'text-slate-500'}`}>{t('donateHint')}</p>
+        </div>
+      )}
 
       {/* Aviso legal y privacidad */}
       <p className={`mt-8 text-center text-xs leading-relaxed ${darkMode ? 'text-zinc-500' : 'text-slate-500'}`} data-testid="legal-footer">
