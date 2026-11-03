@@ -1097,6 +1097,7 @@ export default function HomePage() {
 
               {/* Introduction Words Section */}
               <IntroductionWordsSection
+                finalStretch={remainingTime <= 300}
                 isActive={isInIntroductionMode}
                 isTimerRunning={isTimerRunning}
                 estimatedTime={introductionDuration}
@@ -1165,6 +1166,7 @@ export default function HomePage() {
                     
                     return (
                       <ParagraphCard
+                        finalStretch={remainingTime <= 300}
                         key={`group-${group.firstParagraph.number}`}
                         paragraph={group.firstParagraph}
                         groupedParagraphs={group.paragraphs}
@@ -1200,6 +1202,7 @@ export default function HomePage() {
               {/* Final Questions Section - After all paragraphs */}
               {analysisResult.final_questions?.length > 0 && (
                 <FinalQuestionsSection
+                  finalStretch={remainingTime <= 300}
                   finalQuestions={analysisResult.final_questions}
                   finalQuestionsTitle={analysisResult.final_questions_title}
                   startTime={startTime}
