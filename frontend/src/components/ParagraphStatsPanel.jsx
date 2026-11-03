@@ -2,6 +2,7 @@ import { BarChart3, Clock, TrendingUp, TrendingDown, Minus, ChevronDown, Chevron
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { t } from "@/i18n";
 import {
   Collapsible,
   CollapsibleContent,
@@ -42,9 +43,9 @@ export function ParagraphStatsPanel({ paragraphStats, totalParagraphs }) {
             <CardTitle className="font-heading text-sm text-indigo-700 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
-                Estadísticas de Tiempo
+                {t('timeStats')}
                 <Badge variant="outline" className="ml-2 text-[10px] bg-indigo-100 text-indigo-700 border-indigo-200">
-                  {completedCount}/{totalParagraphs} párrafos
+                  {t('xOfYParagraphs', { x: completedCount, y: totalParagraphs })}
                 </Badge>
               </div>
               {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -57,15 +58,15 @@ export function ParagraphStatsPanel({ paragraphStats, totalParagraphs }) {
             {/* Summary */}
             <div className="grid grid-cols-3 gap-2 p-3 bg-white rounded-lg border border-indigo-100">
               <div className="text-center">
-                <p className="text-[10px] text-zinc-500 uppercase">Estimado</p>
+                <p className="text-[10px] text-zinc-500 uppercase">{t('estimated')}</p>
                 <p className="text-lg font-mono font-bold text-zinc-700">{formatTime(totalEstimated)}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-zinc-500 uppercase">Real</p>
+                <p className="text-[10px] text-zinc-500 uppercase">{t('actual')}</p>
                 <p className="text-lg font-mono font-bold text-zinc-700">{formatTime(totalActual)}</p>
               </div>
               <div className="text-center">
-                <p className="text-[10px] text-zinc-500 uppercase">Diferencia</p>
+                <p className="text-[10px] text-zinc-500 uppercase">{t('difference')}</p>
                 <p className={`text-lg font-mono font-bold ${
                   totalDifference > 0 ? 'text-red-600' : totalDifference < 0 ? 'text-green-600' : 'text-zinc-500'
                 }`}>
@@ -91,14 +92,14 @@ export function ParagraphStatsPanel({ paragraphStats, totalParagraphs }) {
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-zinc-600">P{stat.paragraphNumber}</span>
                     <span className="text-zinc-400">|</span>
-                    <span className="text-zinc-500">{stat.wordCount} palabras</span>
+                    <span className="text-zinc-500">{t('words', { n: stat.wordCount })}</span>
                     {stat.questionsCount > 0 && (
                       <Badge variant="outline" className="text-[9px] px-1 py-0">
-                        {stat.questionsCount} preg
+                        {t('questionsShort', { n: stat.questionsCount })}
                       </Badge>
                     )}
                     {stat.comments > 0 && (
-                      <Badge variant="outline" className="text-[9px] px-1 py-0 border-orange-300 text-orange-600" title="Participaciones marcadas">
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 border-orange-300 text-orange-600" title={t('markedComments')}>
                         ✋ {stat.comments}
                       </Badge>
                     )}
@@ -106,11 +107,11 @@ export function ParagraphStatsPanel({ paragraphStats, totalParagraphs }) {
                   
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <span className="text-zinc-400 mr-1">Est:</span>
+                      <span className="text-zinc-400 mr-1">{t('estShort')}</span>
                       <span className="font-mono">{formatTime(stat.estimatedTime)}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-zinc-400 mr-1">Real:</span>
+                      <span className="text-zinc-400 mr-1">{t('actualShort')}</span>
                       <span className="font-mono">{formatTime(stat.actualTime)}</span>
                     </div>
                     <div className={`flex items-center gap-1 min-w-[60px] justify-end font-mono font-bold ${
@@ -134,11 +135,11 @@ export function ParagraphStatsPanel({ paragraphStats, totalParagraphs }) {
             <div className="flex items-center justify-center gap-4 text-[10px] text-zinc-500 pt-2 border-t border-zinc-100">
               <div className="flex items-center gap-1">
                 <TrendingUp className="w-3 h-3 text-red-500" />
-                <span>Más lento</span>
+                <span>{t('slower')}</span>
               </div>
               <div className="flex items-center gap-1">
                 <TrendingDown className="w-3 h-3 text-green-500" />
-                <span>Más rápido</span>
+                <span>{t('faster')}</span>
               </div>
             </div>
           </CardContent>

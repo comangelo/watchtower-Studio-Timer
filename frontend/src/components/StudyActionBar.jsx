@@ -1,4 +1,5 @@
 import { ArrowRight, Hand, Maximize, Play } from "lucide-react";
+import { t } from "@/i18n";
 
 /**
  * Barra fija abajo en el móvil (pantalla principal).
@@ -30,16 +31,16 @@ export function StudyActionBar({
           <button
             onClick={onAddComment}
             className="w-full rounded-2xl min-h-[56px] px-5 flex items-center justify-between gap-3 bg-orange-500 hover:bg-orange-400 text-white shadow-lg active:scale-95 transition-transform"
-            aria-label="Marcar un comentario"
+            aria-label={t("markComment")}
             data-testid="bar-add-comment"
           >
             <span className="flex items-center gap-3">
               <Hand className="w-7 h-7 shrink-0" strokeWidth={2.2} />
-              <span className="text-lg font-black uppercase tracking-wide">Comentario</span>
+              <span className="text-lg font-black uppercase tracking-wide">{t("comment")}</span>
             </span>
             <span className="text-right leading-none">
               <span className="block text-2xl font-black tabular-nums">{totalComments}</span>
-              <span className="block text-[10px] font-semibold opacity-85">en total</span>
+              <span className="block text-[10px] font-semibold opacity-85">{t("inTotal")}</span>
             </span>
           </button>
         )}
@@ -68,8 +69,8 @@ export function StudyActionBar({
               className={`shrink-0 w-16 rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform ${
                 darkMode ? "bg-zinc-700 text-white" : "bg-zinc-900 text-white"
               }`}
-              aria-label="Modo presentación"
-              title="Modo presentación"
+              aria-label={t("presentationMode")}
+              title={t("presentationMode")}
               data-testid="bar-presentation"
             >
               <Maximize className="w-7 h-7" />

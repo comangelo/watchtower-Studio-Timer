@@ -10,8 +10,7 @@
  * para que cada persona lo descargue en su dispositivo (uso personal), y después lo
  * analiza en el propio dispositivo.
  */
-const MONTHS_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto',
-  'septiembre', 'octubre', 'noviembre', 'diciembre'];
+import { currentLocale } from '@/i18n';
 
 export function mondayOf(date) {
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -25,16 +24,13 @@ export function addWeeks(date, n) {
   return d;
 }
 
-/** "26 de octubre – 1 de noviembre de 2026" */
+/** "26 de octubre – 1 de noviembre de 2026" (en el idioma de la app) */
 export function weekLabel(monday) {
   const sunday = new Date(monday);
   sunday.setDate(sunday.getDate() + 6);
-  const sameMonth = monday.getMonth() === sunday.getMonth();
-  const sameYear = monday.getFullYear() === sunday.getFullYear();
-  const start = sameMonth
-    ? `${monday.getDate()}`
-    : `${monday.getDate()} de ${MONTHS_ES[monday.getMonth()]}${sameYear ? '' : ` de ${monday.getFullYear()}`}`;
-  return `${start} – ${sunday.getDate()} de ${MONTHS_ES[sunday.getMonth()]} de ${sunday.getFullYear()}`;
+  const fmt = new Intl.DateTimeFormat(currentLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
+  if (typeof fmt.formatRange === 'function') return fmt.formatRange(monday, sunday);
+  return `${fmt.format(monday)} – ${fmt.format(sunday)}`;
 }
 
 /** Número de la revista que corresponde a una semana: "202608" para las semanas de octubre de 2026. */

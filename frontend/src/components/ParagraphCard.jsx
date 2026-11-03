@@ -3,6 +3,7 @@ import { isRealQuestion } from "../utils/timePlan";
 import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff, Image, BookOpen, Star, Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { t, tn } from "@/i18n";
 import {
   Collapsible,
   CollapsibleContent,
@@ -148,7 +149,7 @@ export function ParagraphCard({
   // El párrafo actual se abre solo; los terminados quedan atenuados.
   const [expanded, setExpanded] = useState(false);
   const isExpanded = expanded || isCurrentParagraph;
-  const title = isGrouped ? `Párrafos ${allParagraphs.map(p => p.number).join(', ')}` : `Párrafo ${paragraph.number}`;
+  const title = isGrouped ? t('paragraphsN', { n: allParagraphs.map(p => p.number).join(', ') }) : t('paragraphN', { n: paragraph.number });
   const muted = darkMode ? 'text-zinc-400' : 'text-slate-500';
   const chip = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap';
 
@@ -188,7 +189,7 @@ export function ParagraphCard({
             {title}
             {isCurrentParagraph && (
               <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-green-300' : 'text-green-700')}`}>
-                {isOverTime ? 'EXCEDIDO' : 'AHORA'}
+                {isOverTime ? t('overLabel') : t('nowLabel')}
               </span>
             )}
           </span>
@@ -196,17 +197,17 @@ export function ParagraphCard({
             {hasScriptureContent && (
               <span className={`${chip} ${darkMode ? 'bg-blue-900/70 text-blue-200' : 'bg-blue-100 text-blue-700'}`} data-testid={`scripture-badge-${paragraph.number}`}>
                 <BookOpen className="w-3 h-3 shrink-0" />
-                {scriptureRefs.length ? scriptureRefs.join(' · ') : 'Texto'}
+                {scriptureRefs.length ? scriptureRefs.join(' · ') : t('scripture')}
               </span>
             )}
             {hasImageContent && (
               <span className={`${chip} ${darkMode ? 'bg-purple-900/70 text-purple-200' : 'bg-purple-100 text-purple-700'}`} data-testid={`image-badge-${paragraph.number}`}>
-                <Image className="w-3 h-3" /> Imagen
+                <Image className="w-3 h-3" /> {t('image')}
               </span>
             )}
             {hasNoteContent && (
               <span className={`${chip} ${darkMode ? 'bg-amber-900/70 text-amber-200' : 'bg-amber-100 text-amber-700'}`} data-testid={`note-badge-${paragraph.number}`}>
-                <MessageCircleQuestion className="w-3 h-3" /> Nota
+                <MessageCircleQuestion className="w-3 h-3" /> {t('note')}
               </span>
             )}
           </span>
@@ -235,28 +236,28 @@ export function ParagraphCard({
         <div className={`px-4 pb-4 pt-1 border-t ${darkMode ? 'border-zinc-700' : 'border-slate-100'}`} data-testid={`paragraph-details-${paragraph.number}`}>
           {isCurrentParagraph && isOverTime && (
             <p className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 bg-red-600 text-white text-[11px] font-bold rounded-full animate-pulse">
-              +{formatParagraphTime(paragraphElapsed - Math.round(estimatedTime))} excedido
+              {t('overBy', { time: formatParagraphTime(paragraphElapsed - Math.round(estimatedTime)) })}
             </p>
           )}
 
           {/* Datos del párrafo */}
           <div className={`flex flex-wrap items-center gap-1.5 mt-2 text-xs ${muted}`}>
-            <span>{totalWordCount} palabras</span>
+            <span>{t('words', { n: totalWordCount })}</span>
             <span>·</span>
             <span>{paragraph.skip_reading
-              ? (totalReadingTime > 0 ? `sin lectura · ${formatTimeText(totalReadingTime)} textos/imágenes` : 'sin lectura del párrafo')
-              : `${formatTimeText(totalReadingTime)} de lectura`}</span>
-            {hasQuestions && <><span>·</span><span>{realQuestionCount} pregunta{realQuestionCount !== 1 ? 's' : ''}</span></>}
+              ? (totalReadingTime > 0 ? t('noReadingWithExtras', { time: formatTimeText(totalReadingTime) }) : t('noReading'))
+              : t('readingTime', { time: formatTimeText(totalReadingTime) })}</span>
+            {hasQuestions && <><span>·</span><span>{tn('questions', realQuestionCount)}</span></>}
             {paragraphTimes.extraCommentSeconds >= 5 && (
               <span className={`px-2 py-0.5 rounded-full font-medium ${darkMode ? 'bg-emerald-900 text-emerald-200' : 'bg-emerald-50 text-emerald-700'}`}
-                title="Párrafo largo: tiempo para preguntas adicionales o más comentarios" data-testid={`extra-comments-${paragraph.number}`}>
-                +{formatTimeText(paragraphTimes.extraCommentSeconds)} comentarios extra
+                title={t('longParagraphHint')} data-testid={`extra-comments-${paragraph.number}`}>
+                {t('extraComments', { time: formatTimeText(paragraphTimes.extraCommentSeconds) })}
               </span>
             )}
             {startTime && paragraphTimes.start && !isCompletedParagraph && (
               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-zinc-700' : 'bg-slate-100'}`}>
                 <Clock className="w-3 h-3" /> {formatClockTime(paragraphTimes.start)} – {formatClockTime(paragraphTimes.end)}
-                {!paragraphTimes.isCompleted && adjustedQuestionTime && Math.abs(adjustedQuestionTime - plannedQuestionTime) >= 1 && <b className="text-orange-500 ml-1">ajustado</b>}
+                {!paragraphTimes.isCompleted && adjustedQuestionTime && Math.abs(adjustedQuestionTime - plannedQuestionTime) >= 1 && <b className="text-orange-500 ml-1">{t('adjusted')}</b>}
               </span>
             )}
           </div>
@@ -265,7 +266,7 @@ export function ParagraphCard({
           {highlightTexts.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {highlightTexts.map((h, i) => (
-                <span key={i} className={`${chip} max-w-full ${darkMode ? 'bg-cyan-900/70 text-cyan-200' : 'bg-cyan-50 text-cyan-800 border border-cyan-200'}`} title="Idea importante" data-testid={`highlight-badge-${paragraph.number}-${i}`}>
+                <span key={i} className={`${chip} max-w-full ${darkMode ? 'bg-cyan-900/70 text-cyan-200' : 'bg-cyan-50 text-cyan-800 border border-cyan-200'}`} title={t('highlight')} data-testid={`highlight-badge-${paragraph.number}-${i}`}>
                   <Star className="w-3 h-3 shrink-0" /> <span className="truncate">{h}</span>
                 </span>
               ))}
@@ -306,7 +307,7 @@ export function ParagraphCard({
               data-testid={`toggle-content-${paragraph.number}`}
             >
               {showContent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              {showContent ? 'Ocultar el texto' : 'Ver el texto del párrafo'}
+              {showContent ? t('hideText') : t('showParagraphText')}
             </button>
             {showContent && (
               <div className={`mt-2 text-sm leading-relaxed space-y-3 ${darkMode ? 'text-zinc-200' : 'text-slate-700'}`}>
@@ -328,7 +329,7 @@ export function ParagraphCard({
                 }`}
                 data-testid={`start-from-paragraph-${paragraph.number}`}
               >
-                <Play className="w-4 h-4 mr-2" /> Empezar desde aquí
+                <Play className="w-4 h-4 mr-2" /> {t('startFromHere')}
               </Button>
             )}
             {/* En el ordenador (sin barra inferior) los botones del párrafo actual van aquí */}
@@ -338,7 +339,7 @@ export function ParagraphCard({
                 className="hidden lg:inline-flex rounded-full px-5 py-5 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white [&_svg]:size-5"
                 data-testid={`add-comment-paragraph-${paragraph.number}`}
               >
-                <Hand className="mr-1" /> Comentario
+                <Hand className="mr-1" /> {t('comment')}
                 <span className="ml-2 min-w-[1.75rem] rounded-full bg-white/25 px-2 py-0.5 text-center tabular-nums" data-testid={`comment-count-paragraph-${paragraph.number}`}>{commentCount}</span>
               </Button>
             )}
@@ -348,7 +349,7 @@ export function ParagraphCard({
                 className="hidden lg:inline-flex rounded-full px-5 py-5 text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white"
                 data-testid={`next-from-paragraph-${paragraph.number}`}
               >
-                Siguiente párrafo <ArrowRight className="w-4 h-4 ml-2" />
+                {t('nextParagraph')} <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             )}
             {isCurrentParagraph && isLastParagraph && hasReviewQuestions && (
@@ -357,7 +358,7 @@ export function ParagraphCard({
                 className="hidden lg:inline-flex rounded-full px-5 py-5 text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white"
                 data-testid="start-review-questions"
               >
-                Preguntas de repaso <ArrowRight className="w-4 h-4 ml-2" />
+                {t('reviewQuestions')} <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             )}
           </div>

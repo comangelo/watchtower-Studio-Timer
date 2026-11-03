@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Play, Mic, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { t } from "@/i18n";
 
 export function IntroductionWordsSection({
   isActive,
@@ -86,8 +87,8 @@ export function IntroductionWordsSection({
             <Mic className="w-4 h-4" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className={`block text-sm font-bold ${titleTone}`}>Introducción</span>
-            <span className={`block text-xs ${muted}`}>Presenta el tema del artículo</span>
+            <span className={`block text-sm font-bold ${titleTone}`}>{t('introduction')}</span>
+            <span className={`block text-xs ${muted}`}>{t('introHint')}</span>
           </span>
           <Button
             onClick={onStartIntroduction}
@@ -95,7 +96,7 @@ export function IntroductionWordsSection({
             data-testid="start-introduction-btn"
           >
             <Play className="w-4 h-4 mr-1.5" fill="white" />
-            Iniciar estudio
+            {t('startStudy')}
           </Button>
           <span className={`shrink-0 text-base font-black tabular-nums ${titleTone}`}>{formatTime(estimatedTime)}</span>
         </div>
@@ -113,7 +114,7 @@ export function IntroductionWordsSection({
         <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${darkMode ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-200 text-slate-600'}`}>
           <Check className="w-4 h-4" />
         </span>
-        <span className={`min-w-0 flex-1 text-sm font-bold ${titleTone}`}>Introducción</span>
+        <span className={`min-w-0 flex-1 text-sm font-bold ${titleTone}`}>{t('introduction')}</span>
         <span className={`shrink-0 text-base font-black tabular-nums ${titleTone}`}>{formatTime(estimatedTime)}</span>
       </div>
     );
@@ -136,12 +137,12 @@ export function IntroductionWordsSection({
         </span>
         <span className="min-w-0 flex-1">
           <span className={`block text-sm font-bold ${titleTone}`}>
-            Introducción
+            {t('introduction')}
             <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-blue-300' : 'text-blue-700')}`}>
-              {isOverTime ? 'EXCEDIDO' : 'AHORA'}
+              {isOverTime ? t('overLabel') : t('nowLabel')}
             </span>
           </span>
-          <span className={`block text-xs ${muted}`}>Presenta el tema del artículo</span>
+          <span className={`block text-xs ${muted}`}>{t('introHint')}</span>
         </span>
         <span className={`shrink-0 text-base font-black tabular-nums ${isOverTime ? 'text-red-600' : darkMode ? 'text-blue-200' : 'text-blue-700'}`}>
           {formatTime(elapsedTime)}<span className={`font-medium ${muted}`}> / {formatTime(estimatedTime)}</span>
@@ -153,7 +154,7 @@ export function IntroductionWordsSection({
           className="rounded-full px-6 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
           data-testid="go-to-first-paragraph-btn"
         >
-          Siguiente: párrafo 1
+          {t('nextParagraph1')}
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>

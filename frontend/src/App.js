@@ -3,8 +3,10 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import HomePage from "@/pages/HomePage";
+import { useLanguage } from "@/i18n";
 
 function App() {
+  useLanguage(); // al cambiar de idioma se vuelve a pintar toda la app
   return (
     <div className="min-h-screen bg-white">
       <BrowserRouter>

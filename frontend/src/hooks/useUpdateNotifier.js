@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { t } from '@/i18n';
 
 /**
  * Avisa cuando hay una versión nueva de la app publicada.
@@ -20,11 +21,11 @@ export function useUpdateNotifier() {
     const offerUpdate = (worker) => {
       if (!worker || shown) return;
       shown = true;
-      toast.info('Hay una nueva versión de la app disponible.', {
-        description: 'Se aplicará al pulsar «Actualizar» (si estás en un estudio, puedes hacerlo al terminar).',
+      toast.info(t('updateAvailable'), {
+        description: t('updateHint'),
         duration: Infinity,
         action: {
-          label: 'Actualizar',
+          label: t('update'),
           onClick: () => {
             userAccepted = true;
             worker.postMessage({ type: 'SKIP_WAITING' });

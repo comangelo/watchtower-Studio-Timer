@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatClockTime, addSecondsToDate, formatTimeCompact } from "../utils/timeFormatters";
+import { t } from "@/i18n";
 
 const mmss = (sec) => {
   const t = Math.max(0, Math.round(sec || 0));
@@ -88,8 +89,8 @@ function ClosingWordsSection({
           <Sparkles className="w-4 h-4" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className={`block text-sm font-bold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>Conclusión</span>
-          <span className={`block text-xs ${muted}`}>Después del repaso</span>
+          <span className={`block text-sm font-bold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{t('conclusion')}</span>
+          <span className={`block text-xs ${muted}`}>{t('afterReview')}</span>
         </span>
         <span className={`shrink-0 text-base font-black tabular-nums ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{formatTime(estimatedTime)}</span>
       </div>
@@ -112,12 +113,12 @@ function ClosingWordsSection({
         </span>
         <span className="min-w-0 flex-1">
           <span className={`block text-sm font-bold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
-            Conclusión
+            {t('conclusion')}
             <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-purple-300' : 'text-purple-700')}`}>
-              {isOverTime ? 'EXCEDIDO' : 'AHORA'}
+              {isOverTime ? t('overLabel') : t('nowLabel')}
             </span>
           </span>
-          <span className={`block text-xs ${muted}`}>Resume los puntos principales y anima a la congregación.</span>
+          <span className={`block text-xs ${muted}`}>{t('conclusionHint')}</span>
         </span>
         <span className={`shrink-0 text-base font-black tabular-nums ${isOverTime ? 'text-red-600' : darkMode ? 'text-purple-200' : 'text-purple-700'}`}>
           {formatTime(elapsedTime)}<span className={`font-medium ${muted}`}> / {formatTime(estimatedTime)}</span>
@@ -130,7 +131,7 @@ function ClosingWordsSection({
           data-testid="finish-study-btn"
         >
           <PartyPopper className="w-4 h-4 mr-2" />
-          Finalizar estudio
+          {t('finishStudy')}
           <Check className="w-4 h-4 ml-2" />
         </Button>
       </div>
@@ -254,7 +255,7 @@ function ReviewQuestionCard({
         <span className="min-w-0 flex-1 pt-0.5">
           {isCurrentQuestion && (
             <span className={`block text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-green-300' : 'text-green-700')}`}>
-              {isOverTime ? 'EXCEDIDO' : 'AHORA'}
+              {isOverTime ? t('overLabel') : t('nowLabel')}
             </span>
           )}
           <span className={`block text-sm ${isCurrentQuestion ? 'font-semibold' : ''} ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
@@ -285,7 +286,7 @@ function ReviewQuestionCard({
               data-testid={`add-comment-review-${index}`}
             >
               <Hand fill="white" className="mr-1" />
-              Comentario
+              {t('comment')}
               <span className="ml-2 min-w-[1.75rem] rounded-full bg-white/25 px-2 py-0.5 text-center tabular-nums" data-testid={`comment-count-review-${index}`}>{commentCount}</span>
             </Button>
           )}
@@ -296,7 +297,7 @@ function ReviewQuestionCard({
             }`}
             data-testid={`next-review-question-${index}`}
           >
-            {isLastQuestion ? 'Conclusión' : 'Siguiente pregunta'}
+            {isLastQuestion ? t('conclusion') : t('nextQuestion')}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
@@ -358,7 +359,7 @@ export function FinalQuestionsSection({
         <div className={`${isCriticalTime ? 'bg-red-500' : 'bg-orange-500'} text-white px-4 py-2 flex items-center justify-center gap-2 rounded-t-2xl`}>
           <AlertCircle className="w-4 h-4" />
           <span className="text-sm font-medium">
-            {isCriticalTime ? '¡Tiempo crítico para el repaso!' : 'Queda poco tiempo para el repaso'}
+            {isCriticalTime ? t('reviewCritical') : t('reviewLow')}
           </span>
         </div>
       )}
@@ -370,9 +371,9 @@ export function FinalQuestionsSection({
               <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-rose-900/70 text-rose-200' : 'bg-rose-100 text-rose-700'}`}>
                 <MessageCircleQuestion className="w-4 h-4" />
               </span>
-              Repaso
+              {t('review')}
               {isInReviewMode && !isInClosingWordsMode && (
-                <span className={`text-sm font-semibold ${muted}`}>· pregunta {(currentReviewQuestion || 0) + 1} de {finalQuestions.length}</span>
+                <span className={`text-sm font-semibold ${muted}`}>· {t('questionXofY', { x: (currentReviewQuestion || 0) + 1, y: finalQuestions.length })}</span>
               )}
             </CardTitle>
             {finalQuestionsTitle && (

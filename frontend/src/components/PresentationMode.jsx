@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { t } from "@/i18n";
 import {
   Play,
   Pause,
@@ -117,14 +118,14 @@ export default function PresentationMode({
     if (remainingTime <= 300 && remainingTime > 0) {
       const m = Math.floor(remainingTime / 60);
       const s = remainingTime % 60;
-      return { isOvertime: false, prefix: "EN", number: `${m}:${String(s).padStart(2, "0")}`, suffix: "DEBE CONCLUIR" };
+      return { isOvertime: false, prefix: t("pmWarnPrefix"), number: `${m}:${String(s).padStart(2, "0")}`, suffix: t("pmWarnSuffix") };
     }
     if (remainingTime <= 0 && elapsedTime > 0) {
       const over = elapsedTime - totalDurationSeconds;
       if (over <= 0) return null;
       const m = Math.floor(over / 60);
       const s = over % 60;
-      return { isOvertime: true, prefix: null, number: `${m}:${String(s).padStart(2, "0")}`, suffix: "MINUTOS EXCEDIDOS" };
+      return { isOvertime: true, prefix: null, number: `${m}:${String(s).padStart(2, "0")}`, suffix: t("pmMinutesOver") };
     }
     return null;
   }, [remainingTime, elapsedTime, totalDurationSeconds, fiveMinuteWarningEnabled, studyStarted, phase]);
@@ -133,42 +134,42 @@ export default function PresentationMode({
   const phaseInfo = useMemo(() => {
     switch (phase) {
       case PHASES.INTRO:
-        return { title: "Introducción", icon: Mic, subtitle: "Presentando el tema" };
+        return { title: t("introduction"), icon: Mic, subtitle: t("pmIntroSub") };
       case PHASES.PARAGRAPHS: {
-        if (!currentParagraphGroup) return { title: "Párrafos", icon: BookOpen, subtitle: "" };
+        if (!currentParagraphGroup) return { title: t("paragraphsTitle"), icon: BookOpen, subtitle: "" };
         const nums = currentParagraphGroup.paragraphs.map((p) => p.number);
         return {
-          title: nums.length > 1 ? `Párrafos ${nums.join(", ")}` : `Párrafo ${nums[0]}`,
+          title: nums.length > 1 ? t("paragraphsN", { n: nums.join(", ") }) : t("paragraphN", { n: nums[0] }),
           icon: BookOpen,
-          subtitle: `de ${analysisResult?.total_paragraphs || totalParagraphs} párrafos${analysisResult?.circuit_visit ? " · sin leer el párrafo" : ""}`,
+          subtitle: t("pmOfParagraphs", { n: analysisResult?.total_paragraphs || totalParagraphs }) + (analysisResult?.circuit_visit ? ` · ${t("pmNoReading")}` : ""),
         };
       }
       case PHASES.REVIEW:
-        return { title: `Pregunta de repaso ${currentReviewQuestion + 1}`, icon: HelpCircle, subtitle: `de ${finals.length} preguntas` };
+        return { title: t("reviewQuestionN", { n: currentReviewQuestion + 1 }), icon: HelpCircle, subtitle: t("pmOfQuestions", { n: finals.length }) };
       case PHASES.CONCLUSION:
-        return { title: "Conclusión", icon: Sparkles, subtitle: "Resumen y aplicación" };
+        return { title: t("conclusion"), icon: Sparkles, subtitle: t("pmConclusionSub") };
       case PHASES.FINISHED:
-        return { title: "¡Estudio finalizado!", icon: CheckCircle2, subtitle: "Buen trabajo" };
+        return { title: t("studyFinished"), icon: CheckCircle2, subtitle: t("pmWellDone") };
       default:
-        return { title: "Esperando para iniciar", icon: Play, subtitle: "Pulsa «Iniciar estudio»" };
+        return { title: t("pmWaiting"), icon: Play, subtitle: t("pmPressStart") };
     }
   }, [phase, currentParagraphGroup, currentReviewQuestion, analysisResult, totalParagraphs, finals.length]);
 
   // Color del recuadro según el tiempo del tramo
   const { colorClass, indicatorText } = useMemo(() => {
-    if (phase === PHASES.FINISHED) return { colorClass: "bg-emerald-700 text-white", indicatorText: "FINALIZADO" };
-    if (!studyStarted) return { colorClass: "bg-zinc-600 text-white", indicatorText: "LISTO" };
-    if (!isTimerRunning) return { colorClass: "bg-zinc-600 text-white", indicatorText: "EN PAUSA" };
+    if (phase === PHASES.FINISHED) return { colorClass: "bg-emerald-700 text-white", indicatorText: t("pmFinished") };
+    if (!studyStarted) return { colorClass: "bg-zinc-600 text-white", indicatorText: t("pmReady") };
+    if (!isTimerRunning) return { colorClass: "bg-zinc-600 text-white", indicatorText: t("pmPaused") };
     // Pasada la hora de fin del estudio: siempre rojo
-    if (remainingTime <= 0 && elapsedTime > 0) return { colorClass: "bg-red-600 text-white", indicatorText: "TIEMPO EXCEDIDO" };
+    if (remainingTime <= 0 && elapsedTime > 0) return { colorClass: "bg-red-600 text-white", indicatorText: t("pmOver") };
     // Últimos 5 minutos: misma regla que en los párrafos pero SIN prórroga
     // (verde mientras el tramo va en su tiempo; al pasarse, rojo directamente)
     const finalStretch = remainingTime <= FINAL_STRETCH_SECONDS;
-    if (!estimatedTime) return { colorClass: "bg-green-600 text-white", indicatorText: "EN TIEMPO" };
+    if (!estimatedTime) return { colorClass: "bg-green-600 text-white", indicatorText: t("pmOnTime") };
     const ratio = phaseElapsedTime / estimatedTime;
-    if (ratio <= 1) return { colorClass: "bg-green-600 text-white", indicatorText: "EN TIEMPO" };
-    if (!finalStretch && ratio <= GRACE_RATIO) return { colorClass: "bg-yellow-400 text-zinc-900", indicatorText: "TIEMPO DE PRÓRROGA" };
-    return { colorClass: "bg-red-600 text-white", indicatorText: "TIEMPO EXCEDIDO" };
+    if (ratio <= 1) return { colorClass: "bg-green-600 text-white", indicatorText: t("pmOnTime") };
+    if (!finalStretch && ratio <= GRACE_RATIO) return { colorClass: "bg-yellow-400 text-zinc-900", indicatorText: t("pmGrace") };
+    return { colorClass: "bg-red-600 text-white", indicatorText: t("pmOver") };
   }, [phase, studyStarted, isTimerRunning, estimatedTime, phaseElapsedTime, remainingTime, elapsedTime]);
 
   // Etiquetas del párrafo actual (imagen, texto, nota)
@@ -214,23 +215,23 @@ export default function PresentationMode({
 
   // Qué viene después: lo más visible del botón para avanzar
   const groupLabel = (g) => (g && g.paragraphs.length > 1
-    ? `Párrafos ${g.paragraphs.map((p) => p.number).join(", ")}`
-    : `Párrafo ${g?.firstParagraph?.number || 1}`);
+    ? t("paragraphsN", { n: g.paragraphs.map((p) => p.number).join(", ") })
+    : t("paragraphN", { n: g?.firstParagraph?.number || 1 }));
 
   const nextInfo = (() => {
     switch (phase) {
-      case PHASES.INITIAL: return { kicker: null, main: "Iniciar estudio" };
-      case PHASES.INTRO: return { kicker: "Siguiente", main: groupLabel(groupedParagraphs[0]) };
+      case PHASES.INITIAL: return { kicker: null, main: t("startStudy") };
+      case PHASES.INTRO: return { kicker: t("next"), main: groupLabel(groupedParagraphs[0]) };
       case PHASES.PARAGRAPHS: {
-        if (isLastGroup) return finals.length > 0 ? { kicker: "Siguiente", main: "Repaso 1" } : { kicker: "Siguiente", main: "Conclusión" };
+        if (isLastGroup) return finals.length > 0 ? { kicker: t("next"), main: t("reviewN", { n: 1 }) } : { kicker: t("next"), main: t("conclusion") };
         const next = groupedParagraphs.find((g) => g.indices.includes(lastIndexOfGroup + 1));
-        return { kicker: "Siguiente", main: next ? groupLabel(next) : "Párrafo" };
+        return { kicker: t("next"), main: next ? groupLabel(next) : t("paragraph") };
       }
       case PHASES.REVIEW:
         return currentReviewQuestion >= finals.length - 1
-          ? { kicker: "Siguiente", main: "Conclusión" }
-          : { kicker: "Siguiente", main: `Repaso ${currentReviewQuestion + 2}` };
-      case PHASES.CONCLUSION: return { kicker: null, main: "Finalizar estudio" };
+          ? { kicker: t("next"), main: t("conclusion") }
+          : { kicker: t("next"), main: t("reviewN", { n: currentReviewQuestion + 2 }) };
+      case PHASES.CONCLUSION: return { kicker: null, main: t("finishStudy") };
       default: return null;
     }
   })();
@@ -265,7 +266,7 @@ export default function PresentationMode({
       <div className="flex items-center">
         {studyStarted && phase !== PHASES.FINISHED ? (
           <Button onClick={onToggleTimer} variant="ghost" className={`${iconBtn} [&_svg]:size-7`}
-            aria-label={isTimerRunning ? "Pausar" : "Reanudar"} data-testid="presentation-toggle-timer">
+            aria-label={isTimerRunning ? t("pause") : t("resume")} data-testid="presentation-toggle-timer">
             {isTimerRunning ? <Pause /> : <Play />}
           </Button>
         ) : <span className="w-10" />}
@@ -274,28 +275,28 @@ export default function PresentationMode({
         {analysisResult?.circuit_visit ? (
           <span className="inline-block px-3 py-1 rounded-full bg-indigo-600 text-white text-[11px] md:text-sm font-bold tracking-wide leading-tight shadow"
             data-testid="presentation-circuit-visit">
-            SIN LECTURA DE PÁRRAFOS · {Math.round((totalDurationSeconds || 1800) / 60)} MIN
+            {t("pmCircuitBadge", { n: Math.round((totalDurationSeconds || 1800) / 60) })}
           </span>
         ) : null}
       </div>
       <div className="flex items-center">
         <Button onClick={() => setShowLayoutMenu((v) => !v)} variant="ghost" className={`${iconBtn} [&_svg]:size-6`}
-          aria-label="Cambiar diseño" title="Cambiar diseño" data-testid="presentation-layout-button">
+          aria-label={t("changeLayout")} title={t("changeLayout")} data-testid="presentation-layout-button">
           <LayoutTemplate />
         </Button>
-        <Button onClick={onExit} variant="ghost" className={`${iconBtn} [&_svg]:size-8`} aria-label="Salir" data-testid="presentation-exit">
+        <Button onClick={onExit} variant="ghost" className={`${iconBtn} [&_svg]:size-8`} aria-label={t("exit")} data-testid="presentation-exit">
           <X />
         </Button>
       </div>
       {showLayoutMenu && (
         <div className="absolute right-0 top-12 z-30 bg-zinc-900 border border-zinc-700 rounded-2xl p-2 shadow-2xl w-60" data-testid="presentation-layout-menu">
-          <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider px-2 pt-1 pb-2">Diseño</p>
+          <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider px-2 pt-1 pb-2">{t("layout")}</p>
           {LAYOUTS.map((l) => (
             <button key={l.id} onClick={() => { onLayoutChange?.(l.id); setShowLayoutMenu(false); }}
               className={`w-full text-left px-3 py-2.5 rounded-xl mb-1 ${layout === l.id ? "bg-orange-500 text-white" : "text-zinc-200 hover:bg-zinc-800"}`}
               data-testid={`presentation-layout-${l.id}`}>
-              <span className="block text-sm font-bold">{l.name}</span>
-              <span className={`block text-xs ${layout === l.id ? "text-orange-100" : "text-zinc-400"}`}>{l.description}</span>
+              <span className="block text-sm font-bold">{t(`layout_${l.id}`)}</span>
+              <span className={`block text-xs ${layout === l.id ? "text-orange-100" : "text-zinc-400"}`}>{t(`layout_${l.id}_desc`)}</span>
             </button>
           ))}
         </div>
@@ -309,15 +310,15 @@ export default function PresentationMode({
     return (
       <div className={`grid grid-cols-3 gap-x-3 sm:gap-x-8 text-center w-full max-w-md mx-auto ${isSemaforo ? "bg-black/40 rounded-2xl py-2 text-white" : ""}`}>
         <div>
-          <p className={lbl}>Hora actual</p>
+          <p className={lbl}>{t("currentTime")}</p>
           <p className={`${val} font-bold text-white`}>{formatClockTime(currentTime)}</p>
         </div>
         <div>
-          <p className={lbl}>Termina</p>
+          <p className={lbl}>{t("ends")}</p>
           <p className={`${val} font-bold ${isSemaforo ? "text-yellow-200" : "text-yellow-400"}`} data-testid="presentation-end-time">{formatClockTime(shownEndTime)}</p>
         </div>
         <div>
-          <p className={lbl}>Restante</p>
+          <p className={lbl}>{t("remaining")}</p>
           <p className={`${val} ${isSemaforo ? "font-bold text-white" : "font-light text-orange-400"}`} data-testid="presentation-remaining">{formatTime(Math.max(0, remainingTime))}</p>
         </div>
       </div>
@@ -341,17 +342,17 @@ export default function PresentationMode({
     <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
       {badges.scripture && (
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-blue-950/80 text-blue-100 border border-blue-500">
-          <BookOpen className="w-4 h-4 shrink-0" /> {badges.scriptureRefs?.length ? `Leer ${badges.scriptureRefs.join(" · ")}` : "Texto para leer"}
+          <BookOpen className="w-4 h-4 shrink-0" /> {badges.scriptureRefs?.length ? t("readRefs", { refs: badges.scriptureRefs.join(" · ") }) : t("scriptureToRead")}
         </span>
       )}
       {badges.image && (
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-purple-950/80 text-purple-100 border border-purple-500">
-          <Image className="w-4 h-4" /> Imagen
+          <Image className="w-4 h-4" /> {t("image")}
         </span>
       )}
       {badges.note && (
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-amber-950/80 text-amber-100 border border-amber-500">
-          <MessageCircleQuestion className="w-4 h-4" /> Nota de estudio
+          <MessageCircleQuestion className="w-4 h-4" /> {t("studyNote")}
         </span>
       )}
       {(badges.highlights || []).map((h, i) => (
@@ -397,16 +398,16 @@ export default function PresentationMode({
     <button
       onClick={onAddComment}
       className="w-full rounded-3xl min-h-[72px] landscape:min-h-[64px] px-6 flex items-center justify-between gap-3 shadow-xl transition-transform active:scale-95 bg-orange-500 hover:bg-orange-400 text-white shadow-orange-900/40 ring-2 ring-white/20"
-      aria-label="Marcar un comentario" title="Marcar un comentario"
+      aria-label={t("markComment")} title={t("markComment")}
       data-testid="presentation-add-comment"
     >
       <span className="flex items-center gap-3">
         <Hand className="w-9 h-9 shrink-0" strokeWidth={2.2} />
-        <span className="text-xl md:text-2xl font-black uppercase tracking-wide">Comentario</span>
+        <span className="text-xl md:text-2xl font-black uppercase tracking-wide">{t("comment")}</span>
       </span>
       <span className="text-right leading-none">
         <span className="block text-3xl font-black tabular-nums" data-testid="presentation-comment-count">{totalComments}</span>
-        <span className="block text-[11px] font-semibold opacity-85 mt-0.5">en total</span>
+        <span className="block text-[11px] font-semibold opacity-85 mt-0.5">{t("inTotal")}</span>
       </span>
     </button>
   );
@@ -420,7 +421,7 @@ export default function PresentationMode({
 
   const escHint = (
     <div className="shrink-0 h-5 flex items-center justify-center">
-      {studyStarted && hasKeyboard && <span className={`${isSemaforo ? "opacity-60" : "text-zinc-500"} text-xs`}>Pulsa «Esc» para salir</span>}
+      {studyStarted && hasKeyboard && <span className={`${isSemaforo ? "opacity-60" : "text-zinc-500"} text-xs`}>{t("pmEscHint")}</span>}
     </div>
   );
 
@@ -434,7 +435,7 @@ export default function PresentationMode({
       {phaseInfo.subtitle && <p className="text-base md:text-lg opacity-80">{phaseInfo.subtitle}</p>}
       <p className={`${big ? "text-7xl md:text-8xl" : "text-6xl md:text-7xl"} landscape:text-6xl font-extralight tabular-nums leading-none mt-2`}>{formatTime(phaseElapsedTime)}</p>
       {estimatedTime > 0 && (
-        <p className="text-xl md:text-2xl landscape:text-lg font-light opacity-80 tabular-nums mt-1">de {formatTime(Math.round(estimatedTime))}</p>
+        <p className="text-xl md:text-2xl landscape:text-lg font-light opacity-80 tabular-nums mt-1">{t("ofTime", { time: formatTime(Math.round(estimatedTime)) })}</p>
       )}
       {badgeRow}
       {warningBlock}
@@ -509,11 +510,11 @@ export default function PresentationMode({
 
         {studyStarted && (
           <div className="text-center bg-gradient-to-br from-zinc-700 to-zinc-800 border border-zinc-600 rounded-2xl px-5 py-3 landscape:p-2 mb-4 shadow-lg" data-testid="presentation-comments">
-            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Participaciones</p>
+            <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">{t("participations")}</p>
             <p className="text-4xl md:text-5xl landscape:text-3xl font-black text-orange-500 tabular-nums">{totalComments}</p>
             {canComment && (
               <p className="text-[11px] text-zinc-400 mt-0.5 flex items-center justify-center gap-1">
-                <MessagesSquare className="w-3 h-3" /> {phaseComments} en este {phase === PHASES.REVIEW ? "repaso" : "párrafo"}
+                <MessagesSquare className="w-3 h-3" /> {phase === PHASES.REVIEW ? t("pmInThisReview", { n: phaseComments }) : t("pmInThisParagraph", { n: phaseComments })}
               </p>
             )}
           </div>

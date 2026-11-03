@@ -1,13 +1,14 @@
 import { createContext, useContext } from "react";
 import {
   Settings, Timer, Mic, Sparkles, Clock, MessageCircleQuestion, MessagesSquare,
-  Bell, Volume2, Vibrate, MonitorPlay, Sun, Moon, Check, BookOpen, Palette,
+  Bell, Volume2, Vibrate, MonitorPlay, Sun, Moon, Check, BookOpen, Palette, Languages,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { LAYOUTS } from "@/components/PresentationMode";
 import { darkThemes } from "@/utils/darkThemes";
+import { t, LANGUAGES, currentLanguage, setLanguage } from "@/i18n";
 
 const ThemeCtx = createContext({});
 
@@ -89,32 +90,32 @@ function AlertInput({ label, field, max, testid, alertTimes, setAlertTimes }) {
       value={alertTimes?.[field] || ""}
       onChange={(e) => setAlertTimes((prev) => ({ ...prev, [field]: e.target.value === "" ? 0 : parseInt(e.target.value) || 0 }))}
       className={`w-16 h-9 rounded-lg border px-2 text-sm ${c.input}`} data-testid={testid} />
-    <span className={`text-xs ${c.muted}`}>min antes</span>
+    <span className={`text-xs ${c.muted}`}>{t("minBefore")}</span>
   </div>
   );
 }
 
 
 export const SETTINGS_TABS = [
-  { id: "tiempo", label: "Tiempo", icon: Timer },
-  { id: "lectura", label: "Lectura", icon: BookOpen },
-  { id: "avisos", label: "Avisos", icon: Bell },
-  { id: "pantalla", label: "Pantalla", icon: MonitorPlay },
+  { id: "tiempo", label: "tabTime", icon: Timer },
+  { id: "lectura", label: "tabReading", icon: BookOpen },
+  { id: "avisos", label: "tabAlerts", icon: Bell },
+  { id: "pantalla", label: "tabDisplay", icon: MonitorPlay },
 ];
 
 const SPEEDS = [
-  { value: 150, label: "Lento", description: "150 PPM" },
-  { value: 180, label: "Normal", description: "180 PPM" },
-  { value: 210, label: "Rápido", description: "210 PPM" },
+  { value: 150, label: "speedSlow", description: "150 PPM" },
+  { value: 180, label: "speedNormal", description: "180 PPM" },
+  { value: 210, label: "speedFast", description: "210 PPM" },
 ];
 
 const LONG_PARAGRAPH = [
-  { value: 0, label: "Sin extra", description: "Solo preguntas" },
-  { value: 1, label: "Normal", description: "Recomendado" },
-  { value: 1.5, label: "Más", description: "Muchos comentarios" },
+  { value: 0, label: "extraNone", description: "extraNoneDesc" },
+  { value: 1, label: "speedNormal", description: "extraNormalDesc" },
+  { value: 1.5, label: "extraMore", description: "extraMoreDesc" },
 ];
 
-export const speedLabel = (v) => SPEEDS.find((s) => s.value === v)?.label || `${v} PPM`;
+export const speedLabel = (v) => { const s = SPEEDS.find((x) => x.value === v); return s ? t(s.label) : `${v} PPM`; };
 
 /**
  * Todos los ajustes en un solo panel lateral, con pestañas
@@ -184,18 +185,18 @@ export function SettingsSheet({
         data-testid="settings-sheet">
         <div className="px-5 pt-5 pb-3">
           <SheetTitle className={`flex items-center gap-2 text-lg font-bold ${c.text}`}>
-            <Settings className="w-5 h-5 text-orange-500" /> Ajustes
+            <Settings className="w-5 h-5 text-orange-500" /> {t("settings")}
           </SheetTitle>
-          <SheetDescription className={`text-xs ${c.muted}`}>Se guardan en este dispositivo.</SheetDescription>
+          <SheetDescription className={`text-xs ${c.muted}`}>{t("settingsSavedHere")}</SheetDescription>
           <div className={`mt-4 grid grid-cols-4 gap-1 rounded-xl p-1 ${c.tabs}`} role="tablist">
-            {SETTINGS_TABS.map((t) => {
-              const Icon = t.icon;
-              const on = tab === t.id;
+            {SETTINGS_TABS.map((tb) => {
+              const Icon = tb.icon;
+              const on = tab === tb.id;
               return (
-                <button key={t.id} role="tab" aria-selected={on} onClick={() => onTabChange?.(t.id)}
+                <button key={tb.id} role="tab" aria-selected={on} onClick={() => onTabChange?.(tb.id)}
                   className={`rounded-lg py-2 flex flex-col items-center gap-0.5 text-xs font-semibold transition-colors ${on ? c.tabOn : c.tabOff}`}
-                  data-testid={`settings-tab-${t.id}`}>
-                  <Icon className="w-4 h-4" />{t.label}
+                  data-testid={`settings-tab-${tb.id}`}>
+                  <Icon className="w-4 h-4" />{t(tb.label)}
                 </button>
               );
             })}
@@ -206,15 +207,15 @@ export function SettingsSheet({
           {tab === "tiempo" && (
             <>
               <Section testid="settings-section-tiempo">
-                <Row icon={Timer} label="Duración del estudio" value={`${totalDuration} min`}
-                  hint={circuitVisitMode ? "Visita del superintendente de circuito" : null} />
+                <Row icon={Timer} label={t("studyDuration")} value={`${totalDuration} min`}
+                  hint={circuitVisitMode ? t("circuitVisit") : null} />
                 <Range value={totalDuration} onChange={setTotalDuration} min={0} max={60} step={1} left="0" right="60 min" testid="duration-slider" />
               </Section>
               <Section>
-                <Row icon={Mic} color="text-blue-500" label="Introducción" value={`${introductionDuration} s`} valueColor="text-blue-500" />
+                <Row icon={Mic} color="text-blue-500" label={t("introduction")} value={`${introductionDuration} s`} valueColor="text-blue-500" />
                 <Range value={introductionDuration} onChange={setIntroductionDuration} min={30} max={180} step={10}
                   left="30 s" right="3 min" thumb="[&_[role=slider]]:bg-blue-500" range="[&>span>span]:bg-blue-500" testid="introduction-time-slider" />
-                <Row icon={Sparkles} color="text-purple-500" label="Conclusión" value={`${closingWordsDuration} s`} valueColor="text-purple-500" />
+                <Row icon={Sparkles} color="text-purple-500" label={t("conclusion")} value={`${closingWordsDuration} s`} valueColor="text-purple-500" />
                 <Range value={closingWordsDuration} onChange={setClosingWordsDuration} min={30} max={180} step={10}
                   left="30 s" right="3 min" thumb="[&_[role=slider]]:bg-purple-500" range="[&>span>span]:bg-purple-500" testid="closing-time-slider" />
               </Section>
@@ -222,9 +223,9 @@ export function SettingsSheet({
                 <Section>
                   <label className={`flex items-center justify-between gap-3 ${hasStarted ? "opacity-60" : "cursor-pointer"}`}>
                     <span className="min-w-0">
-                      <span className={`block text-sm font-semibold ${c.text}`}>Visita del superintendente de circuito</span>
+                      <span className={`block text-sm font-semibold ${c.text}`}>{t("circuitVisit")}</span>
                       <span className={`block text-xs ${c.muted}`}>
-                        {hasStarted ? "No se puede cambiar con el estudio en marcha." : `Estudio de ${circuitVisitMinutes} min sin leer los párrafos.`}
+                        {hasStarted ? t("cannotChangeRunning") : t("circuitOff", { n: circuitVisitMinutes })}
                       </span>
                     </span>
                     <Switch checked={!!circuitVisitMode} onCheckedChange={(v) => setCircuitVisitMode(!!v)} disabled={hasStarted}
@@ -238,22 +239,22 @@ export function SettingsSheet({
           {tab === "lectura" && (
             <>
               <Section testid="settings-section-lectura">
-                <Row icon={Clock} label="Velocidad de lectura" hint="Cuánto tarda el lector en leer un párrafo." />
-                <Choice options={SPEEDS} value={readingSpeed} onChange={setReadingSpeed} testid="speed" />
+                <Row icon={Clock} label={t("readingSpeed")} hint={t("readingSpeedHint")} />
+                <Choice options={SPEEDS.map((o) => ({ ...o, label: t(o.label) }))} value={readingSpeed} onChange={setReadingSpeed} testid="speed" />
               </Section>
               <Section>
-                <Row icon={MessageCircleQuestion} label="Tiempo por respuesta" value={`${answerTime} s`}
-                  hint="Tiempo previsto para cada pregunta." />
+                <Row icon={MessageCircleQuestion} label={t("answerTime")} value={`${answerTime} s`}
+                  hint={t("answerTimeHint")} />
                 <Range value={answerTime} onChange={setAnswerTime} min={15} max={90} step={5} left="15 s" right="90 s" testid="answer-time-slider" />
               </Section>
               <Section>
-                <Row icon={MessagesSquare} color="text-emerald-500" label="Párrafos largos o agrupados"
-                  hint="Tiempo extra para más comentarios." />
-                <Choice options={LONG_PARAGRAPH} value={longParagraphWeight} onChange={setLongParagraphWeight}
+                <Row icon={MessagesSquare} color="text-emerald-500" label={t("longParagraphs")}
+                  hint={t("longParagraphsHint")} />
+                <Choice options={LONG_PARAGRAPH.map((o) => ({ ...o, label: t(o.label), description: t(o.description) }))} value={longParagraphWeight} onChange={setLongParagraphWeight}
                   active="bg-emerald-500 text-white" sub="text-emerald-100" testid="long-paragraph" />
               </Section>
               {hasStarted && (
-                <p className={`text-xs px-1 ${c.muted}`}>Con el estudio en marcha, la velocidad y la respuesta se aplican al siguiente estudio.</p>
+                <p className={`text-xs px-1 ${c.muted}`}>{t("appliesNextStudy")}</p>
               )}
             </>
           )}
@@ -261,35 +262,51 @@ export function SettingsSheet({
           {tab === "avisos" && (
             <>
               <Section testid="settings-section-avisos">
-                <Toggle icon={Volume2} label="Sonido" checked={soundEnabled} onChange={setSoundEnabled} testid="sound-toggle" />
-                <Toggle icon={Vibrate} label="Vibración" checked={vibrationEnabled} onChange={setVibrationEnabled} testid="vibration-toggle" />
+                <Toggle icon={Volume2} label={t("sound")} checked={soundEnabled} onChange={setSoundEnabled} testid="sound-toggle" />
+                <Toggle icon={Vibrate} label={t("vibration")} checked={vibrationEnabled} onChange={setVibrationEnabled} testid="vibration-toggle" />
                 <div className="flex gap-2">
                   <button onClick={onTestSound} disabled={!soundEnabled}
-                    className={`flex-1 h-9 rounded-lg border text-xs font-semibold disabled:opacity-40 ${c.btn}`} data-testid="test-sound-btn">Probar sonido</button>
+                    className={`flex-1 h-9 rounded-lg border text-xs font-semibold disabled:opacity-40 ${c.btn}`} data-testid="test-sound-btn">{t("testSound")}</button>
                   <button onClick={onTestVibration} disabled={!vibrationEnabled}
-                    className={`flex-1 h-9 rounded-lg border text-xs font-semibold disabled:opacity-40 ${c.btn}`} data-testid="test-vibration-btn">Probar vibración</button>
+                    className={`flex-1 h-9 rounded-lg border text-xs font-semibold disabled:opacity-40 ${c.btn}`} data-testid="test-vibration-btn">{t("testVibration")}</button>
                 </div>
               </Section>
               <Section>
-                <Toggle icon={Timer} color="text-orange-500" label="Párrafo excedido" hint="Avisa si un párrafo pasa de su tiempo."
+                <Toggle icon={Timer} color="text-orange-500" label={t("alertParagraphOver")} hint={t("alertParagraphOverHint")}
                   checked={overtimeAlertEnabled} onChange={setOvertimeAlertEnabled} testid="overtime-alert-toggle" />
-                <Toggle icon={Timer} color="text-red-500" label="Faltan 5 minutos" hint="Avisa 5 min antes de la hora de fin."
+                <Toggle icon={Timer} color="text-red-500" label={t("alertFiveMin")} hint={t("alertFiveMinHint")}
                   checked={fiveMinuteWarningEnabled} onChange={setFiveMinuteWarningEnabled} testid="five-minute-warning-toggle" />
               </Section>
               <Section>
-                <Row icon={Bell} label="Aviso antes del repaso" hint="Minutos antes de las preguntas de repaso (vacío = sin aviso)." />
-                <AlertInput label="1.er aviso" field="firstAlert" max={30} alertTimes={alertTimes} setAlertTimes={setAlertTimes} testid="first-alert-input" />
-                <AlertInput label="2.º aviso" field="secondAlert" max={10} alertTimes={alertTimes} setAlertTimes={setAlertTimes} testid="second-alert-input" />
+                <Row icon={Bell} label={t("alertBeforeReview")} hint={t("alertBeforeReviewHint")} />
+                <AlertInput label={t("firstAlert")} field="firstAlert" max={30} alertTimes={alertTimes} setAlertTimes={setAlertTimes} testid="first-alert-input" />
+                <AlertInput label={t("secondAlert")} field="secondAlert" max={10} alertTimes={alertTimes} setAlertTimes={setAlertTimes} testid="second-alert-input" />
               </Section>
             </>
           )}
 
           {tab === "pantalla" && (
             <>
+              <Section testid="settings-section-idioma">
+                <Row icon={Languages} label={t("language")} />
+                <div className="grid grid-cols-2 gap-2">
+                  {LANGUAGES.map((l) => {
+                    const on = currentLanguage() === l.code;
+                    return (
+                      <button key={l.code} onClick={() => setLanguage(l.code)}
+                        className={`rounded-xl py-2.5 px-3 flex items-center gap-2 text-sm font-semibold ${on ? "bg-orange-500 text-white shadow-md" : c.chip}`}
+                        data-testid={`language-${l.code}`}>
+                        <span className="text-[11px] font-black opacity-80 w-6">{l.short}</span>{l.name}
+                        {on && <Check className="w-4 h-4 ml-auto" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </Section>
               <Section testid="settings-section-pantalla">
-                <Row icon={darkMode ? Moon : Sun} color={darkMode ? "text-yellow-400" : "text-orange-500"} label="Tema" />
+                <Row icon={darkMode ? Moon : Sun} color={darkMode ? "text-yellow-400" : "text-orange-500"} label={t("theme")} />
                 <div className="flex gap-2">
-                  {[{ v: false, label: "Claro", Icon: Sun }, { v: true, label: "Oscuro", Icon: Moon }].map(({ v, label, Icon }) => (
+                  {[{ v: false, label: t("light"), Icon: Sun }, { v: true, label: t("dark"), Icon: Moon }].map(({ v, label, Icon }) => (
                     <button key={label} onClick={() => setDarkMode(v)}
                       className={`flex-1 rounded-xl py-2.5 flex items-center justify-center gap-2 text-sm font-semibold ${darkMode === v ? "bg-orange-500 text-white shadow-md" : c.chip}`}
                       data-testid={`theme-${v ? "dark" : "light"}`}>
@@ -299,14 +316,14 @@ export function SettingsSheet({
                 </div>
                 {darkMode && (
                   <div className="space-y-1.5" data-testid="dark-variants">
-                    <p className={`text-xs flex items-center gap-1 ${c.muted}`}><Palette className="w-3 h-3" /> Variante oscura</p>
+                    <p className={`text-xs flex items-center gap-1 ${c.muted}`}><Palette className="w-3 h-3" /> {t("darkVariant")}</p>
                     {Object.entries(darkThemes).map(([key, th]) => (
                       <button key={key} onClick={() => setDarkTheme(key)}
                         className={`w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left ${darkTheme === key ? "ring-2 ring-orange-500" : ""} ${c.chip}`}>
                         <span className="w-5 h-5 rounded-full border-2 shrink-0" style={{ backgroundColor: th.colors.panel, borderColor: th.colors.border }} />
                         <span className="flex-1 min-w-0">
-                          <span className="block text-sm font-semibold">{th.name}</span>
-                          <span className={`block text-[11px] ${c.subtle}`}>{th.description}</span>
+                          <span className="block text-sm font-semibold">{t(`theme_${key}`)}</span>
+                          <span className={`block text-[11px] ${c.subtle}`}>{t(`theme_${key}_desc`)}</span>
                         </span>
                         {darkTheme === key && <Check className="w-4 h-4 text-orange-500" />}
                       </button>
@@ -315,8 +332,8 @@ export function SettingsSheet({
                 )}
               </Section>
               <Section>
-                <Row icon={MonitorPlay} label="Diseño del modo presentación" hint="También se cambia durante el estudio, arriba a la derecha." />
-                <Choice options={LAYOUTS.map((l) => ({ value: l.id, label: l.name, description: l.description }))}
+                <Row icon={MonitorPlay} label={t("presentationLayout")} hint={t("presentationLayoutHint")} />
+                <Choice options={LAYOUTS.map((l) => ({ value: l.id, label: t(`layout_${l.id}`), description: t(`layout_${l.id}_desc`) }))}
                   value={presentationLayout} onChange={setPresentationLayout} testid="layout-option" />
               </Section>
             </>

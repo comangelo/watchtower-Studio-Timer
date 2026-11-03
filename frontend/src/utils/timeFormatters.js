@@ -1,3 +1,5 @@
+import { t, currentLocale } from "@/i18n";
+
 // Format seconds to MM:SS or HH:MM:SS
 export const formatTime = (seconds) => {
   const hrs = Math.floor(seconds / 3600);
@@ -16,13 +18,13 @@ export const formatTimeText = (seconds) => {
   const secs = Math.floor(seconds % 60);
   
   // Less than 60 seconds - show only seconds
-  if (mins === 0) return `${secs} seg`;
+  if (mins === 0) return `${secs} ${t('unitSec')}`;
   
   // 60 seconds or more - show in minutes (rounded or with seconds)
   if (secs === 0) return `${mins} min`;
   
   // Show minutes and seconds
-  return `${mins} min ${secs} seg`;
+  return `${mins} min ${secs} ${t('unitSec')}`;
 };
 
 // Format seconds to compact text (for cards - shows only minutes if >= 60s)
@@ -31,20 +33,20 @@ export const formatTimeCompact = (seconds) => {
   const secs = Math.floor(seconds % 60);
   
   // Less than 60 seconds - show only seconds
-  if (seconds < 60) return `${Math.round(seconds)} seg`;
+  if (seconds < 60) return `${Math.round(seconds)} ${t('unitSec')}`;
   
   // 60 seconds or more - show in minutes with decimal if needed
   const totalMins = seconds / 60;
   if (secs === 0) return `${mins} min`;
   
   // Round to 1 decimal for cleaner display
-  return `${totalMins.toFixed(1)} min`;
+  return `${totalMins.toLocaleString(currentLocale(), { maximumFractionDigits: 1 })} min`;
 };
 
 // Format time as HH:MM (clock format)
 export const formatClockTime = (date) => {
   if (!date) return "--:--";
-  return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString(currentLocale(), { hour: '2-digit', minute: '2-digit', hour12: false });
 };
 
 // Add seconds to a date and return new date

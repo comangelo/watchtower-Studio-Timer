@@ -10,15 +10,11 @@ import {
 } from "@/utils/jwWeekly";
 import {
   findIssueForDate, getIssueFile, listIssues, deleteIssue,
-  folderSupported, getSavedFolder, chooseFolder, forgetFolder, ensureFolderPermission, findIssueInFolder,
+  folderSupported, getSavedFolder, issueTitle, chooseFolder, forgetFolder, ensureFolderPermission, findIssueInFolder,
 } from "@/utils/pdfLibrary";
-import { t } from "@/i18n";
+import { t, currentLocale } from "@/i18n";
 
-const HELP = {
-  android: "Se guardará en Descargas. Después pulsa el paso 2 y elige el archivo. La app guardará una copia y las próximas semanas ya no tendrás que elegirlo.",
-  ios: "Se abrirá el PDF: pulsa Compartir → «Guardar en Archivos». Después pulsa el paso 2 y elígelo en Archivos. La app guardará una copia para las próximas semanas.",
-  desktop: "Se guardará en Descargas. Después pulsa el paso 2 o arrastra el archivo al recuadro de abajo. La app guardará una copia para las próximas semanas.",
-};
+const HELP = { android: "jwHelpAndroid", ios: "jwHelpIos", desktop: "jwHelpDesktop" };
 
 /**
  * Recuadro "Artículo de esta semana".
@@ -116,28 +112,28 @@ export function JwWeeklyCard({
             <CalendarDays className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <p className={`font-bold ${strong}`}>{isThisWeek ? "Artículo de esta semana" : "Artículo de la semana"}</p>
+            <p className={`font-bold ${strong}`}>{isThisWeek ? t("jwThisWeekArticle") : t("jwWeekArticle")}</p>
             <p className={`text-xs ${muted}`}>{t("weeklySource")}</p>
           </div>
         </div>
 
         {/* Semana con flechas */}
         <div className={`flex items-center justify-between gap-2 rounded-xl px-2 py-2 ${darkMode ? "bg-zinc-700/60" : "bg-white border border-sky-100"}`}>
-          <Button variant="ghost" size="icon" onClick={() => onWeekChange(addWeeks(weekMonday, -1))} aria-label="Semana anterior" data-testid="jw-week-prev">
+          <Button variant="ghost" size="icon" onClick={() => onWeekChange(addWeeks(weekMonday, -1))} aria-label={t("jwPrevWeek")} data-testid="jw-week-prev">
             <ChevronLeft />
           </Button>
           <div className="text-center min-w-0">
             <p className={`font-semibold text-sm sm:text-base ${strong}`} data-testid="jw-week-label">{weekLabel(weekMonday)}</p>
             {state.status === "ok" && (
-              <p className={`text-xs ${muted}`} data-testid="jw-issue-label">Número de {state.info.title.toLowerCase()}</p>
+              <p className={`text-xs ${muted}`} data-testid="jw-issue-label">{t("jwIssueOf", { title: state.info.title.toLowerCase() })}</p>
             )}
             {!isThisWeek && (
               <button type="button" className="text-xs font-semibold text-sky-600 underline" onClick={() => onWeekChange(thisWeek)}>
-                Volver a esta semana
+                {t("jwBackToThisWeek")}
               </button>
             )}
           </div>
-          <Button variant="ghost" size="icon" onClick={() => onWeekChange(addWeeks(weekMonday, 1))} aria-label="Semana siguiente" data-testid="jw-week-next">
+          <Button variant="ghost" size="icon" onClick={() => onWeekChange(addWeeks(weekMonday, 1))} aria-label={t("jwNextWeek")} data-testid="jw-week-next">
             <ChevronRight />
           </Button>
         </div>
@@ -153,8 +149,8 @@ export function JwWeeklyCard({
             >
               {isLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <BookCheck className="w-5 h-5 mr-2 shrink-0" />}
               <span className="text-left leading-tight">
-                {isThisWeek ? "Abrir el artículo de esta semana" : "Abrir el artículo de esa semana"}
-                <span className="block text-xs font-normal opacity-90">Guardado en la app · {saved.title}</span>
+                {isThisWeek ? t("jwOpenThisWeek") : t("jwOpenThatWeek")}
+                <span className="block text-xs font-normal opacity-90">{t("jwSavedInApp")} · {issueTitle(saved.fileName, saved.weeks)}</span>
               </span>
             </Button>
           </div>
@@ -170,8 +166,8 @@ export function JwWeeklyCard({
           >
             {isLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <FolderOpen className="w-5 h-5 mr-2 shrink-0" />}
             <span className="text-left leading-tight">
-              Abrir el artículo de {isThisWeek ? "esta" : "esa"} semana
-              <span className="block text-xs font-normal opacity-90">Encontrado en tu carpeta «{folder?.name}» · {folderState.file?.name}</span>
+              {isThisWeek ? t("jwOpenThisWeek") : t("jwOpenThatWeek")}
+              <span className="block text-xs font-normal opacity-90">{t("jwFoundInFolder", { folder: folder?.name })} · {folderState.file?.name}</span>
             </span>
           </Button>
         )}
@@ -180,14 +176,14 @@ export function JwWeeklyCard({
         {showDownloadSteps && (
           <>
             {state.status === "loading" && (
-              <p className={`text-sm flex items-center gap-2 ${muted}`}><Loader2 className="w-4 h-4 animate-spin" /> Buscando la revista en jw.org…</p>
+              <p className={`text-sm flex items-center gap-2 ${muted}`}><Loader2 className="w-4 h-4 animate-spin" /> {t("jwSearching")}</p>
             )}
             {state.status === "missing" && (
-              <p className={`text-sm ${warn}`} data-testid="jw-missing">La revista de esa semana todavía no está publicada en jw.org.</p>
+              <p className={`text-sm ${warn}`} data-testid="jw-missing">{t("jwMissing")}</p>
             )}
             {state.status === "error" && (
               <p className={`text-sm ${warn}`} data-testid="jw-error">
-                No se pudo consultar jw.org (¿sin conexión?). Puedes descargar la revista desde jw.org → Biblioteca → Revistas y elegirla abajo.
+                {t("jwError")}
               </p>
             )}
 
@@ -202,21 +198,21 @@ export function JwWeeklyCard({
                   <a href={state.info.url} target="_blank" rel="noopener noreferrer">
                     <Download className="w-5 h-5 mr-2 shrink-0" />
                     <span className="text-left leading-tight">
-                      1. Descargar la revista de jw.org
+                      {t("jwStep1")}
                       <span className="block text-xs font-normal opacity-90">
-                        PDF oficial · {(state.info.size / 1048576).toLocaleString("es-ES", { maximumFractionDigits: 1 })} MB
+                        {t("jwOfficialPdf")} · {(state.info.size / 1048576).toLocaleString(currentLocale(), { maximumFractionDigits: 1 })} MB
                       </span>
                     </span>
                     <ExternalLink className="w-4 h-4 ml-auto opacity-80" />
                   </a>
                 ) : (
-                  <span><Download className="w-5 h-5 mr-2 inline" /> 1. Descargar la revista de jw.org</span>
+                  <span><Download className="w-5 h-5 mr-2 inline" /> {t("jwStep1")}</span>
                 )}
               </Button>
               <p className={`text-xs ${muted}`}>
                 {folder && folderState.status === "not-found"
-                  ? `Guárdala en tu carpeta «${folder.name}» (o elígela con el paso 2).`
-                  : HELP[platform]}
+                  ? t("jwSaveInFolder", { folder: folder.name })
+                  : t(HELP[platform])}
               </p>
             </div>
 
@@ -229,8 +225,8 @@ export function JwWeeklyCard({
             >
               {isLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <FileUp className="w-5 h-5 mr-2" />}
               <span className="text-left leading-tight">
-                2. Elegir el PDF descargado
-                <span className="block text-xs font-normal opacity-80">La app buscará dentro el artículo de la semana</span>
+                {t("jwStep2")}
+                <span className="block text-xs font-normal opacity-80">{t("jwStep2Hint")}</span>
               </span>
             </Button>
           </>
@@ -243,22 +239,22 @@ export function JwWeeklyCard({
             {folder ? (
               <>
                 <span className="flex-1 min-w-0">
-                  Carpeta de revistas: <b>{folder.name}</b>
-                  {folderState.status === "searching" && " · buscando…"}
-                  {folderState.status === "not-found" && ` · no está el número de ${state.info?.title?.toLowerCase() || issue}`}
+                  {t("jwFolderLabel")} <b>{folder.name}</b>
+                  {folderState.status === "searching" && ` · ${t("jwFolderSearching")}`}
+                  {folderState.status === "not-found" && ` · ${t("jwFolderNotFound", { title: state.info?.title?.toLowerCase() || issue })}`}
                 </span>
                 {folderState.status === "needs-permission" && (
                   <button type="button" className="font-semibold text-sky-700 underline" onClick={() => searchFolder(folder, true)} data-testid="jw-folder-permission">
-                    Buscar en la carpeta
+                    {t("jwFolderSearch")}
                   </button>
                 )}
-                <button type="button" className="underline" onClick={pickFolder}>Cambiar</button>
-                <button type="button" className="underline" onClick={async () => { await forgetFolder(); setFolder(null); setFolderState({ status: "idle", file: null }); }}>Quitar</button>
+                <button type="button" className="underline" onClick={pickFolder}>{t("change")}</button>
+                <button type="button" className="underline" onClick={async () => { await forgetFolder(); setFolder(null); setFolderState({ status: "idle", file: null }); }}>{t("remove")}</button>
               </>
             ) : (
               <>
-                <span className="flex-1 min-w-0">¿Guardas las revistas en una carpeta? Elígela y la app las buscará sola.</span>
-                <button type="button" className="font-semibold text-sky-700 underline" onClick={pickFolder} data-testid="jw-folder-choose">Elegir carpeta</button>
+                <span className="flex-1 min-w-0">{t("jwFolderAsk")}</span>
+                <button type="button" className="font-semibold text-sky-700 underline" onClick={pickFolder} data-testid="jw-folder-choose">{t("jwFolderChoose")}</button>
               </>
             )}
           </div>
@@ -273,7 +269,7 @@ export function JwWeeklyCard({
               className={`w-full flex items-center gap-2 text-xs font-semibold ${muted}`}
               data-testid="jw-library-toggle"
             >
-              <Library className="w-4 h-4" /> Revistas guardadas en la app ({issues.length})
+              <Library className="w-4 h-4" /> {t("jwLibrary", { n: issues.length })}
               <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${showLibrary ? "rotate-180" : ""}`} />
             </button>
             {showLibrary && (
@@ -281,15 +277,15 @@ export function JwWeeklyCard({
                 {issues.map((r) => (
                   <li key={r.key} className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs ${darkMode ? "bg-zinc-700/50 text-zinc-200" : "bg-white border border-slate-100 text-slate-700"}`}>
                     <span className="flex-1 min-w-0">
-                      <b>{r.title}</b> · {r.weeks.length} artículos
+                      <b>{issueTitle(r.fileName, r.weeks)}</b> · {t("jwArticles", { n: r.weeks.length })}
                       <span className={`block ${muted}`}>{r.weeks.map((w) => w.label.toLowerCase()).join(" · ")}</span>
                     </span>
-                    <button type="button" onClick={() => removeIssue(r.key)} aria-label={`Borrar ${r.title}`} className="p-1 text-red-500 hover:text-red-700" data-testid="jw-library-delete">
+                    <button type="button" onClick={() => removeIssue(r.key)} aria-label={t("delete")} className="p-1 text-red-500 hover:text-red-700" data-testid="jw-library-delete">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </li>
                 ))}
-                <li className={`text-[11px] ${muted}`}>Se borran solas a los 3 meses de su última semana.</li>
+                <li className={`text-[11px] ${muted}`}>{t("jwLibraryCleanup")}</li>
               </ul>
             )}
           </div>

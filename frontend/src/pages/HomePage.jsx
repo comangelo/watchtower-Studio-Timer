@@ -19,6 +19,7 @@ import {
   X,
   Moon,
   Settings,
+  Languages,
   Sun,
   Palette,
   Eye,
@@ -51,7 +52,7 @@ import { IntroductionWordsSection } from "@/components/IntroductionWordsSection"
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
 import { useNotifications } from "@/hooks/useNotifications";
 import { countQuestions } from "@/utils/timePlan";
-import { t } from "@/i18n";
+import { t, tn, useLanguage, LANGUAGES, currentLanguage, setLanguage, currentLocale } from "@/i18n";
 import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
 import { StudyActionBar } from "@/components/StudyActionBar";
@@ -69,6 +70,7 @@ import { darkThemes, defaultDarkTheme } from "@/utils/darkThemes";
 
 
 export default function HomePage() {
+  useLanguage(); // vuelve a pintar la pantalla al cambiar de idioma
   // Core state
   // Análisis tal como sale del PDF (el que se ve puede ser la versión "visita del superintendente")
   const [rawAnalysisResult, setAnalysisResult] = useState(null);
@@ -534,7 +536,7 @@ export default function HomePage() {
   // File upload handler
   const handleFileUpload = async (file, targetDate = jwWeekMonday) => {
     if (!file || !(file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf')) {
-      toast.error("Por favor, selecciona un archivo PDF válido");
+      toast.error(t("errInvalidPdf"));
       return;
     }
 
@@ -561,7 +563,8 @@ export default function HomePage() {
       toast.success("PDF analizado correctamente");
     } catch (error) {
       console.error("Error uploading PDF:", error);
-      toast.error(error?.message ? `Error al procesar el PDF: ${error.message}` : "Error al procesar el PDF");
+      const msg = error?.message === 'ERR_NO_TEXT' ? t("errNoText") : error?.message === 'ERR_FORMAT' ? t("errFormat") : error?.message;
+      toast.error(msg ? `${t("errProcessPdf")}: ${msg}` : t("errProcessPdf"));
     } finally {
       setIsLoading(false);
     }
@@ -722,7 +725,7 @@ export default function HomePage() {
   // Export functions
   const exportToImage = async () => {
     if (!exportRef.current) return;
-    toast.loading("Generando imagen...");
+    toast.loading(t("generatingImage"));
     try {
       const canvas = await html2canvas(exportRef.current, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
       const link = document.createElement('a');
@@ -733,13 +736,13 @@ export default function HomePage() {
       toast.success("Imagen exportada correctamente");
     } catch (error) {
       toast.dismiss();
-      toast.error("Error al exportar imagen");
+      toast.error(t("errExportImage"));
     }
   };
 
   const exportToPDF = async () => {
     if (!exportRef.current) return;
-    toast.loading("Generando PDF...");
+    toast.loading(t("generatingPdf"));
     try {
       const canvas = await html2canvas(exportRef.current, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
       const imgData = canvas.toDataURL('image/png');
@@ -754,7 +757,7 @@ export default function HomePage() {
       toast.success("PDF exportado correctamente");
     } catch (error) {
       toast.dismiss();
-      toast.error("Error al exportar PDF");
+      toast.error(t("errExportPdf"));
     }
   };
 
@@ -832,6 +835,36 @@ export default function HomePage() {
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className={`rounded-full h-9 sm:h-10 px-2 gap-1 text-xs font-bold ${
+                      darkMode ? 'text-zinc-200 hover:bg-zinc-700' : 'text-slate-600 hover:bg-slate-100'
+                    }`}
+                    title={t("language")}
+                    aria-label={t("language")}
+                    data-testid="language-btn"
+                  >
+                    <Languages className="w-5 h-5" />
+                    {LANGUAGES.find((l) => l.code === currentLanguage())?.short}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className={`rounded-xl min-w-[180px] ${darkMode ? 'bg-zinc-800 border-zinc-700' : ''}`}>
+                  {LANGUAGES.map((l) => (
+                    <DropdownMenuItem
+                      key={l.code}
+                      onClick={() => setLanguage(l.code)}
+                      className={`cursor-pointer ${darkMode ? 'text-zinc-100 hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}
+                      data-testid={`language-option-${l.code}`}
+                    >
+                      <span className="w-7 text-[11px] font-black opacity-60">{l.short}</span>
+                      <span className="flex-1">{l.name}</span>
+                      {currentLanguage() === l.code && <Check className="w-4 h-4 text-orange-500" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 variant="ghost"
                 size="icon"
@@ -839,8 +872,8 @@ export default function HomePage() {
                 className={`rounded-full w-9 h-9 sm:w-10 sm:h-10 ${
                   darkMode ? 'text-zinc-200 hover:bg-zinc-700' : 'text-slate-600 hover:bg-slate-100'
                 }`}
-                title="Ajustes"
-                aria-label="Ajustes"
+                title={t("settings")}
+                aria-label={t("settings")}
                 data-testid="settings-btn"
               >
                 <Settings className="w-5 h-5" />
@@ -859,7 +892,7 @@ export default function HomePage() {
                   data-testid="presentation-mode-btn"
                 >
                   <Maximize className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Presentación</span>
+                  <span className="hidden sm:inline">{t("presentation")}</span>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -873,17 +906,17 @@ export default function HomePage() {
                       data-testid="export-btn"
                     >
                       <Download className="w-4 h-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Exportar</span>
+                      <span className="hidden sm:inline">{t("export")}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className={`rounded-xl ${darkMode ? 'bg-zinc-800 border-zinc-600' : ''}`}>
                     <DropdownMenuItem onClick={exportToImage} data-testid="export-image-btn" className={`cursor-pointer ${darkMode ? 'text-zinc-100 hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}>
                       <FileImage className="w-4 h-4 mr-2" />
-                      Exportar como Imagen (PNG)
+                      {t("exportImage")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-btn" className={`cursor-pointer ${darkMode ? 'text-zinc-100 hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}>
                       <File className="w-4 h-4 mr-2" />
-                      Exportar como PDF
+                      {t("exportPdf")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -898,7 +931,7 @@ export default function HomePage() {
                   data-testid="new-analysis-btn"
                 >
                   <RotateCcw className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Nuevo</span>
+                  <span className="hidden sm:inline">{t("newStudy")}</span>
                 </Button>
                 </>
               )}
@@ -912,7 +945,7 @@ export default function HomePage() {
           <div className="space-y-4">
             {/* Plan de hoy (antes de cargar el artículo): compacto */}
             {(() => {
-              const hhmm = (d) => d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+              const hhmm = (d) => d.toLocaleTimeString(currentLocale(), { hour: '2-digit', minute: '2-digit', hour12: false });
               const endPreview = manualEndTime || new Date(Date.now() + totalDuration * 60 * 1000);
               const durationPreview = manualEndTime
                 ? Math.max(0, Math.round((manualEndTime.getTime() - Date.now()) / 60000))
@@ -935,15 +968,15 @@ export default function HomePage() {
               return (
                 <div className="rounded-2xl bg-zinc-900 text-white p-4 shadow-xl border border-zinc-800" data-testid="start-plan-card">
                   <p className="text-[11px] font-bold tracking-[0.2em] text-zinc-400 uppercase">
-                    Plan de hoy · {durationPreview} min{manualEndTime ? ' · fin manual' : ''}
+                    {t('planToday', { n: durationPreview })}{manualEndTime ? ` · ${t('manualEnd')}` : ''}
                   </p>
                   <div className="mt-2 grid grid-cols-3 gap-2 text-center items-end">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Ahora</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t("now")}</p>
                       <p className="text-2xl sm:text-3xl font-black tabular-nums">{hhmm(new Date())}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Termina</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t("ends")}</p>
                       {isEditingInitialEndTime ? (
                         <div className="flex items-center justify-center gap-1">
                           <input
@@ -963,13 +996,13 @@ export default function HomePage() {
                           />
                         </div>
                       ) : (
-                        <button onClick={openEdit} className="text-2xl sm:text-3xl font-black tabular-nums text-yellow-400 hover:text-yellow-300" title="Cambiar hora de fin" data-testid="start-end-time">
+                        <button onClick={openEdit} className="text-2xl sm:text-3xl font-black tabular-nums text-yellow-400 hover:text-yellow-300" title={t("changeEndTime")} data-testid="start-end-time">
                           {hhmm(endPreview)}
                         </button>
                       )}
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Duración</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t("duration")}</p>
                       <p className="text-2xl sm:text-3xl font-black tabular-nums text-orange-400">{durationPreview}<span className="text-sm ml-0.5">min</span></p>
                     </div>
                   </div>
@@ -977,19 +1010,19 @@ export default function HomePage() {
                     {isEditingInitialEndTime ? (
                       <>
                         <button onClick={saveEdit} className="inline-flex items-center gap-1.5 rounded-xl px-4 h-9 bg-emerald-600 hover:bg-emerald-500 text-sm font-bold">
-                          <Check className="w-4 h-4" /> Guardar
+                          <Check className="w-4 h-4" /> {t("save")}
                         </button>
                         <button onClick={() => setIsEditingInitialEndTime(false)} className="inline-flex items-center gap-1.5 rounded-xl px-4 h-9 bg-zinc-700 hover:bg-zinc-600 text-sm font-bold">
-                          <X className="w-4 h-4" /> Cancelar
+                          <X className="w-4 h-4" /> {t("cancel")}
                         </button>
                       </>
                     ) : manualEndTime ? (
                       <button onClick={() => setManualEndTime(null)} className="inline-flex items-center gap-1.5 rounded-xl px-4 h-9 bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold text-cyan-300">
-                        <RotateCcw className="w-4 h-4" /> Hora automática
+                        <RotateCcw className="w-4 h-4" /> {t("autoTime")}
                       </button>
                     ) : (
                       <button onClick={openEdit} className="inline-flex items-center gap-1.5 rounded-xl px-4 h-9 bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold text-zinc-200">
-                        <Pencil className="w-4 h-4 text-yellow-400" /> Cambiar hora de fin
+                        <Pencil className="w-4 h-4 text-yellow-400" /> {t("changeEndTime")}
                       </button>
                     )}
                   </div>
@@ -1023,12 +1056,12 @@ export default function HomePage() {
                 <Settings className="w-4 h-4" />
               </span>
               <span className="flex-1 min-w-0">
-                <span className={`block font-semibold text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>Ajustes del estudio</span>
+                <span className={`block font-semibold text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{t('studySettings')}</span>
                 <span className={`block text-xs mt-0.5 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-                  {totalDuration} min · Lectura {speedLabel(readingSpeed).toLowerCase()} · Respuesta {answerTime} s · Intro {introductionDuration} s
+                  {t('settingsSummary', { dur: totalDuration, speed: speedLabel(readingSpeed).toLowerCase(), answer: answerTime, intro: introductionDuration })}
                 </span>
               </span>
-              <span className="text-sm font-semibold text-orange-500 shrink-0">Cambiar</span>
+              <span className="text-sm font-semibold text-orange-500 shrink-0">{t("change")}</span>
             </button>
             <UploadZone
               onFileSelect={handleFileUpload}
@@ -1080,10 +1113,10 @@ export default function HomePage() {
                   <div className="flex items-center justify-between gap-3 px-1">
                     <div className="min-w-0">
                       <h3 className={`font-heading font-bold text-base ${darkMode ? 'text-zinc-100' : 'text-zinc-900'}`}>
-                        Párrafos
+                        {t('paragraphsTitle')}
                       </h3>
                       <p className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                        {analysisResult.total_paragraphs} párrafos · {analysisResult.total_words} palabras
+                        {tn('paragraphs', analysisResult.total_paragraphs)} · {t('words', { n: analysisResult.total_words })}
                       </p>
                     </div>
                     <button
@@ -1096,20 +1129,20 @@ export default function HomePage() {
                       data-testid="toggle-all-content-btn"
                     >
                       {showAllParagraphContent ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                      {showAllParagraphContent ? 'Ocultar textos' : 'Ver todos los textos'}
+                      {showAllParagraphContent ? t('hideTexts') : t('showAllTexts')}
                     </button>
                   </div>
                   {isTimerRunning && !isInIntroductionMode && (
                     <div className="flex items-center justify-center gap-2 mt-2">
                       <Button size="sm" variant="outline" onClick={goToPreviousParagraph} disabled={currentManualParagraph <= 0} className={`text-xs rounded-full ${darkMode ? 'border-zinc-600 bg-zinc-800 text-zinc-100 hover:bg-zinc-700 hover:text-white' : ''}`} data-testid="prev-paragraph-btn-2">
                         <ChevronLeft className="w-3 h-3 mr-1" />
-                        Anterior
+                        {t('previous')}
                       </Button>
                       <Badge className={`font-mono px-3 py-1 ${darkMode ? 'bg-orange-700 text-white' : 'bg-orange-100 text-orange-700'}`}>
                         {currentManualParagraph + 1} / {analysisResult.total_paragraphs}
                       </Badge>
                       <Button size="sm" variant="outline" onClick={goToNextGroup} disabled={currentGroupLast >= analysisResult.paragraphs.length - 1} className={`text-xs rounded-full ${darkMode ? 'border-zinc-600 bg-zinc-800 text-zinc-100 hover:bg-zinc-700 hover:text-white' : ''}`} data-testid="next-paragraph-btn-2">
-                        Siguiente
+                        {t('next')}
                         <ChevronRight className="w-3 h-3 ml-1" />
                       </Button>
                     </div>

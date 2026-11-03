@@ -24,9 +24,9 @@ export function UploadZone({
   };
 
   const getSpeedLabel = (speed) => {
-    if (speed <= 150) return "Lento";
-    if (speed >= 210) return "Rápido";
-    return "Normal";
+    if (speed <= 150) return t("speedSlow");
+    if (speed >= 210) return t("speedFast");
+    return t("speedNormal");
   };
 
   return (
@@ -87,10 +87,10 @@ export function UploadZone({
         
         {/* Text */}
         <p className={`font-heading font-bold text-2xl mb-2 ${darkMode ? 'text-zinc-200' : 'text-slate-800'}`}>
-          {isLoading ? 'Analizando documento...' : 'Arrastra el artículo de estudio en PDF aquí'}
+          {isLoading ? t('analyzing') : t('dropPdfHere')}
         </p>
         <p className={`text-lg ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-          o haz clic para seleccionar un archivo
+          {t('orClickToSelect')}
         </p>
         
         {/* Features Pills */}
@@ -101,7 +101,7 @@ export function UploadZone({
               : 'bg-white border-slate-200'
           }`}>
             <Clock className="w-4 h-4 text-orange-500" />
-            <span className={`text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>{readingSpeed} palabras/min ({getSpeedLabel(readingSpeed)})</span>
+            <span className={`text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>{t('wordsPerMin', { n: readingSpeed })} ({getSpeedLabel(readingSpeed)})</span>
           </div>
           <div className={`flex items-center gap-2 px-4 py-2 rounded-full border shadow-sm ${
             darkMode 
@@ -109,7 +109,7 @@ export function UploadZone({
               : 'bg-white border-slate-200'
           }`}>
             <MessageCircleQuestion className="w-4 h-4 text-orange-500" />
-            <span className={`text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>{answerTime} seg/respuesta</span>
+            <span className={`text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>{t('secPerAnswer', { n: answerTime })}</span>
           </div>
         </div>
       </div>

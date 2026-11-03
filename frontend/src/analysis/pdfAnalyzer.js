@@ -664,7 +664,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     ? p.spans.filter(sp => !(isBodySize(sp.size) && sp.top < firstBody.top - 3))
     : p.spans);
   if (!lines.length) {
-    throw new Error('No se pudo extraer texto del PDF. ¿Es un PDF escaneado (imagen)?');
+    throw new Error('ERR_NO_TEXT');
   }
 
   // Tamaño de letra de las preguntas: el de los números "N." (normalmente 9).
@@ -911,7 +911,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
   }
 
   if (!analyzed.length) {
-    throw new Error('No se reconoció el formato del artículo de estudio en este PDF.');
+    throw new Error('ERR_FORMAT');
   }
 
   const finalStart = cumulative;

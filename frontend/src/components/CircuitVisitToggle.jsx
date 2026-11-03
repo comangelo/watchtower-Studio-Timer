@@ -1,6 +1,7 @@
 import { Briefcase } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { t } from "@/i18n";
 
 /**
  * Interruptor "Visita del superintendente de circuito":
@@ -35,16 +36,16 @@ export function CircuitVisitToggle({ enabled, onChange, minutes = 30, disabled =
           </div>
           <div className="flex-1 min-w-0">
             <p className={`font-semibold text-sm ${darkMode ? "text-zinc-100" : "text-slate-800"}`}>
-              Visita del superintendente de circuito
+              {t('circuitVisit')}
             </p>
             <p className={`text-xs mt-0.5 ${darkMode ? "text-zinc-400" : "text-slate-500"}`}>
               {enabled
-                ? `Activado: estudio de ${minutes} minutos sin leer los párrafos. Preguntas, textos, imágenes y repaso igual.`
-                : `Estudio de ${minutes} minutos sin leer los párrafos.`}
+                ? t('circuitOn', { n: minutes })
+                : t('circuitOff', { n: minutes })}
             </p>
             {disabled && (
               <p className={`text-xs mt-1 font-medium ${darkMode ? "text-amber-300" : "text-amber-700"}`}>
-                No se puede cambiar con el estudio en marcha.
+                {t('cannotChangeRunning')}
               </p>
             )}
           </div>

@@ -1,33 +1,104 @@
 /**
- * Textos de la app por idioma.
+ * Idiomas de la app.
  *
- * Primer paso de la traducción: el nombre y los textos generales ya salen de aquí.
- * Para añadir un idioma se crea su diccionario (en, de, fr, pt, it…) con las mismas
- * claves; si falta una clave, se usa el español.
+ * - Cada idioma tiene su diccionario con las mismas claves (es.js es el de referencia).
+ * - Si falta una clave en un idioma, se usa el español.
+ * - t("clave", { n: 3 }) sustituye {n} en el texto.
+ * - tn("clave", n) elige "clave_one" o "clave_other" según el número.
+ * - useLanguage() hace que la app se vuelva a pintar al cambiar de idioma.
  */
-const es = {
-  appName: 'Temporizador de Estudio',
-  appNameUpper: 'TEMPORIZADOR DE ESTUDIO',
-  appTagline: 'Para conducir el estudio a tiempo',
-  uploadSubtitle: 'Reparte el tiempo del estudio entre párrafos y preguntas',
-  weeklySource: 'Artículo de estudio · jw.org',
-  unofficialNotice: 'Aplicación no oficial, sin relación con jw.org',
-  privacyPolicy: 'Política de privacidad',
-  donate: 'Apoya este proyecto',
-  donateHint: 'La app es gratuita. Si te resulta útil, puedes hacer una donación voluntaria.',
-};
+import { useSyncExternalStore } from "react";
+import es from "./es";
+import en from "./en";
+import de from "./de";
+import it from "./it";
+import fr from "./fr";
+import pt from "./pt";
 
-const dictionaries = { es };
+export const LANGUAGES = [
+  { code: "es", name: "Español", short: "ES", locale: "es-ES" },
+  { code: "en", name: "English", short: "EN", locale: "en-GB" },
+  { code: "de", name: "Deutsch", short: "DE", locale: "de-DE" },
+  { code: "it", name: "Italiano", short: "IT", locale: "it-IT" },
+  { code: "fr", name: "Français", short: "FR", locale: "fr-FR" },
+  { code: "pt", name: "Português", short: "PT", locale: "pt-BR" },
+];
 
-export function currentLanguage() {
+const dictionaries = { es, en, de, it, fr, pt };
+const STORAGE_KEY = "pdfTimer_language";
+
+function detectLanguage() {
   try {
-    const saved = localStorage.getItem('pdfTimer_language');
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && dictionaries[saved]) return saved;
+    // Quien ya usaba la app (en español) sigue en español hasta que elija otro idioma
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith("pdfTimer_")) return "es";
+    }
   } catch { /* sin almacenamiento */ }
-  return 'es';
+  try {
+    const langs = navigator.languages?.length ? navigator.languages : [navigator.language];
+    for (const l of langs) {
+      const code = (l || "").slice(0, 2).toLowerCase();
+      if (dictionaries[code]) return code;
+    }
+  } catch { /* sin navegador */ }
+  return "es";
 }
 
-export function t(key) {
-  const lang = currentLanguage();
-  return dictionaries[lang]?.[key] ?? es[key] ?? key;
+let current = detectLanguage();
+const listeners = new Set();
+
+function applyToDocument() {
+  try { document.documentElement.lang = current; } catch { /* sin documento */ }
+}
+applyToDocument();
+
+export function currentLanguage() {
+  return current;
+}
+
+export function currentLocale() {
+  return LANGUAGES.find((l) => l.code === current)?.locale || "es-ES";
+}
+
+export function setLanguage(code) {
+  if (!dictionaries[code] || code === current) return;
+  current = code;
+  try { localStorage.setItem(STORAGE_KEY, code); } catch { /* sin almacenamiento */ }
+  applyToDocument();
+  listeners.forEach((fn) => fn());
+}
+
+function subscribe(fn) {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+/** Idioma actual; el componente que lo usa se vuelve a pintar al cambiarlo. */
+export function useLanguage() {
+  return useSyncExternalStore(subscribe, currentLanguage, currentLanguage);
+}
+
+export function t(key, vars) {
+  let text = dictionaries[current]?.[key] ?? es[key] ?? key;
+  if (vars) {
+    for (const [k, v] of Object.entries(vars)) text = text.split(`{${k}}`).join(String(v));
+  }
+  return text;
+}
+
+/** Singular o plural: tn("paragraphs", 3) → t("paragraphs_other", { n: 3 }) */
+export function tn(key, n, vars) {
+  return t(`${key}_${n === 1 ? "one" : "other"}`, { n, ...vars });
+}
+
+/** Como t(), pero los valores pueden ser elementos de React: tx("k", { time: <b>3:00</b> }) */
+export function tx(key, vars = {}) {
+  const text = dictionaries[current]?.[key] ?? es[key] ?? key;
+  const parts = text.split(/(\{[a-zA-Z]+\})/g);
+  return parts.map((part) => {
+    const m = /^\{([a-zA-Z]+)\}$/.exec(part);
+    return m && m[1] in vars ? vars[m[1]] : part;
+  });
 }

@@ -15,8 +15,7 @@ const SETTINGS = 'settings';
 const DAY = 86400000;
 const KEEP_DAYS_AFTER_LAST_WEEK = 90;
 
-const MONTHS_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto',
-  'septiembre', 'octubre', 'noviembre', 'diciembre'];
+import { t, currentLocale } from '@/i18n';
 
 function openDb() {
   return new Promise((resolve, reject) => {
@@ -54,19 +53,24 @@ const reqP = (req) => new Promise((resolve, reject) => {
   req.onerror = () => reject(req.error);
 });
 
-/** "Agosto de 2026" a partir del nombre oficial (w_S_202608.pdf) o de las semanas. */
+/** "Agosto de 2026" (en el idioma de la app) a partir del nombre oficial (w_S_202608.pdf) o de las semanas. */
 export function issueTitle(fileName, weeks) {
   const m = /w_[A-Z]+_(\d{4})(\d{2})/i.exec(fileName || '');
   if (m) {
-    const month = MONTHS_ES[parseInt(m[2], 10) - 1];
-    if (month) return `${month.charAt(0).toUpperCase()}${month.slice(1)} de ${m[1]}`;
+    const d = new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, 1);
+    const txt = d.toLocaleDateString(currentLocale(), { month: 'long', year: 'numeric' });
+    return txt.charAt(0).toUpperCase() + txt.slice(1);
   }
   if (weeks?.length) {
     const a = new Date(weeks[0].start);
     const b = new Date(new Date(weeks[weeks.length - 1].start).getTime() + 6 * DAY);
-    return `Semanas del ${a.getDate()} de ${MONTHS_ES[a.getMonth()]} al ${b.getDate()} de ${MONTHS_ES[b.getMonth()]} de ${b.getFullYear()}`;
+    const fmt = { day: 'numeric', month: 'long' };
+    return t('weeksFromTo', {
+      from: a.toLocaleDateString(currentLocale(), fmt),
+      to: b.toLocaleDateString(currentLocale(), { ...fmt, year: 'numeric' }),
+    });
   }
-  return fileName || 'Revista';
+  return fileName || t('magazine');
 }
 
 /** Guarda la revista completa (solo si trae varias semanas). Sustituye la anterior del mismo número. */

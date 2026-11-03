@@ -5,9 +5,11 @@
  * Devuelve { kicker, main, action } o null cuando no hay nada que hacer.
  *   action: "start" | "firstParagraph" | "nextGroup" | "review" | "nextReview" | "closing" | "finish"
  */
+import { t } from "@/i18n";
+
 const groupLabel = (g) => (g && g.paragraphs.length > 1
-  ? `Párrafos ${g.paragraphs.map((p) => p.number).join(", ")}`
-  : `Párrafo ${g?.firstParagraph?.number || 1}`);
+  ? t("paragraphsN", { n: g.paragraphs.map((p) => p.number).join(", ") })
+  : t("paragraphN", { n: g?.firstParagraph?.number || 1 }));
 
 export function getNextStep({
   phase,
@@ -19,27 +21,27 @@ export function getNextStep({
 }) {
   switch (phase) {
     case "initial":
-      return { kicker: null, main: "Iniciar estudio", action: "start" };
+      return { kicker: null, main: t("startStudy"), action: "start" };
     case "intro":
-      return { kicker: "Siguiente", main: groupLabel(groupedParagraphs[0]), action: "firstParagraph" };
+      return { kicker: t("next"), main: groupLabel(groupedParagraphs[0]), action: "firstParagraph" };
     case "paragraphs": {
       const last = currentParagraphGroup
         ? currentParagraphGroup.indices[currentParagraphGroup.indices.length - 1]
         : -1;
       if (last >= totalParagraphs - 1) {
         return finalsCount > 0
-          ? { kicker: "Siguiente", main: "Repaso 1", action: "review" }
-          : { kicker: "Siguiente", main: "Conclusión", action: "closing" };
+          ? { kicker: t("next"), main: t("reviewN", { n: 1 }), action: "review" }
+          : { kicker: t("next"), main: t("conclusion"), action: "closing" };
       }
       const next = groupedParagraphs.find((g) => g.indices.includes(last + 1));
-      return { kicker: "Siguiente", main: next ? groupLabel(next) : "Párrafo", action: "nextGroup" };
+      return { kicker: t("next"), main: next ? groupLabel(next) : t("paragraph"), action: "nextGroup" };
     }
     case "review":
       return currentReviewQuestion >= finalsCount - 1
-        ? { kicker: "Siguiente", main: "Conclusión", action: "closing" }
-        : { kicker: "Siguiente", main: `Repaso ${currentReviewQuestion + 2}`, action: "nextReview" };
+        ? { kicker: t("next"), main: t("conclusion"), action: "closing" }
+        : { kicker: t("next"), main: t("reviewN", { n: currentReviewQuestion + 2 }), action: "nextReview" };
     case "conclusion":
-      return { kicker: null, main: "Finalizar estudio", action: "finish" };
+      return { kicker: null, main: t("finishStudy"), action: "finish" };
     default:
       return null;
   }

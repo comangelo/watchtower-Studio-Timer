@@ -1,7 +1,8 @@
 import { Play, Pause, RotateCcw, Pencil, Check, X, AlertCircle, MessagesSquare, Briefcase, Clock } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { formatTime, formatClockTime } from "../utils/timeFormatters";
-import { useMemo, useState, useEffect } from "react";
+import { Fragment, useMemo, useState, useEffect } from "react";
+import { t, tx } from "@/i18n";
 
 export function TimerDisplay({
   elapsedTime,
@@ -100,10 +101,10 @@ export function TimerDisplay({
         {/* Cabecera */}
         <div className="flex items-center justify-between gap-2 mb-3">
           <p className="text-[11px] sm:text-xs font-bold tracking-[0.15em] text-zinc-400 uppercase">
-            {!started && <>Plan de hoy · {displayDuration} min</>}
+            {!started && <>{t('planToday', { n: displayDuration })}</>}
             {started && (
               <>
-                {isTimerRunning ? "En curso" : "En pausa"} · empezó{" "}
+                {isTimerRunning ? t("running") : t("paused")} · {t("started")}{" "}
                 <span className="text-emerald-400" data-testid="start-time-display">{formatClockTime(startTime)}</span>
               </>
             )}
@@ -113,7 +114,7 @@ export function TimerDisplay({
               <button
                 onClick={onToggle}
                 className="w-9 h-9 rounded-xl bg-zinc-700 hover:bg-zinc-600 flex items-center justify-center"
-                aria-label={isTimerRunning ? "Pausar" : "Reanudar"}
+                aria-label={isTimerRunning ? t("pause") : t("resume")}
                 data-testid="timer-toggle-btn"
               >
                 {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -121,8 +122,8 @@ export function TimerDisplay({
               <button
                 onClick={onReset}
                 className="w-9 h-9 rounded-xl bg-zinc-700 hover:bg-zinc-600 flex items-center justify-center"
-                aria-label="Reiniciar"
-                title="Reiniciar"
+                aria-label={t("restart")}
+                title={t("restart")}
                 data-testid="timer-reset-btn"
               >
                 <RotateCcw className="w-4 h-4 text-zinc-300" />
@@ -134,12 +135,12 @@ export function TimerDisplay({
         {/* Ahora · Termina · Duración/Restante */}
         <div className="grid grid-cols-3 gap-2 text-center items-start">
           <div>
-            <p className="text-[10px] sm:text-[11px] font-bold tracking-wider text-zinc-400 uppercase">Ahora</p>
+            <p className="text-[10px] sm:text-[11px] font-bold tracking-wider text-zinc-400 uppercase">{t("now")}</p>
             <p className="text-2xl sm:text-3xl font-black tabular-nums" data-testid="current-time-display">{formatClockTime(currentTime)}</p>
           </div>
           <div>
             <p className="text-[10px] sm:text-[11px] font-bold tracking-wider text-zinc-400 uppercase">
-              Termina{manualEndTime && !started ? " (a mano)" : ""}
+              {t("ends")}{manualEndTime && !started ? ` (${t("manual")})` : ""}
             </p>
             {isEditingEndTime ? (
               <div className="flex items-center justify-center gap-1 mt-0.5">
@@ -161,7 +162,7 @@ export function TimerDisplay({
               <p
                 className={`text-2xl sm:text-3xl font-black tabular-nums ${isOvertime || isLowTime ? "text-rose-400" : "text-yellow-400"} ${!started ? "cursor-pointer" : ""}`}
                 onClick={!started ? startEditingEndTime : undefined}
-                title={!started ? "Toca para cambiar la hora de fin" : undefined}
+                title={!started ? t("tapToChangeEnd") : undefined}
                 data-testid="end-time-display"
               >
                 {formatClockTime(displayEndTime)}
@@ -170,7 +171,7 @@ export function TimerDisplay({
           </div>
           <div>
             <p className="text-[10px] sm:text-[11px] font-bold tracking-wider text-zinc-400 uppercase">
-              {started ? (isOvertime ? "Excedido" : "Restante") : "Duración"}
+              {started ? (isOvertime ? t("over") : t("remaining")) : t("duration")}
             </p>
             {started ? (
               <p className={`text-2xl sm:text-3xl font-black tabular-nums ${remainingColor} ${isOvertime ? "animate-pulse" : ""}`} data-testid="remaining-time">
@@ -188,10 +189,10 @@ export function TimerDisplay({
         {isEditingEndTime && (
           <div className="flex items-center justify-center gap-2 mt-3">
             <button onClick={saveEndTime} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 font-bold text-sm" data-testid="save-end-time-btn">
-              <Check className="w-4 h-4" /> Guardar
+              <Check className="w-4 h-4" /> {t("save")}
             </button>
             <button onClick={cancelEditEndTime} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-zinc-600 hover:bg-zinc-500 font-bold text-sm" data-testid="cancel-end-time-btn">
-              <X className="w-4 h-4" /> Cancelar
+              <X className="w-4 h-4" /> {t("cancel")}
             </button>
           </div>
         )}
@@ -201,11 +202,11 @@ export function TimerDisplay({
           <div className="grid grid-cols-2 gap-2 mt-4">
             {manualEndTime ? (
               <button onClick={clearManualEndTime} className="rounded-xl bg-zinc-700/80 hover:bg-zinc-700 px-2 py-2.5 text-xs sm:text-sm font-bold text-cyan-300 flex items-center justify-center gap-1.5" data-testid="clear-manual-time-btn">
-                <RotateCcw className="w-4 h-4 shrink-0" /> Hora automática
+                <RotateCcw className="w-4 h-4 shrink-0" /> {t("autoTime")}
               </button>
             ) : (
               <button onClick={startEditingEndTime} className="rounded-xl bg-zinc-700/80 hover:bg-zinc-700 px-2 py-2.5 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5" data-testid="edit-end-time-btn">
-                <Pencil className="w-4 h-4 shrink-0 text-yellow-300" /> Cambiar hora de fin
+                <Pencil className="w-4 h-4 shrink-0 text-yellow-300" /> {t("changeEndTime")}
               </button>
             )}
             {onCircuitVisitChange ? (
@@ -214,7 +215,7 @@ export function TimerDisplay({
                 data-testid="plan-circuit-visit"
               >
                 <Briefcase className="w-4 h-4 shrink-0" />
-                <span className="leading-tight text-left whitespace-nowrap">Visita S. C.</span>
+                <span className="leading-tight text-left whitespace-nowrap">{t("circuitShort")}</span>
                 <Switch
                   checked={!!circuitVisitMode}
                   onCheckedChange={(v) => onCircuitVisitChange(!!v)}
@@ -226,7 +227,7 @@ export function TimerDisplay({
           </div>
         )}
         {!started && circuitVisitMode && (
-          <p className="text-[11px] text-indigo-200 text-center mt-2">Visita del superintendente: {circuitVisitMinutes} minutos, sin leer los párrafos.</p>
+          <p className="text-[11px] text-indigo-200 text-center mt-2">{t("circuitPlanNote", { n: circuitVisitMinutes })}</p>
         )}
 
         {/* Durante el estudio: progreso, aviso de 5 minutos y tiempo por pregunta */}
@@ -236,7 +237,7 @@ export function TimerDisplay({
               <div className="h-full bg-orange-500 rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, progressPercentage)}%` }} />
             </div>
             <p className="flex items-center justify-center gap-1.5 text-xs text-zinc-400">
-              <Clock className="w-3.5 h-3.5" /> Transcurrido{" "}
+              <Clock className="w-3.5 h-3.5" /> {t("elapsed")}{" "}
               <b className="text-zinc-200 tabular-nums" data-testid="elapsed-time">{formatTime(elapsedTime)}</b> · {Math.round(progressPercentage)}%
             </p>
             {(showFiveMinuteWarning || (fiveMinuteWarningEnabled && isOvertime)) && (
@@ -244,9 +245,9 @@ export function TimerDisplay({
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <span className="font-bold text-sm uppercase tracking-wider">
                   {isOvertime ? (
-                    <><span className="text-xl font-black tabular-nums">{formatTime(overtimeSeconds)}</span> minutos excedidos</>
+                    <>{tx("minutesOver", { time: <span key="t" className="text-xl font-black tabular-nums">{formatTime(overtimeSeconds)}</span> }).map((p, i) => <Fragment key={i}>{p}</Fragment>)}</>
                   ) : (
-                    <>En <span className="text-xl font-black tabular-nums">{formatTime(remainingTime)}</span> debe concluir</>
+                    <>{tx("mustEndIn", { time: <span key="t" className="text-xl font-black tabular-nums">{formatTime(remainingTime)}</span> }).map((p, i) => <Fragment key={i}>{p}</Fragment>)}</>
                   )}
                 </span>
               </div>
@@ -259,7 +260,7 @@ export function TimerDisplay({
             isTimerRunning && perQuestion < 20 ? "bg-orange-500/20 text-orange-200" : "bg-zinc-700/50 text-zinc-300"
           }`} data-testid="per-question-info">
             <MessagesSquare className="w-4 h-4 shrink-0" />
-            <span>Comentarios: <b className="tabular-nums">{Math.round(perQuestion)} s</b> por pregunta</span>
+            <span>{tx("commentsPerQuestion", { time: <b key="t" className="tabular-nums">{Math.round(perQuestion)} s</b> }).map((p, i) => <Fragment key={i}>{p}</Fragment>)}</span>
             {isTimerRunning && plannedPerQuestion && Math.abs(perQuestion - plannedPerQuestion) >= 1 && (
               <span className={`text-xs font-semibold ${perQuestion >= plannedPerQuestion ? "text-green-400" : "text-orange-300"}`}>
                 ({perQuestion >= plannedPerQuestion ? "+" : "−"}{Math.round(Math.abs(perQuestion - plannedPerQuestion))} s)
