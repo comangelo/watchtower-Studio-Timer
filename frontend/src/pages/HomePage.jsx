@@ -19,11 +19,11 @@ import {
   X,
   Moon,
   Settings,
-  Languages,
   Sun,
   Palette,
   Eye,
-  EyeOff
+  EyeOff,
+  Globe, ChevronDown as ChevronDownLv,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -843,16 +843,17 @@ export default function HomePage() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className={`rounded-full h-9 sm:h-10 px-2 gap-1 text-xs font-bold ${
-                      darkMode ? 'text-zinc-200 hover:bg-zinc-700' : 'text-slate-600 hover:bg-slate-100'
-                    }`}
                     title={t("language")}
                     aria-label={t("language")}
                     data-testid="language-btn"
+                    className={`rounded-full h-9 sm:h-10 pl-2.5 pr-2 gap-1.5 text-xs font-black border ${
+                      darkMode ? 'border-zinc-600 text-zinc-100 hover:bg-zinc-700' : 'border-slate-200 text-slate-700 hover:bg-slate-100'
+                    }`}
                   >
-                    <Languages className="w-5 h-5" />
+                    <Globe className="w-4 h-4" />
                     {LANGUAGES.find((l) => l.code === currentLanguage())?.short}
                     {currentLanguage() === "pt" && currentPtVariant() && <span className="opacity-60">·{currentPtVariant()}</span>}
+                    <ChevronDownLv className="w-3.5 h-3.5 opacity-60" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className={`rounded-xl min-w-[180px] ${darkMode ? 'bg-zinc-800 border-zinc-700' : ''}`}>
