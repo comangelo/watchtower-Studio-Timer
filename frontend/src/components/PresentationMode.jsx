@@ -88,6 +88,10 @@ export default function PresentationMode({
     return () => window.removeEventListener("keydown", onKey);
   }, [onExit]);
 
+  // Hora a la que debe terminar: la fijada al empezar (o la elegida a mano);
+  // antes de empezar, la hora actual + la duración del estudio.
+  const shownEndTime = endTime || new Date(currentTime.getTime() + (totalDurationSeconds || 0) * 1000);
+
   const finals = analysisResult?.final_questions || [];
   const totalParagraphs = analysisResult?.paragraphs?.length || 0;
   const studyStarted = phase !== PHASES.INITIAL;
@@ -251,15 +255,19 @@ export default function PresentationMode({
         </Button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto py-2">
-        {/* Hora actual y tiempo restante (sin hora de fin ni transcurrido, para ganar espacio) */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-4">
+      <div className="flex-1 flex flex-col items-center overflow-y-auto py-2 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
+        {/* Hora actual, hora a la que debe terminar y tiempo restante */}
+        <div className="grid grid-cols-3 gap-x-4 sm:gap-x-8 gap-y-2 mb-4 landscape:mb-2 landscape:sticky landscape:top-0 landscape:z-10 landscape:bg-zinc-800 landscape:py-1 landscape:w-full landscape:max-w-md">
           <div className="text-center">
-            <p className="text-sm md:text-base font-semibold text-zinc-400">Hora actual</p>
+            <p className="text-sm md:text-base landscape:text-xs font-semibold text-zinc-400">Hora actual</p>
             <p className="text-3xl md:text-5xl landscape:text-3xl font-bold text-white tabular-nums">{formatClockTime(currentTime)}</p>
           </div>
           <div className="text-center">
-            <p className="text-sm md:text-base font-semibold text-zinc-400">Restante</p>
+            <p className="text-sm md:text-base landscape:text-xs font-semibold text-zinc-400">Termina</p>
+            <p className="text-3xl md:text-5xl landscape:text-3xl font-bold text-yellow-400 tabular-nums" data-testid="presentation-end-time">{formatClockTime(shownEndTime)}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-sm md:text-base landscape:text-xs font-semibold text-zinc-400">Restante</p>
             <p className="text-3xl md:text-5xl landscape:text-3xl font-light text-orange-400 tabular-nums" data-testid="presentation-remaining">{formatTime(Math.max(0, remainingTime))}</p>
           </div>
         </div>
