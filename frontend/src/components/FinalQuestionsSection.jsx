@@ -5,6 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatClockTime, addSecondsToDate, formatTimeCompact } from "../utils/timeFormatters";
 
+const mmss = (sec) => {
+  const t = Math.max(0, Math.round(sec || 0));
+  return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`;
+};
+
 // Closing Words Section Component
 function ClosingWordsSection({
   isActive,
@@ -72,135 +77,62 @@ function ClosingWordsSection({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const muted = darkMode ? 'text-zinc-400' : 'text-slate-500';
+
   if (!isActive) {
-    // Show preview/pending state
     return (
-      <div className={`relative rounded-2xl border-2 p-4 opacity-60 ${
-        darkMode 
-          ? 'bg-purple-950/50 border-purple-800' 
-          : 'bg-purple-50 border-purple-200'
-      }`}>
-        <div className="flex items-center gap-3">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            darkMode ? 'bg-purple-800' : 'bg-purple-200'
-          }`}>
-            <Sparkles className={`w-6 h-6 ${darkMode ? 'text-purple-300' : 'text-purple-600'}`} />
-          </div>
-          <div>
-            <p className={`font-bold ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>Palabras de Conclusión</p>
-            <p className={`text-sm ${darkMode ? 'text-purple-400' : 'text-purple-500'}`}>Después de las preguntas de repaso</p>
-            <div className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${
-              darkMode ? 'bg-purple-900' : 'bg-purple-100'
-            }`}>
-              <Timer className={`w-3 h-3 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-              <span className={`text-xs font-medium ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>{formatTime(estimatedTime)}</span>
-            </div>
-          </div>
-        </div>
+      <div className={`rounded-2xl border-2 px-3 py-2.5 flex items-center gap-3 ${
+        darkMode ? 'border-zinc-700 bg-zinc-800' : 'border-slate-200 bg-white'
+      }`} data-testid="closing-words-row">
+        <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${darkMode ? 'bg-purple-900/70 text-purple-200' : 'bg-purple-100 text-purple-700'}`}>
+          <Sparkles className="w-4 h-4" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className={`block text-sm font-bold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>Conclusión</span>
+          <span className={`block text-xs ${muted}`}>Después del repaso</span>
+        </span>
+        <span className={`shrink-0 text-base font-black tabular-nums ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{formatTime(estimatedTime)}</span>
       </div>
     );
   }
 
-  // Active state
   return (
-    <div 
+    <div
       ref={cardRef}
-      className={`relative rounded-2xl border-2 shadow-lg transition-all duration-300 ${
-        isOverTime 
-          ? darkMode 
-            ? 'border-red-600 bg-red-950/50 shadow-red-900/30' 
-            : 'border-red-400 bg-red-50 shadow-red-100' 
-          : darkMode 
-            ? 'border-purple-600 bg-purple-950/50 shadow-purple-900/30' 
-            : 'border-purple-400 bg-purple-50 shadow-purple-100'
+      className={`rounded-2xl border-2 shadow-lg transition-all duration-300 ${
+        isOverTime
+          ? darkMode ? 'border-red-500 bg-red-950/60' : 'border-red-400 bg-red-50'
+          : darkMode ? 'border-purple-500 bg-purple-950/50' : 'border-purple-400 bg-purple-50'
       }`}
       data-testid="closing-words-section"
     >
-      {/* Active Banner with Timer */}
-      <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold rounded-t-2xl ${
-        isOverTime 
-          ? 'bg-gradient-to-r from-red-500 to-red-600' 
-          : 'bg-gradient-to-r from-purple-500 to-purple-600'
-      }`}>
-        {/* Main row */}
-        <div className="flex items-center justify-between px-4 py-2.5">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
-              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
+      <div className="px-3 py-2.5 flex items-center gap-3">
+        <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-white ${isOverTime ? 'bg-red-500' : 'bg-purple-600'}`}>
+          <Sparkles className="w-4 h-4" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className={`block text-sm font-bold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
+            Conclusión
+            <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? 'text-red-600' : 'text-purple-700'} ${darkMode ? '!text-inherit' : ''}`}>
+              {isOverTime ? 'EXCEDIDO' : 'AHORA'}
             </span>
-            <Sparkles className="w-4 h-4" />
-            <span className="font-bold tracking-wide">
-              {isOverTime ? 'TIEMPO EXCEDIDO' : 'PALABRAS DE CONCLUSIÓN'}
-            </span>
-          </div>
-          
-          {/* Timer display - elegant style */}
-          {isTimerRunning && (
-            <div className={`flex items-baseline gap-1 px-3 py-1.5 rounded-full backdrop-blur-sm ${
-              isOverTime ? 'bg-red-500/40' : 'bg-black/20'
-            }`}>
-              <span className="font-light text-lg tracking-wide tabular-nums">
-                {formatTime(elapsedTime)}
-              </span>
-              <span className="text-sm opacity-50 mx-0.5">/</span>
-              <span className="font-light text-lg tracking-wide tabular-nums opacity-70">
-                {formatTime(estimatedTime)}
-              </span>
-            </div>
-          )}
-        </div>
-        
-        {/* Overtime badge */}
-        {isOverTime && (
-          <div className="px-4 pb-2 -mt-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-700 text-white text-[10px] font-bold rounded-full animate-pulse">
-              ⚠️ +{formatTime(elapsedTime - estimatedTime)} excedido
-            </span>
-          </div>
-        )}
+          </span>
+          <span className={`block text-xs ${muted}`}>Resume los puntos principales y anima a la congregación.</span>
+        </span>
+        <span className={`shrink-0 text-base font-black tabular-nums ${isOverTime ? 'text-red-600' : darkMode ? 'text-purple-200' : 'text-purple-700'}`}>
+          {formatTime(elapsedTime)}<span className={`font-medium ${muted}`}> / {formatTime(estimatedTime)}</span>
+        </span>
       </div>
-
-      {/* Content */}
-      <div className={`p-5 ${isOverTime ? 'pt-20' : 'pt-16'}`}>
-        <div className="flex items-start gap-4">
-          <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${
-            isOverTime 
-              ? 'bg-gradient-to-br from-red-500 to-red-600' 
-              : 'bg-gradient-to-br from-purple-500 to-purple-600'
-          }`}>
-            <Sparkles className="w-7 h-7 text-white" />
-          </div>
-          <div className="flex-1">
-            <h3 className={`font-bold text-lg ${
-              isOverTime 
-                ? darkMode ? 'text-red-300' : 'text-red-800' 
-                : darkMode ? 'text-purple-300' : 'text-purple-800'
-            }`}>
-              Palabras de Conclusión
-            </h3>
-            <p className={`text-sm mt-1 ${
-              isOverTime 
-                ? darkMode ? 'text-red-400' : 'text-red-600' 
-                : darkMode ? 'text-purple-400' : 'text-purple-600'
-            }`}>
-              Resume los puntos principales y anima a la congregación.
-            </p>
-          </div>
-        </div>
-
-        {/* Finish Button */}
-        <div className="mt-5 flex justify-end">
-          <Button
-            onClick={onFinishStudy}
-            className="rounded-full px-6 py-2 text-sm font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg transition-all"
-            data-testid="finish-study-btn"
-          >
-            <PartyPopper className="w-4 h-4 mr-2" />
-            Finalizar Estudio
-            <Check className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
+      <div className="hidden lg:flex justify-end px-3 pb-3">
+        <Button
+          onClick={onFinishStudy}
+          className="rounded-full px-6 py-2 text-sm font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg"
+          data-testid="finish-study-btn"
+        >
+          <PartyPopper className="w-4 h-4 mr-2" />
+          Finalizar estudio
+          <Check className="w-4 h-4 ml-2" />
+        </Button>
       </div>
     </div>
   );
@@ -295,164 +227,80 @@ function ReviewQuestionCard({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const muted = darkMode ? 'text-zinc-400' : 'text-slate-500';
+  const rowTone = isCurrentQuestion
+    ? (isOverTime
+        ? (darkMode ? 'border-red-500 bg-red-950/60' : 'border-red-400 bg-red-50')
+        : (darkMode ? 'border-green-500 bg-green-950/50' : 'border-green-400 bg-green-50'))
+    : isCompletedQuestion
+      ? (darkMode ? 'border-zinc-700 bg-zinc-800/40 opacity-60' : 'border-slate-200 bg-slate-50 opacity-60')
+      : (darkMode ? 'border-zinc-700 bg-zinc-800' : 'border-slate-200 bg-white');
+  const numTone = isCurrentQuestion
+    ? (isOverTime ? 'bg-red-500 text-white' : 'bg-green-600 text-white')
+    : isCompletedQuestion
+      ? (darkMode ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-200 text-slate-600')
+      : (darkMode ? 'bg-rose-900/70 text-rose-200' : 'bg-rose-100 text-rose-700');
+
   return (
-    <div 
+    <div
       ref={cardRef}
-      className={`relative rounded-xl transition-all duration-300 ${
-        isCompletedQuestion
-          ? darkMode 
-            ? 'bg-zinc-800 border border-zinc-700 opacity-70'
-            : 'bg-slate-100 border border-slate-200 opacity-70'
-          : isCurrentQuestion 
-            ? isOverTime
-              ? 'bg-red-100 border-2 border-red-400 shadow-lg'
-              : 'bg-green-100 border-2 border-green-400 shadow-lg'
-            : isCriticalTime 
-              ? darkMode 
-                ? 'bg-red-950/50 border border-red-800'
-                : 'bg-red-100 border border-red-200'
-              : isLowTime 
-                ? darkMode 
-                  ? 'bg-orange-950/50 border border-orange-800'
-                  : 'bg-orange-100 border border-orange-200'
-                : darkMode 
-                  ? 'bg-red-950/30 border border-red-900'
-                  : 'bg-red-50 border border-red-100'
-      }`}
+      className={`rounded-2xl border-2 transition-all duration-300 ${rowTone} ${isCurrentQuestion ? 'shadow-lg' : ''}`}
       data-testid={`review-question-${index}`}
     >
-      {/* Current Question Indicator with Timer */}
-      {isCurrentQuestion && (
-        <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold rounded-t-xl ${
-          isOverTime 
-            ? 'bg-gradient-to-r from-red-500 to-red-600' 
-            : 'bg-gradient-to-r from-green-500 to-green-600'
-        }`}>
-          {/* Main row - always visible */}
-          <div className="flex items-center justify-between px-3 py-2.5">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${isOverTime ? 'bg-red-200' : 'bg-white'}`}></span>
-              </span>
-              <span className="text-[11px] sm:text-xs font-bold tracking-wide">
-                {isOverTime ? 'TIEMPO EXCEDIDO' : 'RESPONDIENDO'}
-              </span>
-            </div>
-            
-            {/* Timer display - elegant style */}
-            {isTimerRunning && (
-              <div className={`flex items-baseline gap-1 px-3 py-1.5 rounded-full backdrop-blur-sm ${
-                isOverTime ? 'bg-red-500/40' : 'bg-black/20'
-              }`}>
-                <span className="font-light text-lg tracking-wide tabular-nums">
-                  {formatTime(questionElapsed)}
-                </span>
-                <span className="text-sm opacity-50 mx-0.5">/</span>
-                <span className="font-light text-lg tracking-wide tabular-nums opacity-70">
-                  {formatTime(Math.round(estimatedTime))}
-                </span>
-              </div>
-            )}
-          </div>
-          
-          {/* Overtime badge - separate row when overtime */}
-          {isOverTime && (
-            <div className="px-3 pb-2 -mt-1">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-700 text-white text-[10px] font-bold rounded-full animate-pulse">
-                ⚠️ +{formatTime(questionElapsed - Math.round(estimatedTime))} excedido
-              </span>
-            </div>
+      <div className="px-3 py-2.5 flex items-start gap-3">
+        <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black ${numTone}`}>
+          {isCompletedQuestion ? <Check className="w-4 h-4" /> : index + 1}
+        </span>
+        <span className="min-w-0 flex-1 pt-0.5">
+          {isCurrentQuestion && (
+            <span className={`block text-[11px] font-black tracking-wide ${isOverTime ? 'text-red-600' : 'text-green-700'} ${darkMode ? '!text-inherit' : ''}`}>
+              {isOverTime ? 'EXCEDIDO' : 'AHORA'}
+            </span>
           )}
-        </div>
-      )}
-
-      {/* Completed Indicator */}
-      {isCompletedQuestion && (
-        <div className={`absolute top-0 left-0 right-0 text-white text-xs font-bold py-1.5 px-4 flex items-center justify-center gap-2 rounded-t-xl ${
-          darkMode ? 'bg-zinc-600' : 'bg-slate-400'
-        }`}>
-          <Check className="w-3 h-3" />
-          COMPLETADA
-        </div>
-      )}
-
-      <div className={`p-4 ${isCurrentQuestion ? (isOverTime ? 'pt-20' : 'pt-16') : isCompletedQuestion ? 'pt-10' : ''}`}>
-        <div className="flex items-start gap-3">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
-            isCompletedQuestion
-              ? darkMode ? 'bg-zinc-700 text-zinc-400' : 'bg-slate-300 text-slate-600'
-              : isCurrentQuestion
-                ? isOverTime ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
-                : darkMode ? 'bg-red-900 text-red-300' : 'bg-red-200 text-red-700'
-          }`}>
-            {index + 1}
-          </div>
-          
-          <div className="flex-1">
-            <p className={`text-sm ${
-              isCompletedQuestion 
-                ? darkMode ? 'text-zinc-500' : 'text-slate-500' 
-                : darkMode ? 'text-slate-300' : 'text-slate-700'
+          <span className={`block text-sm ${isCurrentQuestion ? 'font-semibold' : ''} ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
+            {question.text}
+          </span>
+        </span>
+        <span className="shrink-0 text-right pt-0.5">
+          {isCurrentQuestion && isTimerRunning ? (
+            <span className={`block text-base font-black tabular-nums ${isOverTime ? 'text-red-600' : 'text-green-700'}`}>
+              {formatTime(questionElapsed)}<span className={`font-medium ${muted}`}> / {formatTime(Math.round(estimatedTime))}</span>
+            </span>
+          ) : (
+            <span className={`block text-base font-black tabular-nums ${
+              isLowTime && !isCompletedQuestion ? 'text-orange-600' : darkMode ? 'text-zinc-100' : 'text-slate-800'
             }`}>
-              {question.text}
-            </p>
-            
-            {/* Time Badge */}
-            {!isCompletedQuestion && !isCurrentQuestion && (
-              <div className="mt-2 flex items-center gap-2">
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  isCriticalTime 
-                    ? darkMode ? 'bg-red-900 text-red-300' : 'bg-red-200 text-red-700' 
-                    : isLowTime 
-                      ? darkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-200 text-orange-700' 
-                      : darkMode ? 'bg-red-900/50 text-red-400' : 'bg-red-100 text-red-600'
-                }`}>
-                  {Math.round(perQuestionTime)} seg
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Next Button */}
-        {isCurrentQuestion && (
-          <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
-            {isTimerRunning && onAddComment && (
-              <Button
-                onClick={onAddComment}
-                className="rounded-full px-6 py-2 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-lg active:scale-95 [&_svg]:size-5"
-                data-testid={`add-comment-review-${index}`}
-              >
-                <Hand fill="white" className="mr-1" />
-                Comentario
-                <span className="ml-2 min-w-[1.75rem] rounded-full bg-white/25 px-2 py-0.5 text-center tabular-nums" data-testid={`comment-count-review-${index}`}>{commentCount}</span>
-              </Button>
-            )}
-            <Button
-              onClick={onGoToNext}
-              className={`rounded-full px-6 py-2 text-sm font-semibold ${
-                isLastQuestion
-                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg'
-                  : 'bg-red-600 hover:bg-red-700 text-white'
-              }`}
-              data-testid={`next-review-question-${index}`}
-            >
-              {isLastQuestion ? (
-                <>
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                  Palabras de Conclusión
-                </>
-              ) : (
-                <>
-                  Siguiente Pregunta
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </>
-              )}
-            </Button>
-          </div>
-        )}
+              {formatTime(Math.round(perQuestionTime))}
+            </span>
+          )}
+        </span>
       </div>
+
+      {isCurrentQuestion && (
+        <div className="hidden lg:flex flex-wrap items-center justify-end gap-3 px-3 pb-3">
+          {isTimerRunning && onAddComment && (
+            <Button
+              onClick={onAddComment}
+              className="rounded-full px-6 py-2 text-sm font-bold bg-orange-500 hover:bg-orange-600 text-white shadow-lg active:scale-95 [&_svg]:size-5"
+              data-testid={`add-comment-review-${index}`}
+            >
+              <Hand fill="white" className="mr-1" />
+              Comentario
+              <span className="ml-2 min-w-[1.75rem] rounded-full bg-white/25 px-2 py-0.5 text-center tabular-nums" data-testid={`comment-count-review-${index}`}>{commentCount}</span>
+            </Button>
+          )}
+          <Button
+            onClick={onGoToNext}
+            className={`rounded-full px-6 py-2 text-sm font-semibold text-white shadow-lg ${
+              isLastQuestion ? 'bg-purple-600 hover:bg-purple-700' : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+            data-testid={`next-review-question-${index}`}
+          >
+            {isLastQuestion ? 'Conclusión' : 'Siguiente pregunta'}
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -500,130 +348,60 @@ export function FinalQuestionsSection({
 
   const remainingQuestions = finalQuestions.length - (currentReviewQuestion || 0);
 
+  const muted = darkMode ? 'text-zinc-400' : 'text-slate-500';
+
   return (
     <Card className={`shadow-sm rounded-2xl ${
-      isCriticalTime 
-        ? 'border-red-500 bg-red-50' 
-        : isLowTime 
-          ? 'border-orange-400 bg-orange-50' 
-          : isInReviewMode 
-            ? darkMode 
-              ? 'border-green-700 bg-green-950/30' 
-              : 'border-green-400 bg-green-50/30'
-            : darkMode 
-              ? 'border-red-800 bg-red-950/30' 
-              : 'border-red-200 bg-red-50/30'
+      darkMode ? 'border-zinc-700 bg-zinc-800/60' : 'border-slate-200 bg-white'
     }`} data-testid="final-questions-section">
-      {/* Low Time Alert Banner */}
       {isLowTime && !isInReviewMode && (
         <div className={`${isCriticalTime ? 'bg-red-500' : 'bg-orange-500'} text-white px-4 py-2 flex items-center justify-center gap-2 rounded-t-2xl`}>
           <AlertCircle className="w-4 h-4" />
           <span className="text-sm font-medium">
-            {isCriticalTime ? '¡Tiempo crítico!' : '¡Acelera!'}
+            {isCriticalTime ? '¡Tiempo crítico para el repaso!' : 'Queda poco tiempo para el repaso'}
           </span>
         </div>
       )}
 
-      {/* Review Mode Active Banner */}
-      {isInReviewMode && (
-        <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 flex items-center justify-between rounded-t-2xl">
-          <div className="flex items-center gap-2">
-            <MessageCircleQuestion className="w-5 h-5" />
-            <span className="font-bold">PREGUNTAS DE REPASO</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm">
-              Pregunta {(currentReviewQuestion || 0) + 1} de {finalQuestions.length}
-            </span>
-            <Badge className="bg-white/20 text-white">
-              {remainingQuestions} restantes
-            </Badge>
-          </div>
-        </div>
-      )}
-      
-      <CardHeader className={`pb-3 ${isInReviewMode ? 'pt-4' : ''}`}>
-        {!isInReviewMode && (
-          <>
-            <CardTitle className={`text-base flex items-center gap-2 ${darkMode ? 'text-red-400' : 'text-red-700'}`}>
-              <AlertCircle className="w-4 h-4" />
-              Preguntas de Repaso
-              <Badge variant="destructive" className="ml-2 text-xs">{finalQuestions.length}</Badge>
-            </CardTitle>
-            <p className={`text-sm ${darkMode ? 'text-red-400' : 'text-red-600'}`}>
-              Preguntas de repaso al final del artículo{finalQuestionsTitle ? `: ${finalQuestionsTitle}` : ''}
-            </p>
-          </>
-        )}
-        
-        {/* Time indicators */}
-        {startTime && !isInReviewMode && (
-          <div className="mt-4 flex items-center gap-6 text-sm">
-            <div className="text-center">
-              <span className={`text-xs block mb-1 ${darkMode ? 'text-red-500' : 'text-red-400'}`}>Inicio</span>
-              <span className={`text-lg font-light ${darkMode ? 'text-red-400' : 'text-red-700'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-                {isTimerRunning && adjustedTimes.start 
-                  ? formatClockTime(adjustedTimes.start)
-                  : formatClockTime(addSecondsToDate(startTime, originalStartTime))
-                }
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <CardTitle className={`text-base flex items-center gap-2 ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
+              <span className={`w-8 h-8 rounded-lg flex items-center justify-center ${darkMode ? 'bg-rose-900/70 text-rose-200' : 'bg-rose-100 text-rose-700'}`}>
+                <MessageCircleQuestion className="w-4 h-4" />
               </span>
-            </div>
-            <div className={darkMode ? 'text-red-600' : 'text-red-300'}>—</div>
-            <div className="text-center">
-              <span className={`text-xs block mb-1 ${darkMode ? 'text-red-500' : 'text-red-400'}`}>Fin</span>
-              <span className={`text-lg font-light ${darkMode ? 'text-red-400' : 'text-red-700'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+              Repaso
+              {isInReviewMode && !isInClosingWordsMode && (
+                <span className={`text-sm font-semibold ${muted}`}>· pregunta {(currentReviewQuestion || 0) + 1} de {finalQuestions.length}</span>
+              )}
+            </CardTitle>
+            {finalQuestionsTitle && (
+              <p className={`text-xs mt-1 ${muted}`}>{finalQuestionsTitle}</p>
+            )}
+          </div>
+          <div className="shrink-0 text-right">
+            <p className={`text-sm font-bold tabular-nums ${
+              isCriticalTime ? 'text-red-600' : isLowTime ? 'text-orange-600' : isAdjusted ? (timeDiff > 0 ? 'text-green-600' : 'text-orange-600') : darkMode ? 'text-zinc-100' : 'text-slate-800'
+            }`} data-testid="review-per-question">
+              {finalQuestions.length} × {mmss(perQuestionTime)}
+            </p>
+            {startTime && !isInReviewMode && (
+              <p className={`text-xs tabular-nums ${muted}`}>
+                {isTimerRunning && adjustedTimes.start
+                  ? formatClockTime(adjustedTimes.start)
+                  : formatClockTime(addSecondsToDate(startTime, originalStartTime))}
+                {' – '}
                 {isTimerRunning && adjustedTimes.end
                   ? formatClockTime(adjustedTimes.end)
-                  : formatClockTime(addSecondsToDate(startTime, originalStartTime + (finalQuestions.length * plannedPerQuestion)))
-                }
-              </span>
-            </div>
-            <div className={darkMode ? 'text-red-600' : 'text-red-300'}>|</div>
-            <div className={`text-center px-3 py-2 rounded-lg ${
-              isCriticalTime 
-                ? darkMode ? 'bg-red-900' : 'bg-red-200' 
-                : isLowTime 
-                  ? darkMode ? 'bg-orange-900' : 'bg-orange-200' 
-                  : isAdjusted 
-                    ? (timeDiff > 0 
-                        ? darkMode ? 'bg-green-900' : 'bg-green-100' 
-                        : darkMode ? 'bg-orange-900' : 'bg-orange-100') 
-                    : darkMode ? 'bg-red-900' : 'bg-red-100'
-            }`}>
-              <span className={`text-xs block mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Por pregunta</span>
-              <span 
-                className={`text-xl font-light ${
-                  isCriticalTime 
-                    ? darkMode ? 'text-red-400' : 'text-red-700' 
-                    : isLowTime 
-                      ? darkMode ? 'text-orange-400' : 'text-orange-700' 
-                      : isAdjusted 
-                        ? (timeDiff > 0 
-                            ? darkMode ? 'text-green-400' : 'text-green-700' 
-                            : darkMode ? 'text-orange-400' : 'text-orange-700') 
-                        : darkMode ? 'text-red-400' : 'text-red-700'
-                }`}
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-              >
-                {Math.round(perQuestionTime)}s
-              </span>
-              {isAdjusted && (
-                <span className={`text-xs block ${
-                  timeDiff > 0 
-                    ? darkMode ? 'text-green-400' : 'text-green-600' 
-                    : darkMode ? 'text-orange-400' : 'text-orange-600'
-                }`}>
-                  {timeDiff > 0 ? '+' : ''}{Math.round(timeDiff)}s
-                </span>
-              )}
-            </div>
+                  : formatClockTime(addSecondsToDate(startTime, originalStartTime + (finalQuestions.length * plannedPerQuestion)))}
+              </p>
+            )}
           </div>
-        )}
+        </div>
       </CardHeader>
 
-      <CardContent className="space-y-3 pt-0">
+      <CardContent className="space-y-2 pt-0">
         {isInReviewMode ? (
-          // Review mode - show questions with navigation
           finalQuestions.map((q, idx) => (
             <ReviewQuestionCard
               key={idx}
@@ -656,58 +434,36 @@ export function FinalQuestionsSection({
             />
           ))
         ) : (
-          // Normal mode - show simple list
           finalQuestions.map((q, idx) => (
-            <div 
+            <div
               key={idx}
-              className={`rounded-xl py-3 px-4 text-sm ${
-                isCriticalTime 
-                  ? darkMode ? 'bg-red-950/50 text-red-300' : 'bg-red-100 text-red-900' 
-                  : isLowTime 
-                    ? darkMode ? 'bg-orange-950/50 text-orange-300' : 'bg-orange-100 text-orange-900' 
-                    : darkMode ? 'bg-red-950/30 text-red-300' : 'bg-red-100/50 text-red-800'
+              className={`rounded-2xl border-2 px-3 py-2.5 flex items-start gap-3 ${
+                darkMode ? 'border-zinc-700 bg-zinc-800' : 'border-slate-200 bg-white'
               }`}
               data-testid={`final-question-${idx}`}
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 flex items-start gap-2">
-                  <MessageCircleQuestion className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
-                    isCriticalTime 
-                      ? darkMode ? 'text-red-400' : 'text-red-600' 
-                      : isLowTime 
-                        ? darkMode ? 'text-orange-400' : 'text-orange-600' 
-                        : darkMode ? 'text-red-400' : 'text-red-500'
-                  }`} />
-                  <span>{q.text}</span>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className={`text-sm font-light px-2 py-0.5 rounded-full ${
-                    isCriticalTime 
-                      ? darkMode ? 'bg-red-900 text-red-300' : 'bg-red-200 text-red-700' 
-                      : isLowTime 
-                        ? darkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-200 text-orange-700' 
-                        : isAdjusted 
-                          ? (timeDiff > 0 
-                              ? darkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-700' 
-                              : darkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-100 text-orange-700') 
-                          : darkMode ? 'bg-red-900 text-red-400' : 'bg-red-200 text-red-600'
-                  }`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-                    +{formatTimeCompact(perQuestionTime)}
+              <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black ${darkMode ? 'bg-rose-900/70 text-rose-200' : 'bg-rose-100 text-rose-700'}`}>
+                {idx + 1}
+              </span>
+              <span className={`min-w-0 flex-1 pt-0.5 text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{q.text}</span>
+              <span className="shrink-0 text-right pt-0.5">
+                <span className={`block text-base font-black tabular-nums ${
+                  isCriticalTime ? 'text-red-600' : isLowTime ? 'text-orange-600' : darkMode ? 'text-zinc-100' : 'text-slate-800'
+                }`}>
+                  {mmss(perQuestionTime)}
+                </span>
+                {startTime && (
+                  <span className={`block text-xs tabular-nums ${muted}`}>
+                    {isTimerRunning && getQuestionTime
+                      ? formatClockTime(getQuestionTime(idx))
+                      : formatClockTime(addSecondsToDate(startTime, originalStartTime + (idx * plannedPerQuestion)))}
                   </span>
-                  {startTime && (
-                    <span className={`text-xs ${darkMode ? 'text-red-400' : 'text-red-500'}`} style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-                      {isTimerRunning && getQuestionTime
-                        ? formatClockTime(getQuestionTime(idx))
-                        : formatClockTime(addSecondsToDate(startTime, originalStartTime + (idx * plannedPerQuestion)))
-                      }
-                    </span>
-                  )}
-                </div>
-              </div>
+                )}
+              </span>
             </div>
           ))
         )}
-        
+
         {/* Closing Words Section - Always visible */}
         <ClosingWordsSection 
           isActive={isInClosingWordsMode}
