@@ -1437,7 +1437,7 @@ export default function HomePage() {
           currentReviewQuestion={currentReviewQuestion}
           phaseElapsedTime={segmentElapsed}
           estimatedTime={currentSegmentEstimate}
-          endTime={endTime}
+          endTime={endTime || manualEndTime}
           totalDurationSeconds={totalDurationSeconds}
           totalComments={totalComments}
           phaseComments={phaseComments}
