@@ -34,7 +34,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import PresentationMode from "@/components/PresentationMode";
+import PresentationMode, { DEFAULT_LAYOUT } from "@/components/PresentationMode";
 
 // Import refactored components
 import { UploadZone } from "@/components/UploadZone";
@@ -110,6 +110,8 @@ export default function HomePage() {
   const [overtimeAlertEnabled, setOvertimeAlertEnabled] = useLocalStorage('pdfTimer_overtimeAlert', true);
   const [darkMode, setDarkMode] = useLocalStorage('pdfTimer_darkMode', false);
   const [darkTheme, setDarkTheme] = useLocalStorageString('pdfTimer_darkTheme', defaultDarkTheme);
+  // Diseño del modo presentación: panel ordenado, semáforo o clásico
+  const [presentationLayout, setPresentationLayout] = useLocalStorageString('pdfTimer_presentationLayout', DEFAULT_LAYOUT);
   
   // Get current theme config
   const currentTheme = darkMode ? (darkThemes[darkTheme] || darkThemes.zinc) : null;
@@ -1076,6 +1078,8 @@ export default function HomePage() {
               setClosingWordsDuration={setClosingWordsDuration}
               longParagraphWeight={longParagraphWeight}
               setLongParagraphWeight={setLongParagraphWeight}
+              presentationLayout={presentationLayout}
+              setPresentationLayout={setPresentationLayout}
               darkMode={darkMode}
             />
             <UploadZone
@@ -1438,6 +1442,8 @@ export default function HomePage() {
           phaseElapsedTime={segmentElapsed}
           estimatedTime={currentSegmentEstimate}
           endTime={endTime || manualEndTime}
+          layout={presentationLayout}
+          onLayoutChange={setPresentationLayout}
           totalDurationSeconds={totalDurationSeconds}
           totalComments={totalComments}
           phaseComments={phaseComments}
