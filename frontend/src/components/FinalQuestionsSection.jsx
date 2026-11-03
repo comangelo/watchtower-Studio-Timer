@@ -113,7 +113,7 @@ function ClosingWordsSection({
         <span className="min-w-0 flex-1">
           <span className={`block text-sm font-bold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
             Conclusión
-            <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? 'text-red-600' : 'text-purple-700'} ${darkMode ? '!text-inherit' : ''}`}>
+            <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-purple-300' : 'text-purple-700')}`}>
               {isOverTime ? 'EXCEDIDO' : 'AHORA'}
             </span>
           </span>
@@ -253,7 +253,7 @@ function ReviewQuestionCard({
         </span>
         <span className="min-w-0 flex-1 pt-0.5">
           {isCurrentQuestion && (
-            <span className={`block text-[11px] font-black tracking-wide ${isOverTime ? 'text-red-600' : 'text-green-700'} ${darkMode ? '!text-inherit' : ''}`}>
+            <span className={`block text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-green-300' : 'text-green-700')}`}>
               {isOverTime ? 'EXCEDIDO' : 'AHORA'}
             </span>
           )}

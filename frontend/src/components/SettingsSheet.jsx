@@ -34,12 +34,12 @@ function Row({ icon: Icon, color = "text-orange-500", label, hint, value, valueC
   );
 }
 
-function Range({ value, onChange, min, max, step, left, right, thumb = "", testid }) {
+function Range({ value, onChange, min, max, step, left, right, thumb = "", range = "[&>span>span]:bg-orange-500", testid }) {
   const c = useContext(ThemeCtx);
   return (
   <div>
     <Slider value={[value]} onValueChange={(v) => onChange(v[0])} min={min} max={max} step={step}
-      className={`w-full ${thumb}`} data-testid={testid} />
+      className={`w-full ${range} ${c.track || ""} ${thumb}`} data-testid={testid} />
     <div className={`flex justify-between text-[11px] mt-1.5 ${c.subtle}`}><span>{left}</span><span>{right}</span></div>
   </div>
   );
@@ -160,6 +160,7 @@ export function SettingsSheet({
         tabOn: "bg-zinc-600 text-white shadow",
         input: "bg-zinc-700 border-zinc-600 text-zinc-100",
         btn: "border-zinc-600 text-zinc-200 hover:bg-zinc-700",
+        track: "[&>span]:bg-zinc-700 [&_[role=slider]]:border-zinc-300",
       }
     : {
         sheet: "bg-stone-50 border-slate-200 text-slate-900",
@@ -212,10 +213,10 @@ export function SettingsSheet({
               <Section>
                 <Row icon={Mic} color="text-blue-500" label="Introducción" value={`${introductionDuration} s`} valueColor="text-blue-500" />
                 <Range value={introductionDuration} onChange={setIntroductionDuration} min={30} max={180} step={10}
-                  left="30 s" right="3 min" thumb="[&_[role=slider]]:bg-blue-500" testid="introduction-time-slider" />
+                  left="30 s" right="3 min" thumb="[&_[role=slider]]:bg-blue-500" range="[&>span>span]:bg-blue-500" testid="introduction-time-slider" />
                 <Row icon={Sparkles} color="text-purple-500" label="Conclusión" value={`${closingWordsDuration} s`} valueColor="text-purple-500" />
                 <Range value={closingWordsDuration} onChange={setClosingWordsDuration} min={30} max={180} step={10}
-                  left="30 s" right="3 min" thumb="[&_[role=slider]]:bg-purple-500" testid="closing-time-slider" />
+                  left="30 s" right="3 min" thumb="[&_[role=slider]]:bg-purple-500" range="[&>span>span]:bg-purple-500" testid="closing-time-slider" />
               </Section>
               {setCircuitVisitMode && (
                 <Section>
