@@ -909,151 +909,93 @@ export default function HomePage() {
 
       <main className={`max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 ${showActionBar ? (studyPhase === 'paragraphs' || studyPhase === 'review' ? 'pb-48' : 'pb-32') : ''}`}>
         {!analysisResult ? (
-          <div className="space-y-4 sm:space-y-8">
-            {/* Time Schedule Panel - Before PDF Upload */}
-            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border border-slate-700/50">
-              
-              {/* Main Time Display Grid */}
-              <div className="grid grid-cols-3 gap-4 sm:gap-8 items-center">
-                
-                {/* Start Time - Bright Green */}
-                <div className="text-center">
-                  <div className="inline-block bg-emerald-500/20 rounded-xl px-3 py-1 mb-2">
-                    <span className="text-xs sm:text-sm font-bold text-emerald-400 uppercase tracking-widest">Inicio</span>
-                  </div>
-                  <p 
-                    className="text-2xl sm:text-4xl md:text-5xl font-black text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]"
-                    style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
-                  >
-                    {new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true })}
+          <div className="space-y-4">
+            {/* Plan de hoy (antes de cargar el artículo): compacto */}
+            {(() => {
+              const hhmm = (d) => d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+              const endPreview = manualEndTime || new Date(Date.now() + totalDuration * 60 * 1000);
+              const durationPreview = manualEndTime
+                ? Math.max(0, Math.round((manualEndTime.getTime() - Date.now()) / 60000))
+                : totalDuration;
+              const openEdit = () => {
+                setInitialEditHours(endPreview.getHours().toString().padStart(2, '0'));
+                setInitialEditMinutes(endPreview.getMinutes().toString().padStart(2, '0'));
+                setIsEditingInitialEndTime(true);
+              };
+              const saveEdit = () => {
+                const hours = parseInt(initialEditHours) || 0;
+                const minutes = parseInt(initialEditMinutes) || 0;
+                if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+                  const newEndTime = new Date();
+                  newEndTime.setHours(hours, minutes, 0, 0);
+                  setManualEndTime(newEndTime);
+                  setIsEditingInitialEndTime(false);
+                }
+              };
+              return (
+                <div className="rounded-2xl bg-zinc-900 text-white p-4 shadow-xl border border-zinc-800" data-testid="start-plan-card">
+                  <p className="text-[11px] font-bold tracking-[0.2em] text-zinc-400 uppercase">
+                    Plan de hoy · {durationPreview} min{manualEndTime ? ' · fin manual' : ''}
                   </p>
-                </div>
-                
-                {/* Duration - Center */}
-                <div className="flex flex-col items-center">
-                  <div className="inline-block bg-orange-500/20 rounded-xl px-3 py-1 mb-2">
-                    <span className="text-xs sm:text-sm font-bold text-orange-400 uppercase tracking-widest">Duración</span>
+                  <div className="mt-2 grid grid-cols-3 gap-2 text-center items-end">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Ahora</p>
+                      <p className="text-2xl sm:text-3xl font-black tabular-nums">{hhmm(new Date())}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Termina</p>
+                      {isEditingInitialEndTime ? (
+                        <div className="flex items-center justify-center gap-1">
+                          <input
+                            type="text" inputMode="numeric"
+                            value={initialEditHours}
+                            onChange={(e) => setInitialEditHours(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                            className="w-11 h-10 text-center bg-zinc-800 border-2 border-yellow-500/60 rounded-lg text-yellow-300 text-xl font-black focus:outline-none focus:border-yellow-400"
+                            placeholder="HH" maxLength={2} autoFocus
+                          />
+                          <span className="text-yellow-400 text-xl font-black">:</span>
+                          <input
+                            type="text" inputMode="numeric"
+                            value={initialEditMinutes}
+                            onChange={(e) => setInitialEditMinutes(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                            className="w-11 h-10 text-center bg-zinc-800 border-2 border-yellow-500/60 rounded-lg text-yellow-300 text-xl font-black focus:outline-none focus:border-yellow-400"
+                            placeholder="MM" maxLength={2}
+                          />
+                        </div>
+                      ) : (
+                        <button onClick={openEdit} className="text-2xl sm:text-3xl font-black tabular-nums text-yellow-400 hover:text-yellow-300" title="Cambiar hora de fin" data-testid="start-end-time">
+                          {hhmm(endPreview)}
+                        </button>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Duración</p>
+                      <p className="text-2xl sm:text-3xl font-black tabular-nums text-orange-400">{durationPreview}<span className="text-sm ml-0.5">min</span></p>
+                    </div>
                   </div>
-                  <span className={`text-2xl sm:text-4xl md:text-5xl font-black drop-shadow-[0_0_10px_rgba(251,146,60,0.5)] ${manualEndTime ? 'text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]' : 'text-orange-400'}`}>
-                    {manualEndTime 
-                      ? Math.max(0, Math.round((manualEndTime.getTime() - new Date().getTime()) / 60000))
-                      : totalDuration}
-                    <span className="text-lg sm:text-2xl ml-1">min</span>
-                  </span>
-                </div>
-                
-                {/* End Time - Editable - Bright Yellow/Amber */}
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-2 bg-yellow-500/20 rounded-xl px-3 py-1 mb-2">
-                    <span className="text-xs sm:text-sm font-bold text-yellow-400 uppercase tracking-widest">
-                      Fin {manualEndTime && <span className="text-[10px] opacity-70">(manual)</span>}
-                    </span>
-                    {!isEditingInitialEndTime && (
-                      <button
-                        onClick={() => {
-                          const timeToEdit = manualEndTime || new Date(Date.now() + totalDuration * 60 * 1000);
-                          setInitialEditHours(timeToEdit.getHours().toString().padStart(2, '0'));
-                          setInitialEditMinutes(timeToEdit.getMinutes().toString().padStart(2, '0'));
-                          setIsEditingInitialEndTime(true);
-                        }}
-                        className="p-1.5 rounded-lg bg-yellow-500/30 hover:bg-yellow-500/50 transition-all hover:scale-110"
-                        title="Editar hora de fin"
-                      >
-                        <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-300" />
+                  <div className="mt-3 flex flex-wrap justify-center gap-2">
+                    {isEditingInitialEndTime ? (
+                      <>
+                        <button onClick={saveEdit} className="inline-flex items-center gap-1.5 rounded-xl px-4 h-9 bg-emerald-600 hover:bg-emerald-500 text-sm font-bold">
+                          <Check className="w-4 h-4" /> Guardar
+                        </button>
+                        <button onClick={() => setIsEditingInitialEndTime(false)} className="inline-flex items-center gap-1.5 rounded-xl px-4 h-9 bg-zinc-700 hover:bg-zinc-600 text-sm font-bold">
+                          <X className="w-4 h-4" /> Cancelar
+                        </button>
+                      </>
+                    ) : manualEndTime ? (
+                      <button onClick={() => setManualEndTime(null)} className="inline-flex items-center gap-1.5 rounded-xl px-4 h-9 bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold text-cyan-300">
+                        <RotateCcw className="w-4 h-4" /> Hora automática
+                      </button>
+                    ) : (
+                      <button onClick={openEdit} className="inline-flex items-center gap-1.5 rounded-xl px-4 h-9 bg-zinc-800 hover:bg-zinc-700 text-sm font-semibold text-zinc-200">
+                        <Pencil className="w-4 h-4 text-yellow-400" /> Cambiar hora de fin
                       </button>
                     )}
                   </div>
-                  
-                  {isEditingInitialEndTime ? (
-                    <div className="flex flex-col items-center gap-3">
-                      {/* Time inputs row */}
-                      <div className="flex items-center justify-center gap-2">
-                        <input
-                          type="text"
-                          value={initialEditHours}
-                          onChange={(e) => setInitialEditHours(e.target.value.replace(/\D/g, '').slice(0, 2))}
-                          className="w-14 sm:w-20 h-12 sm:h-16 text-center bg-slate-700/80 border-2 border-yellow-500/50 rounded-xl text-yellow-300 text-2xl sm:text-4xl font-black focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/30"
-                          placeholder="HH"
-                          maxLength={2}
-                          autoFocus
-                        />
-                        <span className="text-yellow-400 text-3xl sm:text-4xl font-black animate-pulse">:</span>
-                        <input
-                          type="text"
-                          value={initialEditMinutes}
-                          onChange={(e) => setInitialEditMinutes(e.target.value.replace(/\D/g, '').slice(0, 2))}
-                          className="w-14 sm:w-20 h-12 sm:h-16 text-center bg-slate-700/80 border-2 border-yellow-500/50 rounded-xl text-yellow-300 text-2xl sm:text-4xl font-black focus:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-500/30"
-                          placeholder="MM"
-                          maxLength={2}
-                        />
-                      </div>
-                      {/* Action buttons row */}
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => {
-                            const hours = parseInt(initialEditHours) || 0;
-                            const minutes = parseInt(initialEditMinutes) || 0;
-                            if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
-                              const newEndTime = new Date();
-                              newEndTime.setHours(hours, minutes, 0, 0);
-                              setManualEndTime(newEndTime);
-                              setIsEditingInitialEndTime(false);
-                            }
-                          }}
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 transition-all shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105"
-                          title="Guardar"
-                        >
-                          <Check className="w-5 h-5 text-white" />
-                          <span className="text-white font-bold text-sm hidden sm:inline">Guardar</span>
-                        </button>
-                        <button
-                          onClick={() => setIsEditingInitialEndTime(false)}
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-600 hover:bg-slate-500 transition-all hover:scale-105"
-                          title="Cancelar"
-                        >
-                          <X className="w-5 h-5 text-white" />
-                          <span className="text-white font-bold text-sm hidden sm:inline">Cancelar</span>
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <p 
-                      className="text-2xl sm:text-4xl md:text-5xl font-black text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.5)] cursor-pointer hover:text-yellow-300 transition-colors"
-                      style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}
-                      onClick={() => {
-                        const timeToEdit = manualEndTime || new Date(Date.now() + totalDuration * 60 * 1000);
-                        setInitialEditHours(timeToEdit.getHours().toString().padStart(2, '0'));
-                        setInitialEditMinutes(timeToEdit.getMinutes().toString().padStart(2, '0'));
-                        setIsEditingInitialEndTime(true);
-                      }}
-                      title="Clic para editar"
-                    >
-                      {manualEndTime 
-                        ? manualEndTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true })
-                        : new Date(Date.now() + totalDuration * 60 * 1000).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: true })
-                      }
-                    </p>
-                  )}
                 </div>
-              </div>
-              
-              {/* Footer info */}
-              <div className="text-center mt-4 sm:mt-6 pt-4 border-t border-slate-700/50">
-                {manualEndTime ? (
-                  <button
-                    onClick={() => setManualEndTime(null)}
-                    className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                    Restaurar hora automática
-                  </button>
-                ) : (
-                  <p className="text-slate-400 text-sm">
-                    Hora actual + <span className="text-orange-400 font-bold">{totalDuration} min</span> = Hora de fin
-                  </p>
-                )}
-              </div>
-            </div>
+              );
+            })()}
 
             <JwWeeklyCard
               weekMonday={jwWeekMonday}
@@ -1115,90 +1057,6 @@ export default function HomePage() {
                 closingWordsDuration={closingWordsDuration}
               />
 
-              {/* Paragraph Progress Indicator */}
-              {isTimerRunning && !isInIntroductionMode && (
-                <Card className={`border-2 shadow-md rounded-2xl ${
-                  darkMode 
-                    ? 'border-green-700 bg-gradient-to-r from-green-950 to-zinc-900' 
-                    : 'border-green-200 bg-gradient-to-r from-green-50 to-white'
-                }`}>
-                  <CardContent className="p-5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg ${
-                          darkMode ? 'shadow-green-900/30' : 'shadow-green-200'
-                        }`}>
-                          <span className="text-white font-bold text-lg">{currentManualParagraph + 1}</span>
-                        </div>
-                        <div>
-                          <p className={`text-base font-bold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
-                            Párrafo {currentManualParagraph + 1} <span className={darkMode ? 'text-slate-500' : 'text-slate-400'}>de {analysisResult.total_paragraphs}</span>
-                          </p>
-                          <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Usa los botones para navegar
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          variant="outline" 
-                          onClick={goToPreviousParagraph} 
-                          disabled={currentManualParagraph <= 0} 
-                          className={`rounded-full w-12 h-12 border-2 disabled:opacity-40 ${
-                            darkMode 
-                              ? 'border-zinc-600 hover:border-green-500 hover:bg-green-950' 
-                              : 'border-slate-300 hover:border-green-400 hover:bg-green-50'
-                          }`}
-                          data-testid="prev-paragraph-btn"
-                        >
-                          <ChevronLeft className="w-5 h-5" />
-                        </Button>
-                        <Button 
-                          onClick={goToNextGroup} 
-                          disabled={currentGroupLast >= analysisResult.paragraphs.length - 1} 
-                          className={`rounded-full w-12 h-12 bg-green-500 hover:bg-green-600 text-white shadow-lg disabled:opacity-40 ${
-                            darkMode ? 'shadow-green-900/30' : 'shadow-green-200'
-                          }`}
-                          data-testid="next-paragraph-btn"
-                        >
-                          <ChevronRight className="w-5 h-5" />
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Adjusted Times Summary */}
-                    {isTimerRunning && adjustedFinalTimes.perQuestion > 0 && Math.abs(adjustedFinalTimes.perQuestion - plannedPerQuestion) >= 1 && (
-                      <div className={`mt-4 p-4 rounded-xl border-2 ${
-                        adjustedFinalTimes.perQuestion < 20 
-                          ? darkMode ? 'bg-orange-950/50 border-orange-800' : 'bg-orange-100 border-orange-300' 
-                          : darkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-slate-50 border-slate-200'
-                      }`}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Clock className={`w-4 h-4 ${
-                              adjustedFinalTimes.perQuestion < 20 
-                                ? darkMode ? 'text-orange-400' : 'text-orange-600' 
-                                : darkMode ? 'text-slate-400' : 'text-slate-600'
-                            }`} />
-                            <span className={`text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Tiempo por pregunta:</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className={`font-mono text-xl font-bold ${
-                              adjustedFinalTimes.perQuestion < 20 
-                                ? darkMode ? 'text-orange-400' : 'text-orange-600' 
-                                : darkMode ? 'text-slate-200' : 'text-slate-800'
-                            }`}>
-                              {Math.round(adjustedFinalTimes.perQuestion)} seg
-                            </span>
-                            <span className={`text-sm ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>(plan: {plannedPerQuestion}s)</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                </CardContent>
-              </Card>
-              )}
-
               {/* Introduction Words Section */}
               <IntroductionWordsSection
                 isActive={isInIntroductionMode}
@@ -1216,69 +1074,41 @@ export default function HomePage() {
               />
 
               {/* Paragraphs List */}
-              <div className="space-y-4">
-                {/* Header con estilo mejorado */}
-                <div className={`rounded-2xl border-2 p-4 ${
-                  darkMode 
-                    ? 'bg-gradient-to-r from-orange-950/50 to-zinc-900 border-orange-700' 
-                    : 'bg-gradient-to-r from-orange-50 to-white border-orange-200'
-                }`}>
-                  <div className="flex items-center justify-between flex-wrap gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        darkMode ? 'bg-orange-600' : 'bg-orange-500'
-                      }`}>
-                        <FileText className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className={`font-heading font-bold text-base ${darkMode ? 'text-zinc-100' : 'text-zinc-900'}`}>
-                          Desglose de párrafos
-                        </h3>
-                        <p className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                          {analysisResult.total_paragraphs} párrafos · {analysisResult.total_words} palabras
-                        </p>
-                      </div>
+              <div className="space-y-2">
+                {/* Cabecera de la lista */}
+                <div data-testid="paragraphs-header">
+                  <div className="flex items-center justify-between gap-3 px-1">
+                    <div className="min-w-0">
+                      <h3 className={`font-heading font-bold text-base ${darkMode ? 'text-zinc-100' : 'text-zinc-900'}`}>
+                        Párrafos
+                      </h3>
+                      <p className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                        {analysisResult.total_paragraphs} párrafos · {analysisResult.total_words} palabras
+                      </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
+                    <button
                       onClick={() => setShowAllParagraphContent(!showAllParagraphContent)}
-                      className={`rounded-full px-4 py-2 text-xs font-semibold transition-all shadow-sm border-2 ${
+                      className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 h-8 text-xs font-semibold border transition-colors ${
                         showAllParagraphContent
-                          ? darkMode 
-                            ? 'bg-orange-600 hover:bg-orange-700 text-white border-orange-500' 
-                            : 'bg-orange-500 hover:bg-orange-600 text-white border-orange-400'
-                          : darkMode 
-                            ? 'bg-green-500 hover:bg-green-600 text-white border-green-400' 
-                            : 'bg-green-400 hover:bg-green-500 text-white border-green-300'
+                          ? 'bg-orange-500 border-orange-500 text-white'
+                          : darkMode ? 'border-zinc-600 text-zinc-200 hover:bg-zinc-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'
                       }`}
                       data-testid="toggle-all-content-btn"
                     >
-                      {showAllParagraphContent ? (
-                        <>
-                          <EyeOff className="w-4 h-4 mr-1.5" />
-                          Ocultar contenido
-                        </>
-                      ) : (
-                        <>
-                          <Eye className="w-4 h-4 mr-1.5" />
-                          Mostrar contenido
-                        </>
-                      )}
-                    </Button>
+                      {showAllParagraphContent ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      {showAllParagraphContent ? 'Ocultar textos' : 'Ver todos los textos'}
+                    </button>
                   </div>
                   {isTimerRunning && !isInIntroductionMode && (
-                    <div className={`flex items-center justify-center gap-2 mt-3 pt-3 border-t ${
-                      darkMode ? 'border-orange-800' : 'border-orange-100'
-                    }`}>
-                      <Button size="sm" variant="outline" onClick={goToPreviousParagraph} disabled={currentManualParagraph <= 0} className={`text-xs rounded-full ${darkMode ? 'border-zinc-600' : ''}`} data-testid="prev-paragraph-btn-2">
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <Button size="sm" variant="outline" onClick={goToPreviousParagraph} disabled={currentManualParagraph <= 0} className={`text-xs rounded-full ${darkMode ? 'border-zinc-600 bg-zinc-800 text-zinc-100 hover:bg-zinc-700 hover:text-white' : ''}`} data-testid="prev-paragraph-btn-2">
                         <ChevronLeft className="w-3 h-3 mr-1" />
                         Anterior
                       </Button>
                       <Badge className={`font-mono px-3 py-1 ${darkMode ? 'bg-orange-700 text-white' : 'bg-orange-100 text-orange-700'}`}>
                         {currentManualParagraph + 1} / {analysisResult.total_paragraphs}
                       </Badge>
-                      <Button size="sm" variant="outline" onClick={goToNextGroup} disabled={currentGroupLast >= analysisResult.paragraphs.length - 1} className={`text-xs rounded-full ${darkMode ? 'border-zinc-600' : ''}`} data-testid="next-paragraph-btn-2">
+                      <Button size="sm" variant="outline" onClick={goToNextGroup} disabled={currentGroupLast >= analysisResult.paragraphs.length - 1} className={`text-xs rounded-full ${darkMode ? 'border-zinc-600 bg-zinc-800 text-zinc-100 hover:bg-zinc-700 hover:text-white' : ''}`} data-testid="next-paragraph-btn-2">
                         Siguiente
                         <ChevronRight className="w-3 h-3 ml-1" />
                       </Button>
