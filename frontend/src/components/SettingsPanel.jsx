@@ -1,6 +1,7 @@
-import { Clock, MessageCircleQuestion, Settings, Timer, Mic, Sparkles, MessagesSquare } from "lucide-react";
+import { Clock, MessageCircleQuestion, Settings, Timer, Mic, Sparkles, MessagesSquare, MonitorPlay } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { LAYOUTS } from "@/components/PresentationMode";
 
 export function SettingsPanel({ 
   readingSpeed, 
@@ -15,6 +16,8 @@ export function SettingsPanel({
   setClosingWordsDuration,
   longParagraphWeight = 1,
   setLongParagraphWeight = () => {},
+  presentationLayout,
+  setPresentationLayout,
   darkMode = false
 }) {
   const longParagraphOptions = [
@@ -226,6 +229,44 @@ export function SettingsPanel({
             ))}
           </div>
         </div>
+
+        {/* Cuarta fila: diseño del modo presentación */}
+        {setPresentationLayout && (
+          <div className={`pt-4 sm:pt-6 mt-4 sm:mt-6 border-t ${darkMode ? 'border-zinc-700' : 'border-slate-200'}`} data-testid="presentation-layout-setting">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
+              <MonitorPlay className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-500" />
+              <span className={`text-xs sm:text-sm font-medium ${darkMode ? 'text-zinc-300' : 'text-slate-700'}`}>
+                Diseño del modo presentación
+              </span>
+            </div>
+            <p className={`text-[10px] sm:text-xs mb-2 sm:mb-3 ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>
+              También se puede cambiar durante el estudio con el botón de diseño, arriba a la derecha.
+            </p>
+            <div className="flex gap-1.5 sm:gap-2">
+              {LAYOUTS.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => setPresentationLayout(option.id)}
+                  className={`flex-1 py-1.5 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 rounded-lg sm:rounded-xl text-center transition-all ${
+                    presentationLayout === option.id
+                      ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+                      : darkMode
+                        ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                  data-testid={`layout-option-${option.id}`}
+                >
+                  <span className="block text-[10px] sm:text-xs md:text-sm font-semibold">{option.name}</span>
+                  <span className={`block text-[8px] sm:text-[10px] md:text-xs mt-0.5 ${
+                    presentationLayout === option.id ? 'text-orange-100' : darkMode ? 'text-zinc-500' : 'text-slate-400'
+                  }`}>
+                    {option.description}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

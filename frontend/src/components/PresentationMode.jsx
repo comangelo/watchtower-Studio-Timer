@@ -16,6 +16,7 @@ import {
   AlertCircle,
   MessagesSquare,
   Star,
+  LayoutTemplate,
 } from "lucide-react";
 import { formatTime, formatClockTime } from "@/utils/timeFormatters";
 import { isRealQuestion } from "@/utils/timePlan";
@@ -47,6 +48,14 @@ export const PHASES = {
 const GRACE_RATIO = 1.3; // 30 % de prórroga
 const FINAL_STRETCH_SECONDS = 300; // últimos 5 minutos: sin prórroga
 
+// Diseños del modo presentación (el usuario elige; se guarda en el dispositivo)
+export const LAYOUTS = [
+  { id: "panel", name: "Panel ordenado", description: "Oscuro, con un recuadro de color grande" },
+  { id: "semaforo", name: "Semáforo", description: "Toda la pantalla cambia de color" },
+  { id: "classic", name: "Clásico", description: "El diseño de siempre" },
+];
+export const DEFAULT_LAYOUT = "panel";
+
 export default function PresentationMode({
   analysisResult,
   elapsedTime,
@@ -73,6 +82,8 @@ export default function PresentationMode({
   onNextReviewQuestion,
   onStartClosingWords,
   onFinishStudy,
+  layout: layoutProp = DEFAULT_LAYOUT,
+  onLayoutChange,
 }) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -145,19 +156,19 @@ export default function PresentationMode({
 
   // Color del recuadro según el tiempo del tramo
   const { colorClass, indicatorText } = useMemo(() => {
-    if (phase === PHASES.FINISHED) return { colorClass: "bg-emerald-700", indicatorText: "FINALIZADO" };
-    if (!studyStarted) return { colorClass: "bg-zinc-600", indicatorText: "LISTO" };
-    if (!isTimerRunning) return { colorClass: "bg-zinc-600", indicatorText: "EN PAUSA" };
+    if (phase === PHASES.FINISHED) return { colorClass: "bg-emerald-700 text-white", indicatorText: "FINALIZADO" };
+    if (!studyStarted) return { colorClass: "bg-zinc-600 text-white", indicatorText: "LISTO" };
+    if (!isTimerRunning) return { colorClass: "bg-zinc-600 text-white", indicatorText: "EN PAUSA" };
     // Pasada la hora de fin del estudio: siempre rojo
-    if (remainingTime <= 0 && elapsedTime > 0) return { colorClass: "bg-red-600", indicatorText: "TIEMPO EXCEDIDO" };
+    if (remainingTime <= 0 && elapsedTime > 0) return { colorClass: "bg-red-600 text-white", indicatorText: "TIEMPO EXCEDIDO" };
     // Últimos 5 minutos: misma regla que en los párrafos pero SIN prórroga
     // (verde mientras el tramo va en su tiempo; al pasarse, rojo directamente)
     const finalStretch = remainingTime <= FINAL_STRETCH_SECONDS;
-    if (!estimatedTime) return { colorClass: "bg-green-600", indicatorText: "EN TIEMPO" };
+    if (!estimatedTime) return { colorClass: "bg-green-600 text-white", indicatorText: "EN TIEMPO" };
     const ratio = phaseElapsedTime / estimatedTime;
-    if (ratio <= 1) return { colorClass: "bg-green-600", indicatorText: "EN TIEMPO" };
-    if (!finalStretch && ratio <= GRACE_RATIO) return { colorClass: "bg-orange-500", indicatorText: "TIEMPO DE PRÓRROGA" };
-    return { colorClass: "bg-red-600", indicatorText: "TIEMPO EXCEDIDO" };
+    if (ratio <= 1) return { colorClass: "bg-green-600 text-white", indicatorText: "EN TIEMPO" };
+    if (!finalStretch && ratio <= GRACE_RATIO) return { colorClass: "bg-yellow-400 text-zinc-900", indicatorText: "TIEMPO DE PRÓRROGA" };
+    return { colorClass: "bg-red-600 text-white", indicatorText: "TIEMPO EXCEDIDO" };
   }, [phase, studyStarted, isTimerRunning, estimatedTime, phaseElapsedTime, remainingTime, elapsedTime]);
 
   // Etiquetas del párrafo actual (imagen, texto, nota)
@@ -201,88 +212,301 @@ export default function PresentationMode({
     }
   };
 
-  const smartButtonText = (() => {
+  // Qué viene después: lo más visible del botón para avanzar
+  const groupLabel = (g) => (g && g.paragraphs.length > 1
+    ? `Párrafos ${g.paragraphs.map((p) => p.number).join(", ")}`
+    : `Párrafo ${g?.firstParagraph?.number || 1}`);
+
+  const nextInfo = (() => {
     switch (phase) {
-      case PHASES.INITIAL: return "Iniciar estudio";
-      case PHASES.INTRO: {
-        const g = groupedParagraphs[0];
-        if (g && g.paragraphs.length > 1) return `Pasar a los párrafos ${g.paragraphs.map((p) => p.number).join(", ")}`;
-        return `Pasar al párrafo ${g?.firstParagraph?.number || 1}`;
-      }
+      case PHASES.INITIAL: return { kicker: null, main: "Iniciar estudio" };
+      case PHASES.INTRO: return { kicker: "Siguiente", main: groupLabel(groupedParagraphs[0]) };
       case PHASES.PARAGRAPHS: {
-        if (isLastGroup) return finals.length > 0 ? "Pregunta de repaso 1" : "Ir a la conclusión";
+        if (isLastGroup) return finals.length > 0 ? { kicker: "Siguiente", main: "Repaso 1" } : { kicker: "Siguiente", main: "Conclusión" };
         const next = groupedParagraphs.find((g) => g.indices.includes(lastIndexOfGroup + 1));
-        if (!next) return "Siguiente párrafo";
-        return next.paragraphs.length > 1
-          ? `Siguientes párrafos ${next.paragraphs.map((p) => p.number).join(", ")}`
-          : `Siguiente párrafo ${next.firstParagraph.number}`;
+        return { kicker: "Siguiente", main: next ? groupLabel(next) : "Párrafo" };
       }
       case PHASES.REVIEW:
-        return currentReviewQuestion >= finals.length - 1 ? "Ir a la conclusión" : `Siguiente pregunta ${currentReviewQuestion + 2}`;
-      case PHASES.CONCLUSION: return "Finalizar estudio";
+        return currentReviewQuestion >= finals.length - 1
+          ? { kicker: "Siguiente", main: "Conclusión" }
+          : { kicker: "Siguiente", main: `Repaso ${currentReviewQuestion + 2}` };
+      case PHASES.CONCLUSION: return { kicker: null, main: "Finalizar estudio" };
       default: return null;
     }
   })();
 
   const canComment = phase === PHASES.PARAGRAPHS || phase === PHASES.REVIEW;
   const PhaseIcon = phaseInfo.icon;
+  const layout = LAYOUTS.some((l) => l.id === layoutProp) ? layoutProp : DEFAULT_LAYOUT;
+  const isSemaforo = layout === "semaforo";
+  // "Pulsa Esc" solo tiene sentido con teclado (ordenador)
+  const hasKeyboard = typeof window !== "undefined" && window.matchMedia?.("(pointer: fine)")?.matches;
+  const [showLayoutMenu, setShowLayoutMenu] = useState(false);
+  // Horizontal (móvil girado, tablet u ordenador): dos columnas en «Panel» y «Semáforo»
+  const [isLandscape, setIsLandscape] = useState(
+    () => typeof window !== "undefined" && !!window.matchMedia?.("(orientation: landscape)")?.matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia?.("(orientation: landscape)");
+    if (!mq) return undefined;
+    const onChange = () => setIsLandscape(mq.matches);
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
 
-  return (
-    <div className="fixed inset-0 z-[9999] bg-zinc-800 text-white flex flex-col p-4 md:p-6 landscape:py-2 landscape:px-4" data-testid="presentation-mode">
-      {/* Barra superior */}
-      <div className="flex justify-between items-start">
+  /* ---------------- Piezas comunes ---------------- */
+
+  const iconBtn = isSemaforo
+    ? "text-white bg-black/25 hover:bg-black/40"
+    : "text-zinc-400 hover:text-white hover:bg-zinc-700";
+
+  const topBar = (
+    <div className="relative flex justify-between items-center gap-2 shrink-0">
+      <div className="flex items-center">
         {studyStarted && phase !== PHASES.FINISHED ? (
-          <Button
-            onClick={onToggleTimer}
-            variant="ghost"
-            className="text-zinc-400 hover:text-white hover:bg-zinc-700 [&_svg]:size-7"
-            aria-label={isTimerRunning ? "Pausar" : "Reanudar"}
-            data-testid="presentation-toggle-timer"
-          >
+          <Button onClick={onToggleTimer} variant="ghost" className={`${iconBtn} [&_svg]:size-7`}
+            aria-label={isTimerRunning ? "Pausar" : "Reanudar"} data-testid="presentation-toggle-timer">
             {isTimerRunning ? <Pause /> : <Play />}
           </Button>
-        ) : <span />}
-        {analysisResult?.circuit_visit && (
-          <div
-            className="mx-2 mt-1 px-3 py-1.5 rounded-full bg-indigo-600 text-white text-xs md:text-sm font-bold tracking-wide text-center leading-tight shadow-lg"
-            data-testid="presentation-circuit-visit"
-          >
+        ) : <span className="w-10" />}
+      </div>
+      <div className="flex-1 min-w-0 text-center">
+        {analysisResult?.circuit_visit ? (
+          <span className="inline-block px-3 py-1 rounded-full bg-indigo-600 text-white text-[11px] md:text-sm font-bold tracking-wide leading-tight shadow"
+            data-testid="presentation-circuit-visit">
             SIN LECTURA DE PÁRRAFOS · {Math.round((totalDurationSeconds || 1800) / 60)} MIN
-          </div>
-        )}
-        <Button onClick={onExit} variant="ghost" className="text-zinc-400 hover:text-white hover:bg-zinc-700 [&_svg]:size-8" aria-label="Salir" data-testid="presentation-exit">
+          </span>
+        ) : null}
+      </div>
+      <div className="flex items-center">
+        <Button onClick={() => setShowLayoutMenu((v) => !v)} variant="ghost" className={`${iconBtn} [&_svg]:size-6`}
+          aria-label="Cambiar diseño" title="Cambiar diseño" data-testid="presentation-layout-button">
+          <LayoutTemplate />
+        </Button>
+        <Button onClick={onExit} variant="ghost" className={`${iconBtn} [&_svg]:size-8`} aria-label="Salir" data-testid="presentation-exit">
           <X />
         </Button>
       </div>
-
-      <div className="flex-1 flex flex-col items-center overflow-y-auto py-2 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
-        {/* Hora actual, hora a la que debe terminar y tiempo restante */}
-        <div className="grid grid-cols-3 gap-x-4 sm:gap-x-8 gap-y-2 mb-4 landscape:mb-2 landscape:sticky landscape:top-0 landscape:z-10 landscape:bg-zinc-800 landscape:py-1 landscape:w-full landscape:max-w-md">
-          <div className="text-center">
-            <p className="text-sm md:text-base landscape:text-xs font-semibold text-zinc-400">Hora actual</p>
-            <p className="text-3xl md:text-5xl landscape:text-3xl font-bold text-white tabular-nums">{formatClockTime(currentTime)}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm md:text-base landscape:text-xs font-semibold text-zinc-400">Termina</p>
-            <p className="text-3xl md:text-5xl landscape:text-3xl font-bold text-yellow-400 tabular-nums" data-testid="presentation-end-time">{formatClockTime(shownEndTime)}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-sm md:text-base landscape:text-xs font-semibold text-zinc-400">Restante</p>
-            <p className="text-3xl md:text-5xl landscape:text-3xl font-light text-orange-400 tabular-nums" data-testid="presentation-remaining">{formatTime(Math.max(0, remainingTime))}</p>
-          </div>
+      {showLayoutMenu && (
+        <div className="absolute right-0 top-12 z-30 bg-zinc-900 border border-zinc-700 rounded-2xl p-2 shadow-2xl w-60" data-testid="presentation-layout-menu">
+          <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider px-2 pt-1 pb-2">Diseño</p>
+          {LAYOUTS.map((l) => (
+            <button key={l.id} onClick={() => { onLayoutChange?.(l.id); setShowLayoutMenu(false); }}
+              className={`w-full text-left px-3 py-2.5 rounded-xl mb-1 ${layout === l.id ? "bg-orange-500 text-white" : "text-zinc-200 hover:bg-zinc-800"}`}
+              data-testid={`presentation-layout-${l.id}`}>
+              <span className="block text-sm font-bold">{l.name}</span>
+              <span className={`block text-xs ${layout === l.id ? "text-orange-100" : "text-zinc-400"}`}>{l.description}</span>
+            </button>
+          ))}
         </div>
+      )}
+    </div>
+  );
 
-        {/* Progreso total */}
-        <div className="w-full max-w-[17rem] mb-4">
-          <div className="relative w-full bg-zinc-700/50 rounded-full h-5 overflow-hidden">
-            <div className="bg-yellow-500 h-5 rounded-full transition-all duration-1000 ease-linear" style={{ width: `${progressPercentage}%` }} />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="font-bold text-white text-xs drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">{Math.round(progressPercentage)}%</span>
+  const timesRow = (compact = false) => {
+    const lbl = `font-semibold ${compact ? "text-[11px]" : "text-sm md:text-base landscape:text-xs"} ${isSemaforo ? "text-white/80" : "text-zinc-400"}`;
+    const val = `${compact ? "text-2xl md:text-3xl" : "text-3xl md:text-5xl landscape:text-3xl"} tabular-nums`;
+    return (
+      <div className={`grid grid-cols-3 gap-x-3 sm:gap-x-8 text-center w-full max-w-md mx-auto ${isSemaforo ? "bg-black/40 rounded-2xl py-2 text-white" : ""}`}>
+        <div>
+          <p className={lbl}>Hora actual</p>
+          <p className={`${val} font-bold text-white`}>{formatClockTime(currentTime)}</p>
+        </div>
+        <div>
+          <p className={lbl}>Termina</p>
+          <p className={`${val} font-bold ${isSemaforo ? "text-yellow-200" : "text-yellow-400"}`} data-testid="presentation-end-time">{formatClockTime(shownEndTime)}</p>
+        </div>
+        <div>
+          <p className={lbl}>Restante</p>
+          <p className={`${val} ${isSemaforo ? "font-bold text-white" : "font-light text-orange-400"}`} data-testid="presentation-remaining">{formatTime(Math.max(0, remainingTime))}</p>
+        </div>
+      </div>
+    );
+  };
+
+  const progressBar = (thin = false) => (
+    <div className={`w-full ${thin ? "max-w-md" : "max-w-[17rem]"} mx-auto`}>
+      <div className={`relative w-full ${isSemaforo ? "bg-black/25" : "bg-zinc-700/50"} rounded-full ${thin ? "h-2" : "h-5"} overflow-hidden`}>
+        <div className={`${isSemaforo ? "bg-white" : "bg-yellow-500"} h-full rounded-full transition-all duration-1000 ease-linear`} style={{ width: `${progressPercentage}%` }} />
+        {!thin && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-bold text-white text-xs drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">{Math.round(progressPercentage)}%</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const badgeRow = phase === PHASES.PARAGRAPHS && (badges.image || badges.scripture || badges.note || badges.highlights?.length) ? (
+    <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+      {badges.scripture && (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-blue-950/80 text-blue-100 border border-blue-500">
+          <BookOpen className="w-4 h-4 shrink-0" /> {badges.scriptureRefs?.length ? `Leer ${badges.scriptureRefs.join(" · ")}` : "Texto para leer"}
+        </span>
+      )}
+      {badges.image && (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-purple-950/80 text-purple-100 border border-purple-500">
+          <Image className="w-4 h-4" /> Imagen
+        </span>
+      )}
+      {badges.note && (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-amber-950/80 text-amber-100 border border-amber-500">
+          <MessageCircleQuestion className="w-4 h-4" /> Nota de estudio
+        </span>
+      )}
+      {(badges.highlights || []).map((h, i) => (
+        <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-cyan-950/80 text-cyan-100 border border-cyan-500 max-w-[18rem]">
+          <Star className="w-4 h-4 shrink-0" /> <span className="truncate">{h}</span>
+        </span>
+      ))}
+    </div>
+  ) : null;
+
+  const warningBlock = warning ? (
+    <div className="mt-3 pt-3 border-t border-white/25 w-full text-center" data-testid="presentation-five-minute-warning">
+      <div className={`flex items-center justify-center gap-2 animate-pulse ${warning.isOvertime ? "text-red-100" : "text-yellow-100"}`}>
+        <AlertCircle className="w-5 h-5 shrink-0" />
+        <div className="font-bold text-sm uppercase tracking-wider">
+          {warning.prefix && <span>{warning.prefix} </span>}
+          <span className="text-2xl text-white font-black mx-1 tabular-nums">{warning.number}</span>
+          <span> {warning.suffix}</span>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
+  // Botón para avanzar: grande, con lo que viene a continuación bien visible
+  const nextButton = (variant) => nextInfo && (
+    <button
+      onClick={handleSmartButton}
+      className="w-full rounded-3xl flex items-center justify-between gap-3 px-6 min-h-[96px] landscape:min-h-[84px] text-left transition-transform active:scale-95 shadow-xl bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/40 ring-2 ring-white/20"
+      data-testid="presentation-smart-button"
+    >
+      <span className="min-w-0">
+        {nextInfo.kicker && (
+          <span className="block text-xs md:text-sm font-bold uppercase tracking-[0.2em] mb-1 text-blue-100">{nextInfo.kicker}</span>
+        )}
+        <span className={`block ${nextInfo.main.length > 14 ? "text-2xl md:text-3xl" : "text-4xl md:text-5xl"} landscape:text-3xl font-black uppercase leading-none`} data-testid="presentation-next-label">{nextInfo.main}</span>
+      </span>
+      <ArrowRight className="w-10 h-10 shrink-0" strokeWidth={3} />
+    </button>
+  );
+
+  // Botón de comentarios: ancho, naranja, con el total a la vista
+  const commentButton = (variant) => canComment && (
+    <button
+      onClick={onAddComment}
+      className="w-full rounded-3xl min-h-[72px] landscape:min-h-[64px] px-6 flex items-center justify-between gap-3 shadow-xl transition-transform active:scale-95 bg-orange-500 hover:bg-orange-400 text-white shadow-orange-900/40 ring-2 ring-white/20"
+      aria-label="Marcar un comentario" title="Marcar un comentario"
+      data-testid="presentation-add-comment"
+    >
+      <span className="flex items-center gap-3">
+        <Hand className="w-9 h-9 shrink-0" strokeWidth={2.2} />
+        <span className="text-xl md:text-2xl font-black uppercase tracking-wide">Comentario</span>
+      </span>
+      <span className="text-right leading-none">
+        <span className="block text-3xl font-black tabular-nums" data-testid="presentation-comment-count">{totalComments}</span>
+        <span className="block text-[11px] font-semibold opacity-85 mt-0.5">en total</span>
+      </span>
+    </button>
+  );
+
+  const actionBar = (variant) => (
+    <div className="flex flex-col gap-3 w-full max-w-xl mx-auto">
+      {commentButton(variant)}
+      {nextButton(variant)}
+    </div>
+  );
+
+  const escHint = (
+    <div className="shrink-0 h-5 flex items-center justify-center">
+      {studyStarted && hasKeyboard && <span className={`${isSemaforo ? "opacity-60" : "text-zinc-500"} text-xs`}>Pulsa «Esc» para salir</span>}
+    </div>
+  );
+
+  // Bloque central del estado: título del tramo + tiempo del tramo
+  const statusCore = (big) => (
+    <>
+      <p className="text-xs md:text-sm font-bold tracking-[0.25em] opacity-90">{indicatorText}</p>
+      <p className={`${big ? "text-3xl md:text-4xl" : "text-2xl md:text-3xl"} landscape:text-2xl font-black uppercase tracking-wide mt-1 flex items-center justify-center gap-2`} data-testid="presentation-phase-title">
+        {phaseInfo.title}
+      </p>
+      {phaseInfo.subtitle && <p className="text-base md:text-lg opacity-80">{phaseInfo.subtitle}</p>}
+      <p className={`${big ? "text-7xl md:text-8xl" : "text-6xl md:text-7xl"} landscape:text-6xl font-extralight tabular-nums leading-none mt-2`}>{formatTime(phaseElapsedTime)}</p>
+      {estimatedTime > 0 && (
+        <p className="text-xl md:text-2xl landscape:text-lg font-light opacity-80 tabular-nums mt-1">de {formatTime(Math.round(estimatedTime))}</p>
+      )}
+      {badgeRow}
+      {warningBlock}
+    </>
+  );
+
+  /* ---------------- Diseño «Semáforo» ---------------- */
+  if (layout === "semaforo") {
+    return (
+      <div className={`fixed inset-0 z-[9999] ${colorClass} transition-colors duration-500 flex flex-col p-3 md:p-6 gap-2`} data-testid="presentation-mode" data-layout="semaforo">
+        {topBar}
+        {isLandscape ? (
+          <div className="flex-1 min-h-0 flex flex-row gap-5">
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-2 min-h-0 overflow-y-auto">
+              {statusCore(true)}
+            </div>
+            <div className="w-[42%] flex flex-col justify-center gap-4">
+              {timesRow(true)}{progressBar(true)}{actionBar("dark")}
             </div>
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="space-y-2 shrink-0">{timesRow()}{progressBar(true)}</div>
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-2 min-h-0 overflow-y-auto">
+              {statusCore(true)}
+            </div>
+            <div className="shrink-0 pt-1">{actionBar("dark")}</div>
+          </>
+        )}
+        {escHint}
+      </div>
+    );
+  }
 
-        {/* Participaciones */}
+  /* ---------------- Diseño «Panel ordenado» ---------------- */
+  if (layout === "panel") {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-zinc-800 text-white flex flex-col p-3 md:p-6 gap-2" data-testid="presentation-mode" data-layout="panel">
+        {topBar}
+        {isLandscape ? (
+          <div className="flex-1 min-h-0 flex flex-row gap-5">
+            <div className={`flex-1 min-h-0 overflow-y-auto rounded-[2rem] ${colorClass} transition-colors duration-500 flex flex-col items-center justify-center text-center px-4 py-3 shadow-2xl`} data-testid="presentation-status-box">
+              {statusCore(false)}
+            </div>
+            <div className="w-[42%] flex flex-col justify-center gap-4">
+              {timesRow(true)}{progressBar(true)}{actionBar("dark")}
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-2 shrink-0">{timesRow()}{progressBar(true)}</div>
+            <div className={`flex-1 min-h-0 overflow-y-auto rounded-[2rem] ${colorClass} transition-colors duration-500 flex flex-col items-center justify-center text-center px-4 py-5 shadow-2xl`} data-testid="presentation-status-box">
+              {statusCore(true)}
+            </div>
+            <div className="shrink-0 pt-1">{actionBar("dark")}</div>
+          </>
+        )}
+        {escHint}
+      </div>
+    );
+  }
+
+  /* ---------------- Diseño «Clásico» (el de siempre, con el botón de avanzar mejorado) ---------------- */
+  return (
+    <div className="fixed inset-0 z-[9999] bg-zinc-800 text-white flex flex-col p-4 md:p-6 landscape:py-2 landscape:px-4" data-testid="presentation-mode" data-layout="classic">
+      {topBar}
+
+      <div className="flex-1 flex flex-col items-center overflow-y-auto py-2 [&>*:first-child]:mt-auto [&>*:last-child]:mb-auto">
+        <div className="mb-4 landscape:mb-2 w-full landscape:sticky landscape:top-0 landscape:z-10 landscape:bg-zinc-800 landscape:py-1">{timesRow()}</div>
+
+        <div className="w-full mb-4">{progressBar(false)}</div>
+
         {studyStarted && (
           <div className="text-center bg-gradient-to-br from-zinc-700 to-zinc-800 border border-zinc-600 rounded-2xl px-5 py-3 landscape:p-2 mb-4 shadow-lg" data-testid="presentation-comments">
             <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Participaciones</p>
@@ -295,92 +519,31 @@ export default function PresentationMode({
           </div>
         )}
 
-        {/* Recuadro de color */}
         <div className={`w-full max-w-[17rem] rounded-2xl flex flex-col items-center justify-center transition-colors duration-500 py-8 px-6 landscape:py-3 landscape:px-2 shadow-2xl ${colorClass}`} data-testid="presentation-status-box">
-          <p className="text-white text-lg md:text-2xl landscape:text-base font-bold tracking-widest text-center">{indicatorText}</p>
-          <p className="text-white text-4xl md:text-6xl landscape:text-4xl font-light tabular-nums">{formatTime(phaseElapsedTime)}</p>
+          <p className="text-lg md:text-2xl landscape:text-base font-bold tracking-widest text-center">{indicatorText}</p>
+          <p className="text-4xl md:text-6xl landscape:text-4xl font-light tabular-nums">{formatTime(phaseElapsedTime)}</p>
           {estimatedTime > 0 && (
-            <p className="text-white/70 text-lg md:text-2xl landscape:text-base font-light tabular-nums">/ {formatTime(Math.round(estimatedTime))}</p>
+            <p className="opacity-70 text-lg md:text-2xl landscape:text-base font-light tabular-nums">/ {formatTime(Math.round(estimatedTime))}</p>
           )}
-
-          {warning && (
-            <div className="mt-4 pt-4 border-t border-white/20 w-full text-center" data-testid="presentation-five-minute-warning">
-              <div className={`flex items-center justify-center gap-2 animate-pulse ${warning.isOvertime ? "text-red-200" : "text-yellow-200"}`}>
-                <AlertCircle className="w-5 h-5 shrink-0" />
-                <div className="font-bold text-sm uppercase tracking-wider">
-                  {warning.prefix && <span>{warning.prefix} </span>}
-                  <span className="text-2xl text-white font-black mx-1 tabular-nums">{warning.number}</span>
-                  <span> {warning.suffix}</span>
-                </div>
-              </div>
-            </div>
-          )}
+          {warningBlock}
         </div>
 
-        {/* Tramo actual */}
         <div className="text-center mt-4 landscape:mt-2">
-          <p className="text-2xl md:text-3xl landscape:text-xl font-black uppercase tracking-wider flex items-center justify-center gap-2">
+          <p className="text-2xl md:text-3xl landscape:text-xl font-black uppercase tracking-wider flex items-center justify-center gap-2" data-testid="presentation-phase-title">
             <PhaseIcon className="w-6 h-6 text-zinc-400" />
             {phaseInfo.title}
           </p>
           {phaseInfo.subtitle && <p className="text-lg md:text-xl landscape:text-base text-zinc-400 mt-1">{phaseInfo.subtitle}</p>}
-
-          {phase === PHASES.PARAGRAPHS && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-4 landscape:mt-2">
-              {badges.image && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-900/70 text-purple-200 border border-purple-700">
-                  <Image className="w-3.5 h-3.5" /> Contiene imagen
-                </span>
-              )}
-              {badges.scripture && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-900/70 text-blue-200 border border-blue-700">
-                  <BookOpen className="w-3.5 h-3.5 shrink-0" /> {badges.scriptureRefs?.length ? `Leer ${badges.scriptureRefs.join(" · ")}` : "Texto para leer"}
-                </span>
-              )}
-              {badges.note && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-900/70 text-amber-200 border border-amber-700">
-                  <MessageCircleQuestion className="w-3.5 h-3.5" /> Nota de estudio
-                </span>
-              )}
-              {(badges.highlights || []).map((h, i) => (
-                <span key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-900/70 text-cyan-200 border border-cyan-700 max-w-[18rem]">
-                  <Star className="w-3.5 h-3.5 shrink-0" /> <span className="truncate">{h}</span>
-                </span>
-              ))}
-            </div>
-          )}
+          {badgeRow}
         </div>
 
-        {/* Botones */}
-        <div className="flex flex-col items-center gap-6 mt-8 landscape:mt-3 landscape:gap-3">
-          {canComment && (
-            <Button
-              onClick={onAddComment}
-              className="bg-orange-500 hover:bg-orange-600 text-white rounded-full w-20 h-20 landscape:w-16 landscape:h-16 flex items-center justify-center shadow-lg transition-all active:scale-90 p-0 [&_svg]:size-10 landscape:[&_svg]:size-8"
-              aria-label="Marcar un comentario"
-              title="Marcar un comentario"
-              data-testid="presentation-add-comment"
-            >
-              <Hand fill="white" />
-            </Button>
-          )}
-          {smartButtonText && (
-            <Button
-              onClick={handleSmartButton}
-              size="lg"
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full px-5 py-3 landscape:py-2 text-sm font-bold tracking-wider uppercase h-auto transition-all active:scale-95 shadow-lg shadow-blue-500/30 flex items-center gap-2"
-              data-testid="presentation-smart-button"
-            >
-              <span>{smartButtonText}</span>
-              <ArrowRight className="w-4 h-4" strokeWidth={3} />
-            </Button>
-          )}
+        <div className="flex flex-col items-center gap-3 mt-6 landscape:mt-3 w-full max-w-sm">
+          {commentButton("dark")}
+          {nextButton("dark")}
         </div>
       </div>
 
-      <div className="flex-shrink-0 pt-2 h-8 flex items-center justify-center">
-        {studyStarted && <span className="text-zinc-500 text-xs">Pulsa «Esc» para salir</span>}
-      </div>
+      {escHint}
     </div>
   );
 }
