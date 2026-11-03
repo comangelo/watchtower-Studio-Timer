@@ -44,7 +44,7 @@ export const cleanHyphenatedText = (text) => text.replace(/(\p{L})-\s+(\p{Ll})/g
 const ci = (w) => [...w].map((c) => (c.toLowerCase() !== c.toUpperCase() ? `[${c.toLowerCase()}${c.toUpperCase()}]` : c)).join('');
 export const READ_VERB = '(?:' + [
   '[Ll][EeÉé](?:[Aa]|[Ee])[Nn]?(?:[Ll][Oo][Ss]?)?',
-  ...['read', 'lies', 'lest', 'lesen', 'leggi', 'leggete', 'leggiamo', 'leggetelo', 'leggilo', 'lisez', 'lis', 'lire', 'lisons', 'leia', 'leiam', 'lê', 'ler', 'leiamos'].map(ci),
+  ...['read', 'lies', 'lest', 'lesen', 'leggi', 'leggete', 'leggiamo', 'leggetelo', 'leggilo', 'lisez', 'lis', 'lire', 'lisons', 'leia', 'leiam', 'lê', 'ler', 'leiamos', 'przeczytaj', 'przeczytajcie', 'lees', 'leest', 'citește', 'citiți', 'citeste', 'cititi'].map(ci),
 ].join('|') + ')(?![\\p{L}])';
 const READ_PREFIX = new RegExp('^' + READ_VERB + '\\s+', 'u');
 /** "Efesios 6: 11, 12" (cita partida entre dos líneas) -> "Efesios 6:11, 12" */
@@ -104,11 +104,11 @@ export function joinParagraphLines(lines) {
 export function classifyParenthesisContent(paren) {
   // "vea también la imagen", "See also picture", "Siehe auch Bild", "Vedi anche immagine",
   // "Voir aussi l’image", "Veja também a imagem"; nota/note/footnote/Fußnote
-  const VERB = '(?:vea|mira|mire|observe|observa|see|siehe|seht|vedi|vedete|voir|vois|voyez|veja|vejam|ver|olhe)';
-  const ALSO = '(?:también|also|auch|anche|aussi|também)';
-  const ART = "(?:(?:la|las|the|das|die|den|le|les|l['’]|a|as|o|os|i|gli|l)\\s*)?";
-  const IMAGE = '(?:im[aá]gen(?:es)?|ilustraci[oó]n(?:es)?|pictures?|illustrations?|images?|bild(?:er)?|abbildung(?:en)?|immagin[ei]|illustrazion[ei]|imagens?|imagem|ilustra[çc](?:ão|ões))';
-  const NOTE = '(?:nota|note|footnote|fu[ßs]note|anmerkung)';
+  const VERB = '(?:vea|mira|mire|observe|observa|see|siehe|seht|vedi|vedete|voir|vois|voyez|veja|vejam|ver|olhe|zobacz|zob\\.|zie|vezi|vedeți|vedeti)';
+  const ALSO = '(?:también|also|auch|anche|aussi|também|też|także|również|ook|și|si)';
+  const ART = "(?:(?:la|las|the|das|die|den|le|les|l['’]|a|as|o|os|i|gli|l|de|het)\\s*)?";
+  const IMAGE = '(?:im[aá]gen(?:es)?|ilustraci[oó]n(?:es)?|pictures?|illustrations?|images?|bild(?:er)?|abbildung(?:en)?|immagin[ei]|illustrazion[ei]|imagens?|imagem|ilustra[çc](?:ão|ões)|ilustracj[aęei]|ilustracji|zdjęci[ae]|afbeelding(?:en)?|plaat(?:je)?s?|imaginea|imaginile|imagini|ilustrația|ilustrațiile)';
+  const NOTE = '(?:nota|note|footnote|fu[ßs]note|anmerkung|przypis(?:y|u|ie)?|voetnoot|nota de subsol)';
   const END = '(?![\\p{L}])';
   const lead = '(?<![\\p{L}])' + VERB + '\\s*(?:' + ALSO + '\\s+)?' + ART;
   const hasNote = new RegExp(lead + NOTE + END, 'iu').test(paren);
@@ -250,7 +250,7 @@ export function extractLeaScripturesFromText(text) {
 // Acentos que algunos PDF dibujan como un signo aparte encima de la letra
 const SPACING_TO_COMBINING = {
   '´': '́', 'ˊ': '́', '`': '̀', 'ˋ': '̀', '¨': '̈',
-  '˜': '̃', 'ˆ': '̂', '¸': '̧', '˚': '̊', 'ˇ': '̌',
+  '˜': '̃', 'ˆ': '̂', '¸': '̧', '˚': '̊', 'ˇ': '̌', '˙': '̇', '˘': '̆', '\uE000': '̦',
 };
 const BASE_FIX = { 'ı': 'i', 'ȷ': 'j' };
 
@@ -260,6 +260,16 @@ function composeAccent(accent, base) {
   const b = BASE_FIX[base] || base;
   const composed = (b + comb).normalize('NFC');
   return composed.length === 1 ? composed : null;
+}
+
+// Palabras cortas polacas tras las que suele empezar otra palabra con ś/ź/ż ("na świecie", "i życie")
+const PL_SHORT_WORDS = new Set(['a', 'i', 'o', 'u', 'w', 'z', 'na', 'do', 'po', 'we', 'ze', 'za', 'są', 'się', 'nie', 'to', 'ten', 'tym', 'jak', 'jest', 'być', 'aby', 'że', 'lub', 'oraz', 'przy', 'przez', 'dla', 'bez', 'nad', 'pod', 'przed', 'całym', 'tak', 'już', 'też', 'jego', 'jej', 'ich', 'nasze', 'nasz', 'swoje', 'swój', 'może', 'mogą', 'można', 'cały']);
+function polishWordStart(prevStr, nextStr) {
+  if (!/^[śźżŚŹŻ]/u.test(nextStr)) return false;
+  const t = prevStr.trimEnd();
+  if (/[,.;:!?”"’)—–]$/u.test(t)) return true;
+  const last = (t.split(/\s+/).pop() || '').toLowerCase();
+  return PL_SHORT_WORDS.has(last);
 }
 
 const applyMatrix = (m, x, y) => [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]];
@@ -299,6 +309,21 @@ export async function extractSpans(doc, OPS) {
       items.push({ str: it.str, x, y, size, width: it.width || 0, fontName: it.fontName, eol: !!it.hasEOL });
     }
 
+    // 1b) Polaco: algunas fuentes traen "ę" como "©" y "ą" como "§" ("si©" -> "się", "s§" -> "są").
+    //     Solo pegados a una letra (el "© 2026" del pie no se toca).
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      if (!/[©§]/.test(it.str)) continue;
+      const prevEndsLetter = i > 0 && /\p{L}$/u.test(items[i - 1].str);
+      it.str = it.str
+        .replace(/(\p{L})©/gu, '$1ę').replace(/(\p{L})§/gu, '$1ą')
+        .replace(/^©(?=\p{L}|$|[\s,.;:!?—”’)-])/u, (c) => (prevEndsLetter ? 'ę' : c))
+        .replace(/^§(?=\p{L}|$|[\s,.;:!?—”’)-])/u, (c) => (prevEndsLetter ? 'ą' : c));
+    }
+
+    // 1c) Rumano: la coma de "ș"/"ț" llega como un "ù" sin anchura debajo de la letra
+    for (const it of items) if (it.str === 'ù' && it.width < 1) it.str = '\uE000';
+
     // 2) Recomponer acentos dibujados aparte ("´" + "ı" -> "í").
     //    pdf.js suele intercalar un espacio falso porque la tilde retrocede sobre la letra;
     //    se elimina si la letra base empieza justo donde acabó la anterior.
@@ -308,7 +333,7 @@ export async function extractSpans(doc, OPS) {
     // se pasa al principio del tramo siguiente, donde está su letra.
     for (let i = 0; i < items.length - 1; i++) {
       const it = items[i];
-      const m = /\s?([´ˊ`ˋ¨˜ˆ¸˚ˇ])$/u.exec(it.str);
+      const m = /\s?([´ˊ`ˋ¨˜ˆ¸˚ˇ˙˘])$/u.exec(it.str);
       if (!m || it.str.length < 2) continue;
       let j = i + 1;
       while (j < items.length && isBlank(items[j])) j++;
@@ -341,7 +366,9 @@ export async function extractSpans(doc, OPS) {
           // (la letra empieza antes de que acabe el tramo anterior: ese espacio no existe)
           // Excepción: palabras de una sola letra acentuada ("como é que", "à", "às").
           const standalone = /^(?:[éÉàÀóÓ]|[àÀ]s)(?=$|[\s,.;:!?)])/u.test(next.str);
-          if (prev && / $/.test(prev.str) && !standalone && next.x < prev.x + prev.width - it.size * 0.1) prev.str = prev.str.replace(/ +$/, '');
+          // Polaco: ś/ź/ż también empiezan palabras ("na świecie", "Przyznał, że"): ahí el espacio es real.
+          const keepSpace = !!prev && polishWordStart(prev.str, next.str);
+          if (prev && / $/.test(prev.str) && !standalone && !keepSpace && next.x < prev.x + prev.width - it.size * 0.1) prev.str = prev.str.replace(/ +$/, '');
         }
       }
       if (!done) {
@@ -477,8 +504,8 @@ export function detectHorizontalLine(pages, OPS) {
  * Sirve tanto si los puntos son preguntas como si son frases ("Ser más accesibles.").
  */
 // "CANCIÓN 12" en cada idioma (cierra el artículo)
-const SONG_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO)\s+\d+/u;
-const SONG_WORD_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO)\b/u;
+const SONG_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO|PIEŚŃ|PIESN|C[ÂA]NTAREA)\s+\d+/u;
+const SONG_WORD_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO|PIEŚŃ|PIESN|C[ÂA]NTAREA)(?![\p{L}])/u;
 const BULLET_CHARS = '˛•·■□▪▫❑☐◻◼●○✓✔➢►';
 const REVIEW_BULLET = new RegExp('^[' + BULLET_CHARS + ']$', 'u');
 // Casilla pegada al texto: "• Explica por qué…"
@@ -589,23 +616,23 @@ function extractQuestionsAfterLine(pages, line) {
 
 // Meses en los idiomas de la app (sin tildes, en mayúsculas)
 const MONTH_NAMES = [
-  ['ENERO', 'JANUARY', 'JANUAR', 'GENNAIO', 'JANVIER', 'JANEIRO'],
-  ['FEBRERO', 'FEBRUARY', 'FEBRUAR', 'FEBBRAIO', 'FEVRIER', 'FEVEREIRO'],
-  ['MARZO', 'MARCH', 'MARZ', 'MARS', 'MARCO'],
-  ['ABRIL', 'APRIL', 'APRILE', 'AVRIL'],
-  ['MAYO', 'MAY', 'MAI', 'MAGGIO', 'MAIO'],
-  ['JUNIO', 'JUNE', 'JUNI', 'GIUGNO', 'JUIN', 'JUNHO'],
-  ['JULIO', 'JULY', 'JULI', 'LUGLIO', 'JUILLET', 'JULHO'],
-  ['AGOSTO', 'AUGUST', 'AOUT'],
-  ['SEPTIEMBRE', 'SETIEMBRE', 'SEPTEMBER', 'SETTEMBRE', 'SEPTEMBRE', 'SETEMBRO'],
-  ['OCTUBRE', 'OCTOBER', 'OKTOBER', 'OTTOBRE', 'OCTOBRE', 'OUTUBRO'],
-  ['NOVIEMBRE', 'NOVEMBER', 'NOVEMBRE', 'NOVEMBRO'],
-  ['DICIEMBRE', 'DECEMBER', 'DEZEMBER', 'DICEMBRE', 'DECEMBRE', 'DEZEMBRO'],
+  ['ENERO', 'JANUARY', 'JANUAR', 'GENNAIO', 'JANVIER', 'JANEIRO', 'STYCZNIA', 'STYCZEN', 'JANUARI', 'IANUARIE'],
+  ['FEBRERO', 'FEBRUARY', 'FEBRUAR', 'FEBBRAIO', 'FEVRIER', 'FEVEREIRO', 'LUTEGO', 'LUTY', 'FEBRUARI', 'FEBRUARIE'],
+  ['MARZO', 'MARCH', 'MARZ', 'MARS', 'MARCO', 'MARCA', 'MARZEC', 'MAART', 'MARTIE'],
+  ['ABRIL', 'APRIL', 'APRILE', 'AVRIL', 'KWIETNIA', 'KWIECIEN', 'APRILIE'],
+  ['MAYO', 'MAY', 'MAI', 'MAGGIO', 'MAIO', 'MAJA', 'MAJ', 'MEI'],
+  ['JUNIO', 'JUNE', 'JUNI', 'GIUGNO', 'JUIN', 'JUNHO', 'CZERWCA', 'CZERWIEC', 'IUNIE'],
+  ['JULIO', 'JULY', 'JULI', 'LUGLIO', 'JUILLET', 'JULHO', 'LIPCA', 'LIPIEC', 'IULIE'],
+  ['AGOSTO', 'AUGUST', 'AOUT', 'SIERPNIA', 'SIERPIEN', 'AUGUSTUS'],
+  ['SEPTIEMBRE', 'SETIEMBRE', 'SEPTEMBER', 'SETTEMBRE', 'SEPTEMBRE', 'SETEMBRO', 'WRZESNIA', 'WRZESIEN', 'SEPTEMBRIE'],
+  ['OCTUBRE', 'OCTOBER', 'OKTOBER', 'OTTOBRE', 'OCTOBRE', 'OUTUBRO', 'PAZDZIERNIKA', 'PAZDZIERNIK', 'OCTOMBRIE'],
+  ['NOVIEMBRE', 'NOVEMBER', 'NOVEMBRE', 'NOVEMBRO', 'LISTOPADA', 'LISTOPAD', 'NOIEMBRIE'],
+  ['DICIEMBRE', 'DECEMBER', 'DEZEMBER', 'DICEMBRE', 'DECEMBRE', 'DEZEMBRO', 'GRUDNIA', 'GRUDZIEN', 'DECEMBRIE'],
 ];
 const MONTHS = {};
 MONTH_NAMES.forEach((names, idx) => names.forEach((n) => { MONTHS[n] = idx; }));
 // Palabras de unión permitidas en la cabecera ("2 A 8 DE MARÇO DE 2026", "MARCH 2-8, 2026")
-const WEEK_FILLERS = new Set(['DE', 'DEL', 'A', 'AL', 'AU', 'DU', 'BIS', 'TO']);
+const WEEK_FILLERS = new Set(['DE', 'DEL', 'A', 'AL', 'AU', 'DU', 'BIS', 'TO', 'DO']);
 const stripMarks = (t) => t.normalize('NFD').replace(/\p{M}/gu, '');
 
 /**
