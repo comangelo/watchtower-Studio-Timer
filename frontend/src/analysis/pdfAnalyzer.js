@@ -37,10 +37,15 @@ const isUpperText = (s) => s === s.toUpperCase() && s !== s.toLowerCase();
 const isUpperChar = (c) => !!c && c === c.toUpperCase() && c !== c.toLowerCase();
 
 // "ima- gen" -> "imagen"
-export const cleanHyphenatedText = (text) => text.replace(/-\s+([a-záéíóúñ])/g, '$1');
+export const cleanHyphenatedText = (text) => text.replace(/(\p{L})-\s+(\p{Ll})/gu, '$1$2');
 
 /** Verbo de lectura al inicio: "lea", "léalo", "lee", "léelo", "lean", "léanlo" (forma de usted y de tú). */
-export const READ_VERB = '[Ll][EeÉé](?:[Aa]|[Ee])[Nn]?(?:[Ll][Oo][Ss]?)?';
+// Otros idiomas: read (EN), lies/lest (DE), leggi/leggete (IT), lis/lisez/lire (FR), leia/leiam/lê/ler (PT)
+const ci = (w) => [...w].map((c) => (c.toLowerCase() !== c.toUpperCase() ? `[${c.toLowerCase()}${c.toUpperCase()}]` : c)).join('');
+export const READ_VERB = '(?:' + [
+  '[Ll][EeÉé](?:[Aa]|[Ee])[Nn]?(?:[Ll][Oo][Ss]?)?',
+  ...['read', 'lies', 'lest', 'lesen', 'leggi', 'leggete', 'leggiamo', 'leggetelo', 'leggilo', 'lisez', 'lis', 'lire', 'lisons', 'leia', 'leiam', 'lê', 'ler', 'leiamos'].map(ci),
+].join('|') + ')(?![\\p{L}])';
 const READ_PREFIX = new RegExp('^' + READ_VERB + '\\s+', 'u');
 /** "Efesios 6: 11, 12" (cita partida entre dos líneas) -> "Efesios 6:11, 12" */
 export const joinVerseColon = (text) => text.replace(/(\d+):\s+(\d+)/g, '$1:$2');
@@ -49,18 +54,18 @@ export const joinVerseColon = (text) => text.replace(/(\d+):\s+(\d+)/g, '$1:$2')
 const SINGLE_CHAPTER = '(?:Abd[ií]as|Abd\\.|Filem[oó]n|Filem\\.|Flm\\.|[23]\\s?Juan|[23]\\s?Jn\\.|Judas|Jud\\.)';
 const SINGLE_CHAPTER_REF = new RegExp(SINGLE_CHAPTER + '\\s+\\d+(?:\\s?[-–,]\\s?\\d+)*', 'u');
 const BIBLE_REF = new RegExp(
-  '(?:[1-3]\\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\\.?\\s+\\d+:\\d+(?:\\s?[-–,]\\s?\\d+(?::\\d+)?)*'
+  '(?:[1-3]\\.?\\s?)?\\p{Lu}\\p{Ll}+\\.?\\s+\\d+:\\d+(?:\\s?[-–,]\\s?\\d+(?::\\d+)?)*'
   + '|' + SINGLE_CHAPTER + '\\s+\\d+(?:\\s?[-–,]\\s?\\d+)*(?![\\d:])',
   'gu');
 /** "Lucas 1:67-73" y "Luc. 1:69" -> "luc1" (libro abreviado + capítulo) */
 export function chapterKey(ref) {
-  const m = /^((?:[1-3]\s?)?[A-Za-zÁÉÍÓÚÑáéíóúñ]+)\.?\s+(\d+)(?=:)/u.exec((ref || '').trim());
+  const m = /^((?:[1-3]\.?\s?)?\p{L}+)\.?\s+(\d+)(?=:)/u.exec((ref || '').trim());
   if (!m) return null;
   const book = m[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f\s]/g, '').slice(0, 4);
   return book + m[2];
 }
 // Tras "lee/lea": nombre de libro + número basta ("lee Filemón 10-12", "lea Judas 3")
-const READ_BOOK_REF = /^(?:[1-3]\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\.?\s+\d+/u;
+const READ_BOOK_REF = /^(?:[1-3]\.?\s?)?\p{Lu}\p{Ll}+\.?\s+\d+/u;
 
 export function joinHyphenatedLines(parts) {
   const result = [];
@@ -88,7 +93,7 @@ export function joinParagraphLines(lines) {
     line = line.trim();
     if (!line) continue;
     if (!out) { out = line; continue; }
-    if (/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]-$/u.test(out) && /^[a-záéíóúüñ]/u.test(line)) out = out.slice(0, -1) + line;
+    if (/\p{L}-$/u.test(out) && /^\p{Ll}/u.test(line)) out = out.slice(0, -1) + line;
     else if (/[-:]$/.test(out) && /^\d/.test(line)) out += line;
     else out += ' ' + line;
   }
@@ -97,14 +102,23 @@ export function joinParagraphLines(lines) {
 
 /** Clasifica el contenido entre paréntesis: image | scripture | note | both | "" */
 export function classifyParenthesisContent(paren) {
-  const VERB = '(?:vea|mira|mire|observe|observa)';
-  const hasNote = new RegExp(VERB + '\\s*(también\\s+)?la\\s+nota', 'iu').test(paren);
+  // "vea también la imagen", "See also picture", "Siehe auch Bild", "Vedi anche immagine",
+  // "Voir aussi l’image", "Veja também a imagem"; nota/note/footnote/Fußnote
+  const VERB = '(?:vea|mira|mire|observe|observa|see|siehe|seht|vedi|vedete|voir|vois|voyez|veja|vejam|ver|olhe)';
+  const ALSO = '(?:también|also|auch|anche|aussi|também)';
+  const ART = "(?:(?:la|las|the|das|die|den|le|les|l['’]|a|as|o|os|i|gli|l)\\s*)?";
+  const IMAGE = '(?:im[aá]gen(?:es)?|ilustraci[oó]n(?:es)?|pictures?|illustrations?|images?|bild(?:er)?|abbildung(?:en)?|immagin[ei]|illustrazion[ei]|imagens?|imagem|ilustra[çc](?:ão|ões))';
+  const NOTE = '(?:nota|note|footnote|fu[ßs]note|anmerkung)';
+  const END = '(?![\\p{L}])';
+  const lead = '(?<![\\p{L}])' + VERB + '\\s*(?:' + ALSO + '\\s+)?' + ART;
+  const hasNote = new RegExp(lead + NOTE + END, 'iu').test(paren);
+  const ADJ = '(?:(?:cover|front|portada|titelbild|copertina|couverture|capa)\\s+)?';
 
   let hasImage = false;
   if (!hasNote) {
-    hasImage = new RegExp(VERB + '\\s*(también\\s+)?(la\\s+|las\\s+)?(im[aá]gen(es)?|ilustraci[oó]n(es)?)', 'iu').test(paren);
-    if (!hasImage) hasImage = /^(im[aá]gen(es)?|ilustraci[oó]n(es)?)$/iu.test(paren.trim());
-    if (!hasImage) hasImage = new RegExp('^' + VERB + '\\s+también\\s*$', 'iu').test(paren.trim());
+    hasImage = new RegExp(lead + ADJ + IMAGE + END, 'iu').test(paren);
+    if (!hasImage) hasImage = new RegExp('^' + IMAGE + '\\.?$', 'iu').test(paren.trim());
+    if (!hasImage) hasImage = new RegExp('^' + VERB + '\\s+' + ALSO + '\\.?\\s*$', 'iu').test(paren.trim());
   }
 
   let hasScripture = false;
@@ -113,8 +127,8 @@ export function classifyParenthesisContent(paren) {
     const part = paren.replace(READ_PREFIX, '');
     if (/\d+:\d+/.test(part) || READ_BOOK_REF.test(part)) hasScripture = true;
   }
-  if (!hasScripture) hasScripture = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\s+\d+:\d+/u.test(paren);
-  if (!hasScripture) hasScripture = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\d+:\d+/u.test(paren);
+  if (!hasScripture) hasScripture = /\p{L}+\.?\s+\d+:\d+/u.test(paren);
+  if (!hasScripture) hasScripture = /\p{L}+\d+:\d+/u.test(paren);
   if (!hasScripture) hasScripture = SINGLE_CHAPTER_REF.test(paren);
 
   if (hasNote) return 'note';
@@ -128,9 +142,10 @@ export function extractQuestionWithParenthesis(questionText) {
   questionText = cleanHyphenatedText(questionText);
   const result = { text: questionText.trim(), parenthesis_content: '', content_type: '' };
 
-  const m = /\?\s*\(([^)]+)\)/u.exec(questionText);
+  // Uno o varios paréntesis tras la pregunta: "…? (Romans 7:22-24) (See also picture.)"
+  const m = /\?\s*((?:\([^)]+\)[.;,]?\s*)+)/u.exec(questionText);
   if (m) {
-    const paren = m[1].trim();
+    const paren = [...m[1].matchAll(/\(([^)]+)\)/gu)].map((x) => x[1].trim().replace(/\.$/, '')).join('; ');
     result.parenthesis_content = paren;
     result.text = questionText.slice(0, m.index + 1).trim();
     result.content_type = classifyParenthesisContent(paren);
@@ -149,7 +164,7 @@ export function extractQuestionWithParenthesis(questionText) {
 }
 
 // Cita bíblica dentro del propio texto de la pregunta ("Según Mateo 5:43, 44, ¿…?")
-const SCRIPTURE_IN_TEXT_CV = /[A-Za-záéíóúÁÉÍÓÚñÑ]+\.?\s+\d+:\d+/u;
+const SCRIPTURE_IN_TEXT_CV = /\p{L}+\.?\s+\d+:\d+/u;
 const SCRIPTURE_IN_TEXT = { test: (t) => SCRIPTURE_IN_TEXT_CV.test(t) || SINGLE_CHAPTER_REF.test(t) };
 
 export function createQuestionInfo(questionText, answerTime, isFinal = false) {
@@ -171,11 +186,16 @@ export function createQuestionInfo(questionText, answerTime, isFinal = false) {
 export function extractMultipleQuestions(text) {
   const questions = [];
   // Incluye lo que va antes del "¿" ("Según Mateo 5:43, 44, ¿cómo…?")
-  const re = /[^?¿]*¿[^?]+\?\s*(?:\([^)]+\))?|[^?¿]+\?\s*(?:\([^)]+\))?/gu;
+  const re = /[^?¿]*¿[^?]+\?(?:[.;,]?\s*\([^)]+\))*|[^?¿]+\?(?:[.;,]?\s*\([^)]+\))*/gu;
+  let end = 0;
   for (const m of text.matchAll(re)) {
     const part = m[0].trim();
     if (part && part.length > 3) questions.push(part);
+    end = m.index + m[0].length;
   }
+  // "…do? Explain. (Hebrews 5:14–6:1)": lo que sigue a la última pregunta va con ella
+  const rest = text.slice(end).trim();
+  if (questions.length && rest && /\(/.test(rest)) questions[questions.length - 1] += ' ' + rest;
   if (!questions.length && text.trim().includes('?')) questions.push(text.trim());
   if (!questions.length) {
     const whole = text.replace(/\s+/g, ' ').trim();
@@ -206,7 +226,7 @@ export function extractHighlights(parenthesisContent) {
 export function extractLeaScripturesFromText(text) {
   const out = [];
   const clean = joinVerseColon(cleanHyphenatedText(text));
-  const withRef = new RegExp('\\(\\s*(' + READ_VERB + '\\s+(?:[^)]+\\d+:\\d+|(?:[1-3]\\s?)?[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\\.?\\s+\\d+)[^)]*)\\)', 'gu');
+  const withRef = new RegExp('\\(\\s*(' + READ_VERB + '\\s+(?:[^)]+\\d+:\\d+|(?:[1-3]\\.?\\s?)?\\p{Lu}\\p{Ll}+\\.?\\s+\\d+)[^)]*)\\)', 'gu');
   for (const m of clean.matchAll(withRef)) {
     out.push({ parenthesis_content: m[1].replace(/\s+/g, ' ').trim(), content_type: 'scripture' });
   }
@@ -214,7 +234,7 @@ export function extractLeaScripturesFromText(text) {
   const bare = new RegExp('\\(\\s*(' + READ_VERB + ')\\s*\\)', 'gu');
   for (const m of clean.matchAll(bare)) {
     const before = clean.slice(Math.max(0, m.index - 300), m.index);
-    const sentence = before.split(/[.!?](?=\s+[A-ZÁÉÍÓÚ¿¡])/u).pop();
+    const sentence = before.split(/[.!?](?=\s+[\p{Lu}¿¡])/u).pop();
     const refs = [...sentence.matchAll(BIBLE_REF)];
     if (refs.length) {
       out.push({ parenthesis_content: m[1].toLowerCase() + ' ' + refs[refs.length - 1][0].trim(), content_type: 'scripture' });
@@ -284,6 +304,23 @@ export async function extractSpans(doc, OPS) {
     //    se elimina si la letra base empieza justo donde acabó la anterior.
     const isBlank = (it) => it && it.str.trim() === '';
     const charWidth = (it) => (it.str.length ? it.width / it.str.length : it.size * 0.5);
+    // Algunos PDF (p. ej. portugués) dejan la tilde al final de un tramo ("orienta ¸" + "c"):
+    // se pasa al principio del tramo siguiente, donde está su letra.
+    for (let i = 0; i < items.length - 1; i++) {
+      const it = items[i];
+      const m = /\s?([´ˊ`ˋ¨˜ˆ¸˚ˇ])$/u.exec(it.str);
+      if (!m || it.str.length < 2) continue;
+      let j = i + 1;
+      while (j < items.length && isBlank(items[j])) j++;
+      const next = items[j];
+      if (!next || !next.str) continue;
+      const base = next.str.replace(/^\s+/, '');
+      const c = composeAccent(m[1], base[0]);
+      if (!c) continue;
+      it.str = it.str.slice(0, m.index);
+      next.str = c + base.slice(1);
+      for (let z = i + 1; z < j; z++) items[z].str = '';
+    }
     for (let i = 0; i < items.length; i++) {
       const it = items[i];
       if (it.str.length !== 1 || !SPACING_TO_COMBINING[it.str]) continue;
@@ -295,7 +332,17 @@ export async function extractSpans(doc, OPS) {
       let done = false;
       if (next && next.str && it.x >= next.x - it.size * 0.35 && it.x <= next.x + charWidth(next) + it.size * 0.15) {
         const c = composeAccent(it.str, next.str[0]);
-        if (c) { next.str = c + next.str.slice(1); it.str = ''; done = true; }
+        if (c) {
+          next.str = c + next.str.slice(1); it.str = ''; done = true;
+          // "JEOV " + "´" + "A": el espacio del tramo anterior es falso (la tilde va pegada)
+          let k = i - 1;
+          while (k >= 0 && items[k] && items[k].str === '') k--;
+          const prev = items[k];
+          // (la letra empieza antes de que acabe el tramo anterior: ese espacio no existe)
+          // Excepción: palabras de una sola letra acentuada ("como é que", "à", "às").
+          const standalone = /^(?:[éÉàÀóÓ]|[àÀ]s)(?=$|[\s,.;:!?)])/u.test(next.str);
+          if (prev && / $/.test(prev.str) && !standalone && next.x < prev.x + prev.width - it.size * 0.1) prev.str = prev.str.replace(/ +$/, '');
+        }
       }
       if (!done) {
         // Tilde dibujada después de su letra
@@ -429,6 +476,9 @@ export function detectHorizontalLine(pages, OPS) {
  * ("¿QUÉ RESPONDERÍAS?", "¿CÓMO NOS PUEDE AYUDAR…?", "REPASO", …).
  * Sirve tanto si los puntos son preguntas como si son frases ("Ser más accesibles.").
  */
+// "CANCIÓN 12" en cada idioma (cierra el artículo)
+const SONG_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO)\s+\d+/u;
+const SONG_WORD_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO)\b/u;
 const BULLET_CHARS = '˛•·■□▪▫❑☐◻◼●○✓✔➢►';
 const REVIEW_BULLET = new RegExp('^[' + BULLET_CHARS + ']$', 'u');
 // Casilla pegada al texto: "• Explica por qué…"
@@ -444,7 +494,7 @@ export function extractReviewByBullets(pages) {
   const size = bullets[0].size;
   const firstTop = bullets[0].top;
   const song = spans
-    .filter((sp) => /^CANCI[OÓ]N\s+\d+/u.test(sp.text.toUpperCase()) && sp.top > firstTop)
+    .filter((sp) => SONG_RE.test(sp.text.toUpperCase()) && sp.top > firstTop)
     .sort((a, b) => a.top - b.top)[0];
   const endTop = song ? song.top - 2 : Infinity;
 
@@ -465,7 +515,7 @@ export function extractReviewByBullets(pages) {
 
   // Título: texto en negrita más cercano por encima de la primera casilla
   const title = spans
-    .filter((sp) => sp.bold && sp.top < firstTop && firstTop - sp.top < 60 && !/^CANCI[OÓ]N/u.test(sp.text.toUpperCase()))
+    .filter((sp) => sp.bold && sp.top < firstTop && firstTop - sp.top < 60 && !SONG_WORD_RE.test(sp.text.toUpperCase()))
     .sort((a, b) => b.top - a.top)[0];
   return [items.map((q) => createQuestionInfo(q, QUESTION_ANSWER_TIME, true)), title ? title.text.trim() : ''];
 }
@@ -497,7 +547,7 @@ function extractQuestionsAfterLine(pages, line) {
   let gapLimit = null;
   let reviewSize = null;
   for (const { y, size, text, bold } of items) {
-    if (/^CANCI[OÓ]N\s+\d+/u.test(text.toUpperCase())) break;
+    if (SONG_RE.test(text.toUpperCase())) break;
     if (text === '˛') continue;
     if (/^[\u0001-\u0008_\u2014\u2015\u2500-]{5,}$/u.test(text)) continue;
     // Título: primera línea en negrita o en mayúsculas ("¿QUÉ RESPONDERÍAS?", "REPASO"…)
@@ -537,29 +587,54 @@ function extractQuestionsAfterLine(pages, line) {
 /* Revista completa: varios artículos de estudio, uno por semana       */
 /* ------------------------------------------------------------------ */
 
-const MONTHS = {
-  ENERO: 0, FEBRERO: 1, MARZO: 2, ABRIL: 3, MAYO: 4, JUNIO: 5, JULIO: 6,
-  AGOSTO: 7, SEPTIEMBRE: 8, SETIEMBRE: 8, OCTUBRE: 9, NOVIEMBRE: 10, DICIEMBRE: 11,
-};
-// "12-18 DE OCTUBRE DE 2026", "5 -11 DE OCTUBRE DE 2026", "26 DE OCTUBRE-1 DE NOVIEMBRE DE 2026",
-// "28 DE DICIEMBRE DE 2026-3 DE ENERO DE 2027"
-const WEEK_RE = /^(\d{1,2})\s*(?:DE\s+([A-ZÁÉÍÓÚ]+)\s*)?(?:DE\s+(\d{4})\s*)?[-–—]\s*(\d{1,2})\s+DE\s+([A-ZÁÉÍÓÚ]+)\s+DE\s+(\d{4})$/u;
+// Meses en los idiomas de la app (sin tildes, en mayúsculas)
+const MONTH_NAMES = [
+  ['ENERO', 'JANUARY', 'JANUAR', 'GENNAIO', 'JANVIER', 'JANEIRO'],
+  ['FEBRERO', 'FEBRUARY', 'FEBRUAR', 'FEBBRAIO', 'FEVRIER', 'FEVEREIRO'],
+  ['MARZO', 'MARCH', 'MARZ', 'MARS', 'MARCO'],
+  ['ABRIL', 'APRIL', 'APRILE', 'AVRIL'],
+  ['MAYO', 'MAY', 'MAI', 'MAGGIO', 'MAIO'],
+  ['JUNIO', 'JUNE', 'JUNI', 'GIUGNO', 'JUIN', 'JUNHO'],
+  ['JULIO', 'JULY', 'JULI', 'LUGLIO', 'JUILLET', 'JULHO'],
+  ['AGOSTO', 'AUGUST', 'AOUT'],
+  ['SEPTIEMBRE', 'SETIEMBRE', 'SEPTEMBER', 'SETTEMBRE', 'SEPTEMBRE', 'SETEMBRO'],
+  ['OCTUBRE', 'OCTOBER', 'OKTOBER', 'OTTOBRE', 'OCTOBRE', 'OUTUBRO'],
+  ['NOVIEMBRE', 'NOVEMBER', 'NOVEMBRE', 'NOVEMBRO'],
+  ['DICIEMBRE', 'DECEMBER', 'DEZEMBER', 'DICEMBRE', 'DECEMBRE', 'DEZEMBRO'],
+];
+const MONTHS = {};
+MONTH_NAMES.forEach((names, idx) => names.forEach((n) => { MONTHS[n] = idx; }));
+// Palabras de unión permitidas en la cabecera ("2 A 8 DE MARÇO DE 2026", "MARCH 2-8, 2026")
+const WEEK_FILLERS = new Set(['DE', 'DEL', 'A', 'AL', 'AU', 'DU', 'BIS', 'TO']);
+const stripMarks = (t) => t.normalize('NFD').replace(/\p{M}/gu, '');
 
-/** Interpreta la cabecera de semana de un artículo. Devuelve {label, start, end} o null. */
+/**
+ * Interpreta la cabecera de semana de un artículo, en cualquiera de los idiomas:
+ * "12-18 DE OCTUBRE DE 2026", "MARCH 2-8, 2026", "2.-8. MÄRZ 2026", "2-8 MARZO 2026",
+ * "2-8 MARS 2026", "2 A 8 DE MARÇO DE 2026", "30. MÄRZ–5. APRIL 2026",
+ * "MARCH 30–APRIL 5, 2026", "28 DE DICIEMBRE DE 2026-3 DE ENERO DE 2027".
+ * Devuelve {label, start, end} o null.
+ */
 export function parseWeekHeader(text) {
   const t = (text || '').toUpperCase().replace(/\s+/g, ' ').trim();
-  const m = WEEK_RE.exec(t);
-  if (!m) return null;
-  const endMonth = MONTHS[m[5]];
-  if (endMonth === undefined) return null;
-  const endYear = parseInt(m[6], 10);
-  const startMonth = m[2] ? MONTHS[m[2]] : endMonth;
-  if (startMonth === undefined) return null;
-  const startYear = m[3] ? parseInt(m[3], 10) : (startMonth > endMonth ? endYear - 1 : endYear);
-  const start = new Date(startYear, startMonth, parseInt(m[1], 10));
-  const end = new Date(endYear, endMonth, parseInt(m[4], 10));
+  if (!t || t.length > 60) return null;
+  const tokens = stripMarks(t).replace(/[-–—,.]/g, ' ').split(' ').filter(Boolean);
+  const days = [], months = [], years = [];
+  for (const tok of tokens) {
+    if (/^\d{4}$/.test(tok)) years.push(parseInt(tok, 10));
+    else if (/^\d{1,2}$/.test(tok)) days.push(parseInt(tok, 10));
+    else if (tok in MONTHS) months.push(MONTHS[tok]);
+    else if (!WEEK_FILLERS.has(tok)) return null;
+  }
+  if (days.length !== 2 || months.length < 1 || months.length > 2 || years.length < 1 || years.length > 2) return null;
+  const startMonth = months[0];
+  const endMonth = months[months.length - 1];
+  const endYear = years[years.length - 1];
+  const startYear = years.length === 2 ? years[0] : (startMonth > endMonth ? endYear - 1 : endYear);
+  const start = new Date(startYear, startMonth, days[0]);
+  const end = new Date(endYear, endMonth, days[1]);
   if (isNaN(start) || isNaN(end) || end < start || (end - start) > 8 * 86400000) return null;
-  return { label: t.replace(/\s*-\s*/, '-'), start, end };
+  return { label: t.replace(/\s*([-–—])\s*/, '$1'), start, end };
 }
 
 /**
@@ -577,7 +652,7 @@ export function findStudyArticles(pages) {
     if (header && !starts.some((a) => a.label === header.label)) starts.push({ ...header, firstPage: i });
   });
   const hasReview = (pg) => pg.spans.some((sp) => /^[˛•■□▪❑☐]$/u.test(sp.text.trim()))
-    && pg.spans.some((sp) => /^CANCI[OÓ]N\s+\d+/u.test(sp.text.toUpperCase()));
+    && pg.spans.some((sp) => SONG_RE.test(sp.text.toUpperCase()));
   return starts.map((a, k) => {
     const limit = k + 1 < starts.length ? starts[k + 1].firstPage - 1 : pages.length - 1;
     let lastPage = limit;
@@ -658,7 +733,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
   // los párrafos pero ENCIMA del primer párrafo; el PDF lo trae después en el flujo y se
   // colaba en mitad de un párrafo. Se descartan las líneas de párrafo de la primera
   // página situadas por encima de la primera línea del texto.
-  const isBodySize = (sz) => sz >= 10.5 && sz <= 11.5;
+  const isBodySize = (sz) => sz >= 10.2 && sz <= 11.6; // 10,3-10,6 en algunas ediciones (p. ej. portugués de Brasil)
   const firstBody = pages[0]?.spans.find(sp => isBodySize(sp.size) && sp.text.trim().length > 20);
   const lines = pages.flatMap((p, i) => (i === 0 && firstBody)
     ? p.spans.filter(sp => !(isBodySize(sp.size) && sp.top < firstBody.top - 3))
@@ -672,7 +747,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
   const qSizeCounts = {};
   for (const ln of lines) {
     const sz = Math.round(ln.size * 10) / 10;
-    if (sz >= 8 && sz <= 10 && /^[\d,\s]+\.$/.test(ln.text.trim())) qSizeCounts[sz] = (qSizeCounts[sz] || 0) + 1;
+    if (sz >= 8 && sz <= 10 && /^\d[\d,\s\-–]*\.$/.test(ln.text.trim())) qSizeCounts[sz] = (qSizeCounts[sz] || 0) + 1;
   }
   const qSizes = Object.keys(qSizeCounts).map(Number);
   const questionSize = qSizes.length ? qSizes.sort((a, b) => qSizeCounts[b] - qSizeCounts[a])[0] : 9.0;
@@ -687,10 +762,16 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     if (!text) continue;
     const isQuestionSize = Math.abs(size - questionSize) <= 0.25;
     if (isQuestionSize) {
-      const numMatch = /^([\d,\s]+)\.\s*$/.exec(text);
+      // "4." · "1, 2." (español) · "1-2." / "9–10." (otros idiomas)
+      const numMatch = /^(\d[\d,\s\-–]*)\.\s*$/.exec(text);
       if (numMatch) {
         if (qParts.length && qNums) grouped.push(['question', qNums, joinHyphenatedLines(qParts)]);
-        qNums = numMatch[1].split(',').map(n => n.trim()).filter(n => isDigits(n)).map(Number);
+        qNums = numMatch[1].split(',').flatMap((part) => {
+          const r = /^\s*(\d+)\s*[-–]\s*(\d+)\s*$/.exec(part);
+          if (r && +r[2] > +r[1] && +r[2] - +r[1] < 10) return Array.from({ length: +r[2] - +r[1] + 1 }, (_, i) => +r[1] + i);
+          const n = part.trim();
+          return isDigits(n) ? [Number(n)] : [];
+        });
         qParts = [];
       } else if (qNums !== null) {
         qParts.push(text);
@@ -774,14 +855,14 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
         continue;
       }
       if (foundFinalSection && !skipFinalDetection) {
-        if (upper.startsWith('CANCIÓN') || upper.startsWith('CANCION')) continue;
+        if (SONG_WORD_RE.test(upper)) continue;
         if (text.includes('?')) {
           for (const q of extractMultipleQuestions(text)) finalQuestions.push(createQuestionInfo(q, answerTime, true));
         }
         continue;
       }
       const isParaNumber = size >= 6.0 && size <= 7.5 && isDigits(text);
-      const isParagraphSize = size >= 10.5 && size <= 11.5;
+      const isParagraphSize = isBodySize(size);
       if (isParaNumber) {
         if (!foundFirstNumber) {
           foundFirstNumber = true;
