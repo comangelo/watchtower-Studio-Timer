@@ -91,6 +91,7 @@ const d = {
   questionXofY: "domanda {x} di {y}",
   overLabel: "SFORATO",
   nowLabel: "ORA",
+  graceLabel: "TOLLERANZA",
   nextParagraph1: "Avanti: paragrafo 1",
   introHint: "Presenta il tema dell’articolo",
   scripture: "Scrittura",

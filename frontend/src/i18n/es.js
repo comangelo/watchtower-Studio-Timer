@@ -91,6 +91,7 @@ const es = {
   questionXofY: "pregunta {x} de {y}",
   overLabel: "EXCEDIDO",
   nowLabel: "AHORA",
+  graceLabel: "PRÓRROGA",
   nextParagraph1: "Siguiente: párrafo 1",
   introHint: "Presenta el tema del artículo",
   scripture: "Texto",

@@ -91,6 +91,7 @@ const d = {
   questionXofY: "question {x} of {y}",
   overLabel: "OVER",
   nowLabel: "NOW",
+  graceLabel: "GRACE TIME",
   nextParagraph1: "Next: paragraph 1",
   introHint: "Introduce the theme of the article",
   scripture: "Scripture",
