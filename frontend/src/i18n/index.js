@@ -14,6 +14,10 @@ import de from "./de";
 import it from "./it";
 import fr from "./fr";
 import pt from "./pt";
+import pl from "./pl";
+import nl from "./nl";
+import ro from "./ro";
+// Japonés y coreano: traducidos (ja.js, ko.js), pendientes de que el analizador lea sus PDF
 
 export const LANGUAGES = [
   { code: "es", name: "Español", short: "ES", locale: "es-ES" },
@@ -22,14 +26,17 @@ export const LANGUAGES = [
   { code: "it", name: "Italiano", short: "IT", locale: "it-IT" },
   { code: "fr", name: "Français", short: "FR", locale: "fr-FR" },
   { code: "pt", name: "Português", short: "PT", locale: "pt-BR" },
+  { code: "pl", name: "Polski", short: "PL", locale: "pl-PL" },
+  { code: "nl", name: "Nederlands", short: "NL", locale: "nl-NL" },
+  { code: "ro", name: "Română", short: "RO", locale: "ro-RO" },
 ];
 
-const dictionaries = { es, en, de, it, fr, pt };
+const dictionaries = { es, en, de, it, fr, pt, pl, nl, ro };
 const STORAGE_KEY = "pdfTimer_language";
 const PT_KEY = "pdfTimer_ptVariant";
 
 /** Código de idioma de jw.org (w_S_202609.pdf, w_E_…). Portugués: T (Brasil) o TPO (Portugal). */
-const JW_CODES = { es: "S", en: "E", de: "X", it: "I", fr: "F" };
+const JW_CODES = { es: "S", en: "E", de: "X", it: "I", fr: "F", pl: "P", nl: "O", ro: "M", ja: "J", ko: "KO" };
 
 function detectLanguage() {
   try {
@@ -119,7 +126,12 @@ export function t(key, vars) {
 
 /** Singular o plural: tn("paragraphs", 3) → t("paragraphs_other", { n: 3 }) */
 export function tn(key, n, vars) {
-  return t(`${key}_${n === 1 ? "one" : "other"}`, { n, ...vars });
+  // Polaco y otros: "one", "few", "many"… según las reglas del idioma; si falta, "_other"
+  let cat = n === 1 ? "one" : "other";
+  try { cat = new Intl.PluralRules(currentLocale()).select(n); } catch { /* sin Intl */ }
+  const dict = dictionaries[current] || {};
+  const k = `${key}_${cat}`;
+  return t(k in dict ? k : `${key}_${n === 1 ? "one" : "other"}`, { n, ...vars });
 }
 
 /** Como t(), pero los valores pueden ser elementos de React: tx("k", { time: <b>3:00</b> }) */
