@@ -12,7 +12,7 @@ import {
   findIssueForDate, getIssueFile, listIssues, deleteIssue,
   folderSupported, getSavedFolder, issueTitle, chooseFolder, forgetFolder, ensureFolderPermission, findIssueInFolder,
 } from "@/utils/pdfLibrary";
-import { t, currentLocale } from "@/i18n";
+import { t, currentLocale, jwLanguageCode } from "@/i18n";
 
 const HELP = { android: "jwHelpAndroid", ios: "jwHelpIos", desktop: "jwHelpDesktop" };
 
@@ -36,26 +36,27 @@ export function JwWeeklyCard({
   const thisWeek = mondayOf(new Date());
   const isThisWeek = weekMonday.getTime() === thisWeek.getTime();
   const issue = issueForWeek(weekMonday);
+  const jwLang = jwLanguageCode(); // revista en el idioma de la app
 
   // Enlace oficial de jw.org
   useEffect(() => {
     let cancelled = false;
     setState({ status: "loading", info: null, issue });
-    fetchIssuePdf(issue)
+    fetchIssuePdf(issue, jwLang)
       .then((info) => { if (!cancelled) setState({ status: info ? "ok" : "missing", info, issue }); })
       .catch(() => { if (!cancelled) setState({ status: "error", info: null, issue }); });
     return () => { cancelled = true; };
-  }, [issue]);
+  }, [issue, jwLang]);
 
   // Biblioteca de la app
   const refreshLibrary = useCallback(async () => {
     try {
-      setSaved(await findIssueForDate(weekMonday));
+      setSaved(await findIssueForDate(weekMonday, jwLang));
       setIssues(await listIssues());
     } catch {
       setSaved(null); setIssues([]);
     }
-  }, [weekMonday]);
+  }, [weekMonday, jwLang]);
   useEffect(() => { refreshLibrary(); }, [refreshLibrary, libraryVersion]);
 
   // Carpeta de Windows: si ya hay permiso, buscar sola la revista de la semana
@@ -65,12 +66,12 @@ export function JwWeeklyCard({
     try {
       const ok = await ensureFolderPermission(handle, ask);
       if (!ok) { setFolderState({ status: "needs-permission", file: null }); return; }
-      const file = await findIssueInFolder(handle, issue);
+      const file = await findIssueInFolder(handle, issue, jwLang);
       setFolderState({ status: file ? "found" : "not-found", file });
     } catch {
       setFolderState({ status: "needs-permission", file: null });
     }
-  }, [issue]);
+  }, [issue, jwLang]);
 
   useEffect(() => {
     if (!canUseFolder) return;

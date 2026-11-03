@@ -1,7 +1,13 @@
 import { FileText, MessageCircle, HelpCircle, Image, BookOpen, Layers, StickyNote, Clock, Sparkles, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatTimeCompact } from "../utils/timeFormatters";
-import { t, tn } from "@/i18n";
+import { t, tn, currentLanguage } from "@/i18n";
+
+/** "NOVEMBER 2-8, 2026" -> "November 2-8, 2026" (EN/DE: meses con mayúscula) · "2-8 de noviembre de 2026" */
+const weekChipLabel = (label) => {
+  const low = label.toLowerCase();
+  return ['en', 'de'].includes(currentLanguage()) ? low.replace(/(^|[\s.–-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()) : low;
+};
 
 // Número del artículo (sale del nombre del archivo, p. ej. "Articulo_de_Estudio_83_…")
 // y título (el impreso en el PDF; si no se encontró, el del nombre del archivo).
@@ -111,7 +117,7 @@ export function AnalysisSummary({
                       }`}
                       data-testid="issue-week-option"
                     >
-                      {w.label.toLowerCase()}
+                      {weekChipLabel(w.label)}
                     </button>
                   );
                 })}

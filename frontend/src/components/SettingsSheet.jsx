@@ -8,7 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { LAYOUTS } from "@/components/PresentationMode";
 import { darkThemes } from "@/utils/darkThemes";
-import { t, LANGUAGES, currentLanguage, setLanguage } from "@/i18n";
+import { t, LANGUAGES, currentLanguage, setLanguage, currentPtVariant, setPtVariant } from "@/i18n";
 
 const ThemeCtx = createContext({});
 
@@ -302,6 +302,23 @@ export function SettingsSheet({
                     );
                   })}
                 </div>
+                {currentLanguage() === "pt" && (
+                  <div className="mt-3" data-testid="settings-pt-variant">
+                    <p className="text-xs font-semibold mb-2 opacity-70">{t("ptVariantLabel")}</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[{ v: "PT", label: t("ptPortugal") }, { v: "BR", label: t("ptBrazil") }].map(({ v, label }) => {
+                        const on = currentPtVariant() === v;
+                        return (
+                          <button key={v} onClick={() => setPtVariant(v)}
+                            className={`rounded-xl py-2 px-3 flex items-center gap-2 text-sm font-semibold ${on ? "bg-orange-500 text-white shadow-md" : c.chip}`}
+                            data-testid={`settings-pt-${v}`}>
+                            {label}{on && <Check className="w-4 h-4 ml-auto" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </Section>
               <Section testid="settings-section-pantalla">
                 <Row icon={darkMode ? Moon : Sun} color={darkMode ? "text-yellow-400" : "text-orange-500"} label={t("theme")} />
