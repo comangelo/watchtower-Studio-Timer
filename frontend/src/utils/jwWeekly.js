@@ -10,7 +10,7 @@
  * para que cada persona lo descargue en su dispositivo (uso personal), y después lo
  * analiza en el propio dispositivo.
  */
-import { currentLocale } from '@/i18n';
+import { currentLocale, jwLanguageCode } from '@/i18n';
 
 export function mondayOf(date) {
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -45,15 +45,17 @@ const API = 'https://b.jw-cdn.org/apis/pub-media/GETPUBMEDIALINKS';
  * Dirección oficial del PDF de La Atalaya (edición de estudio) de un número.
  * Devuelve { issue, title, url, largePrintUrl, size } o null si aún no está publicado.
  */
-export async function fetchIssuePdf(issue, lang = 'S') {
+export async function fetchIssuePdf(issue, lang = jwLanguageCode()) {
   const res = await fetch(`${API}?pub=w&issue=${issue}&fileformat=PDF&langwritten=${lang}&output=json`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`jw.org respondió ${res.status}`);
   const data = await res.json();
   const files = data?.files?.[lang]?.PDF || [];
-  const normal = files.find((f) => /normal/i.test(f.title)) || files[0];
+  // Letra grande: "Letra grande", "Large Print", "Großdruck", "Grands caractères"… o "_lp" en el archivo
+  const isLarge = (f) => /grande|large|gro(?:ß|ss)|grands?\s|caratteri\s+grandi/i.test(f.title || '') || /_lp\b|lp-/i.test(f.file?.url || '');
+  const normal = files.find((f) => !isLarge(f)) || files[0];
   if (!normal) return null;
-  const large = files.find((f) => /grande/i.test(f.title));
+  const large = files.find((f) => f !== normal && isLarge(f));
   const title = (data.formattedDate || '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
   return {
     issue,

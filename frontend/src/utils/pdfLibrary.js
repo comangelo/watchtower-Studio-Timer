@@ -15,7 +15,7 @@ const SETTINGS = 'settings';
 const DAY = 86400000;
 const KEEP_DAYS_AFTER_LAST_WEEK = 90;
 
-import { t, currentLocale } from '@/i18n';
+import { t, currentLocale, jwLanguageCode } from '@/i18n';
 
 function openDb() {
   return new Promise((resolve, reject) => {
@@ -77,7 +77,9 @@ export function issueTitle(fileName, weeks) {
 export async function saveIssue(file, weeks) {
   if (!file || !weeks || weeks.length < 2) return null;
   const sorted = [...weeks].sort((a, b) => new Date(a.start) - new Date(b.start));
-  const key = sorted[0].start.slice(0, 10);
+  // Una revista por número y por idioma (las de español conservan la clave de siempre)
+  const lang = fileLanguage(file.name);
+  const key = sorted[0].start.slice(0, 10) + (lang && lang !== 'S' ? `_${lang}` : '');
   const record = {
     key,
     title: issueTitle(file.name, sorted),
@@ -103,14 +105,19 @@ export async function listIssues() {
     .sort((a, b) => (a.key < b.key ? 1 : -1));
 }
 
-/** Revista guardada que contiene la semana de esa fecha (o null). */
-export async function findIssueForDate(date) {
+/** Idioma de jw.org en el nombre oficial: "w_E_202609.pdf" -> "E" (null si no lo lleva). */
+export const fileLanguage = (fileName) => /^w_([A-Z]+)_\d{6}/i.exec(fileName || '')?.[1]?.toUpperCase() || null;
+
+/** Revista guardada que contiene la semana de esa fecha (o null); primero la del idioma de la app. */
+export async function findIssueForDate(date, lang = jwLanguageCode()) {
   const day = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-  const all = await listIssues();
-  return all.find((r) => r.weeks.some((w) => {
+  const all = (await listIssues()).filter((r) => r.weeks.some((w) => {
     const start = new Date(w.start).getTime();
     return day >= start && day < start + 7 * DAY;
-  })) || null;
+  }));
+  return all.find((r) => fileLanguage(r.fileName) === lang)
+    || all.find((r) => !fileLanguage(r.fileName))
+    || null;
 }
 
 /** Archivo PDF de una revista guardada, listo para analizar. */
@@ -165,8 +172,8 @@ export async function ensureFolderPermission(handle, ask = false) {
  * Busca en la carpeta la revista de un número ("202608" -> w_S_202608.pdf, también
  * con "(1)" u otros añadidos al nombre). Devuelve el File o null.
  */
-export async function findIssueInFolder(handle, issue) {
-  const re = new RegExp(`^w_S_${issue}\\b.*\\.pdf$`, 'i');
+export async function findIssueInFolder(handle, issue, lang = jwLanguageCode()) {
+  const re = new RegExp(`^w_${lang}_${issue}\\b.*\\.pdf$`, 'i');
   for await (const entry of handle.values()) {
     if (entry.kind === 'file' && re.test(entry.name)) return entry.getFile();
   }
