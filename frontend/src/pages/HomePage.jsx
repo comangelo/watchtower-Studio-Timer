@@ -1337,7 +1337,7 @@ export default function HomePage() {
                   )}
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {groupedParagraphs.map((group, groupIndex) => {
                     const firstIndex = group.indices[0];
                     const lastIndex = group.indices[group.indices.length - 1];
