@@ -41,6 +41,7 @@ import PresentationMode, { DEFAULT_LAYOUT } from "@/components/PresentationMode"
 // Import refactored components
 import { UploadZone } from "@/components/UploadZone";
 import { SettingsSheet, speedLabel } from "@/components/SettingsSheet";
+import { PtVariantDialog } from "@/components/PtVariantDialog";
 import { AnalysisSummary } from "@/components/AnalysisSummary";
 import { TimerDisplay } from "@/components/TimerDisplay";
 import { ParagraphCard } from "@/components/ParagraphCard";
@@ -52,7 +53,7 @@ import { IntroductionWordsSection } from "@/components/IntroductionWordsSection"
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
 import { useNotifications } from "@/hooks/useNotifications";
 import { countQuestions } from "@/utils/timePlan";
-import { t, tn, useLanguage, LANGUAGES, currentLanguage, setLanguage, currentLocale } from "@/i18n";
+import { t, tn, useLanguage, LANGUAGES, currentLanguage, setLanguage, currentLocale, currentPtVariant } from "@/i18n";
 import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
 import { StudyActionBar } from "@/components/StudyActionBar";
@@ -62,6 +63,7 @@ import { mondayOf } from "@/utils/jwWeekly";
 import { saveIssue } from "@/utils/pdfLibrary";
 import { analyzeFile } from "@/analysis/analyzeFile";
 import { useUpdateNotifier } from "@/hooks/useUpdateNotifier";
+import { useWakeLock } from "@/hooks/useWakeLock";
 import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
 
 // Import utils
@@ -82,6 +84,8 @@ export default function HomePage() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [remainingTime, setRemainingTime] = useState(60 * 60); // Will be updated when totalDuration changes
   const [startTime, setStartTime] = useState(null);
+  // Con el estudio iniciado, la pantalla no se apaga
+  useWakeLock(startTime !== null);
   const [endTime, setEndTime] = useState(null);
   const [manualEndTime, setManualEndTime] = useState(null); // For manual end time override
   
@@ -848,6 +852,7 @@ export default function HomePage() {
                   >
                     <Languages className="w-5 h-5" />
                     {LANGUAGES.find((l) => l.code === currentLanguage())?.short}
+                    {currentLanguage() === "pt" && currentPtVariant() && <span className="opacity-60">·{currentPtVariant()}</span>}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className={`rounded-xl min-w-[180px] ${darkMode ? 'bg-zinc-800 border-zinc-700' : ''}`}>
@@ -1251,6 +1256,7 @@ export default function HomePage() {
         />
       )}
 
+      <PtVariantDialog darkMode={darkMode} />
       <SettingsSheet
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
