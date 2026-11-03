@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Play, Mic, ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { t } from "@/i18n";
+import { timeStatus } from "@/utils/timeStatus";
 
 export function IntroductionWordsSection({
   isActive,
@@ -15,7 +16,8 @@ export function IntroductionWordsSection({
   playNotificationSound,
   triggerVibration,
   hasStarted, // true if timer has been started
-  darkMode = false
+  darkMode = false,
+  finalStretch = false, // últimos 5 minutos del estudio: sin prórroga
 }) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
@@ -23,6 +25,9 @@ export function IntroductionWordsSection({
   const cardRef = useRef(null);
 
   const isOverTime = elapsedTime > estimatedTime;
+  const status = timeStatus(elapsedTime, estimatedTime, finalStretch);
+  const isGrace = status === 'grace';
+  const isRed = status === 'over';
 
   // Auto-scroll when active
   useEffect(() => {
@@ -125,26 +130,28 @@ export function IntroductionWordsSection({
     <div
       ref={cardRef}
       className={`rounded-2xl border-2 shadow-lg transition-all duration-300 ${
-        isOverTime
+        isRed
           ? darkMode ? 'border-red-500 bg-red-950/60' : 'border-red-400 bg-red-50'
+          : isGrace
+          ? darkMode ? 'border-yellow-400 bg-yellow-900/40' : 'border-yellow-400 bg-yellow-50'
           : darkMode ? 'border-blue-500 bg-blue-950/50' : 'border-blue-400 bg-blue-50'
       }`}
       data-testid="introduction-words-active"
     >
       <div className="px-3 py-2.5 flex items-center gap-3">
-        <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-white ${isOverTime ? 'bg-red-500' : 'bg-blue-600'}`}>
+        <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${isRed ? 'bg-red-500 text-white' : isGrace ? 'bg-yellow-400 text-zinc-900' : 'bg-blue-600 text-white'}`}>
           <Mic className="w-4 h-4" />
         </span>
         <span className="min-w-0 flex-1">
           <span className={`block text-sm font-bold ${titleTone}`}>
             {t('introduction')}
-            <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-blue-300' : 'text-blue-700')}`}>
-              {isOverTime ? t('overLabel') : t('nowLabel')}
+            <span className={`ml-2 text-[11px] font-black tracking-wide ${isRed ? (darkMode ? 'text-red-300' : 'text-red-600') : isGrace ? (darkMode ? 'text-yellow-300' : 'text-yellow-700') : (darkMode ? 'text-blue-300' : 'text-blue-700')}`}>
+              {isRed ? t('overLabel') : isGrace ? t('graceLabel') : t('nowLabel')}
             </span>
           </span>
           <span className={`block text-xs ${muted}`}>{t('introHint')}</span>
         </span>
-        <span className={`shrink-0 text-base font-black tabular-nums ${isOverTime ? 'text-red-600' : darkMode ? 'text-blue-200' : 'text-blue-700'}`}>
+        <span className={`shrink-0 text-base font-black tabular-nums ${isRed ? (darkMode ? 'text-red-400' : 'text-red-600') : isGrace ? (darkMode ? 'text-yellow-300' : 'text-yellow-700') : darkMode ? 'text-blue-200' : 'text-blue-700'}`}>
           {formatTime(elapsedTime)}<span className={`font-medium ${muted}`}> / {formatTime(estimatedTime)}</span>
         </span>
       </div>

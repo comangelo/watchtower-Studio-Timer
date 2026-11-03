@@ -35,7 +35,8 @@ export function ParagraphCard({
   darkMode = false,
   showContentGlobal = true,
   onAddComment,
-  commentCount = 0
+  commentCount = 0,
+  finalStretch = false, // últimos 5 minutos del estudio: sin prórroga
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showContent, setShowContent] = useState(true); // Individual content visibility
@@ -76,6 +77,11 @@ export function ParagraphCard({
   const estimatedTime = paragraphTimes.adjustedDuration
     || allParagraphs.reduce((sum, p) => sum + (p.total_time_seconds || 0), 0);
   const isOverTime = paragraphElapsed > estimatedTime;
+  // Igual que en el modo presentación: verde en tiempo, amarillo en la prórroga (hasta un 30 % más),
+  // rojo después. En los últimos 5 minutos del estudio no hay prórroga.
+  const GRACE_RATIO = 1.3;
+  const isGrace = isOverTime && !finalStretch && estimatedTime > 0 && paragraphElapsed <= estimatedTime * GRACE_RATIO;
+  const isRed = isOverTime && !isGrace;
 
   // Auto-scroll to current paragraph
   useEffect(() => {
@@ -154,15 +160,17 @@ export function ParagraphCard({
   const chip = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap';
 
   const rowTone = isCurrentParagraph
-    ? (isOverTime
+    ? (isRed
         ? (darkMode ? 'border-red-500 bg-red-950/60' : 'border-red-400 bg-red-50')
-        : (darkMode ? 'border-green-500 bg-green-950/50' : 'border-green-400 bg-green-50'))
+        : isGrace
+          ? (darkMode ? 'border-yellow-400 bg-yellow-900/40' : 'border-yellow-400 bg-yellow-50')
+          : (darkMode ? 'border-green-500 bg-green-950/50' : 'border-green-400 bg-green-50'))
     : isCompletedParagraph
       ? (darkMode ? 'border-zinc-700 bg-zinc-800/40 opacity-60' : 'border-slate-200 bg-slate-50 opacity-60')
       : (darkMode ? 'border-zinc-700 bg-zinc-800 hover:border-orange-500' : 'border-slate-200 bg-white hover:border-orange-300');
 
   const numTone = isCurrentParagraph
-    ? (isOverTime ? 'bg-red-500 text-white' : 'bg-green-500 text-white')
+    ? (isRed ? 'bg-red-500 text-white' : isGrace ? 'bg-yellow-400 text-zinc-900' : 'bg-green-500 text-white')
     : isCompletedParagraph
       ? (darkMode ? 'bg-zinc-700 text-green-400' : 'bg-green-100 text-green-700')
       : (darkMode ? 'bg-orange-900/60 text-orange-300' : 'bg-orange-50 text-orange-600');
@@ -188,8 +196,8 @@ export function ParagraphCard({
           <span className={`block text-sm font-bold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
             {title}
             {isCurrentParagraph && (
-              <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-green-300' : 'text-green-700')}`}>
-                {isOverTime ? t('overLabel') : t('nowLabel')}
+              <span className={`ml-2 text-[11px] font-black tracking-wide ${isRed ? (darkMode ? 'text-red-300' : 'text-red-600') : isGrace ? (darkMode ? 'text-yellow-300' : 'text-yellow-700') : (darkMode ? 'text-green-300' : 'text-green-700')}`}>
+                {isRed ? t('overLabel') : isGrace ? t('graceLabel') : t('nowLabel')}
               </span>
             )}
           </span>
@@ -214,7 +222,7 @@ export function ParagraphCard({
         </span>
         <span className="shrink-0 text-right">
           {isCurrentParagraph && isTimerRunning ? (
-            <span className={`block text-base font-black tabular-nums ${isOverTime ? 'text-red-600' : 'text-green-700'}`}>
+            <span className={`block text-base font-black tabular-nums ${isRed ? (darkMode ? 'text-red-400' : 'text-red-600') : isGrace ? (darkMode ? 'text-yellow-300' : 'text-yellow-700') : (darkMode ? 'text-green-400' : 'text-green-700')}`}>
               {formatParagraphTime(paragraphElapsed)}<span className={`font-medium ${muted}`}> / {formatParagraphTime(Math.round(estimatedTime))}</span>
             </span>
           ) : (
@@ -235,7 +243,7 @@ export function ParagraphCard({
       {isExpanded && (
         <div className={`px-4 pb-4 pt-1 border-t ${darkMode ? 'border-zinc-700' : 'border-slate-100'}`} data-testid={`paragraph-details-${paragraph.number}`}>
           {isCurrentParagraph && isOverTime && (
-            <p className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 bg-red-600 text-white text-[11px] font-bold rounded-full animate-pulse">
+            <p className={`mt-2 inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold rounded-full animate-pulse ${isGrace ? 'bg-yellow-400 text-zinc-900' : 'bg-red-600 text-white'}`}>
               {t('overBy', { time: formatParagraphTime(paragraphElapsed - Math.round(estimatedTime)) })}
             </p>
           )}

@@ -160,6 +160,13 @@ export default function PresentationMode({
     if (phase === PHASES.FINISHED) return { colorClass: "bg-emerald-700 text-white", indicatorText: t("pmFinished") };
     if (!studyStarted) return { colorClass: "bg-zinc-600 text-white", indicatorText: t("pmReady") };
     if (!isTimerRunning) return { colorClass: "bg-zinc-600 text-white", indicatorText: t("pmPaused") };
+    // La conclusión tiene siempre su prórroga, aunque sea en el tramo final
+    if (phase === PHASES.CONCLUSION && estimatedTime) {
+      const r = phaseElapsedTime / estimatedTime;
+      if (r <= 1) return { colorClass: "bg-green-600 text-white", indicatorText: t("pmOnTime") };
+      if (r <= GRACE_RATIO) return { colorClass: "bg-yellow-400 text-zinc-900", indicatorText: t("pmGrace") };
+      return { colorClass: "bg-red-600 text-white", indicatorText: t("pmOver") };
+    }
     // Pasada la hora de fin del estudio: siempre rojo
     if (remainingTime <= 0 && elapsedTime > 0) return { colorClass: "bg-red-600 text-white", indicatorText: t("pmOver") };
     // Últimos 5 minutos: misma regla que en los párrafos pero SIN prórroga

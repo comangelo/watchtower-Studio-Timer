@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatClockTime, addSecondsToDate, formatTimeCompact } from "../utils/timeFormatters";
 import { t } from "@/i18n";
+import { timeStatus } from "@/utils/timeStatus";
 
 const mmss = (sec) => {
   const t = Math.max(0, Math.round(sec || 0));
@@ -22,7 +23,8 @@ function ClosingWordsSection({
   vibrationEnabled,
   playNotificationSound,
   triggerVibration,
-  darkMode = false
+  darkMode = false,
+  finalStretch = false, // la conclusión conserva siempre su prórroga (no se pasa este valor)
 }) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
@@ -30,6 +32,9 @@ function ClosingWordsSection({
   const cardRef = useRef(null);
 
   const isOverTime = elapsedTime > estimatedTime;
+  const status = timeStatus(elapsedTime, estimatedTime, finalStretch);
+  const isGrace = status === 'grace';
+  const isRed = status === 'over';
 
   // Auto-scroll when active
   useEffect(() => {
@@ -101,26 +106,28 @@ function ClosingWordsSection({
     <div
       ref={cardRef}
       className={`rounded-2xl border-2 shadow-lg transition-all duration-300 ${
-        isOverTime
+        isRed
           ? darkMode ? 'border-red-500 bg-red-950/60' : 'border-red-400 bg-red-50'
+          : isGrace
+          ? darkMode ? 'border-yellow-400 bg-yellow-900/40' : 'border-yellow-400 bg-yellow-50'
           : darkMode ? 'border-purple-500 bg-purple-950/50' : 'border-purple-400 bg-purple-50'
       }`}
       data-testid="closing-words-section"
     >
       <div className="px-3 py-2.5 flex items-center gap-3">
-        <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-white ${isOverTime ? 'bg-red-500' : 'bg-purple-600'}`}>
+        <span className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${isRed ? 'bg-red-500 text-white' : isGrace ? 'bg-yellow-400 text-zinc-900' : 'bg-purple-600 text-white'}`}>
           <Sparkles className="w-4 h-4" />
         </span>
         <span className="min-w-0 flex-1">
           <span className={`block text-sm font-bold ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
             {t('conclusion')}
-            <span className={`ml-2 text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-purple-300' : 'text-purple-700')}`}>
-              {isOverTime ? t('overLabel') : t('nowLabel')}
+            <span className={`ml-2 text-[11px] font-black tracking-wide ${isRed ? (darkMode ? 'text-red-300' : 'text-red-600') : isGrace ? (darkMode ? 'text-yellow-300' : 'text-yellow-700') : (darkMode ? 'text-purple-300' : 'text-purple-700')}`}>
+              {isRed ? t('overLabel') : isGrace ? t('graceLabel') : t('nowLabel')}
             </span>
           </span>
           <span className={`block text-xs ${muted}`}>{t('conclusionHint')}</span>
         </span>
-        <span className={`shrink-0 text-base font-black tabular-nums ${isOverTime ? 'text-red-600' : darkMode ? 'text-purple-200' : 'text-purple-700'}`}>
+        <span className={`shrink-0 text-base font-black tabular-nums ${isRed ? (darkMode ? 'text-red-400' : 'text-red-600') : isGrace ? (darkMode ? 'text-yellow-300' : 'text-yellow-700') : darkMode ? 'text-purple-200' : 'text-purple-700'}`}>
           {formatTime(elapsedTime)}<span className={`font-medium ${muted}`}> / {formatTime(estimatedTime)}</span>
         </span>
       </div>
@@ -159,7 +166,8 @@ function ReviewQuestionCard({
   isTimerRunning,
   darkMode = false,
   onAddComment,
-  commentCount = 0
+  commentCount = 0,
+  finalStretch = false,
 }) {
   const [questionElapsed, setQuestionElapsed] = useState(0);
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
@@ -168,6 +176,9 @@ function ReviewQuestionCard({
 
   const estimatedTime = perQuestionTime;
   const isOverTime = questionElapsed > estimatedTime;
+  const status = timeStatus(questionElapsed, estimatedTime, finalStretch);
+  const isGrace = status === 'grace';
+  const isRed = status === 'over';
 
   // Auto-scroll to current question
   useEffect(() => {
@@ -230,14 +241,16 @@ function ReviewQuestionCard({
 
   const muted = darkMode ? 'text-zinc-400' : 'text-slate-500';
   const rowTone = isCurrentQuestion
-    ? (isOverTime
+    ? (isRed
         ? (darkMode ? 'border-red-500 bg-red-950/60' : 'border-red-400 bg-red-50')
+        : isGrace
+        ? (darkMode ? 'border-yellow-400 bg-yellow-900/40' : 'border-yellow-400 bg-yellow-50')
         : (darkMode ? 'border-green-500 bg-green-950/50' : 'border-green-400 bg-green-50'))
     : isCompletedQuestion
       ? (darkMode ? 'border-zinc-700 bg-zinc-800/40 opacity-60' : 'border-slate-200 bg-slate-50 opacity-60')
       : (darkMode ? 'border-zinc-700 bg-zinc-800' : 'border-slate-200 bg-white');
   const numTone = isCurrentQuestion
-    ? (isOverTime ? 'bg-red-500 text-white' : 'bg-green-600 text-white')
+    ? (isRed ? 'bg-red-500 text-white' : isGrace ? 'bg-yellow-400 text-zinc-900' : 'bg-green-600 text-white')
     : isCompletedQuestion
       ? (darkMode ? 'bg-zinc-700 text-zinc-300' : 'bg-slate-200 text-slate-600')
       : (darkMode ? 'bg-rose-900/70 text-rose-200' : 'bg-rose-100 text-rose-700');
@@ -254,8 +267,8 @@ function ReviewQuestionCard({
         </span>
         <span className="min-w-0 flex-1 pt-0.5">
           {isCurrentQuestion && (
-            <span className={`block text-[11px] font-black tracking-wide ${isOverTime ? (darkMode ? 'text-red-300' : 'text-red-600') : (darkMode ? 'text-green-300' : 'text-green-700')}`}>
-              {isOverTime ? t('overLabel') : t('nowLabel')}
+            <span className={`block text-[11px] font-black tracking-wide ${isRed ? (darkMode ? 'text-red-300' : 'text-red-600') : isGrace ? (darkMode ? 'text-yellow-300' : 'text-yellow-700') : (darkMode ? 'text-green-300' : 'text-green-700')}`}>
+              {isRed ? t('overLabel') : isGrace ? t('graceLabel') : t('nowLabel')}
             </span>
           )}
           <span className={`block text-sm ${isCurrentQuestion ? 'font-semibold' : ''} ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>
@@ -264,7 +277,7 @@ function ReviewQuestionCard({
         </span>
         <span className="shrink-0 text-right pt-0.5">
           {isCurrentQuestion && isTimerRunning ? (
-            <span className={`block text-base font-black tabular-nums ${isOverTime ? 'text-red-600' : 'text-green-700'}`}>
+            <span className={`block text-base font-black tabular-nums ${isRed ? (darkMode ? 'text-red-400' : 'text-red-600') : isGrace ? (darkMode ? 'text-yellow-300' : 'text-yellow-700') : (darkMode ? 'text-green-400' : 'text-green-700')}`}>
               {formatTime(questionElapsed)}<span className={`font-medium ${muted}`}> / {formatTime(Math.round(estimatedTime))}</span>
             </span>
           ) : (
@@ -330,7 +343,8 @@ export function FinalQuestionsSection({
   triggerVibration,
   darkMode = false,
   onAddComment,
-  reviewCommentStats = {}
+  reviewCommentStats = {},
+  finalStretch = false,
 }) {
   if (!finalQuestions || finalQuestions.length === 0) return null;
   
@@ -405,6 +419,7 @@ export function FinalQuestionsSection({
         {isInReviewMode ? (
           finalQuestions.map((q, idx) => (
             <ReviewQuestionCard
+              finalStretch={finalStretch}
               key={idx}
               question={q}
               index={idx}
