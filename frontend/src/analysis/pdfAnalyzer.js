@@ -228,7 +228,7 @@ export function extractLeaScripturesFromText(text) {
   const clean = joinVerseColon(cleanHyphenatedText(text));
   const withRef = new RegExp('\\(\\s*(' + READ_VERB + '\\s+(?:[^)]+\\d+:\\d+|(?:[1-3]\\.?\\s?)?\\p{Lu}\\p{Ll}+\\.?\\s+\\d+)[^)]*)\\)', 'gu');
   for (const m of clean.matchAll(withRef)) {
-    out.push({ parenthesis_content: m[1].replace(/\s+/g, ' ').trim(), content_type: 'scripture' });
+    out.push({ parenthesis_content: m[1].replace(/\s+/g, ' ').trim().replace(/[.;,]+$/, ''), content_type: 'scripture' });
   }
   // "(léelo)" / "(léalo)" / "(léanlo)" sin cita: se toma la última cita de la misma frase
   const bare = new RegExp('\\(\\s*(' + READ_VERB + ')\\s*\\)', 'gu');
@@ -921,23 +921,29 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
       else if (q.content_type === 'scripture') { if (!isRepeatedScripture(q)) scr++; }
       else if (q.content_type === 'note') notes++;
     }
+    // Párrafos agrupados ("5, 6." / "5-6."): la pregunta va en el último, pero el "(lea …)" puede estar
+    // en el primero. Se compara con las preguntas de todo el grupo para no contar la lectura dos veces.
+    const groupQuestions = [
+      ...questions,
+      ...(pd.grouped_with || []).filter((n) => n !== num).flatMap((n) => paragraphs.get(n)?.questions || []),
+    ];
     for (const lea of extractLeaScripturesFromText(text)) {
       const norm = (x) => joinVerseColon(x).toLowerCase().replace(leaPrefix, '').replace(/[\s.]+/g, '');
       const leaRef = norm(lea.parenthesis_content);
       let counted = false;
-      for (const q of questions) {
+      for (const q of groupQuestions) {
         if (!q.parenthesis_content) continue;
         const qc = norm(q.parenthesis_content);
         if (qc && (qc.includes(leaRef) || leaRef.includes(qc))) { counted = true; break; }
       }
-      for (const q of questions) {
+      for (const q of groupQuestions) {
         if (q.text && norm(q.text).includes(leaRef)) { counted = true; break; }
       }
       // Misma lectura citada por la pregunta ("Según Juan 10:29, ¿…?" y "(lee Juan 10:29; Sant. 4:7)")
       if (!counted) {
         const leaFirst = [...joinVerseColon(lea.parenthesis_content.replace(leaPrefix, '')).matchAll(BIBLE_REF)][0];
         const lk = leaFirst ? chapterKey(leaFirst[0]) : null;
-        if (lk && questions.some(q => chapterKeys(q).includes(lk))) counted = true;
+        if (lk && groupQuestions.some(q => chapterKeys(q).includes(lk))) counted = true;
       }
       if (!counted) {
         scr++;
