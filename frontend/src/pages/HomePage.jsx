@@ -56,6 +56,8 @@ import { countQuestions } from "@/utils/timePlan";
 import { t } from "@/i18n";
 import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
+import { StudyActionBar } from "@/components/StudyActionBar";
+import { getNextStep } from "@/utils/nextStep";
 import { JwWeeklyCard } from "@/components/JwWeeklyCard";
 import { mondayOf } from "@/utils/jwWeekly";
 import { saveIssue } from "@/utils/pdfLibrary";
@@ -112,6 +114,15 @@ export default function HomePage() {
   const [darkTheme, setDarkTheme] = useLocalStorageString('pdfTimer_darkTheme', defaultDarkTheme);
   // Diseño del modo presentación: panel ordenado, semáforo o clásico
   const [presentationLayout, setPresentationLayout] = useLocalStorageString('pdfTimer_presentationLayout', DEFAULT_LAYOUT);
+  // Ordenador (pantalla ancha): dos columnas. Móvil: el plan arriba y la barra de botones abajo.
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(min-width: 1024px)')?.matches);
+  useEffect(() => {
+    const mq = window.matchMedia?.('(min-width: 1024px)');
+    if (!mq) return undefined;
+    const onChange = () => setIsDesktop(mq.matches);
+    mq.addEventListener?.('change', onChange);
+    return () => mq.removeEventListener?.('change', onChange);
+  }, []);
   
   // Get current theme config
   const currentTheme = darkMode ? (darkThemes[darkTheme] || darkThemes.zinc) : null;
@@ -750,6 +761,52 @@ export default function HomePage() {
   const progressPercentage = analysisResult ? Math.min(100, (elapsedTime / totalDurationSeconds) * 100) : 0;
   const adjustedFinalTimes = getAdjustedFinalQuestionsTime();
 
+  // «Plan de hoy»: hora actual, hora de fin y duración (o restante), con los controles del cronómetro
+  const planCard = analysisResult ? (
+    <TimerDisplay
+      elapsedTime={elapsedTime}
+      isTimerRunning={isTimerRunning}
+      startTime={startTime}
+      endTime={endTime}
+      progressPercentage={progressPercentage}
+      onToggle={toggleTimer}
+      onReset={resetTimer}
+      remainingTime={remainingTime}
+      totalDuration={totalDuration}
+      manualEndTime={manualEndTime}
+      onManualEndTimeChange={setManualEndTime}
+      fiveMinuteWarningEnabled={fiveMinuteWarningEnabled}
+      perQuestion={isTimerRunning && adjustedFinalTimes.perQuestion !== undefined ? adjustedFinalTimes.perQuestion : plannedPerQuestion}
+      plannedPerQuestion={plannedPerQuestion}
+      circuitVisitMode={circuitVisitMode}
+      onCircuitVisitChange={startTime ? undefined : setCircuitVisitMode}
+      circuitVisitMinutes={circuitVisitDuration}
+    />
+  ) : null;
+
+  // Botón «Siguiente» de la barra inferior (móvil): mismo orden que el modo presentación
+  const nextStep = analysisResult ? getNextStep({
+    phase: studyPhase,
+    groupedParagraphs,
+    currentParagraphGroup,
+    totalParagraphs: analysisResult.paragraphs?.length || 0,
+    finalsCount: analysisResult.final_questions?.length || 0,
+    currentReviewQuestion,
+  }) : null;
+  const handleNextStep = () => {
+    switch (nextStep?.action) {
+      case 'start': startIntroductionMode(); break;
+      case 'firstParagraph': goToFirstParagraph(); break;
+      case 'nextGroup': goToNextGroup(); break;
+      case 'review': startReviewMode(); break;
+      case 'nextReview': goToNextReviewQuestion(); break;
+      case 'closing': startClosingWordsMode(); break;
+      case 'finish': finishStudy(); break;
+      default: break;
+    }
+  };
+  const showActionBar = !!analysisResult && !isPresentationMode && !isDesktop && !!nextStep;
+
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? currentTheme?.bg || 'bg-zinc-900' : 'bg-stone-50'}`}>
       {/* Header */}
@@ -902,7 +959,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+      <main className={`max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 ${showActionBar ? (studyPhase === 'paragraphs' || studyPhase === 'review' ? 'pb-48' : 'pb-32') : ''}`}>
         {!analysisResult ? (
           <div className="space-y-4 sm:space-y-8">
             {/* Time Schedule Panel - Before PDF Upload */}
@@ -1099,6 +1156,7 @@ export default function HomePage() {
           <div ref={exportRef} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column - Analysis */}
             <div className="lg:col-span-8 space-y-6">
+              {!isDesktop && planCard}
               <AnalysisSummary 
                 analysisResult={analysisResult} 
                 onSelectIssueWeek={startTime ? undefined : handleSelectIssueWeek}
@@ -1356,30 +1414,7 @@ export default function HomePage() {
             {/* Right Column - Timers */}
             <div className="lg:col-span-4 space-y-6">
               <div className="lg:sticky lg:top-24 space-y-6">
-                <TimerDisplay
-                  elapsedTime={elapsedTime}
-                  isTimerRunning={isTimerRunning}
-                  startTime={startTime}
-                  endTime={endTime}
-                  progressPercentage={progressPercentage}
-                  onToggle={toggleTimer}
-                  onReset={resetTimer}
-                  remainingTime={remainingTime}
-                  totalDuration={totalDuration}
-                  manualEndTime={manualEndTime}
-                  onManualEndTimeChange={setManualEndTime}
-                  fiveMinuteWarningEnabled={fiveMinuteWarningEnabled}
-                  perQuestion={isTimerRunning && adjustedFinalTimes.perQuestion !== undefined ? adjustedFinalTimes.perQuestion : plannedPerQuestion}
-                  plannedPerQuestion={plannedPerQuestion}
-                />
-
-                <CircuitVisitToggle
-                  enabled={circuitVisitMode}
-                  onChange={setCircuitVisitMode}
-                  minutes={circuitVisitDuration}
-                  disabled={!!startTime}
-                  darkMode={darkMode}
-                />
+                {isDesktop && planCard}
 
                 <DurationAdjuster
                   totalDuration={totalDuration}
@@ -1425,6 +1460,18 @@ export default function HomePage() {
           </div>
         )}
       </main>
+
+      {showActionBar && (
+        <StudyActionBar
+          nextStep={nextStep}
+          onNext={handleNextStep}
+          canComment={studyPhase === 'paragraphs' || studyPhase === 'review'}
+          onAddComment={handleAddComment}
+          totalComments={totalComments}
+          onPresentation={enterPresentationMode}
+          darkMode={darkMode}
+        />
+      )}
 
       {/* Presentation Mode Overlay */}
       {isPresentationMode && (
