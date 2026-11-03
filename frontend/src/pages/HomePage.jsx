@@ -42,12 +42,10 @@ import { UploadZone } from "@/components/UploadZone";
 import { SettingsSheet, speedLabel } from "@/components/SettingsSheet";
 import { AnalysisSummary } from "@/components/AnalysisSummary";
 import { TimerDisplay } from "@/components/TimerDisplay";
-import { QuickStats } from "@/components/QuickStats";
 import { ParagraphCard } from "@/components/ParagraphCard";
 import { FinalQuestionsSection } from "@/components/FinalQuestionsSection";
 import { ParagraphStatsPanel } from "@/components/ParagraphStatsPanel";
 import { IntroductionWordsSection } from "@/components/IntroductionWordsSection";
-import { DurationAdjuster } from "@/components/DurationAdjuster";
 
 // Import hooks
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
@@ -1366,24 +1364,6 @@ export default function HomePage() {
             <div className="lg:col-span-4 space-y-6">
               <div className="lg:sticky lg:top-24 space-y-6">
                 {isDesktop && planCard}
-
-                <DurationAdjuster
-                  totalDuration={totalDuration}
-                  setTotalDuration={setTotalDuration}
-                  originalTotalTime={originalTotalTime}
-                  scaleFactor={getScaleFactor()}
-                  plannedPerQuestion={plannedPerQuestion}
-                  answerTime={answerTime}
-                  readingFitsInTime={staticPlan?.readingFitsInTime ?? true}
-                  darkMode={darkMode}
-                />
-
-                <QuickStats
-                  analysisResult={analysisResult}
-                  currentManualParagraph={currentManualParagraph}
-                  readingSpeed={readingSpeed}
-                  darkMode={darkMode}
-                />
 
                 {/* Statistics Panel - shows after at least one paragraph is completed */}
                 <ParagraphStatsPanel
