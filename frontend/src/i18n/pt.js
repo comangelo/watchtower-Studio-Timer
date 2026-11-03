@@ -264,6 +264,11 @@ const d = {
   update: "Atualizar",
   errNoText: "Não foi possível extrair o texto do PDF. É um PDF digitalizado (imagem)?",
   errFormat: "O formato do artigo de estudo não foi reconhecido neste PDF.",
+  ptVariantTitle: "Português de Portugal ou do Brasil?",
+  ptVariantHint: "A Sentinela do jw.org será obtida nesta versão. Pode mudar depois em ⚙ → Ecrã/Tela.",
+  ptVariantLabel: "Versão do português",
+  ptPortugal: "Portugal",
+  ptBrazil: "Brasil",
 };
 
 export default d;

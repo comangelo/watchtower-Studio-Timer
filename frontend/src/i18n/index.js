@@ -26,6 +26,10 @@ export const LANGUAGES = [
 
 const dictionaries = { es, en, de, it, fr, pt };
 const STORAGE_KEY = "pdfTimer_language";
+const PT_KEY = "pdfTimer_ptVariant";
+
+/** Código de idioma de jw.org (w_S_202609.pdf, w_E_…). Portugués: T (Brasil) o TPO (Portugal). */
+const JW_CODES = { es: "S", en: "E", de: "X", it: "I", fr: "F" };
 
 function detectLanguage() {
   try {
@@ -47,7 +51,12 @@ function detectLanguage() {
 }
 
 let current = detectLanguage();
+let ptVariant = (() => {
+  try { const v = localStorage.getItem(PT_KEY); return v === "PT" || v === "BR" ? v : null; } catch { return null; }
+})();
+let snapshot = current + (ptVariant || "");
 const listeners = new Set();
+const notify = () => { snapshot = current + (ptVariant || ""); listeners.forEach((fn) => fn()); };
 
 function applyToDocument() {
   try { document.documentElement.lang = current; } catch { /* sin documento */ }
@@ -59,7 +68,26 @@ export function currentLanguage() {
 }
 
 export function currentLocale() {
+  if (current === "pt") return ptVariant === "PT" ? "pt-PT" : "pt-BR";
   return LANGUAGES.find((l) => l.code === current)?.locale || "es-ES";
+}
+
+/** Portugués de Portugal ("PT") o de Brasil ("BR"); null si aún no se ha elegido. */
+export function currentPtVariant() {
+  return ptVariant;
+}
+
+export function setPtVariant(v) {
+  if (v !== "PT" && v !== "BR") return;
+  ptVariant = v;
+  try { localStorage.setItem(PT_KEY, v); } catch { /* sin almacenamiento */ }
+  notify();
+}
+
+/** Código de jw.org para el idioma de la app ("S", "E", "X", "I", "F", "T" o "TPO"). */
+export function jwLanguageCode() {
+  if (current === "pt") return ptVariant === "PT" ? "TPO" : "T";
+  return JW_CODES[current] || "S";
 }
 
 export function setLanguage(code) {
@@ -67,7 +95,7 @@ export function setLanguage(code) {
   current = code;
   try { localStorage.setItem(STORAGE_KEY, code); } catch { /* sin almacenamiento */ }
   applyToDocument();
-  listeners.forEach((fn) => fn());
+  notify();
 }
 
 function subscribe(fn) {
@@ -77,7 +105,8 @@ function subscribe(fn) {
 
 /** Idioma actual; el componente que lo usa se vuelve a pintar al cambiarlo. */
 export function useLanguage() {
-  return useSyncExternalStore(subscribe, currentLanguage, currentLanguage);
+  useSyncExternalStore(subscribe, () => snapshot, () => snapshot);
+  return current;
 }
 
 export function t(key, vars) {

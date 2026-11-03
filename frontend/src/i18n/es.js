@@ -264,6 +264,11 @@ const es = {
   update: "Actualizar",
   errNoText: "No se pudo extraer texto del PDF. ¿Es un PDF escaneado (imagen)?",
   errFormat: "No se reconoció el formato del artículo de estudio en este PDF.",
+  ptVariantTitle: "¿Portugués de Portugal o de Brasil?",
+  ptVariantHint: "La Atalaya de jw.org se buscará en esa versión. Puedes cambiarlo después en ⚙ → Pantalla.",
+  ptVariantLabel: "Versión del portugués",
+  ptPortugal: "Portugal",
+  ptBrazil: "Brasil",
 };
 
 export default es;
