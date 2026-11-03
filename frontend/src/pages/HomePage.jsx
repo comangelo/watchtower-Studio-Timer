@@ -18,6 +18,7 @@ import {
   Pencil,
   X,
   Moon,
+  Settings,
   Sun,
   Palette,
   Eye,
@@ -38,11 +39,10 @@ import PresentationMode, { DEFAULT_LAYOUT } from "@/components/PresentationMode"
 
 // Import refactored components
 import { UploadZone } from "@/components/UploadZone";
-import { SettingsPanel } from "@/components/SettingsPanel";
+import { SettingsSheet, speedLabel } from "@/components/SettingsSheet";
 import { AnalysisSummary } from "@/components/AnalysisSummary";
 import { TimerDisplay } from "@/components/TimerDisplay";
 import { QuickStats } from "@/components/QuickStats";
-import { NotificationSettings } from "@/components/NotificationSettings";
 import { ParagraphCard } from "@/components/ParagraphCard";
 import { FinalQuestionsSection } from "@/components/FinalQuestionsSection";
 import { ParagraphStatsPanel } from "@/components/ParagraphStatsPanel";
@@ -125,6 +125,9 @@ export default function HomePage() {
   }, []);
   
   // Get current theme config
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState('tiempo');
+  const openSettings = (tab = 'tiempo') => { setSettingsTab(tab); setSettingsOpen(true); };
   const currentTheme = darkMode ? (darkThemes[darkTheme] || darkThemes.zinc) : null;
   
   // Configurable reading settings
@@ -831,72 +834,19 @@ export default function HomePage() {
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Dark Mode Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`rounded-full w-9 h-9 sm:w-10 sm:h-10 ${
-                      darkMode 
-                        ? 'text-yellow-400 hover:bg-zinc-700' 
-                        : 'text-slate-600 hover:bg-slate-100'
-                    }`}
-                    title={darkMode ? 'Opciones de modo oscuro' : 'Activar modo oscuro'}
-                    data-testid="dark-mode-toggle"
-                  >
-                    {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={`rounded-xl min-w-[200px] ${darkMode ? 'bg-zinc-800 border-zinc-700' : ''}`}>
-                  {darkMode ? (
-                    <>
-                      <DropdownMenuItem 
-                        onClick={() => setDarkMode(false)} 
-                        className={`cursor-pointer ${darkMode ? 'hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}
-                      >
-                        <Sun className="w-4 h-4 mr-2 text-yellow-500" />
-                        <span className={darkMode ? 'text-zinc-200' : ''}>Modo Claro</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator className={darkMode ? 'bg-zinc-700' : ''} />
-                      <DropdownMenuLabel className={`text-xs ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
-                        <Palette className="w-3 h-3 inline mr-1" />
-                        Variante Oscura
-                      </DropdownMenuLabel>
-                      {Object.entries(darkThemes).map(([key, theme]) => (
-                        <DropdownMenuItem 
-                          key={key}
-                          onClick={() => setDarkTheme(key)}
-                          className={`cursor-pointer ${darkMode ? 'hover:bg-zinc-700 focus:bg-zinc-700' : ''}`}
-                        >
-                          <div className="flex items-center gap-2 w-full">
-                            <div 
-                              className="w-4 h-4 rounded-full border-2"
-                              style={{ 
-                                backgroundColor: theme.colors.panel,
-                                borderColor: darkTheme === key ? '#f97316' : theme.colors.border
-                              }}
-                            />
-                            <div className="flex-1">
-                              <span className={`text-sm ${darkMode ? 'text-zinc-200' : ''}`}>{theme.name}</span>
-                              <span className={`text-xs block ${darkMode ? 'text-zinc-500' : 'text-slate-400'}`}>{theme.description}</span>
-                            </div>
-                            {darkTheme === key && <Check className="w-4 h-4 text-orange-500" />}
-                          </div>
-                        </DropdownMenuItem>
-                      ))}
-                    </>
-                  ) : (
-                    <DropdownMenuItem 
-                      onClick={() => setDarkMode(true)} 
-                      className="cursor-pointer"
-                    >
-                      <Moon className="w-4 h-4 mr-2 text-slate-600" />
-                      Activar Modo Oscuro
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => openSettings(settingsTab)}
+                className={`rounded-full w-9 h-9 sm:w-10 sm:h-10 ${
+                  darkMode ? 'text-zinc-200 hover:bg-zinc-700' : 'text-slate-600 hover:bg-slate-100'
+                }`}
+                title="Ajustes"
+                aria-label="Ajustes"
+                data-testid="settings-btn"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
               
               {analysisResult && (
                 <>
@@ -1122,23 +1072,24 @@ export default function HomePage() {
               minutes={circuitVisitDuration}
               darkMode={darkMode}
             />
-            <SettingsPanel
-              readingSpeed={readingSpeed}
-              setReadingSpeed={setReadingSpeed}
-              answerTime={answerTime}
-              setAnswerTime={setAnswerTime}
-              totalDuration={totalDuration}
-              setTotalDuration={setTotalDuration}
-              introductionDuration={introductionDuration}
-              setIntroductionDuration={setIntroductionDuration}
-              closingWordsDuration={closingWordsDuration}
-              setClosingWordsDuration={setClosingWordsDuration}
-              longParagraphWeight={longParagraphWeight}
-              setLongParagraphWeight={setLongParagraphWeight}
-              presentationLayout={presentationLayout}
-              setPresentationLayout={setPresentationLayout}
-              darkMode={darkMode}
-            />
+            <button
+              onClick={() => openSettings('tiempo')}
+              className={`w-full text-left rounded-2xl border shadow-sm p-4 flex items-center gap-3 transition-colors ${
+                darkMode ? 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700' : 'bg-white border-slate-200 hover:bg-slate-50'
+              }`}
+              data-testid="settings-summary"
+            >
+              <span className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center ${darkMode ? 'bg-zinc-700 text-zinc-200' : 'bg-slate-100 text-slate-600'}`}>
+                <Settings className="w-4 h-4" />
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className={`block font-semibold text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>Ajustes del estudio</span>
+                <span className={`block text-xs mt-0.5 ${darkMode ? 'text-zinc-400' : 'text-slate-500'}`}>
+                  {totalDuration} min · Lectura {speedLabel(readingSpeed).toLowerCase()} · Respuesta {answerTime} s · Intro {introductionDuration} s
+                </span>
+              </span>
+              <span className="text-sm font-semibold text-orange-500 shrink-0">Cambiar</span>
+            </button>
             <UploadZone
               onFileSelect={handleFileUpload}
               isDragging={isDragging}
@@ -1434,22 +1385,6 @@ export default function HomePage() {
                   darkMode={darkMode}
                 />
 
-                <NotificationSettings
-                  soundEnabled={soundEnabled}
-                  setSoundEnabled={setSoundEnabled}
-                  vibrationEnabled={vibrationEnabled}
-                  setVibrationEnabled={setVibrationEnabled}
-                  alertTimes={alertTimes}
-                  setAlertTimes={setAlertTimes}
-                  onTestSound={() => playNotificationSound('warning')}
-                  onTestVibration={() => triggerVibration([200, 100, 200])}
-                  overtimeAlertEnabled={overtimeAlertEnabled}
-                  setOvertimeAlertEnabled={setOvertimeAlertEnabled}
-                  fiveMinuteWarningEnabled={fiveMinuteWarningEnabled}
-                  setFiveMinuteWarningEnabled={setFiveMinuteWarningEnabled}
-                  darkMode={darkMode}
-                />
-
                 {/* Statistics Panel - shows after at least one paragraph is completed */}
                 <ParagraphStatsPanel
                   paragraphStats={paragraphStats}
@@ -1472,6 +1407,47 @@ export default function HomePage() {
           darkMode={darkMode}
         />
       )}
+
+      <SettingsSheet
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        tab={settingsTab}
+        onTabChange={setSettingsTab}
+        hasStarted={startTime !== null}
+        totalDuration={totalDuration}
+        setTotalDuration={setTotalDuration}
+        introductionDuration={introductionDuration}
+        setIntroductionDuration={setIntroductionDuration}
+        closingWordsDuration={closingWordsDuration}
+        setClosingWordsDuration={setClosingWordsDuration}
+        circuitVisitMode={circuitVisitMode}
+        setCircuitVisitMode={setCircuitVisitMode}
+        circuitVisitMinutes={circuitVisitDuration}
+        readingSpeed={readingSpeed}
+        setReadingSpeed={setReadingSpeed}
+        answerTime={answerTime}
+        setAnswerTime={setAnswerTime}
+        longParagraphWeight={longParagraphWeight}
+        setLongParagraphWeight={setLongParagraphWeight}
+        soundEnabled={soundEnabled}
+        setSoundEnabled={setSoundEnabled}
+        vibrationEnabled={vibrationEnabled}
+        setVibrationEnabled={setVibrationEnabled}
+        overtimeAlertEnabled={overtimeAlertEnabled}
+        setOvertimeAlertEnabled={setOvertimeAlertEnabled}
+        fiveMinuteWarningEnabled={fiveMinuteWarningEnabled}
+        setFiveMinuteWarningEnabled={setFiveMinuteWarningEnabled}
+        alertTimes={alertTimes}
+        setAlertTimes={setAlertTimes}
+        onTestSound={() => playNotificationSound('warning')}
+        onTestVibration={() => triggerVibration([200, 100, 200])}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        darkTheme={darkTheme}
+        setDarkTheme={setDarkTheme}
+        presentationLayout={presentationLayout}
+        setPresentationLayout={setPresentationLayout}
+      />
 
       {/* Presentation Mode Overlay */}
       {isPresentationMode && (
