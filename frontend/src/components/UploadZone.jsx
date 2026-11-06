@@ -1,6 +1,13 @@
 import { Upload, Clock, MessageCircleQuestion, Heart } from "lucide-react";
 import { DONATION_URL, donationAvailable } from "@/utils/donation";
-import { t } from "@/i18n";
+import { t, currentLanguage } from "@/i18n";
+
+/** Manual en el idioma de la app (español si no hay traducción). */
+const MANUAL_LANGS = ["en", "de", "it", "fr", "pt", "pl", "nl", "ro"];
+function manualUrl() {
+  const l = currentLanguage();
+  return MANUAL_LANGS.includes(l) ? `/manual-${l}.html` : "/manual.html";
+}
 
 export function UploadZone({ 
   onFileSelect, 
@@ -139,6 +146,8 @@ export function UploadZone({
       <p className={`mt-8 text-center text-xs leading-relaxed ${darkMode ? 'text-zinc-500' : 'text-slate-500'}`} data-testid="legal-footer">
         {t('unofficialNotice')} ·{' '}
         <a href="/privacidad" className="underline hover:text-orange-600" data-testid="privacy-link">{t('privacyPolicy')}</a>
+        {' '}·{' '}
+        <a href={manualUrl()} className="underline hover:text-orange-600" data-testid="manual-link">{t('userManual')}</a>
         {' '}· © safeSingleMark S.L.
       </p>
     </div>

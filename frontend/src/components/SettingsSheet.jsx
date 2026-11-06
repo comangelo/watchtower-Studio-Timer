@@ -245,7 +245,7 @@ export function SettingsSheet({
               <Section>
                 <Row icon={MessageCircleQuestion} label={t("answerTime")} value={`${answerTime} s`}
                   hint={t("answerTimeHint")} />
-                <Range value={answerTime} onChange={setAnswerTime} min={15} max={90} step={5} left="15 s" right="90 s" testid="answer-time-slider" />
+                <Range value={answerTime} onChange={setAnswerTime} min={30} max={90} step={5} left="30 s" right="90 s" testid="answer-time-slider" />
               </Section>
               <Section>
                 <Row icon={MessagesSquare} color="text-emerald-500" label={t("longParagraphs")}

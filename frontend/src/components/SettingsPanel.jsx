@@ -119,7 +119,7 @@ export function SettingsPanel({
             <Slider
               value={[answerTime]}
               onValueChange={(value) => setAnswerTime(value[0])}
-              min={15}
+              min={30}
               max={90}
               step={5}
               className="w-full"
