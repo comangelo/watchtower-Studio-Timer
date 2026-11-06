@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual de utilizare · Cronometru pentru studiu</title>
+<meta name="description" content="Manual de utilizare al Cronometrului pentru studiu: cum să pregătești și să conduci Studiul Turnului de veghe la timp.">
+<link rel="icon" href="/icon-192.png">
+<link rel="stylesheet" href="/manual/manual.css">
+</head>
+<body>
+<header class="cover">
+  <div class="wrap">
+    <img src="/icon-192.png" alt="">
+    <div>
+      <h1>Manual de utilizare<br>Cronometru pentru studiu</h1>
+      <p>Cum să pregătești și să conduci Studiul Turnului de veghe la timp</p>
+      <p class="meta">Versiunea 3.1 · noiembrie 2026</p>
+      <nav class="langbar" aria-label="Limbile manualului"><a href="/manual.html" lang="es">ES</a><a href="/manual-en.html" lang="en">EN</a><a href="/manual-de.html" lang="de">DE</a><a href="/manual-it.html" lang="it">IT</a><a href="/manual-fr.html" lang="fr">FR</a><a href="/manual-pt.html" lang="pt">PT</a><a href="/manual-pl.html" lang="pl">PL</a><a href="/manual-nl.html" lang="nl">NL</a><a href="/manual-ro.html" lang="ro" class=on>RO</a></nav>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+<div class="warn" id="advertencias">
+  <h3>⚠ Două avertismente importante</h3>
+  <ol>
+    <li><strong>Conduce întotdeauna folosind publicația originală.</strong> Aplicația afișează paragrafele și întrebările doar ca să calculeze timpii. Cel care conduce <strong>nu trebuie să se ghideze niciodată după conținutul afișat în cronometru</strong>: ca să prezinți informațiile auditoriului, folosește întotdeauna aplicația <strong>JW Library</strong> sau revista <strong>Turnul de veghe</strong> tipărită.</li>
+    <li><strong>În timpul studiului, folosește modul prezentare.</strong> Acesta este modul recomandat de a folosi cronometrul cât timp conduci, deoarece evită distragerile: afișează doar ce e necesar, cu culorile <span class="chip g">verde</span>, <span class="chip y">galben</span> și <span class="chip r">roșu</span>, ca să vezi dintr-o privire cum stai cu timpul, și cu butoane mari, ușor de apăsat, pentru a trece la <strong>paragraful următor</strong> și pentru a număra <strong>comentariile</strong> (secțiunea 9).</li>
+  </ol>
+</div>
+
+<nav class="toc">
+  <h2>Cuprins</h2>
+  <ol>
+    <li><a href="#que-es">Ce este și ce face</a></li>
+    <li><a href="#instalar">Instalarea aplicației</a></li>
+    <li><a href="#inicio">Ecranul de start</a></li>
+    <li><a href="#cargar">Încărcarea articolului săptămânii</a></li>
+    <li><a href="#resumen">Rezumatul și planul studiului</a></li>
+    <li><a href="#parrafos">Lista paragrafelor</a></li>
+    <li><a href="#conducir">Conducerea studiului pas cu pas</a></li>
+    <li><a href="#colores">Culorile: verde, galben și roșu</a></li>
+    <li><a href="#presentacion">Modul prezentare</a></li>
+    <li><a href="#calculo">Cum se calculează timpii</a></li>
+    <li><a href="#ajustes">Setări</a></li>
+    <li><a href="#avisos">Alerte sonore și vibrații</a></li>
+    <li><a href="#circuito">Vizita supraveghetorului de circumscripție</a></li>
+    <li><a href="#idiomas">Limbi</a></li>
+    <li><a href="#final">La final: statistici și export</a></li>
+    <li><a href="#faq">Întrebări frecvente</a></li>
+  </ol>
+</nav>
+
+<!-- 1 -->
+<section id="que-es">
+  <h2><span class="n">1</span>Ce este și ce face</h2>
+  <p class="lead"><strong>Cronometrul pentru studiu</strong> îl ajută pe fratele care conduce Studiul Turnului de veghe <strong>să împartă bine timpul și să încheie la timp</strong>.</p>
+  <p>Încarci articolul săptămânii în format PDF, iar aplicația:</p>
+  <ul>
+    <li><strong>citește articolul</strong> și găsește paragrafele, întrebările, versetele care trebuie citite, imaginile, notele și întrebările de recapitulare;</li>
+    <li><strong>calculează cât timp</strong> să acorzi fiecărei părți: introducerea, fiecare paragraf, recapitularea și încheierea;</li>
+    <li><strong>te ghidează în timpul studiului</strong> cu un cronometru pentru fiecare paragraf și culori care arată dacă te încadrezi în timp, ești în prelungire sau ai depășit timpul;</li>
+    <li><strong>se reajustează singură:</strong> dacă un paragraf durează mai mult, împarte timpul rămas între următoarele, ca să închei la timp.</li>
+  </ul>
+  <div class="note"><p><strong>Aplicație neoficială.</strong> Este un proiect gratuit și independent. Nu este o publicație oficială și nu are legătură cu jw.org sau cu organizația Martorilor lui Iehova. Articolul este analizat pe dispozitivul tău: nu este trimis și nici păstrat pe vreun server.</p></div>
+  <p class="sample">Imaginile din acest manual folosesc un articol de exemplu inventat, nu un articol real din Turnul de veghe.</p>
+</section>
+
+<!-- 2 -->
+<section id="instalar">
+  <h2><span class="n">2</span>Instalarea aplicației</h2>
+  <h3>Android</h3>
+  <p>Instaleaz-o din Google Play: caută <strong>„Temporizador de Estudio”</strong> sau deschide acest link:<br>
+  <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio</a></p>
+  <h3>iPhone și iPad</h3>
+  <p>Încă nu este în App Store, dar funcționează la fel din browser și poate fi pusă pe ecranul principal:</p>
+  <ol class="steps">
+    <li>Deschide <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> în <strong>Safari</strong>.</li>
+    <li>Atinge butonul <strong>Partajează</strong> (pătratul cu săgeata în sus).</li>
+    <li>Alege <strong>„Adaugă pe ecranul principal”</strong> și atinge <strong>Adaugă</strong>. Va apărea pictograma portocalie a cronometrului.</li>
+  </ol>
+  <h3>Calculator sau tabletă</h3>
+  <p>Deschide <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> în browser. În Chrome și Edge o poți instala ca aplicație cu pictograma de instalare din bara de adrese.</p>
+  <div class="note blue"><p><strong>Actualizări:</strong> când apare o versiune nouă, aplicația afișează mesajul <em>„Este disponibilă o versiune nouă a aplicației.”</em> cu butonul <strong>Actualizează</strong>. Nu se actualizează niciodată singură în mijlocul unui studiu.</p></div>
+</section>
+
+<!-- 3 -->
+<section id="inicio">
+  <h2><span class="n">3</span>Ecranul de start</h2>
+  <div class="figs">
+    <figure><img src="manual/ro/01-inicio.webp" alt="Ecranul de start" loading="lazy"><figcaption>Ecranul de start cu planul de azi și articolul săptămânii.</figcaption></figure>
+  </div>
+  <p>De sus în jos vei găsi:</p>
+  <ul>
+    <li><strong>Bara de sus:</strong> selectorul de <strong>limbă</strong> (glob cu codul, de exemplu <span class="key">RO</span>) și butonul de <strong>setări</strong> <span class="key">⚙</span>. După ce încarci un articol apar și butoanele ecran complet, <strong>exportă</strong> și <strong>începe din nou</strong>.</li>
+    <li><strong>Planul de azi:</strong> ora actuală, ora la care studiul <strong>se termină</strong> și <strong>durata</strong> lui. Cu <strong>„Schimbă ora de încheiere”</strong> stabilești tu ora de încheiere (de exemplu, 20:28); aplicația ajustează durata.</li>
+    <li><strong>Articolul din această săptămână:</strong> pentru a descărca revista de pe jw.org și a o deschide în aplicație (vezi secțiunea 4).</li>
+    <li><strong>Vizita supraveghetorului de circumscripție:</strong> un comutator pentru studiul de 30 de minute fără citirea paragrafelor (secțiunea 13).</li>
+    <li><strong>Setările studiului:</strong> un rezumat al setărilor tale (durată, viteza de citire, timp pe răspuns și introducere), cu linkul <strong>Schimbă</strong>.</li>
+    <li><strong>Zona în care tragi PDF-ul</strong>, pentru cine are deja fișierul.</li>
+  </ul>
+</section>
+
+<!-- 4 -->
+<section id="cargar">
+  <h2><span class="n">4</span>Încărcarea articolului săptămânii</h2>
+  <p>Cardul <strong>„Articolul din această săptămână”</strong> arată săptămâna curentă (de exemplu, <em>9-15 noiembrie 2026</em>) și numărul Turnului de veghe în care se află. Cu săgețile <span class="key">‹</span> <span class="key">›</span> poți alege altă săptămână.</p>
+  <ol class="steps">
+    <li><strong>„1. Descarcă revista de pe jw.org”</strong> deschide PDF-ul oficial al numărului corespunzător. Pe Android se salvează în <em>Descărcări</em>; pe iPhone atinge Partajează → <em>„Salvează în Fișiere”</em>.</li>
+    <li><strong>„2. Alege PDF-ul descărcat”</strong>: selectează acel fișier. Aplicația caută în revistă articolul săptămânii alese și îl analizează.</li>
+  </ol>
+  <div class="note blue"><p><strong>Turnul de veghe se descarcă în limba aplicației.</strong> Dacă aplicația este în română, se descarcă ediția în română; dacă este în engleză, ediția în engleză, și tot așa pentru fiecare limbă. Ca să descarci altă limbă, schimbă mai întâi limba aplicației (secțiunea 14). În portugheză se descarcă ediția pentru Portugalia sau cea pentru Brazilia, după cum ai ales.</p></div>
+  <p>Aplicația <strong>păstrează o copie</strong> a revistei. Săptămânile următoare din același număr se deschid direct cu <strong>„Deschide articolul din această săptămână”</strong>, fără să mai descarci nimic. Revistele salvate se șterg singure la 3 luni după ultima lor săptămână.</p>
+  <p>Pe calculator poți și să <strong>tragi PDF-ul</strong> în zona de jos sau să alegi <strong>dosarul în care păstrezi revistele</strong>, iar aplicația le va găsi singură.</p>
+  <div class="note"><p><strong>Spune că revista nu a fost publicată încă?</strong> jw.org publică fiecare număr cu câteva săptămâni înainte. Dacă alegi o săptămână foarte îndepărtată, s-ar putea să nu fie încă disponibilă.</p></div>
+</section>
+
+<!-- 5 -->
+<section id="resumen">
+  <h2><span class="n">5</span>Rezumatul și planul studiului</h2>
+  <div class="figs">
+    <figure><img src="manual/ro/04-plan.webp" alt="Planul studiului" loading="lazy"><figcaption>Sus, planul de azi; dedesubt, rezumatul articolului.</figcaption></figure>
+    <figure><img src="manual/ro/05-resumen.webp" alt="Rezumatul articolului" loading="lazy"><figcaption>Rezumat cu împărțirea celor 60 de minute.</figcaption></figure>
+  </div>
+  <p>După ce încarci articolul vei vedea:</p>
+  <ul>
+    <li><strong>Titlul și săptămâna</strong> articolului de studiu.</li>
+    <li><strong>Etichete de conținut:</strong> numărul de paragrafe, întrebări, versete de citit, imagini, note și întrebări de recapitulare.</li>
+    <li><strong>Împărțirea timpului:</strong> o bară colorată cu ce revine pentru <span class="chip b">Introducere</span>, <strong>Citire</strong>, <span class="chip o">Comentarii</span> și <span class="chip p">Încheiere</span>. Arată și cât ar dura articolul <em>citit fără pauze</em>.</li>
+  </ul>
+  <p>Pe cardul planului, mesajul <strong>„Comentarii: X s pe întrebare”</strong> îți spune cât timp există în medie pentru răspunsul la fiecare întrebare.</p>
+  <div class="note"><p>Dacă articolul este prea lung pentru timpul ales, apare avertismentul <strong>„Nu încape”</strong> cu cât lipsește. Poți mări durata sau alege o citire mai rapidă în Setări.</p></div>
+</section>
+
+<!-- 6 -->
+<section id="parrafos">
+  <h2><span class="n">6</span>Lista paragrafelor</h2>
+  <div class="figs">
+    <figure><img src="manual/ro/06-parrafo-detalle.webp" alt="Detaliile unui paragraf" loading="lazy"><figcaption>Paragraf deschis cu întrebarea, imaginea și butonul „Începe de aici”.</figcaption></figure>
+  </div>
+  <p>Fiecare paragraf ocupă un rând cu <strong>numărul</strong>, <strong>timpul planificat</strong> și <strong>ora</strong> aproximativă la care ar trebui să se termine. Etichetele colorate arată de ce trebuie să ții cont:</p>
+  <table>
+    <tr><th>Etichetă</th><th>Ce înseamnă</th></tr>
+    <tr><td><span class="chip b">Iacov 5:7, 8</span></td><td>Există un <strong>verset de citit</strong>. Se afișează referința exactă.</td></tr>
+    <tr><td><span class="chip p">Imagine</span></td><td>Întrebarea trimite la o <strong>imagine</strong> din articol („Vezi și imaginea”).</td></tr>
+    <tr><td><span class="chip o">Notă</span></td><td>Există o <strong>notă</strong> de subsol de comentat.</td></tr>
+    <tr><td>★ Idee importantă</td><td>Întrebarea menționează un chenar sau o idee evidențiată între ghilimele.</td></tr>
+  </table>
+  <p>Atinge un paragraf ca să-l <strong>deschizi</strong>. Vei vedea cuvintele, timpul de citire, întrebarea și, dacă este lung, timpul suplimentar pentru mai multe comentarii. De acolo:</p>
+  <ul>
+    <li><strong>„Arată textul paragrafului”</strong> afișează textul complet. Cu <strong>„Arată toate textele”</strong> se deschid toate deodată. Acest lucru servește doar la pregătirea timpilor: ca să conduci, folosește publicația originală (vezi avertismentele de la început).</li>
+    <li><strong>„Începe de aici”</strong> sare la acel paragraf dacă studiul a început deja (de exemplu, dacă întârzii). Aplicația socotește ca și cum părțile anterioare ar fi durat cât era planificat.</li>
+  </ul>
+  <p>Paragrafele care au aceeași întrebare (de exemplu, <strong>„5, 6.”</strong>) sunt tratate ca un grup, iar butonul <strong>Următorul</strong> sare peste tot grupul.</p>
+</section>
+
+<!-- 7 -->
+<section id="conducir">
+  <h2><span class="n">7</span>Conducerea studiului pas cu pas</h2>
+  <div class="note"><p><strong>Recomandat:</strong> în timpul studiului, deschide <strong>modul prezentare</strong> (secțiunea 9). Aici se explică funcționarea generală, care este aceeași în ambele moduri de afișare.</p></div>
+  <p>Pe telefon, butoanele principale sunt mereu jos, în <strong>bara de jos</strong>:</p>
+  <ul>
+    <li><span class="chip b">URMĂTORUL</span> butonul mare albastru îți arată ce urmează: <em>Începe studiul → Paragraful 1 → Paragraful 2 → … → Recapitulare 1 → … → Încheiere → Încheie studiul</em>.</li>
+    <li><span class="chip o">✋ COMENTARIU</span> adaugă un comentariu la contor. La final vei vedea câte participări au fost la fiecare paragraf.</li>
+    <li><span class="key">⛶</span> deschide <strong>modul prezentare</strong> (secțiunea 9).</li>
+  </ul>
+  <ol class="steps">
+    <li><strong>Introducere.</strong> Atinge <strong>„Începe studiul”</strong>. Pornesc cronometrul general și cel al introducerii (1 minut implicit). Cardul introducerii devine albastru.</li>
+    <li><strong>Paragrafe.</strong> Atinge <strong>Următorul</strong> la începutul fiecărui paragraf. Cardul paragrafului curent arată timpul scurs față de cel planificat (de exemplu, <strong>1:11 / 5:43</strong>) și își schimbă culoarea pe parcurs (secțiunea 8).</li>
+    <li><strong>Întrebări de recapitulare.</strong> După ultimul paragraf urmează întrebările din chenarul final, fiecare cu timpul ei.</li>
+    <li><strong>Încheiere.</strong> Ultima parte (1 minut implicit) pentru a rezuma și a încuraja congregația.</li>
+    <li><strong>Încheie studiul.</strong> Cronometrul se oprește și se afișează statisticile.</li>
+  </ol>
+  <div class="figs">
+    <figure><img src="manual/ro/08-introduccion.webp" alt="Introducere în desfășurare" loading="lazy"><figcaption>Introducerea în desfășurare.</figcaption></figure>
+    <figure><img src="manual/ro/16-repaso.webp" alt="Întrebări de recapitulare" loading="lazy"><figcaption>Întrebări de recapitulare: cea curentă e marcată cu „ACUM”.</figcaption></figure>
+    <figure><img src="manual/ro/17-conclusion.webp" alt="Încheiere" loading="lazy"><figcaption>Încheierea și, dedesubt, statisticile.</figcaption></figure>
+  </div>
+  <p>Pe cardul planului, sus, poți <strong>pune pauză</strong> și <strong>continua</strong> studiul. Mesajul <strong>„Trebuie să închei în m:ss”</strong> îți amintește cât a mai rămas până la ora de încheiere.</p>
+  <div class="note blue"><p><strong>Ecranul nu se stinge</strong> cât timp studiul este în desfășurare, ca să nu fie nevoie să atingi telefonul. La final, telefonul stinge din nou ecranul ca de obicei.</p></div>
+</section>
+
+<!-- 8 -->
+<section id="colores">
+  <h2><span class="n">8</span>Culorile: verde, galben și roșu</h2>
+  <p>Cardul părții în desfășurare (paragraf, introducere, întrebare de recapitulare sau încheiere) își schimbă culoarea în funcție de timpul scurs:</p>
+  <table>
+    <tr><th>Culoare</th><th>Când</th><th>Ce faci</th></tr>
+    <tr><td><span class="chip g">ÎN TIMP</span></td><td>Până la timpul planificat.</td><td>Totul e bine: continuă așa.</td></tr>
+    <tr><td><span class="chip y">PRELUNGIRE</span></td><td>A depășit timpul, dar cu cel mult <strong>30%</strong>.</td><td>Începe să închei comentariile.</td></tr>
+    <tr><td><span class="chip r">DEPĂȘIT</span></td><td>Cu peste 30% mai mult decât era planificat.</td><td>Treci la paragraful următor.</td></tr>
+  </table>
+  <div class="figs">
+    <figure><img src="manual/ro/09-parrafo-verde.webp" alt="Paragraf în timp" loading="lazy"><figcaption>În timp.</figcaption></figure>
+    <figure><img src="manual/ro/10-parrafo-amarillo.webp" alt="Paragraf în prelungire" loading="lazy"><figcaption>Prelungire, cu timpul depășit.</figcaption></figure>
+    <figure><img src="manual/ro/11-parrafo-rojo.webp" alt="Paragraf depășit" loading="lazy"><figcaption>Depășit.</figcaption></figure>
+  </div>
+  <p><strong>În ultimele 5 minute ale studiului</strong>, paragrafele și întrebările de recapitulare <strong>nu au prelungire</strong>: trec direct de la verde la roșu, ca să nu se piardă timpul de la final. <strong>Încheierea își păstrează întotdeauna prelungirea</strong>.</p>
+  <p>Dacă o parte durează mai mult, nu e nicio problemă: când atingi <strong>Următorul</strong>, aplicația împarte din nou timpul rămas între ce a mai rămas, ca să închei la timp.</p>
+</section>
+
+<!-- 9 -->
+<section id="presentacion">
+  <h2><span class="n">9</span>Modul prezentare</h2>
+  <div class="note"><p><strong>Acesta este modul recomandat de a conduce studiul.</strong> Modul prezentare evită distragerile: afișează doar ce îți trebuie, culorile verde, galben și roșu îți arată dintr-o privire unde ești și cum stai cu timpul, iar butoanele <strong>Următorul</strong> și <strong>Comentariu</strong> sunt mari și ușor de găsit și de apăsat.</p></div>
+  <p>Este gândit pentru a lăsa telefonul sau tableta pe pupitru sau pe podium: totul este mare și se vede dintr-o privire. Se deschide cu butonul <span class="key">⛶</span> din bara de jos și se închide cu <span class="key">✕</span> (sau tasta <span class="key">Esc</span> pe calculator).</p>
+  <p>Sus arată <strong>ora actuală</strong>, ora la care <strong>se termină</strong> și timpul <strong>rămas</strong>, cu o bară de progres. În centru, partea în desfășurare cu cronometrul și culoarea ei, plus etichetele (de exemplu, <em>Citește Iacov 5:7, 8</em>). Jos, butoanele <strong>Comentariu</strong> și <strong>Următorul</strong>.</p>
+  <p>Există <strong>trei aspecte</strong>. Le schimbi cu butonul de aspect <span class="key">▦</span> (sus, în dreapta) sau din Setări → Ecran:</p>
+  <div class="figs">
+    <figure><img src="manual/ro/12-pres-panel.webp" alt="Aspect panou" loading="lazy"><figcaption><strong>Panou ordonat:</strong> întunecat, cu un chenar mare colorat.</figcaption></figure>
+    <figure><img src="manual/ro/13-pres-semaforo.webp" alt="Aspect semafor" loading="lazy"><figcaption><strong>Semafor:</strong> tot ecranul își schimbă culoarea.</figcaption></figure>
+    <figure><img src="manual/ro/14-pres-clasico.webp" alt="Aspect clasic" loading="lazy"><figcaption><strong>Clasic:</strong> aspectul obișnuit, cu contorul de participări.</figcaption></figure>
+  </div>
+  <p>În modul prezentare, <strong>butonul mare</strong> avansează singur prin studiu: <em>Începe studiul → Treci la paragraful 1 → Paragraful următor → Întrebare de recapitulare → Treci la încheiere → Încheie studiul</em>. În ultimele 5 minute apare avertismentul că trebuie să închei.</p>
+</section>
+
+<!-- 10 -->
+<section id="calculo">
+  <h2><span class="n">10</span>Cum se calculează timpii</h2>
+  <ol class="steps">
+    <li><strong>Citirea fiecărui paragraf</strong> = numărul de cuvinte ÷ viteza de citire (150, 180 sau 210 cuvinte pe minut), plus <strong>timpul pe răspuns</strong> ales în Setări (<strong>minimum 30 de secunde</strong>; implicit 35) pentru fiecare verset de citit, imagine, notă sau idee importantă. Dacă cel care conduce vrea mai mult timp pentru a le comenta, poate mări timpul pe răspuns. Citirea nu se scurtează și nu se lungește niciodată.</li>
+    <li><strong>Introducerea și încheierea</strong> au mereu rezervat timpul stabilit în Setări (implicit câte 1 minut).</li>
+    <li><strong>Comentarii:</strong> timpul rămas se împarte între toate întrebările (de la paragrafe și de recapitulare). <strong>Paragrafele lungi sau grupate</strong> primesc ceva mai mult timp pentru comentarii, în funcție de lungime.</li>
+    <li><strong>În timpul studiului:</strong> planul părții în desfășurare nu se schimbă. De fiecare dată când atingi <strong>Următorul</strong>, ce a mai rămas se recalculează cu timpul disponibil până la ora de încheiere, păstrând rezervat timpul pentru încheiere.</li>
+  </ol>
+  <div class="note"><p><strong>Exemplu</strong> (articolul din imagini): într-un studiu de 60 de minute cu 11 paragrafe și 21 de întrebări (18 de la paragrafe și 3 de recapitulare), cu timpul pe răspuns de 35 de secunde, aproximativ 7 minute sunt pentru citire, 2 minute pentru introducere și încheiere și aproximativ 51 de minute pentru comentarii, adică puțin peste 2 minute pe întrebare.</p></div>
+</section>
+
+<!-- 11 -->
+<section id="ajustes">
+  <h2><span class="n">11</span>Setări</h2>
+  <p>Atinge <span class="key">⚙</span> sus, în dreapta. Setările se păstrează pe dispozitivul tău și sunt împărțite în patru file:</p>
+  <div class="figs">
+    <figure><img src="manual/ro/03-ajustes-tiempo.webp" alt="Setări timp" loading="lazy"><figcaption>Timp</figcaption></figure>
+    <figure><img src="manual/ro/03-ajustes-lectura.webp" alt="Setări citire" loading="lazy"><figcaption>Citire</figcaption></figure>
+  </div>
+  <div class="figs">
+    <figure><img src="manual/ro/03-ajustes-avisos.webp" alt="Setări alerte" loading="lazy"><figcaption>Alerte</figcaption></figure>
+    <figure><img src="manual/ro/03-ajustes-pantalla.webp" alt="Setări ecran" loading="lazy"><figcaption>Ecran</figcaption></figure>
+  </div>
+  <table>
+    <tr><th>Filă</th><th>Ce poți schimba</th></tr>
+    <tr><td><strong>Timp</strong></td><td>Durata studiului (până la 60 min). Durata <strong>introducerii</strong> și a <strong>încheierii</strong> (de la 30 s la 3 min). Vizita supraveghetorului de circumscripție.</td></tr>
+    <tr><td><strong>Citire</strong></td><td><strong>Viteza de citire</strong> a cititorului: Lent (150), Normal (180) sau Rapid (210 cuvinte/min). <strong>Timp pe răspuns</strong> (de la 30 la 90 s; se folosește și pentru fiecare verset, imagine, notă sau idee importantă). <strong>Paragrafe lungi sau grupate</strong>: Fără extra, Normal sau Mai multe comentarii.</td></tr>
+    <tr><td><strong>Alerte</strong></td><td>Sunet și vibrație (cu butoane pentru testare). Alertă de <strong>paragraf depășit</strong>, alertă <strong>„Mai sunt 5 minute”</strong> și până la două <strong>alerte înainte de recapitulare</strong>.</td></tr>
+    <tr><td><strong>Ecran</strong></td><td><strong>Limba</strong>, <strong>tema</strong> luminoasă sau întunecată (cu patru variante întunecate) și <strong>aspectul modului prezentare</strong>.</td></tr>
+  </table>
+  <p>Dacă schimbi viteza de citire sau timpul pe răspuns în timpul studiului, schimbarea se aplică la studiul următor.</p>
+</section>
+
+<!-- 12 -->
+<section id="avisos">
+  <h2><span class="n">12</span>Alerte sonore și vibrații</h2>
+  <ul>
+    <li><strong>Paragraf depășit:</strong> sună când paragraful curent își depășește timpul.</li>
+    <li><strong>Mai sunt 5 minute:</strong> cu 5 minute înainte de ora de încheiere, cu sunet, vibrație și un mesaj pe ecran.</li>
+    <li><strong>Înainte de recapitulare:</strong> scrie cu câte minute înainte de întrebările de recapitulare vrei o alertă (de exemplu, 10 și 5). Lasă gol dacă nu vrei.</li>
+    <li><strong>Puțin timp pentru recapitulare:</strong> dacă rămân mai puțin de 20 de secunde pe întrebare de recapitulare, aplicația te avertizează.</li>
+  </ul>
+  <p>Verifică dacă telefonul nu este pe silențios, dacă vrei să auzi alertele. Vibrația funcționează pe Android; pe iPhone depinde de browser.</p>
+</section>
+
+<!-- 13 -->
+<section id="circuito">
+  <h2><span class="n">13</span>Vizita supraveghetorului de circumscripție</h2>
+  <div class="figs">
+    <figure><img src="manual/ro/07-circuito-on.webp" alt="Vizita supraveghetorului activată" loading="lazy"><figcaption>Comutator activat: studiu de 30 de minute.</figcaption></figure>
+  </div>
+  <p>În săptămâna vizitei, activează comutatorul <strong>„Vizita supraveghetorului de circumscripție”</strong> pe ecranul de start (sau în Setări → Timp). Studiul durează atunci <strong>30 de minute</strong> și <strong>paragrafele nu se citesc</strong>: rămân întrebările, versetele, imaginile și recapitularea. Nu uita să-l dezactivezi după vizită.</p>
+</section>
+
+<!-- 14 -->
+<section id="idiomas">
+  <h2><span class="n">14</span>Limbi</h2>
+  <div class="figs">
+    <figure><img src="manual/ro/02-idioma.webp" alt="Selectorul de limbă" loading="lazy"><figcaption>Meniul de limbi.</figcaption></figure>
+  </div>
+  <p>Aplicația funcționează în <strong>spaniolă, engleză, germană, italiană, franceză, portugheză, poloneză, neerlandeză și română</strong>. Schimbă limba cu butonul cu glob de sus sau din Setări → Ecran. Când schimbi limba:</p>
+  <ul>
+    <li>toată aplicația apare în limba respectivă, cu datele și orele corespunzătoare;</li>
+    <li>butonul jw.org descarcă <strong>Turnul de veghe în aceeași limbă</strong>. Limba aplicației hotărăște limba revistei;</li>
+    <li>în <strong>portugheză</strong>, aplicația întreabă o singură dată dacă preferi ediția pentru <strong>Portugalia</strong> sau cea pentru <strong>Brazilia</strong>. Poți schimba asta mai târziu în Setări → Ecran.</li>
+  </ul>
+  <p>Acest manual este disponibil în toate aceste limbi: folosește butoanele de limbă din partea de sus a paginii.</p>
+</section>
+
+<!-- 15 -->
+<section id="final">
+  <h2><span class="n">15</span>La final: statistici și export</h2>
+  <div class="figs">
+    <figure><img src="manual/ro/18-estadisticas.webp" alt="Statistici" loading="lazy"><figcaption>Statistici de timp pentru fiecare paragraf.</figcaption></figure>
+  </div>
+  <p><strong>Statisticile de timp</strong> compară timpul <strong>estimat</strong> cu cel <strong>real</strong> pentru tot studiul și pentru fiecare paragraf, cu diferența în verde (mai repede) sau roșu (mai încet) și comentariile marcate. Te ajută să vezi ce părți au durat mai mult și să ajustezi data viitoare (de exemplu, viteza de citire).</p>
+  <p>Cu butonul <strong>exportă</strong> <span class="key">⬇</span> din bara de sus poți salva planul studiului ca <strong>imagine (PNG)</strong> sau ca <strong>PDF</strong>, ca să-l tipărești sau să-l trimiți altora.</p>
+  <p>Ca să pregătești alt studiu, folosește butonul <strong>începe din nou</strong> <span class="key">↻</span>.</p>
+</section>
+
+<!-- 16 -->
+<section id="faq">
+  <h2><span class="n">16</span>Întrebări frecvente</h2>
+  <dl class="faq">
+    <dt>Pot să conduc citind paragrafele și întrebările din aplicație?</dt>
+    <dd>Nu. Aplicația le afișează doar ca să calculeze timpii. Ca să conduci, folosește întotdeauna JW Library sau Turnul de veghe tipărit.</dd>
+    <dt>De ce s-a descărcat Turnul de veghe în altă limbă?</dt>
+    <dd>Revista se descarcă în limba aplicației. Schimbă limba cu butonul cu glob și atinge din nou „Descarcă revista de pe jw.org”.</dd>
+    <dt>Spune că nu recunoaște formatul articolului.</dt>
+    <dd>Folosește PDF-ul oficial al Turnului de veghe, ediția de studiu, descărcat de pe jw.org (butonul „Descarcă revista de pe jw.org” face asta pentru tine). PDF-urile scanate sau făcute din capturi de ecran nu pot fi citite.</dd>
+    <dt>Nu găsește articolul săptămânii în revistă.</dt>
+    <dd>Verifică dacă săptămâna aleasă corespunde acelui număr al revistei. Dacă nu, aplicația arată cel mai apropiat articol și te lasă să alegi altă săptămână.</dd>
+    <dt>Am nevoie de internet în timpul studiului?</dt>
+    <dd>Doar ca să descarci revista. După ce articolul este încărcat, cronometrul funcționează fără conexiune.</dd>
+    <dt>Am întârziat sau am început mai târziu. Ce fac?</dt>
+    <dd>Deschide paragraful la care ați ajuns și atinge „Începe de aici”. Aplicația va împărți timpul rămas.</dd>
+    <dt>Vreau să închei la o oră exactă.</dt>
+    <dd>Folosește „Schimbă ora de încheiere” în planul de azi și scrie ora. Totul se calculează ca să închei la ora respectivă.</dd>
+    <dt>Alertele nu sună.</dt>
+    <dd>Verifică în Setări → Alerte că sunt activate, atinge „Testează sunetul” și asigură-te că telefonul nu este pe silențios.</dd>
+    <dt>Ce date păstrează aplicația?</dt>
+    <dd>Doar setările tale și revistele pe care alegi să le păstrezi, și întotdeauna pe dispozitivul tău. Nu există conturi și nu se trimit date la niciun server. Mai multe informații în <a href="/privacidad">politica de confidențialitate</a>.</dd>
+  </dl>
+</section>
+
+<footer>
+  <p>Cronometru pentru studiu · Manual de utilizare · versiunea 3.1, noiembrie 2026.<br>
+  Aplicație gratuită și neoficială, fără legătură cu jw.org. Web: <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> · <a href="/privacidad">Confidențialitate</a></p>
+  <p class="no-print"><a href="/manual_usuario_ro.pdf">Descarcă acest manual în PDF</a> · <a href="/">Înapoi la aplicație</a></p>
+</footer>
+</div>
+</body>
+</html>
