@@ -2,8 +2,8 @@
  * Modelo de tiempos del estudio de La Atalaya.
  *
  * Criterios:
- *  - La LECTURA de cada párrafo es fija: palabras ÷ velocidad + 40 s por cada
- *    elemento de apoyo (imagen, texto bíblico, nota). Nunca se estira ni se encoge.
+ *  - La LECTURA de cada párrafo es fija: palabras ÷ velocidad + el «tiempo por respuesta»
+ *    (mín. 30 s) por cada elemento de apoyo (imagen, texto bíblico, nota, idea importante). Nunca se estira ni se encoge.
  *  - La INTRODUCCIÓN y la CONCLUSIÓN duran lo que se configure y siempre se reservan.
  *  - Todo el tiempo restante es para COMENTARIOS y se reparte en "turnos de comentario":
  *      · cada pregunta real (de párrafo o de repaso) = 1 turno. Las referencias

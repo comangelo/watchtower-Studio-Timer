@@ -6,22 +6,22 @@
  * notas, ideas importantes, comentarios extra, repaso, introducción y conclusión.
  *
  * En lugar de tocar cada cálculo, se crea una copia del análisis en la que la
- * "lectura" de cada párrafo solo incluye los 40 s de sus elementos extra
+ * "lectura" de cada párrafo solo incluye el tiempo de sus elementos extra
  * (imagen, texto, nota, idea importante). Así el plan, las tarjetas, el resumen
  * y el modo presentación funcionan igual que siempre.
  */
 export const CIRCUIT_VISIT_MINUTES = 30;
-const EXTRA_CONTENT_TIME = 40;
+const DEFAULT_EXTRA_SECONDS = 40; // análisis guardados antes de que existiera extra_item_seconds
 
 /** Segundos de elementos extra del párrafo (misma regla que el análisis del PDF). */
-export function extraContentSeconds(paragraph) {
+export function extraContentSeconds(paragraph, perItem = DEFAULT_EXTRA_SECONDS) {
   let items = 0;
   for (const q of paragraph?.questions || []) {
     if (q.content_type === 'both') items += 2;
     else if (q.content_type === 'image' || q.content_type === 'scripture' || q.content_type === 'note') items += 1;
     items += (q.highlight_contents || []).length;
   }
-  return items * EXTRA_CONTENT_TIME;
+  return items * perItem;
 }
 
 /** Copia del análisis sin la lectura de los párrafos. */
@@ -30,7 +30,7 @@ export function withoutParagraphReading(analysis) {
   let cumulative = 0;
   let totalReading = 0;
   const paragraphs = analysis.paragraphs.map((p) => {
-    const reading = extraContentSeconds(p);
+    const reading = extraContentSeconds(p, analysis.extra_item_seconds || DEFAULT_EXTRA_SECONDS);
     const questionTime = Math.max(0, (p.total_time_seconds || 0) - (p.reading_time_seconds || 0));
     totalReading += reading;
     cumulative += reading + questionTime;
