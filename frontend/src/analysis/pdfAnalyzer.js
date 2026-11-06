@@ -10,7 +10,8 @@
  *  - Preguntas: 8,5–9,5, empiezan con "N." o "N, M." (párrafos agrupados)
  *  - Preguntas de repaso: lo que va debajo de la línea horizontal final (o tras
  *    "¿QUÉ RESPONDERÍAS?")
- *  - 40 s extra por cada imagen, texto bíblico o nota.
+ *  - Por cada imagen, texto bíblico, nota o idea importante se suma el «tiempo por
+ *    respuesta» elegido por el conductor (mínimo 30 s).
  *
  * El módulo no depende de React: recibe el documento de pdf.js ya abierto, así que
  * también se puede ejecutar en Node para las pruebas.
@@ -18,7 +19,8 @@
 
 export const WORDS_PER_MINUTE = 180;
 export const QUESTION_ANSWER_TIME = 35;
-const EXTRA_CONTENT_TIME = 40;
+/** Mínimo del «tiempo por respuesta»; también es el mínimo por cada elemento extra. */
+export const MIN_ANSWER_TIME = 30;
 
 /* ------------------------------------------------------------------ */
 /* Utilidades de texto (equivalentes a las de Python)                  */
@@ -756,6 +758,8 @@ export function extractArticleTitle(pages) {
 }
 
 export function analyzeSpans(pages, line, filename, wpm, answerTime) {
+  // Cada elemento extra (imagen, texto, nota, idea importante) cuenta como una respuesta.
+  const extraTime = Math.max(MIN_ANSWER_TIME, Number(answerTime) || QUESTION_ANSWER_TIME);
   // El texto temático de la portada ("No tenemos una lucha…") va en la misma letra que
   // los párrafos pero ENCIMA del primer párrafo; el PDF lo trae después en el flujo y se
   // colaba en mitad de un párrafo. Se descartan las líneas de párrafo de la primera
@@ -996,7 +1000,7 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     }
 
     totalImages += imgs; totalScriptures += scr; totalNotes += notes; totalHighlights += highlights;
-    reading += (imgs + scr + notes + highlights) * EXTRA_CONTENT_TIME;
+    reading += (imgs + scr + notes + highlights) * extraTime;
 
     totalWords += wordCount;
     totalEntries += questions.length;
@@ -1053,5 +1057,6 @@ export function analyzeSpans(pages, line, filename, wpm, answerTime) {
     total_scriptures: totalScriptures,
     total_notes: totalNotes,
     total_highlights: totalHighlights,
+    extra_item_seconds: extraTime,
   };
 }
