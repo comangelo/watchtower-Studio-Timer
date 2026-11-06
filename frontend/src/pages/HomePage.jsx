@@ -136,7 +136,9 @@ export default function HomePage() {
   
   // Configurable reading settings
   const [readingSpeed, setReadingSpeed] = useLocalStorage('pdfTimer_readingSpeed', 180);
-  const [answerTime, setAnswerTime] = useLocalStorage('pdfTimer_answerTime', 35);
+  const [storedAnswerTime, setAnswerTime] = useLocalStorage('pdfTimer_answerTime', 35);
+  // Mínimo 30 s (los ajustes antiguos podían bajar hasta 15 s).
+  const answerTime = Math.max(30, Number(storedAnswerTime) || 35);
   const [normalDuration, setNormalDuration] = useLocalStorage('pdfTimer_totalDuration', 60);
   // Semana de la visita del superintendente de circuito: 30 min y sin lectura de párrafos
   const [circuitVisitMode, setCircuitVisitMode] = useLocalStorage('pdfTimer_circuitVisitMode', false);
