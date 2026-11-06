@@ -7,6 +7,7 @@ const d = {
   weeklySource: "研究記事 · jw.org",
   unofficialNotice: "非公式アプリです。jw.org とは関係ありません",
   privacyPolicy: "プライバシーポリシー",
+  userManual: "使い方ガイド",
   donate: "このプロジェクトを支援",
   donateHint: "アプリは無料です。役立つと感じたら、任意で寄付できます。",
   unitSec: "秒",
