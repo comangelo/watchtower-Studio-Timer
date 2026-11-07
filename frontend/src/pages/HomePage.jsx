@@ -24,7 +24,9 @@ import {
   Eye,
   EyeOff,
   Globe, ChevronDown as ChevronDownLv,
+  BookOpen,
 } from "lucide-react";
+import { manualUrl } from "@/utils/manual";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -109,6 +111,8 @@ export default function HomePage() {
   
   // Settings with localStorage persistence
   const [soundEnabled, setSoundEnabled] = useLocalStorage('pdfTimer_soundEnabled', true);
+  // Tarjeta «¿Primera vez?» con el manual; el botón del manual de la cabecera queda siempre.
+  const [manualCardHidden, setManualCardHidden] = useLocalStorage('pdfTimer_manualCardHidden', false);
   const [vibrationEnabled, setVibrationEnabled] = useLocalStorage('pdfTimer_vibrationEnabled', true);
   const [alertTimes, setAlertTimes] = useLocalStorage('pdfTimer_alertTimes', { firstAlert: 0, secondAlert: 0 });
   // Aviso cuando faltan 5 minutos para la hora de fin (modo presentación y alerta)
@@ -833,7 +837,7 @@ export default function HomePage() {
                 alt={t('appName')} 
                 className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl shadow-lg"
               />
-              <div>
+              <div className={analysisResult ? 'hidden sm:block' : ''}>
                 <h1 className="font-heading font-bold text-base sm:text-xl text-orange-500" data-testid="app-title">
                   {t('appNameUpper')}
                 </h1>
@@ -841,6 +845,21 @@ export default function HomePage() {
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
+              <Button
+                asChild
+                variant="ghost"
+                title={t("userManual")}
+                aria-label={t("userManual")}
+                data-testid="manual-btn"
+                className={`rounded-full h-9 sm:h-10 w-9 sm:w-auto px-0 sm:px-3 gap-1.5 text-xs font-bold border ${
+                  darkMode ? 'border-zinc-600 text-zinc-100 hover:bg-zinc-700' : 'border-slate-200 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <a href={manualUrl()} target="_blank" rel="noopener">
+                  <BookOpen className="w-4 h-4 text-orange-500" />
+                  <span className="hidden sm:inline">{t("manualShort")}</span>
+                </a>
+              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -855,7 +874,7 @@ export default function HomePage() {
                     <Globe className="w-4 h-4" />
                     {LANGUAGES.find((l) => l.code === currentLanguage())?.short}
                     {currentLanguage() === "pt" && currentPtVariant() && <span className="opacity-60">·{currentPtVariant()}</span>}
-                    <ChevronDownLv className="w-3.5 h-3.5 opacity-60" />
+                    <ChevronDownLv className="hidden sm:block w-3.5 h-3.5 opacity-60" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className={`rounded-xl min-w-[180px] ${darkMode ? 'bg-zinc-800 border-zinc-700' : ''}`}>
@@ -1038,6 +1057,40 @@ export default function HomePage() {
               );
             })()}
 
+            {!manualCardHidden && (
+              <div
+                className={`rounded-2xl border shadow-sm p-4 flex items-start gap-3 ${
+                  darkMode ? 'bg-zinc-800 border-orange-500/40' : 'bg-orange-50 border-orange-200'
+                }`}
+                data-testid="manual-card"
+              >
+                <span className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center bg-orange-500 text-white">
+                  <BookOpen className="w-5 h-5" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className={`font-semibold text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{t('manualCardTitle')}</p>
+                  <p className={`text-xs mt-0.5 leading-relaxed ${darkMode ? 'text-zinc-400' : 'text-slate-600'}`}>{t('manualCardText')}</p>
+                  <div className="mt-3 flex items-center gap-4">
+                    <a
+                      href={manualUrl()}
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold"
+                      data-testid="manual-card-open"
+                    >
+                      <BookOpen className="w-4 h-4" /> {t('manualOpen')}
+                    </a>
+                    <button
+                      onClick={() => setManualCardHidden(true)}
+                      className={`text-xs font-semibold ${darkMode ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      data-testid="manual-card-hide"
+                    >
+                      {t('manualHide')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <JwWeeklyCard
               weekMonday={jwWeekMonday}
               onWeekChange={setJwWeekMonday}
