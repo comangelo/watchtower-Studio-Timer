@@ -191,6 +191,8 @@ export default function HomePage() {
   // Closing words section
   const [isInClosingWordsMode, setIsInClosingWordsMode] = useState(false);
   const [closingWordsStartTime, setClosingWordsStartTime] = useState(null);
+  // Duración real de la conclusión: lo configurado o, si sobran minutos al terminar el repaso, todo el sobrante
+  const [conclusionTarget, setConclusionTarget] = useState(null);
   const [closingWordsDuration, setClosingWordsDuration] = useLocalStorage('pdfTimer_closingWordsDuration', 60); // 1 minute default
   
   // Presentation mode phase state (persists when exiting/entering presentation mode)
@@ -335,36 +337,42 @@ export default function HomePage() {
     ? (commentStats.review[currentReviewQuestion] || 0)
     : (commentStats.paragraphs[currentGroupFirst] || 0);
 
+  // Guarda la estadística (previsto / real) del párrafo o grupo actual
+  const recordCurrentGroupStats = useCallback(() => {
+    if (!analysisResult || !paragraphStartTime) return;
+    const first = currentGroupFirst;
+    const last = currentGroupLast;
+    const group = analysisResult.paragraphs.slice(first, last + 1);
+    if (group.length === 0) return;
+    const actualTimeSpent = Math.round((Date.now() - paragraphStartTime) / 1000);
+    const estimated = Math.round(getAdjustedParagraphTimes(first, last).adjustedDuration
+      || group.reduce((sum, p) => sum + p.total_time_seconds, 0));
+    setParagraphStats(prev => ({
+      ...prev,
+      [first]: {
+        paragraphNumber: group.map(p => p.number).join(', '),
+        estimatedTime: estimated,
+        actualTime: actualTimeSpent,
+        difference: actualTimeSpent - estimated,
+        wordCount: group.reduce((sum, p) => sum + p.word_count, 0),
+        questionsCount: group.reduce((sum, p) => sum + countQuestions(p), 0),
+        comments: commentStats.paragraphs[first] || 0,
+      }
+    }));
+  }, [analysisResult, currentGroupFirst, currentGroupLast, paragraphStartTime, getAdjustedParagraphTimes, commentStats]);
+
   // Avanzar al siguiente párrafo o grupo, guardando la estadística del actual
   const goToNextGroup = useCallback(() => {
     if (!analysisResult) return;
-    const first = currentGroupFirst;
     const last = currentGroupLast;
     if (last >= analysisResult.paragraphs.length - 1) return;
-    const group = analysisResult.paragraphs.slice(first, last + 1);
-    if (paragraphStartTime) {
-      const actualTimeSpent = Math.round((Date.now() - paragraphStartTime) / 1000);
-      const estimated = Math.round(getAdjustedParagraphTimes(first, last).adjustedDuration
-        || group.reduce((sum, p) => sum + p.total_time_seconds, 0));
-      setParagraphStats(prev => ({
-        ...prev,
-        [first]: {
-          paragraphNumber: group.map(p => p.number).join(', '),
-          estimatedTime: estimated,
-          actualTime: actualTimeSpent,
-          difference: actualTimeSpent - estimated,
-          wordCount: group.reduce((sum, p) => sum + p.word_count, 0),
-          questionsCount: group.reduce((sum, p) => sum + countQuestions(p), 0),
-          comments: commentStats.paragraphs[first] || 0,
-        }
-      }));
-    }
+    recordCurrentGroupStats();
     const nextIndex = last + 1;
     setCurrentManualParagraph(nextIndex);
     setParagraphStartTime(Date.now());
     setParagraphStartTimes(prev => ({ ...prev, [nextIndex]: new Date() }));
     toast.success(`Avanzando al Párrafo ${analysisResult.paragraphs[nextIndex].number}`);
-  }, [analysisResult, currentGroupFirst, currentGroupLast, paragraphStartTime, getAdjustedParagraphTimes, commentStats]);
+  }, [analysisResult, currentGroupLast, recordCurrentGroupStats]);
 
   // Tiempo previsto del tramo actual (para el recuadro de colores)
   const currentSegmentEstimate = (() => {
@@ -372,7 +380,7 @@ export default function HomePage() {
       case 'intro': return introductionDuration;
       case 'paragraphs': return getAdjustedParagraphTimes(currentGroupFirst, currentGroupLast).adjustedDuration || 0;
       case 'review': return getAdjustedFinalQuestionsTime().perQuestion || 0;
-      case 'conclusion': return closingWordsDuration;
+      case 'conclusion': return conclusionTarget ?? closingWordsDuration;
       default: return 0;
     }
   })();
@@ -664,6 +672,7 @@ export default function HomePage() {
     setIntroductionStartTime(null);
     setIsInClosingWordsMode(false);
     setClosingWordsStartTime(null);
+    setConclusionTarget(null);
     setCommentStats({ paragraphs: {}, review: {} });
     setSegmentTimer({ key: '', elapsed: 0 });
     setPresentationPhase('intro');
@@ -707,13 +716,15 @@ export default function HomePage() {
 
   // Start review questions mode
   const startReviewMode = useCallback(() => {
+    // El último párrafo o grupo termina al empezar el repaso: también cuenta en las estadísticas
+    if (studyPhase === 'paragraphs') recordCurrentGroupStats();
     setIsInReviewMode(true);
     setCurrentReviewQuestion(0);
     setReviewQuestionStartTime(Date.now());
     setPresentationPhase('review'); // Sync presentation phase
     setPresentationReviewQuestion(0);
     toast.success("Iniciando Preguntas de Repaso");
-  }, []);
+  }, [studyPhase, recordCurrentGroupStats]);
 
   // Navigate to next review question
   const goToNextReviewQuestion = useCallback(() => {
@@ -730,20 +741,24 @@ export default function HomePage() {
 
   // Start closing words mode
   const startClosingWordsMode = useCallback(() => {
+    if (studyPhase === 'paragraphs') recordCurrentGroupStats();
+    // Si sobran minutos, la conclusión los aprovecha aunque supere lo configurado
+    setConclusionTarget(Math.max(closingWordsDuration, Math.round(remainingTime || 0)));
     setIsInClosingWordsMode(true);
     setClosingWordsStartTime(Date.now());
     setPresentationPhase('conclusion'); // Sync presentation phase
     toast.success("Iniciando Palabras de Conclusión");
-  }, []);
+  }, [studyPhase, recordCurrentGroupStats, closingWordsDuration, remainingTime]);
 
   // Finish study
   const finishStudy = useCallback(() => {
+    if (studyPhase === 'paragraphs') recordCurrentGroupStats();
     setIsTimerRunning(false);
     setIsInClosingWordsMode(false);
     setIsInReviewMode(false);
     setPresentationPhase('finished'); // Sync presentation phase
     toast.success("¡Estudio finalizado! 🎉");
-  }, []);
+  }, [studyPhase, recordCurrentGroupStats]);
 
   // Start from specific paragraph
   const startFromParagraph = useCallback((paragraphIndex) => {
@@ -1264,7 +1279,8 @@ export default function HomePage() {
                     // Show as current if timer is running and we're on this group
                     const isCurrentGroup = isTimerRunning && !isInIntroductionMode && group.indices.includes(currentManualParagraph);
                     // Show as completed if we've passed this group (regardless of timer state)
-                    const isCompletedGroup = !isInIntroductionMode && lastIndex < currentManualParagraph;
+                    const isCompletedGroup = !isInIntroductionMode && (lastIndex < currentManualParagraph
+                      || studyPhase === 'review' || studyPhase === 'conclusion' || studyPhase === 'finished');
                     
                     return (
                       <ParagraphCard
@@ -1319,7 +1335,7 @@ export default function HomePage() {
                   onNextReviewQuestion={goToNextReviewQuestion}
                   onStartClosingWords={startClosingWordsMode}
                   isInClosingWordsMode={isInClosingWordsMode}
-                  closingWordsDuration={closingWordsDuration}
+                  closingWordsDuration={isInClosingWordsMode && conclusionTarget ? conclusionTarget : closingWordsDuration}
                   onFinishStudy={finishStudy}
                   overtimeAlertEnabled={overtimeAlertEnabled}
                   soundEnabled={soundEnabled}
