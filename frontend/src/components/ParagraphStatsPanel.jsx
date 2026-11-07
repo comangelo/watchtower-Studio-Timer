@@ -13,9 +13,9 @@ export function ParagraphStatsPanel({ paragraphStats, totalParagraphs }) {
   const [isOpen, setIsOpen] = useState(true);
   
   const statsArray = Object.values(paragraphStats);
-  const completedCount = statsArray.length;
-  
-  if (completedCount === 0) return null;
+  if (statsArray.length === 0) return null;
+  // Un grupo («5, 6») cuenta como varios párrafos
+  const completedCount = statsArray.reduce((n, s) => n + String(s.paragraphNumber).split(',').length, 0);
   
   // Calculate totals
   const totalEstimated = statsArray.reduce((sum, s) => sum + s.estimatedTime, 0);
