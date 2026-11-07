@@ -403,7 +403,14 @@ export default function HomePage() {
     // Use setTimeout to ensure state is updated before showing modal
     setTimeout(() => {
       setIsPresentationMode(true);
-      if (document.documentElement.requestFullscreen) {
+      // En móviles y tabletas no se pide la pantalla completa del navegador: Android
+      // muestra entonces un aviso abajo («para salir de la pantalla completa…») que
+      // tapa los botones. El modo presentación ya ocupa toda la pantalla de la app.
+      const isTouch = window.matchMedia?.('(pointer: coarse)').matches;
+      if (isTouch) {
+        // El botón «atrás» del móvil cierra el modo presentación en vez de salir de la app
+        window.history.pushState({ presentation: true }, '');
+      } else if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen().catch(err => {
           console.log('Fullscreen not supported:', err);
         });
@@ -413,6 +420,7 @@ export default function HomePage() {
 
   const exitPresentationMode = useCallback(() => {
     setIsPresentationMode(false);
+    if (window.history.state?.presentation) window.history.back();
     if (document.fullscreenElement && document.exitFullscreen) {
       document.exitFullscreen().catch(err => {
         console.log('Exit fullscreen error:', err);
@@ -428,7 +436,13 @@ export default function HomePage() {
       }
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    // Botón «atrás» del móvil
+    const handlePopState = () => { if (isPresentationMode) setIsPresentationMode(false); };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, [isPresentationMode]);
 
   // Paragraph navigation (avanzar: goToNextGroup)
