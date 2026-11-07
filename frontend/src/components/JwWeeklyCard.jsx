@@ -31,12 +31,15 @@ export function JwWeeklyCard({
   const [showLibrary, setShowLibrary] = useState(false);
   const [folder, setFolder] = useState(null);         // carpeta de Windows
   const [folderState, setFolderState] = useState({ status: "idle", file: null });
+  // Tras pulsar «Descargar», el paso 2 se resalta para que baste un toque al volver a la app.
+  const [downloaded, setDownloaded] = useState(false);
   const platform = devicePlatform();
   const canUseFolder = folderSupported();
   const thisWeek = mondayOf(new Date());
   const isThisWeek = weekMonday.getTime() === thisWeek.getTime();
   const issue = issueForWeek(weekMonday);
   const jwLang = jwLanguageCode(); // revista en el idioma de la app
+  useEffect(() => { setDownloaded(false); }, [issue, jwLang]);
 
   // Enlace oficial de jw.org
   useEffect(() => {
@@ -196,7 +199,7 @@ export function JwWeeklyCard({
                 data-testid="jw-download"
               >
                 {state.status === "ok" ? (
-                  <a href={state.info.url} target="_blank" rel="noopener noreferrer">
+                  <a href={state.info.url} target="_blank" rel="noopener noreferrer" onClick={() => setDownloaded(true)}>
                     <Download className="w-5 h-5 mr-2 shrink-0" />
                     <span className="text-left leading-tight">
                       {t("jwStep1")}
@@ -220,14 +223,21 @@ export function JwWeeklyCard({
             <Button
               onClick={onChoosePdf}
               disabled={isLoading}
-              variant="outline"
-              className={`w-full h-auto py-3 rounded-xl font-semibold justify-start border-2 ${darkMode ? "border-sky-500 text-sky-200" : "border-sky-300 text-sky-800"}`}
+              variant={downloaded ? "default" : "outline"}
+              className={`w-full h-auto rounded-xl font-semibold justify-start border-2 ${
+                downloaded
+                  ? "py-4 bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white shadow-lg ring-4 ring-emerald-300/60"
+                  : `py-3 ${darkMode ? "border-sky-500 text-sky-200" : "border-sky-300 text-sky-800"}`
+              }`}
               data-testid="jw-choose-pdf"
+              data-ready={downloaded ? "1" : undefined}
             >
-              {isLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <FileUp className="w-5 h-5 mr-2" />}
+              {isLoading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <FileUp className={`${downloaded ? "w-6 h-6" : "w-5 h-5"} mr-2`} />}
               <span className="text-left leading-tight">
                 {t("jwStep2")}
-                <span className="block text-xs font-normal opacity-80">{t("jwStep2Hint")}</span>
+                <span className={`block font-normal ${downloaded ? "text-sm font-semibold mt-0.5" : "text-xs opacity-80"}`}>
+                  {downloaded ? t("jwStep2Ready") : t("jwStep2Hint")}
+                </span>
               </span>
             </Button>
           </>
