@@ -25,8 +25,9 @@ import {
   EyeOff,
   Globe, ChevronDown as ChevronDownLv,
   BookOpen,
+  Compass,
 } from "lucide-react";
-import { manualUrl } from "@/utils/manual";
+import { manualUrl, guideUrl } from "@/utils/manual";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -1111,19 +1112,30 @@ export default function HomePage() {
                 <div className="flex-1 min-w-0">
                   <p className={`font-semibold text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{t('manualCardTitle')}</p>
                   <p className={`text-xs mt-0.5 leading-relaxed ${darkMode ? 'text-zinc-400' : 'text-slate-600'}`}>{t('manualCardText')}</p>
-                  <div className="mt-3 flex items-center gap-4">
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <a
+                      href={guideUrl()}
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold"
+                      data-testid="guide-card-open"
+                    >
+                      <Compass className="w-4 h-4" /> {t('quickGuide')}
+                    </a>
                     <a
                       href={manualUrl()}
                       target="_blank"
                       rel="noopener"
-                      className="inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold"
+                      className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 border text-sm font-bold ${
+                        darkMode ? 'border-orange-400/60 text-orange-300 hover:bg-zinc-700' : 'border-orange-300 text-orange-700 hover:bg-orange-100'
+                      }`}
                       data-testid="manual-card-open"
                     >
-                      <BookOpen className="w-4 h-4" /> {t('manualOpen')}
+                      <BookOpen className="w-4 h-4" /> {t('userManual')}
                     </a>
                     <button
                       onClick={() => setManualCardHidden(true)}
-                      className={`text-xs font-semibold ${darkMode ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      className={`ml-1 text-xs font-semibold ${darkMode ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-700'}`}
                       data-testid="manual-card-hide"
                     >
                       {t('manualHide')}
