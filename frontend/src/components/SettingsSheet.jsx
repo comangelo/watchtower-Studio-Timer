@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { LAYOUTS } from "@/components/PresentationMode";
 import { darkThemes } from "@/utils/darkThemes";
 import { t, LANGUAGES, currentLanguage, setLanguage, currentPtVariant, setPtVariant } from "@/i18n";
+import { manualUrl } from "@/utils/manual";
 
 const ThemeCtx = createContext({});
 
@@ -188,6 +189,11 @@ export function SettingsSheet({
             <Settings className="w-5 h-5 text-orange-500" /> {t("settings")}
           </SheetTitle>
           <SheetDescription className={`text-xs ${c.muted}`}>{t("settingsSavedHere")}</SheetDescription>
+          <a href={manualUrl()} target="_blank" rel="noopener"
+            className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-orange-500 hover:text-orange-600"
+            data-testid="settings-manual-link">
+            <BookOpen className="w-4 h-4" /> {t("userManual")}
+          </a>
           <div className={`mt-4 grid grid-cols-4 gap-1 rounded-xl p-1 ${c.tabs}`} role="tablist">
             {SETTINGS_TABS.map((tb) => {
               const Icon = tb.icon;
