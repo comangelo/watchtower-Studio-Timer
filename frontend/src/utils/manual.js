@@ -13,3 +13,9 @@ export function manualUrl() {
 export function openManual() {
   window.open(manualUrl(), "_blank", "noopener");
 }
+
+/** Guía rápida en el idioma actual de la app. */
+export function guideUrl() {
+  const l = currentLanguage();
+  return MANUAL_LANGS.includes(l) ? `/guia-rapida-${l}.html` : "/guia-rapida.html";
+}
