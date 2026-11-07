@@ -589,14 +589,33 @@ export default function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startTime, readingSpeed, answerTime]);
 
-  // Drag and drop handlers
-  const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true); };
-  const handleDragLeave = (e) => { e.preventDefault(); setIsDragging(false); };
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    handleFileUpload(e.dataTransfer.files[0]);
-  };
+  // Arrastrar y soltar el PDF en cualquier parte de la pantalla de inicio (ordenador)
+  const handleFileUploadRef = useRef(null);
+  handleFileUploadRef.current = handleFileUpload;
+  useEffect(() => {
+    if (analysisResult) { setIsDragging(false); return undefined; }
+    let depth = 0;
+    const hasFiles = (e) => Array.from(e.dataTransfer?.types || []).includes('Files');
+    const onEnter = (e) => { if (!hasFiles(e)) return; e.preventDefault(); depth += 1; setIsDragging(true); };
+    const onOver = (e) => { if (hasFiles(e)) e.preventDefault(); };
+    const onLeave = (e) => { if (!hasFiles(e)) return; depth = Math.max(0, depth - 1); if (depth === 0) setIsDragging(false); };
+    const onDropWin = (e) => {
+      if (!hasFiles(e)) return;
+      e.preventDefault(); depth = 0; setIsDragging(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file) handleFileUploadRef.current?.(file);
+    };
+    window.addEventListener('dragenter', onEnter);
+    window.addEventListener('dragover', onOver);
+    window.addEventListener('dragleave', onLeave);
+    window.addEventListener('drop', onDropWin);
+    return () => {
+      window.removeEventListener('dragenter', onEnter);
+      window.removeEventListener('dragover', onOver);
+      window.removeEventListener('dragleave', onLeave);
+      window.removeEventListener('drop', onDropWin);
+    };
+  }, [analysisResult]);
 
   // Timer controls
   const toggleTimer = () => {
@@ -823,6 +842,14 @@ export default function HomePage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? currentTheme?.bg || 'bg-zinc-900' : 'bg-stone-50'}`}>
+      {isDragging && !analysisResult && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-orange-500/15 backdrop-blur-sm pointer-events-none p-6" data-testid="drop-overlay">
+          <div className={`rounded-3xl border-4 border-dashed border-orange-500 px-10 py-12 text-center shadow-2xl ${darkMode ? 'bg-zinc-900/95 text-zinc-100' : 'bg-white/95 text-slate-800'}`}>
+            <FileText className="w-14 h-14 mx-auto mb-4 text-orange-500" />
+            <p className="font-heading font-bold text-2xl">{t('dropPdfAnywhere')}</p>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <header className={`border-b sticky top-0 z-50 shadow-sm backdrop-blur-md transition-colors duration-300 ${
         darkMode 
@@ -1126,14 +1153,7 @@ export default function HomePage() {
             </button>
             <UploadZone
               onFileSelect={handleFileUpload}
-              isDragging={isDragging}
-              isLoading={isLoading}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
               fileInputRef={fileInputRef}
-              readingSpeed={readingSpeed}
-              answerTime={answerTime}
               darkMode={darkMode}
             />
           </div>
