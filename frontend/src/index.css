@@ -115,3 +115,13 @@ code {
         display: contents !important;
     }
 }
+
+/* Botón «Siguiente» cuando ya no queda de dónde recuperar tiempo: late despacio */
+@keyframes nextUrgentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(254, 202, 202, 0.95); filter: brightness(1); }
+  50% { box-shadow: 0 0 0 10px rgba(254, 202, 202, 0); filter: brightness(1.18); }
+}
+.next-urgent { animation: nextUrgentPulse 1.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .next-urgent { animation: none; box-shadow: 0 0 0 4px #fecaca; }
+}
