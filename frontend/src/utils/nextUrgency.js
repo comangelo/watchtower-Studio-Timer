@@ -28,7 +28,7 @@ export function nextButtonUrgency({
 
   // La conclusión conserva siempre su prórroga
   const finalStretch = phase !== "conclusion" && remainingTime <= FINAL_STRETCH_SECONDS;
-  const status = remainingTime <= 0 && phase !== "conclusion"
+  const status = remainingTime <= 0 && (phase !== "conclusion" || segmentElapsed > 0)
     ? "over"
     : timeStatus(segmentElapsed, segmentEstimate, finalStretch);
   if (status !== "over") return "none";
