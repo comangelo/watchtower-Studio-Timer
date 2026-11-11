@@ -62,6 +62,7 @@ import { IntroductionWordsSection } from "@/components/IntroductionWordsSection"
 import { useLocalStorage, useLocalStorageString } from "@/hooks/useLocalStorage";
 import { useNotifications } from "@/hooks/useNotifications";
 import { countQuestions } from "@/utils/timePlan";
+import { nextButtonUrgency } from "@/utils/nextUrgency";
 import { t, tn, useLanguage, LANGUAGES, currentLanguage, setLanguage, currentLocale, currentPtVariant } from "@/i18n";
 import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
@@ -127,6 +128,7 @@ export default function HomePage() {
   // Aviso cuando faltan 5 minutos para la hora de fin (modo presentación y alerta)
   const [fiveMinuteWarningEnabled, setFiveMinuteWarningEnabled] = useLocalStorage('pdfTimer_fiveMinuteWarning', true);
   const [overtimeAlertEnabled, setOvertimeAlertEnabled] = useLocalStorage('pdfTimer_overtimeAlert', true);
+  const [nextButtonAlertEnabled, setNextButtonAlertEnabled] = useLocalStorage('pdfTimer_nextButtonAlert', true);
   const [darkMode, setDarkMode] = useLocalStorage('pdfTimer_darkMode', false);
   const [darkTheme, setDarkTheme] = useLocalStorageString('pdfTimer_darkTheme', defaultDarkTheme);
   // Diseño del modo presentación: panel ordenado, semáforo o clásico
@@ -419,6 +421,19 @@ export default function HomePage() {
       default: return 0;
     }
   })();
+
+  // Botón «Siguiente» en rojo (y parpadeando si ya no hay de dónde recuperar tiempo)
+  const nextUrgency = nextButtonAlertEnabled ? nextButtonUrgency({
+    phase: studyPhase,
+    running: isTimerRunning,
+    segmentElapsed,
+    segmentEstimate: currentSegmentEstimate,
+    remainingTime,
+    analysis: analysisResult,
+    currentGroupLast,
+    currentReviewQuestion,
+    conclusionSeconds: closingWordsDuration,
+  }) : 'none';
 
   // Presentation mode functions
   const enterPresentationMode = useCallback(() => {
@@ -1513,6 +1528,7 @@ export default function HomePage() {
           totalComments={totalComments}
           onPresentation={enterPresentationMode}
           darkMode={darkMode}
+          urgency={nextUrgency}
         />
       )}
 
@@ -1544,6 +1560,8 @@ export default function HomePage() {
         setVibrationEnabled={setVibrationEnabled}
         overtimeAlertEnabled={overtimeAlertEnabled}
         setOvertimeAlertEnabled={setOvertimeAlertEnabled}
+        nextButtonAlertEnabled={nextButtonAlertEnabled}
+        setNextButtonAlertEnabled={setNextButtonAlertEnabled}
         fiveMinuteWarningEnabled={fiveMinuteWarningEnabled}
         setFiveMinuteWarningEnabled={setFiveMinuteWarningEnabled}
         alertTimes={alertTimes}
@@ -1589,6 +1607,7 @@ export default function HomePage() {
           onStartClosingWords={startClosingWordsMode}
           onFinishStudy={finishStudy}
           onOpenReport={lastReportId ? () => openReport(lastReportId) : undefined}
+          urgency={nextUrgency}
         />
       )}
     </div>
