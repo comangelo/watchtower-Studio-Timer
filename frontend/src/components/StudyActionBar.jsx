@@ -13,6 +13,8 @@ export function StudyActionBar({
   canComment = false,
   onAddComment,
   totalComments = 0,
+  phaseComments = 0,
+  phaseLabel = "",
   onPresentation,
   darkMode = false,
   urgency = "none", // "none" | "over" | "critical"
@@ -42,9 +44,15 @@ export function StudyActionBar({
               <Hand className="w-7 h-7 shrink-0" strokeWidth={2.2} />
               <span className="text-lg font-black uppercase tracking-wide">{t("comment")}</span>
             </span>
-            <span className="text-right leading-none">
-              <span className="block text-2xl font-black tabular-nums">{totalComments}</span>
-              <span className="block text-[10px] font-semibold opacity-85">{t("inTotal")}</span>
+            <span className="flex items-stretch gap-3 text-right leading-none">
+              <span className="pr-3 border-r border-white/40">
+                <span className="block text-2xl font-black tabular-nums" data-testid="bar-phase-comment-count">{phaseComments}</span>
+                <span className="block text-[10px] font-semibold opacity-85">{phaseLabel}</span>
+              </span>
+              <span>
+                <span className="block text-2xl font-black tabular-nums">{totalComments}</span>
+                <span className="block text-[10px] font-semibold opacity-85">{t("inTotal")}</span>
+              </span>
             </span>
           </button>
         )}

@@ -25,14 +25,17 @@ function ClosingWordsSection({
   triggerVibration,
   darkMode = false,
   finalStretch = false, // la conclusión conserva siempre su prórroga (no se pasa este valor)
+  pastEnd = false,      // ya pasó la hora de fin del estudio: siempre en rojo
+  segmentElapsed,       // segundos del tramo en curso (reloj central)
 }) {
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const [ownElapsed, setElapsedTime] = useState(0);
+  const elapsedTime = isActive && segmentElapsed != null ? segmentElapsed : ownElapsed;
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
   const timerRef = useRef(null);
   const cardRef = useRef(null);
 
-  const isOverTime = elapsedTime > estimatedTime;
-  const status = timeStatus(elapsedTime, estimatedTime, finalStretch);
+  const isOverTime = elapsedTime > estimatedTime || (pastEnd && isActive && elapsedTime > 0);
+  const status = pastEnd && isActive && elapsedTime > 0 ? 'over' : timeStatus(elapsedTime, estimatedTime, finalStretch);
   const isGrace = status === 'grace';
   const isRed = status === 'over';
 
@@ -168,8 +171,10 @@ function ReviewQuestionCard({
   onAddComment,
   commentCount = 0,
   finalStretch = false,
+  segmentElapsed,
 }) {
-  const [questionElapsed, setQuestionElapsed] = useState(0);
+  const [ownElapsed, setQuestionElapsed] = useState(0);
+  const questionElapsed = isCurrentQuestion && segmentElapsed != null ? segmentElapsed : ownElapsed;
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
   const questionTimerRef = useRef(null);
   const cardRef = useRef(null);
@@ -345,6 +350,8 @@ export function FinalQuestionsSection({
   onAddComment,
   reviewCommentStats = {},
   finalStretch = false,
+  pastEnd = false,
+  segmentElapsed,
 }) {
   if (!finalQuestions || finalQuestions.length === 0) return null;
   
@@ -424,6 +431,7 @@ export function FinalQuestionsSection({
               question={q}
               index={idx}
               isCurrentQuestion={idx === currentReviewQuestion && !isInClosingWordsMode}
+              segmentElapsed={segmentElapsed}
               isCompletedQuestion={idx < currentReviewQuestion || isInClosingWordsMode}
               perQuestionTime={perQuestionTime}
               isLowTime={isLowTime}
@@ -485,6 +493,8 @@ export function FinalQuestionsSection({
           isActive={isInClosingWordsMode}
           isTimerRunning={isTimerRunning}
           estimatedTime={closingWordsDuration}
+          pastEnd={pastEnd}
+          segmentElapsed={segmentElapsed}
           onFinishStudy={onFinishStudy}
           overtimeAlertEnabled={overtimeAlertEnabled}
           soundEnabled={soundEnabled}

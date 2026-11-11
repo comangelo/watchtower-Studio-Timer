@@ -18,8 +18,10 @@ export function IntroductionWordsSection({
   hasStarted, // true if timer has been started
   darkMode = false,
   finalStretch = false, // últimos 5 minutos del estudio: sin prórroga
+  segmentElapsed, // segundos del tramo en curso (reloj central)
 }) {
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const [ownElapsed, setElapsedTime] = useState(0);
+  const elapsedTime = isActive && segmentElapsed != null ? segmentElapsed : ownElapsed;
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
   const timerRef = useRef(null);
   const cardRef = useRef(null);

@@ -85,6 +85,7 @@ export default function PresentationMode({
   onFinishStudy,
   onOpenReport,
   urgency = "none", // "none" | "over" | "critical": el botón «Siguiente» avisa del tiempo
+  startTime = null,  // hora real en que empezó el estudio
   layout: layoutProp = DEFAULT_LAYOUT,
   onLayoutChange,
 }) {
@@ -163,6 +164,8 @@ export default function PresentationMode({
     if (!studyStarted) return { colorClass: "bg-zinc-600 text-white", indicatorText: t("pmReady") };
     if (!isTimerRunning) return { colorClass: "bg-zinc-600 text-white", indicatorText: t("pmPaused") };
     // La conclusión tiene siempre su prórroga, aunque sea en el tramo final
+    // …salvo que ya haya pasado la hora de fin: entonces rojo
+    if (phase === PHASES.CONCLUSION && remainingTime <= 0 && phaseElapsedTime > 0) return { colorClass: "bg-red-600 text-white", indicatorText: t("pmOver") };
     if (phase === PHASES.CONCLUSION && estimatedTime) {
       const r = phaseElapsedTime / estimatedTime;
       if (r <= 1) return { colorClass: "bg-green-600 text-white", indicatorText: t("pmOnTime") };
@@ -317,9 +320,18 @@ export default function PresentationMode({
 
   const timesRow = (compact = false) => {
     const lbl = `font-semibold ${compact ? "text-[11px]" : "text-sm md:text-base landscape:text-xs"} ${isSemaforo ? "text-white/80" : "text-zinc-400"}`;
-    const val = `${compact ? "text-2xl md:text-3xl" : "text-3xl md:text-5xl landscape:text-3xl"} tabular-nums`;
+    const showStart = !!startTime && studyStarted;
+    const val = `${showStart
+      ? (compact ? "text-xl md:text-3xl" : "text-[1.7rem] leading-tight md:text-5xl landscape:text-3xl")
+      : (compact ? "text-2xl md:text-3xl" : "text-3xl md:text-5xl landscape:text-3xl")} tabular-nums`;
     return (
-      <div className={`grid grid-cols-3 gap-x-3 sm:gap-x-8 text-center w-full max-w-md mx-auto ${isSemaforo ? "bg-black/40 rounded-2xl py-2 text-white" : ""}`}>
+      <div className={`grid ${showStart ? "grid-cols-4 gap-x-2 sm:gap-x-6 max-w-xl" : "grid-cols-3 gap-x-3 sm:gap-x-8 max-w-md"} text-center w-full mx-auto ${isSemaforo ? "bg-black/40 rounded-2xl py-2 text-white" : ""}`}>
+        {showStart && (
+          <div>
+            <p className={lbl}>{t("pmStarted")}</p>
+            <p className={`${val} font-bold ${isSemaforo ? "text-white/90" : "text-zinc-300"}`} data-testid="presentation-start-time">{formatClockTime(new Date(startTime))}</p>
+          </div>
+        )}
         <div>
           <p className={lbl}>{t("currentTime")}</p>
           <p className={`${val} font-bold text-white`}>{formatClockTime(currentTime)}</p>
@@ -426,9 +438,15 @@ export default function PresentationMode({
         <Hand className="w-9 h-9 shrink-0" strokeWidth={2.2} />
         <span className="text-xl md:text-2xl font-black uppercase tracking-wide">{t("comment")}</span>
       </span>
-      <span className="text-right leading-none">
-        <span className="block text-3xl font-black tabular-nums" data-testid="presentation-comment-count">{totalComments}</span>
-        <span className="block text-[11px] font-semibold opacity-85 mt-0.5">{t("inTotal")}</span>
+      <span className="flex items-stretch gap-3 text-right leading-none">
+        <span className="pr-3 border-r border-white/40">
+          <span className="block text-3xl font-black tabular-nums" data-testid="presentation-phase-comment-count">{phaseComments}</span>
+          <span className="block text-[11px] font-semibold opacity-85 mt-0.5">{phase === PHASES.REVIEW ? t("pmThisQuestion") : t("pmThisParagraph")}</span>
+        </span>
+        <span>
+          <span className="block text-3xl font-black tabular-nums" data-testid="presentation-comment-count">{totalComments}</span>
+          <span className="block text-[11px] font-semibold opacity-85 mt-0.5">{t("inTotal")}</span>
+        </span>
       </span>
     </button>
   );

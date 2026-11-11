@@ -37,10 +37,12 @@ export function ParagraphCard({
   onAddComment,
   commentCount = 0,
   finalStretch = false, // últimos 5 minutos del estudio: sin prórroga
+  segmentElapsed, // segundos del tramo en curso (reloj central): no se reinicia al pausar
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showContent, setShowContent] = useState(true); // Individual content visibility
-  const [paragraphElapsed, setParagraphElapsed] = useState(0);
+  const [ownElapsed, setParagraphElapsed] = useState(0);
+  const paragraphElapsed = isCurrentParagraph && segmentElapsed != null ? segmentElapsed : ownElapsed;
   const [overtimeAlertTriggered, setOvertimeAlertTriggered] = useState(false);
   const cardRef = useRef(null);
   const paragraphTimerRef = useRef(null);
