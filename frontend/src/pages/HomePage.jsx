@@ -27,9 +27,13 @@ import {
   BookOpen,
   Compass,
   Smartphone,
+  ClipboardList,
+  History,
 } from "lucide-react";
 import { manualUrl, guideUrl } from "@/utils/manual";
 import { playStoreUrl, suggestPlayStoreApp } from "@/utils/donation";
+import { saveReport, openReport } from "@/utils/studyHistory";
+import { getArticleHeading } from "@/components/AnalysisSummary";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -197,6 +201,9 @@ export default function HomePage() {
   const [closingWordsStartTime, setClosingWordsStartTime] = useState(null);
   // Duración real de la conclusión: lo configurado o, si sobran minutos al terminar el repaso, todo el sobrante
   const [conclusionTarget, setConclusionTarget] = useState(null);
+  // Registro de tramos para el informe (introducción, párrafos, repaso, conclusión)
+  const studyLogRef = useRef({ startedAt: null, open: null, done: [] });
+  const [lastReportId, setLastReportId] = useState(null);
   const [closingWordsDuration, setClosingWordsDuration] = useLocalStorage('pdfTimer_closingWordsDuration', 60); // 1 minute default
   
   // Presentation mode phase state (persists when exiting/entering presentation mode)
@@ -341,6 +348,18 @@ export default function HomePage() {
     ? (commentStats.review[currentReviewQuestion] || 0)
     : (commentStats.paragraphs[currentGroupFirst] || 0);
 
+  // Informe: abre y cierra tramos con su hora real
+  const openLogSegment = useCallback((seg) => {
+    studyLogRef.current.open = { ...seg, start: Date.now() };
+  }, []);
+  const closeLogSegment = useCallback((extra = {}) => {
+    const log = studyLogRef.current;
+    if (!log.open) return;
+    const end = Date.now();
+    log.done.push({ ...log.open, ...extra, end, actual: Math.round((end - log.open.start) / 1000) });
+    log.open = null;
+  }, []);
+
   // Guarda la estadística (previsto / real) del párrafo o grupo actual
   const recordCurrentGroupStats = useCallback(() => {
     if (!analysisResult || !paragraphStartTime) return;
@@ -363,7 +382,18 @@ export default function HomePage() {
         comments: commentStats.paragraphs[first] || 0,
       }
     }));
-  }, [analysisResult, currentGroupFirst, currentGroupLast, paragraphStartTime, getAdjustedParagraphTimes, commentStats]);
+    if (studyLogRef.current.open?.kind === 'paragraph') {
+      closeLogSegment({
+        numbers: group.map(p => p.number).join(', '),
+        count: group.length,
+        // Previsto según el plan del inicio del estudio (la columna suma la duración elegida)
+        estimated: staticPlan ? Math.round(group.reduce((sum, p) => sum + staticPlan.paragraphDuration(p), 0)) : estimated,
+        words: group.reduce((sum, p) => sum + p.word_count, 0),
+        questions: group.reduce((sum, p) => sum + countQuestions(p), 0),
+        comments: commentStats.paragraphs[first] || 0,
+      });
+    }
+  }, [analysisResult, currentGroupFirst, currentGroupLast, paragraphStartTime, getAdjustedParagraphTimes, commentStats, closeLogSegment, staticPlan]);
 
   // Avanzar al siguiente párrafo o grupo, guardando la estadística del actual
   const goToNextGroup = useCallback(() => {
@@ -372,11 +402,12 @@ export default function HomePage() {
     if (last >= analysisResult.paragraphs.length - 1) return;
     recordCurrentGroupStats();
     const nextIndex = last + 1;
+    openLogSegment({ kind: 'paragraph' });
     setCurrentManualParagraph(nextIndex);
     setParagraphStartTime(Date.now());
     setParagraphStartTimes(prev => ({ ...prev, [nextIndex]: new Date() }));
     toast.success(`Avanzando al Párrafo ${analysisResult.paragraphs[nextIndex].number}`);
-  }, [analysisResult, currentGroupLast, recordCurrentGroupStats]);
+  }, [analysisResult, currentGroupLast, recordCurrentGroupStats, openLogSegment]);
 
   // Tiempo previsto del tramo actual (para el recuadro de colores)
   const currentSegmentEstimate = (() => {
@@ -677,6 +708,8 @@ export default function HomePage() {
     setIsInClosingWordsMode(false);
     setClosingWordsStartTime(null);
     setConclusionTarget(null);
+    studyLogRef.current = { startedAt: null, open: null, done: [] };
+    setLastReportId(null);
     setCommentStats({ paragraphs: {}, review: {} });
     setSegmentTimer({ key: '', elapsed: 0 });
     setPresentationPhase('intro');
@@ -690,6 +723,9 @@ export default function HomePage() {
 
   // Start introduction mode and main timer
   const startIntroductionMode = useCallback(() => {
+    studyLogRef.current = { startedAt: Date.now(), open: null, done: [] };
+    setLastReportId(null);
+    openLogSegment({ kind: 'intro', estimated: introductionDuration });
     setIsInIntroductionMode(true);
     setIntroductionStartTime(Date.now());
     setPresentationPhase('intro'); // Sync presentation phase
@@ -707,28 +743,42 @@ export default function HomePage() {
     setIsTimerRunning(true);
     
     toast.success("Iniciando Palabras de Introducción");
-  }, [manualEndTime, totalDurationSeconds]);
+  }, [manualEndTime, totalDurationSeconds, introductionDuration, openLogSegment]);
 
   // Move to first paragraph after introduction
   const goToFirstParagraph = useCallback(() => {
+    closeLogSegment();
+    openLogSegment({ kind: 'paragraph' });
     setIsInIntroductionMode(false);
     setCurrentManualParagraph(0);
     setParagraphStartTime(Date.now());
     setPresentationPhase('paragraphs'); // Sync presentation phase
     toast.success("Pasando al Párrafo 1");
-  }, []);
+  }, [closeLogSegment, openLogSegment]);
+
+  // Cierra la pregunta de repaso actual en el informe (con su tiempo previsto y comentarios)
+  const closeReviewSegment = useCallback(() => {
+    const open = studyLogRef.current.open;
+    if (open?.kind !== 'review') return;
+    closeLogSegment({
+      estimated: Math.round(staticPlan?.perQuestion ?? getAdjustedFinalQuestionsTime().perQuestion ?? 0),
+      comments: commentStats.review[open.index] || 0,
+    });
+  }, [closeLogSegment, getAdjustedFinalQuestionsTime, commentStats, staticPlan]);
 
   // Start review questions mode
   const startReviewMode = useCallback(() => {
     // El último párrafo o grupo termina al empezar el repaso: también cuenta en las estadísticas
     if (studyPhase === 'paragraphs') recordCurrentGroupStats();
+    else closeLogSegment();
+    openLogSegment({ kind: 'review', index: 0 });
     setIsInReviewMode(true);
     setCurrentReviewQuestion(0);
     setReviewQuestionStartTime(Date.now());
     setPresentationPhase('review'); // Sync presentation phase
     setPresentationReviewQuestion(0);
     toast.success("Iniciando Preguntas de Repaso");
-  }, [studyPhase, recordCurrentGroupStats]);
+  }, [studyPhase, recordCurrentGroupStats, closeLogSegment, openLogSegment]);
 
   // Navigate to next review question
   const goToNextReviewQuestion = useCallback(() => {
@@ -736,33 +786,62 @@ export default function HomePage() {
     
     const nextQuestion = currentReviewQuestion + 1;
     if (nextQuestion < analysisResult.final_questions.length) {
+      closeReviewSegment();
+      openLogSegment({ kind: 'review', index: nextQuestion });
       setCurrentReviewQuestion(nextQuestion);
       setReviewQuestionStartTime(Date.now());
       setPresentationReviewQuestion(nextQuestion); // Sync presentation review question
       toast.success(`Pregunta de repaso ${nextQuestion + 1}`);
     }
-  }, [currentReviewQuestion, analysisResult]);
+  }, [currentReviewQuestion, analysisResult, closeReviewSegment, openLogSegment]);
 
   // Start closing words mode
   const startClosingWordsMode = useCallback(() => {
     if (studyPhase === 'paragraphs') recordCurrentGroupStats();
+    else if (studyPhase === 'review') closeReviewSegment();
+    else closeLogSegment();
     // Si sobran minutos, la conclusión los aprovecha aunque supere lo configurado
-    setConclusionTarget(Math.max(closingWordsDuration, Math.round(remainingTime || 0)));
+    const target = Math.max(closingWordsDuration, Math.round(remainingTime || 0));
+    openLogSegment({ kind: 'conclusion', estimated: closingWordsDuration, extraTime: target - closingWordsDuration });
+    setConclusionTarget(target);
     setIsInClosingWordsMode(true);
     setClosingWordsStartTime(Date.now());
     setPresentationPhase('conclusion'); // Sync presentation phase
     toast.success("Iniciando Palabras de Conclusión");
-  }, [studyPhase, recordCurrentGroupStats, closingWordsDuration, remainingTime]);
+  }, [studyPhase, recordCurrentGroupStats, closeReviewSegment, closeLogSegment, openLogSegment, closingWordsDuration, remainingTime]);
 
   // Finish study
   const finishStudy = useCallback(() => {
     if (studyPhase === 'paragraphs') recordCurrentGroupStats();
+    else if (studyPhase === 'review') closeReviewSegment();
+    else closeLogSegment();
+    // Guarda el informe en el historial de este dispositivo
+    const log = studyLogRef.current;
+    if (analysisResult && log.startedAt && log.done.length) {
+      const { articleLine, titleLine } = getArticleHeading(analysisResult);
+      const report = {
+        id: String(log.startedAt),
+        version: 1,
+        lang: currentLanguage(),
+        articleLine,
+        titleLine,
+        weekLabel: analysisResult.week_label || '',
+        circuitVisit: !!analysisResult.circuit_visit,
+        startedAt: log.startedAt,
+        endedAt: Date.now(),
+        plannedSeconds: totalDurationSeconds,
+        plannedEnd: endTime ? new Date(endTime).getTime() : null,
+        segments: log.done.map(({ start, end, ...rest }) => ({ ...rest, start, end })),
+      };
+      report.totalComments = report.segments.reduce((n, sg) => n + (sg.comments || 0), 0);
+      if (saveReport(report)) setLastReportId(report.id);
+    }
     setIsTimerRunning(false);
     setIsInClosingWordsMode(false);
     setIsInReviewMode(false);
     setPresentationPhase('finished'); // Sync presentation phase
     toast.success("¡Estudio finalizado! 🎉");
-  }, [studyPhase, recordCurrentGroupStats]);
+  }, [studyPhase, recordCurrentGroupStats, closeReviewSegment, closeLogSegment, analysisResult, totalDurationSeconds, endTime]);
 
   // Start from specific paragraph
   const startFromParagraph = useCallback((paragraphIndex) => {
@@ -781,9 +860,12 @@ export default function HomePage() {
     setIsTimerRunning(true);
     setNotificationPlayed({ fiveMin: false, oneMin: false, now: false });
     setParagraphStartTime(Date.now()); // Start timing this paragraph
+    if (!studyLogRef.current.startedAt) studyLogRef.current = { startedAt: Date.now(), open: null, done: [] };
+    else closeLogSegment();
+    openLogSegment({ kind: 'paragraph' });
     
     toast.success(`Iniciando desde Párrafo ${paragraphIndex + 1}`);
-  }, [totalDurationSeconds, staticPlan]);
+  }, [totalDurationSeconds, staticPlan, closeLogSegment, openLogSegment]);
 
   // Export functions
   const exportToImage = async () => {
@@ -1240,6 +1322,25 @@ export default function HomePage() {
           <div ref={exportRef} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left Column - Analysis */}
             <div className="lg:col-span-8 space-y-6">
+              {studyPhase === 'finished' && lastReportId && (
+                <div className={`rounded-2xl border shadow-sm p-4 flex items-start gap-3 ${darkMode ? 'bg-zinc-800 border-emerald-500/40' : 'bg-emerald-50 border-emerald-200'}`} data-testid="report-card">
+                  <span className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center bg-emerald-600 text-white">
+                    <ClipboardList className="w-5 h-5" />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className={`font-semibold text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{t('reportReadyTitle')}</p>
+                    <p className={`text-xs mt-0.5 leading-relaxed ${darkMode ? 'text-zinc-400' : 'text-slate-600'}`}>{t('reportReadyText')}</p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <button onClick={() => openReport(lastReportId)} className="inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold" data-testid="report-open">
+                        <ClipboardList className="w-4 h-4" /> {t('viewReport')}
+                      </button>
+                      <button onClick={() => openReport(null)} className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 border text-sm font-bold ${darkMode ? 'border-emerald-400/60 text-emerald-300 hover:bg-zinc-700' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-100'}`} data-testid="report-history">
+                        <History className="w-4 h-4" /> {t('studyHistory')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               {!isDesktop && planCard}
               <AnalysisSummary 
                 analysisResult={analysisResult} 
@@ -1487,6 +1588,7 @@ export default function HomePage() {
           onNextReviewQuestion={goToNextReviewQuestion}
           onStartClosingWords={startClosingWordsMode}
           onFinishStudy={finishStudy}
+          onOpenReport={lastReportId ? () => openReport(lastReportId) : undefined}
         />
       )}
     </div>
