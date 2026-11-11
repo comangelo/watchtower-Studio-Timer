@@ -1,5 +1,5 @@
 import { Heart } from "lucide-react";
-import { DONATION_URL, donationAvailable } from "@/utils/donation";
+import { DONATION_URL, donationAvailable, isPlayStoreApp, playStoreUrl } from "@/utils/donation";
 import { t } from "@/i18n";
 import { manualUrl } from "@/utils/manual";
 
@@ -56,6 +56,12 @@ export function UploadZone({ onFileSelect, fileInputRef, darkMode = false }) {
         <a href="/privacidad" className="underline hover:text-orange-600" data-testid="privacy-link">{t('privacyPolicy')}</a>
         {' '}·{' '}
         <a href={manualUrl()} target="_blank" rel="noopener" className="underline hover:text-orange-600" data-testid="manual-link">{t('userManual')}</a>
+        {!isPlayStoreApp() && !/iPhone|iPad|iPod/i.test(navigator.userAgent) && (
+          <>
+            {' '}·{' '}
+            <a href={playStoreUrl('footer')} target="_blank" rel="noopener" className="underline hover:text-orange-600" data-testid="play-link">{t('playLink')}</a>
+          </>
+        )}
         {' '}· © safeSingleMark S.L.
       </p>
     </div>
