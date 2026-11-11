@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import {
   Settings, Timer, Mic, Sparkles, Clock, MessageCircleQuestion, MessagesSquare,
-  Bell, Volume2, Vibrate, MonitorPlay, Sun, Moon, Check, BookOpen, Palette, Languages,
+  Bell, Volume2, Vibrate, MonitorPlay, Sun, Moon, Check, BookOpen, Palette, Languages, ArrowRight,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Slider } from "@/components/ui/slider";
@@ -141,6 +141,7 @@ export function SettingsSheet({
   soundEnabled, setSoundEnabled,
   vibrationEnabled, setVibrationEnabled,
   overtimeAlertEnabled, setOvertimeAlertEnabled,
+  nextButtonAlertEnabled, setNextButtonAlertEnabled,
   fiveMinuteWarningEnabled, setFiveMinuteWarningEnabled,
   alertTimes, setAlertTimes,
   onTestSound, onTestVibration,
@@ -280,6 +281,10 @@ export function SettingsSheet({
               <Section>
                 <Toggle icon={Timer} color="text-orange-500" label={t("alertParagraphOver")} hint={t("alertParagraphOverHint")}
                   checked={overtimeAlertEnabled} onChange={setOvertimeAlertEnabled} testid="overtime-alert-toggle" />
+                {setNextButtonAlertEnabled && (
+                  <Toggle icon={ArrowRight} color="text-red-500" label={t("alertNextButton")} hint={t("alertNextButtonHint")}
+                    checked={nextButtonAlertEnabled} onChange={setNextButtonAlertEnabled} testid="next-button-alert-toggle" />
+                )}
                 <Toggle icon={Timer} color="text-red-500" label={t("alertFiveMin")} hint={t("alertFiveMinHint")}
                   checked={fiveMinuteWarningEnabled} onChange={setFiveMinuteWarningEnabled} testid="five-minute-warning-toggle" />
               </Section>

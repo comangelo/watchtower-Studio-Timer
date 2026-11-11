@@ -15,9 +15,13 @@ export function StudyActionBar({
   totalComments = 0,
   onPresentation,
   darkMode = false,
+  urgency = "none", // "none" | "over" | "critical"
 }) {
   if (!nextStep) return null;
   const isStart = nextStep.action === "start";
+  const urgent = !isStart && urgency !== "none";
+  const critical = !isStart && urgency === "critical";
+  const kicker = critical ? t("nextNow") : nextStep.kicker;
 
   return (
     <div
@@ -47,14 +51,15 @@ export function StudyActionBar({
         <div className="flex gap-2">
           <button
             onClick={onNext}
-            className="flex-1 min-w-0 rounded-2xl min-h-[64px] px-5 flex items-center justify-between gap-3 bg-blue-600 hover:bg-blue-500 text-white shadow-lg active:scale-95 transition-transform text-left"
+            className={`flex-1 min-w-0 rounded-2xl min-h-[64px] px-5 flex items-center justify-between gap-3 ${urgent ? "bg-red-600 hover:bg-red-500" : "bg-blue-600 hover:bg-blue-500"} ${critical ? "next-urgent" : ""} text-white shadow-lg active:scale-95 transition-[transform,background-color] duration-500 text-left`}
             data-testid="bar-next"
+            data-urgency={urgent ? urgency : "none"}
           >
             <span className="min-w-0 flex items-center gap-3">
               {isStart && <Play className="w-7 h-7 shrink-0" fill="white" />}
               <span className="min-w-0">
-                {nextStep.kicker && (
-                  <span className="block text-[11px] font-bold uppercase tracking-[0.2em] text-blue-100">{nextStep.kicker}</span>
+                {kicker && (
+                  <span className={`block text-[11px] font-bold uppercase tracking-[0.2em] ${urgent ? "text-red-100" : "text-blue-100"}`} data-testid="bar-next-kicker">{kicker}</span>
                 )}
                 <span className={`block ${nextStep.main.length > 14 ? "text-xl" : "text-2xl"} font-black uppercase leading-tight`} data-testid="bar-next-label">
                   {nextStep.main}

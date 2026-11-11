@@ -84,6 +84,7 @@ export default function PresentationMode({
   onStartClosingWords,
   onFinishStudy,
   onOpenReport,
+  urgency = "none", // "none" | "over" | "critical": el botón «Siguiente» avisa del tiempo
   layout: layoutProp = DEFAULT_LAYOUT,
   onLayoutChange,
 }) {
@@ -387,15 +388,25 @@ export default function PresentationMode({
   ) : null;
 
   // Botón para avanzar: grande, con lo que viene a continuación bien visible
+  // Con el tramo en rojo el botón se vuelve blanco con letras rojas (se ve sobre cualquier
+  // fondo, también en «Semáforo»); si ya no hay de dónde recuperar tiempo, además late.
+  const urgent = urgency !== "none" && phase !== PHASES.FINISHED && studyStarted && isTimerRunning;
+  const critical = urgent && urgency === "critical";
+  const nextKicker = critical ? t("nextNow") : nextInfo?.kicker;
   const nextButton = (variant) => nextInfo && (
     <button
       onClick={handleSmartButton}
-      className="w-full rounded-3xl flex items-center justify-between gap-3 px-6 min-h-[96px] landscape:min-h-[84px] text-left transition-transform active:scale-95 shadow-xl bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/40 ring-2 ring-white/20"
+      className={`w-full rounded-3xl flex items-center justify-between gap-3 px-6 min-h-[96px] landscape:min-h-[84px] text-left transition-[transform,background-color,color] duration-500 active:scale-95 shadow-xl ${
+        urgent
+          ? "bg-white hover:bg-red-50 text-red-700 shadow-red-950/50 ring-4 ring-red-300"
+          : "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-900/40 ring-2 ring-white/20"
+      } ${critical ? "next-urgent" : ""}`}
       data-testid="presentation-smart-button"
+      data-urgency={urgent ? urgency : "none"}
     >
       <span className="min-w-0">
-        {nextInfo.kicker && (
-          <span className="block text-xs md:text-sm font-bold uppercase tracking-[0.2em] mb-1 text-blue-100">{nextInfo.kicker}</span>
+        {nextKicker && (
+          <span className={`block text-xs md:text-sm font-bold uppercase tracking-[0.2em] mb-1 ${urgent ? "text-red-600" : "text-blue-100"}`} data-testid="presentation-next-kicker">{nextKicker}</span>
         )}
         <span className={`block ${nextInfo.main.length > 14 ? "text-2xl md:text-3xl" : "text-4xl md:text-5xl"} landscape:text-3xl font-black uppercase leading-none`} data-testid="presentation-next-label">{nextInfo.main}</span>
       </span>
