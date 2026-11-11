@@ -15,7 +15,7 @@
     <div>
       <h1>Manual de uso<br>Cronômetro do Estudo</h1>
       <p>Como preparar e dirigir o Estudo de A Sentinela no tempo certo</p>
-      <p class="meta">Versão 3.1 · novembro de 2026</p>
+      <p class="meta">Versão 4.0 · novembro de 2026</p>
       <nav class="langbar" aria-label="Idiomas do manual"><a href="/manual.html" lang="es">ES</a><a href="/manual-en.html" lang="en">EN</a><a href="/manual-de.html" lang="de">DE</a><a href="/manual-it.html" lang="it">IT</a><a href="/manual-fr.html" lang="fr">FR</a><a href="/manual-pt.html" lang="pt" class=on>PT</a><a href="/manual-pl.html" lang="pl">PL</a><a href="/manual-nl.html" lang="nl">NL</a><a href="/manual-ro.html" lang="ro">RO</a></nav>
     </div>
   </div>
@@ -46,11 +46,11 @@
     <li><a href="#avisos">Avisos de som e vibração</a></li>
     <li><a href="#circuito">Visita do superintendente de circuito</a></li>
     <li><a href="#idiomas">Idiomas</a></li>
-    <li><a href="#final">No final: estatísticas e exportar</a></li>
+    <li><a href="#final">No final: o relatório e o histórico</a></li>
     <li><a href="#faq">Perguntas frequentes</a></li>
   </ol>
 </nav>
-<p class="sample" style="font-style:normal;font-size:15px">Quer começar já? Veja o <a href="/guia-rapida-pt.html"><strong>guia rápido em 7 passos</strong></a>.</p>
+<p class="start">Quer começar logo? <a href="/guia-rapida-pt.html">Abra o guia rápido em 7 passos</a></p>
 
 <!-- 1 -->
 <section id="que-es">
@@ -70,37 +70,46 @@
 <!-- 2 -->
 <section id="instalar">
   <h2><span class="n">2</span>Instalar o aplicativo</h2>
-  <h3>Android</h3>
-  <p>Instale pelo Google Play: procure <strong>“Temporizador de Estudio”</strong> ou abra este link:<br>
-  <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio</a></p>
+  <p class="lead">O ícone do aplicativo é um <strong>livro laranja com um medidor colorido</strong> (verde, amarelo e vermelho) sobre fundo preto.</p>
+  <div class="figs"><figure style="width:140px"><img src="/icon-192.png" alt="Ícone do aplicativo"><figcaption>O ícone</figcaption></figure></div>
+  <h3>Celular ou tablet Android</h3>
+  <ol class="steps">
+    <li>Abra o <strong>Google Play</strong>.</li>
+    <li>Abra este link: <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">abrir no Google Play</a> (ou procure o aplicativo no Google Play).</li>
+    <li>Toque em <strong>Instalar</strong>.</li>
+  </ol>
+  <div class="tip"><p>Se você já usa o aplicativo no navegador de um aparelho Android, a tela inicial mostra o cartão verde <strong>“Usa Android?”</strong> com o botão <strong>“Abrir no Google Play”</strong>.</p></div>
   <h3>iPhone e iPad</h3>
-  <p>Ainda não está na App Store, mas funciona do mesmo jeito pela web e pode ser colocado na tela de início:</p>
+  <p>Ainda não está na App Store, mas funciona igual pela internet:</p>
   <ol class="steps">
     <li>Abra <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> no <strong>Safari</strong>.</li>
-    <li>Toque no botão <strong>Compartilhar</strong> (o quadrado com a seta para cima).</li>
-    <li>Escolha <strong>“Adicionar à Tela de Início”</strong> e toque em <strong>Adicionar</strong>. Vai aparecer o ícone laranja do cronômetro.</li>
+    <li>Toque no botão <strong>Compartilhar</strong> (o quadrado com uma seta para cima).</li>
+    <li>Escolha <strong>“Adicionar à Tela de Início”</strong> e toque em <strong>Adicionar</strong>. O ícone vai aparecer na sua tela.</li>
   </ol>
-  <h3>Computador ou tablet</h3>
-  <p>Abra <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> no navegador. No Chrome e no Edge, você pode instalá-lo como aplicativo pelo ícone de instalar na barra de endereços.</p>
-  <div class="note blue"><p><strong>Atualizações:</strong> quando há uma nova versão, o aplicativo mostra o aviso <em>“Há uma nova versão do aplicativo disponível.”</em> com o botão <strong>Atualizar</strong>. Ele nunca se atualiza sozinho no meio de um estudo.</p></div>
+  <h3>Computador</h3>
+  <p>Abra <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> no Chrome ou no Edge. Se quiser, instale como um programa usando o ícone de instalar na barra de endereços.</p>
+  <div class="note blue"><p><strong>Atualizações:</strong> quando houver uma versão nova, aparece um aviso com o botão <strong>Atualizar</strong>. O aplicativo nunca se atualiza sozinho no meio de um estudo.</p></div>
 </section>
 
 <!-- 3 -->
 <section id="inicio">
   <h2><span class="n">3</span>A tela inicial</h2>
-  <div class="figs">
-    <figure><img src="manual/pt/01-inicio.webp" alt="Tela inicial" loading="lazy"><figcaption>Tela inicial com o plano de hoje e o artigo da semana.</figcaption></figure>
-  </div>
-  <p>De cima para baixo, você vai encontrar:</p>
+  <p class="lead">É a primeira coisa que você vê ao abrir o aplicativo. Os números vermelhos da imagem mostram onde fica cada coisa.</p>
+  <div class="figs"><figure><img src="manual/pt/01-inicio.webp" alt="Tela inicial" loading="lazy"><figcaption>Tela inicial.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Botão do livro:</strong> abre este manual a qualquer momento.</li>
+    <li><strong>“Primeira vez usando o aplicativo?”:</strong> abre o <strong>guia rápido</strong> ou este manual. Quando já conhecer o aplicativo, toque em <strong>Ocultar</strong>.</li>
+    <li><strong>“Usa Android?”</strong> (só em celulares Android que usam o navegador): instale o aplicativo pelo Google Play. Este cartão também pode ser ocultado.</li>
+  </ol>
+  <p>Mais abaixo você encontra:</p>
   <ul>
-    <li><strong>Barra superior:</strong> o seletor de <strong>idioma</strong> (globo com o código, por exemplo <span class="key">PT</span>) e o botão de <strong>configurações</strong> <span class="key">⚙</span>. Com um artigo carregado, aparecem também os botões de tela cheia, <strong>exportar</strong> e <strong>começar de novo</strong>.</li>
-    <li><strong>Plano de hoje:</strong> a hora atual, a hora em que o estudo <strong>termina</strong> e a sua <strong>duração</strong>. Com <strong>“Mudar horário de término”</strong>, você mesmo define a hora de terminar (por exemplo, 20h28); o aplicativo ajusta a duração.</li>
-    <li><strong>Artigo desta semana:</strong> para baixar a revista do jw.org e abri-la no aplicativo (veja a seção 4).</li>
-    <li><strong>Visita do superintendente de circuito:</strong> um botão para o estudo de 30 minutos sem leitura dos parágrafos (seção 13).</li>
-    <li><strong>Configurações do estudo:</strong> um resumo das suas configurações (duração, velocidade de leitura, tempo por resposta e introdução), com o link <strong>Alterar</strong>.</li>
-    <li><strong>Botão do livro</strong> <span class="key">📖</span> (em cima): abre este manual a qualquer momento. Ele também está nas Configurações e no fim da tela inicial.</li>
-    <li><strong>“Primeira vez usando o aplicativo?”:</strong> um cartão com o <strong>guia rápido</strong> e o manual. Quando já conhecer o aplicativo, você pode tirá-lo com <strong>“Ocultar”</strong>.</li>
+    <li><strong>Programa de hoje:</strong> a hora atual, a hora em que o estudo <strong>termina</strong> e quanto <strong>dura</strong>.</li>
+    <li><strong>Artigo desta semana:</strong> para baixar a revista e abri-la (seção 4).</li>
+    <li><strong>Visita do superintendente de circuito:</strong> o botão para o estudo de 30 minutos (seção 13).</li>
+    <li><strong>Configurações do estudo:</strong> um resumo das suas configurações, com o link para <strong>editar</strong>.</li>
+    <li>Bem no final, os links de <strong>privacidade</strong>, <strong>manual</strong>, <strong>Google Play</strong> e <strong>histórico de estudos</strong>.</li>
   </ul>
+  <p>Em cima também estão o <strong>idioma</strong> (<span class="key">PT</span>) e as <strong>configurações</strong> <span class="key">⚙</span>.</p>
 </section>
 
 <!-- 4 -->
@@ -119,67 +128,74 @@
 
 <!-- 5 -->
 <section id="resumen">
-  <h2><span class="n">5</span>O resumo e o plano do estudo</h2>
+  <h2><span class="n">5</span>O resumo e o programa do estudo</h2>
   <div class="figs">
-    <figure><img src="manual/pt/04-plan.webp" alt="Plano do estudo" loading="lazy"><figcaption>Em cima, o plano de hoje; embaixo, o resumo do artigo.</figcaption></figure>
-    <figure><img src="manual/pt/05-resumen.webp" alt="Resumo do artigo" loading="lazy"><figcaption>Resumo com a divisão dos 60 minutos.</figcaption></figure>
+    <figure><img src="manual/pt/04-plan.webp" alt="Programa do estudo" loading="lazy"><figcaption>O programa de hoje.</figcaption></figure>
+    <figure><img src="manual/pt/05-resumen.webp" alt="Resumo do artigo" loading="lazy"><figcaption>O resumo do artigo.</figcaption></figure>
   </div>
-  <p>Ao carregar o artigo, você vai ver:</p>
+  <ol class="callouts">
+    <li><strong>Hora de término:</strong> a hora em que o estudo termina.</li>
+    <li><strong>“Mudar horário de término”:</strong> se a reunião termina em outro horário, escreva aqui. Tudo é recalculado para terminar nesse horário.</li>
+  </ol>
+  <p>Logo abaixo, o <strong>resumo do artigo</strong> mostra:</p>
   <ul>
-    <li><strong>Título e semana</strong> do artigo de estudo.</li>
-    <li><strong>Etiquetas de conteúdo:</strong> número de parágrafos, perguntas, textos bíblicos a serem lidos, imagens, notas e perguntas de recapitulação.</li>
-    <li><strong>Divisão do tempo:</strong> uma barra colorida com o que vai para a <span class="chip b">Introdução</span>, a <strong>Leitura</strong>, os <span class="chip o">Comentários</span> e a <span class="chip p">Conclusão</span>. Também mostra quanto duraria o artigo <em>lido sem pausas</em>.</li>
+    <li>o <strong>título e a semana</strong>;</li>
+    <li>quantos <strong>parágrafos, perguntas, textos, imagens e notas</strong> ele tem;</li>
+    <li>uma <strong>barra colorida</strong> com a divisão do tempo: <span class="chip b">Introdução</span> <strong>Leitura</strong> <span class="chip o">Comentários</span> <span class="chip p">Conclusão</span>.</li>
   </ul>
-  <p>No cartão do plano, o aviso <strong>“Comentários: X s por pergunta”</strong> diz quanto tempo há em média para responder cada pergunta.</p>
-  <div class="note"><p>Se o artigo for longo demais para o tempo escolhido, aparece o aviso <strong>“Não cabe”</strong> com o que falta. Você pode aumentar a duração ou escolher uma leitura mais rápida nas Configurações.</p></div>
+  <p>O programa também diz <strong>“Comentários: X s por pergunta”</strong>: o tempo médio para responder cada pergunta.</p>
+  <div class="note"><p>Se o artigo não couber no tempo escolhido, aparece um aviso. Você pode aumentar a duração ou escolher uma leitura mais rápida nas Configurações.</p></div>
 </section>
 
 <!-- 6 -->
 <section id="parrafos">
   <h2><span class="n">6</span>A lista de parágrafos</h2>
-  <div class="figs">
-    <figure><img src="manual/pt/06-parrafo-detalle.webp" alt="Detalhe de um parágrafo" loading="lazy"><figcaption>Parágrafo aberto com a pergunta, a imagem e o botão “Começar daqui”.</figcaption></figure>
-  </div>
-  <p>Cada parágrafo ocupa uma linha com o seu <strong>número</strong>, o seu <strong>tempo previsto</strong> e a <strong>hora</strong> aproximada em que deve terminar. As etiquetas coloridas indicam o que é preciso levar em conta:</p>
+  <p class="lead">Cada parágrafo aparece numa linha com o seu <strong>número</strong> e o seu <strong>tempo previsto</strong>. Toque num parágrafo para abri-lo.</p>
+  <div class="figs"><figure><img src="manual/pt/06-parrafo-detalle.webp" alt="Parágrafo aberto" loading="lazy"><figcaption>Um parágrafo aberto.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Dados do parágrafo</strong>, cada um com sua cor: <strong>palavras</strong> (cinza), <strong>tempo de leitura</strong> (azul) e <strong>perguntas</strong> (laranja). Durante o estudo, aparece também o <strong>horário</strong> previsto (roxo).</li>
+    <li><strong>Tempo previsto para o parágrafo:</strong> o total e como ele se divide. A barra mostra a <strong>leitura</strong> (azul), os <strong>comentários</strong> (laranja) e, nos parágrafos longos, um <strong>extra</strong> para mais comentários (verde). As partes somadas dão o total.</li>
+    <li><strong>“Começar daqui”:</strong> se o estudo já começou (por exemplo, se você chegou atrasado), vai direto para este parágrafo.</li>
+  </ol>
+  <p>As etiquetas coloridas avisam o que você precisa levar em conta:</p>
   <table>
     <tr><th>Etiqueta</th><th>O que significa</th></tr>
-    <tr><td><span class="chip b">Tiago 5:7, 8</span></td><td>Há um <strong>texto bíblico para ler</strong>. Aparece a citação exata.</td></tr>
-    <tr><td><span class="chip p">Imagem</span></td><td>A pergunta menciona uma <strong>imagem</strong> do artigo (“Veja também a imagem”).</td></tr>
-    <tr><td><span class="chip o">Nota</span></td><td>Há uma <strong>nota</strong> de rodapé para comentar.</td></tr>
-    <tr><td>★ Ponto principal</td><td>A pergunta menciona um quadro ou uma ideia destacada entre aspas.</td></tr>
+    <tr><td><span class="chip b">Tiago 5:7, 8</span></td><td>Há um <strong>texto para ler</strong>.</td></tr>
+    <tr><td><span class="chip p">Imagem</span></td><td>A pergunta fala de uma <strong>imagem</strong> do artigo.</td></tr>
+    <tr><td><span class="chip o">Nota</span></td><td>Há uma <strong>nota</strong> para comentar.</td></tr>
+    <tr><td>★ Ponto principal</td><td>A pergunta menciona um quadro ou uma ideia entre aspas.</td></tr>
   </table>
-  <p>Toque num parágrafo para <strong>abri-lo</strong>. Você vai ver as palavras, o tempo de leitura, a pergunta e, se for longo, o tempo extra para mais comentários. A partir daí:</p>
-  <ul>
-    <li><strong>“Ver o texto do parágrafo”</strong> mostra o texto completo. Com <strong>“Ver todos os textos”</strong>, todos se abrem de uma vez. Isso serve só para preparar os tempos: para dirigir, use a publicação original (veja os avisos do início).</li>
-    <li><strong>“Começar daqui”</strong> pula para esse parágrafo se o estudo já começou (por exemplo, se você chegar atrasado). O aplicativo conta como se as partes anteriores tivessem durado o previsto.</li>
-  </ul>
-  <p>Os parágrafos que têm a mesma pergunta (por exemplo, <strong>“5, 6.”</strong>) são tratados como um grupo, e o botão <strong>Próximo</strong> pula o grupo inteiro.</p>
+  <p>Com <strong>“Ver o texto do parágrafo”</strong>, você pode ler o texto para preparar os tempos. Para dirigir, use sempre a publicação original.</p>
+  <p>Os parágrafos que têm a mesma pergunta (por exemplo <strong>“5, 6”</strong>) vão juntos, e o botão <strong>Próximo</strong> passa o grupo inteiro.</p>
 </section>
 
 <!-- 7 -->
 <section id="conducir">
   <h2><span class="n">7</span>Dirigir o estudo passo a passo</h2>
-  <div class="note"><p><strong>Recomendado:</strong> durante o estudo, abra o <strong>modo apresentação</strong> (seção 9). Aqui se explica o funcionamento geral, que é o mesmo nas duas telas.</p></div>
-  <p>No celular, os botões principais ficam sempre embaixo, na <strong>barra inferior</strong>:</p>
-  <ul>
-    <li><span class="chip b">PRÓXIMO</span> o botão grande azul mostra o que vem depois: <em>Iniciar estudo → Parágrafo 1 → Parágrafo 2 → … → Recapitulação 1 → … → Conclusão → Encerrar estudo</em>.</li>
-    <li><span class="chip o">✋ COMENTÁRIO</span> soma um comentário ao contador. No final, você vai ver quantas participações houve em cada parágrafo.</li>
-    <li><span class="key">⛶</span> abre o <strong>modo apresentação</strong> (seção 9).</li>
-  </ul>
+  <div class="tip"><p><strong>Recomendado:</strong> durante o estudo, use o <strong>modo apresentação</strong> (seção 9). Aqui explicamos como funciona; é igual nas duas telas.</p></div>
+  <p>No celular, os botões principais ficam sempre <strong>embaixo</strong>:</p>
+  <div class="figs">
+    <figure><img src="manual/pt/06b-barra.webp" alt="Barra de baixo" loading="lazy"><figcaption>Antes de começar.</figcaption></figure>
+    <figure><img src="manual/pt/09-parrafo-verde.webp" alt="Parágrafo em andamento" loading="lazy"><figcaption>Durante um parágrafo.</figcaption></figure>
+  </div>
+  <ol class="callouts">
+    <li><strong>Botão azul grande:</strong> diz o que vem a seguir. Toque nele cada vez que passar para outra parte: <em>Iniciar estudo → Parágrafo 1 → Parágrafo 2 → … → Recapitulação → Conclusão → Encerrar estudo</em>.</li>
+    <li><strong>Botão preto</strong> <span class="key">⛶</span>: abre o <strong>modo apresentação</strong>.</li>
+  </ol>
+  <p>Durante os parágrafos aparece também o botão laranja <span class="chip o">✋ COMENTÁRIO</span>: toque nele cada vez que alguém comentar. No final, você vai ver quantos comentários houve.</p>
   <ol class="steps">
-    <li><strong>Introdução.</strong> Toque em <strong>“Iniciar estudo”</strong>. Começam o cronômetro geral e o da introdução (1 minuto, por padrão). O cartão da introdução fica azul.</li>
-    <li><strong>Parágrafos.</strong> Toque em <strong>Próximo</strong> no início de cada parágrafo. O cartão do parágrafo atual mostra o tempo decorrido sobre o previsto (por exemplo, <strong>1:11 / 5:43</strong>) e muda de cor conforme o tempo passa (seção 8).</li>
-    <li><strong>Perguntas de recapitulação.</strong> Depois do último parágrafo vêm as perguntas do quadro final, cada uma com o seu tempo.</li>
-    <li><strong>Conclusão.</strong> A última parte (1 minuto, por padrão) para resumir e incentivar a congregação.</li>
-    <li><strong>Encerrar estudo.</strong> O cronômetro para e aparecem as estatísticas.</li>
+    <li><strong>Introdução.</strong> Toque em <strong>“Iniciar estudo”</strong>. Começam a contar o cronômetro geral e o da introdução.</li>
+    <li><strong>Parágrafos.</strong> Toque em <strong>Próximo</strong> no começo de cada parágrafo. Você vê o tempo que passou e o tempo previsto (por exemplo <strong>1:11 / 5:43</strong>) e a cor (seção 8).</li>
+    <li><strong>Perguntas de recapitulação.</strong> Depois do último parágrafo vêm as perguntas do quadro final.</li>
+    <li><strong>Conclusão.</strong> Tem o tempo definido nas Configurações (1 minuto, se não mudar). <strong>Se sobrar tempo depois da recapitulação, a conclusão usa todo esse tempo</strong>, mesmo que seja mais do que o configurado.</li>
+    <li><strong>Encerrar estudo.</strong> O cronômetro para e o <strong>relatório do estudo</strong> é salvo (seção 15).</li>
   </ol>
   <div class="figs">
     <figure><img src="manual/pt/08-introduccion.webp" alt="Introdução em andamento" loading="lazy"><figcaption>Introdução em andamento.</figcaption></figure>
-    <figure><img src="manual/pt/16-repaso.webp" alt="Perguntas de recapitulação" loading="lazy"><figcaption>Perguntas de recapitulação: a atual aparece como “AGORA”.</figcaption></figure>
-    <figure><img src="manual/pt/17-conclusion.webp" alt="Conclusão" loading="lazy"><figcaption>Conclusão e, embaixo, as estatísticas.</figcaption></figure>
+    <figure><img src="manual/pt/16-repaso.webp" alt="Perguntas de recapitulação" loading="lazy"><figcaption>Perguntas de recapitulação.</figcaption></figure>
+    <figure><img src="manual/pt/17-conclusion.webp" alt="Conclusão" loading="lazy"><figcaption>Conclusão.</figcaption></figure>
   </div>
-  <p>No cartão do plano, em cima, você pode <strong>pausar</strong> e <strong>continuar</strong> o estudo. O aviso <strong>“Deve terminar em m:ss”</strong> lembra quanto falta para a hora de término.</p>
-  <div class="note blue"><p><strong>A tela não se apaga</strong> enquanto o estudo está em andamento, para você não precisar tocar no celular. No final, o celular volta a apagar a tela como de costume.</p></div>
+  <p>Com o botão <span class="key">⏸</span> do programa, você pode <strong>pausar</strong> o cronômetro se houver uma interrupção.</p>
 </section>
 
 <!-- 8 -->
@@ -199,33 +215,52 @@
   </div>
   <p><strong>Nos últimos 5 minutos do estudo</strong>, os parágrafos e as perguntas de recapitulação <strong>não têm tolerância</strong>: passam direto do verde para o vermelho, para não tirar tempo do final. A <strong>conclusão sempre mantém a sua tolerância</strong>.</p>
   <p>Se uma parte demorar mais, não tem problema: ao tocar em <strong>Próximo</strong>, o aplicativo volta a distribuir o tempo que sobra entre o que falta, para terminar no horário.</p>
+  <!-- next-btn -->
+  <h3>O botão “Próximo” também avisa</h3>
+  <p>Quando a parte atual fica <strong>vermelha</strong>, o botão grande para avançar também muda, para você perceber sem precisar procurar:</p>
+  <div class="figs">
+    <figure class="wide" style="max-width:420px"><img src="manual/pt/11b-boton-rojo.webp" alt="" loading="lazy"><figcaption>Vermelho: ainda dá para recuperar.</figcaption></figure>
+    <figure class="wide" style="max-width:420px"><img src="manual/pt/11c-boton-parpadea.webp" alt="" loading="lazy"><figcaption>Piscando: passe já para o próximo.</figcaption></figure>
+  </div>
+  <ul>
+    <li><strong>Botão vermelho:</strong> a parte passou do tempo, mas ainda dá para recuperar no que falta. Comece a encerrar os comentários.</li>
+    <li><strong>Botão vermelho piscando com “Passe já para o próximo!”:</strong> já não dá para recuperar o tempo (sobrariam menos de 30 segundos para cada pergunta que falta, ou você está nos últimos 5 minutos). Passe para o próximo assim que puder.</li>
+  </ul>
+  <p>No <strong>modo apresentação</strong> o botão fica <strong>branco com letras vermelhas</strong>, para aparecer bem em qualquer cor de fundo.</p>
+  <div class="note"><p>Se não quiser, desligue em <strong>Configurações → Avisos → “Botão ‘Próximo’ vermelho”</strong>.</p></div>
+  <!-- /next-btn -->
 </section>
 
 <!-- 9 -->
 <section id="presentacion">
   <h2><span class="n">9</span>O modo apresentação</h2>
-  <div class="note"><p><strong>É a forma recomendada de dirigir o estudo.</strong> O modo apresentação evita distrações: mostra só o que você precisa, as cores verde, amarelo e vermelho mostram num relance em que ponto você está e como está o tempo, e os botões <strong>Próximo</strong> e <strong>Comentário</strong> são grandes e fáceis de encontrar e tocar.</p></div>
-  <p>Pensado para deixar o celular ou o tablet na tribuna: tudo grande e fácil de ver num relance. Abre com o botão <span class="key">⛶</span> da barra inferior e fecha com o <span class="key">✕</span> (ou a tecla <span class="key">Esc</span> no computador). No celular, ele também fecha com o botão <strong>“voltar”</strong>, sem sair do aplicativo.</p>
-  <p>Em cima, mostra a <strong>hora atual</strong>, a hora em que <strong>termina</strong> e o tempo <strong>restante</strong>, com uma barra de progresso. No centro, a parte em andamento com o seu cronômetro e a sua cor, e as etiquetas (por exemplo, <em>Ler Tiago 5:7, 8</em>). Embaixo, os botões <strong>Comentário</strong> e <strong>Próximo</strong>.</p>
-  <p>Há <strong>três layouts</strong>. Para trocar, use o botão de layout <span class="key">▦</span> (em cima, à direita) ou Configurações → Tela:</p>
+  <div class="tip"><p><strong>É a forma recomendada de dirigir o estudo.</strong> Mostra só o essencial, com letras e botões grandes, e a cor mostra de relance como você está de tempo.</p></div>
+  <p>Abre com o botão <span class="key">⛶</span> embaixo e fecha com o <span class="key">✕</span> em cima (ou com o botão <strong>“voltar”</strong> do celular, sem sair do aplicativo).</p>
+  <div class="figs"><figure><img src="manual/pt/12-pres-panel.webp" alt="Modo apresentação" loading="lazy"><figcaption>O modo apresentação durante um parágrafo.</figcaption></figure></div>
+  <ol class="callouts yellow">
+    <li><strong>Quadro colorido:</strong> onde você está (por exemplo <em>Parágrafo 1</em>), o cronômetro dessa parte e o tempo previsto. Fica verde, amarelo ou vermelho conforme o tempo.</li>
+    <li><strong>Comentário:</strong> toque cada vez que alguém comentar.</li>
+    <li><strong>Próximo:</strong> passa para a parte seguinte. O botão diz o que vem a seguir.</li>
+  </ol>
+  <p>Em cima, você vê a <strong>hora atual</strong>, a hora em que o estudo <strong>termina</strong> e quanto tempo <strong>falta</strong>.</p>
+  <p>Há <strong>três formatos</strong>. Mude com o botão <span class="key">▦</span> em cima ou em Configurações → Tela:</p>
   <div class="figs">
-    <figure><img src="manual/pt/12-pres-panel.webp" alt="Layout painel" loading="lazy"><figcaption><strong>Painel organizado:</strong> escuro, com um quadro grande colorido.</figcaption></figure>
-    <figure><img src="manual/pt/13-pres-semaforo.webp" alt="Layout semáforo" loading="lazy"><figcaption><strong>Semáforo:</strong> a tela inteira muda de cor.</figcaption></figure>
-    <figure><img src="manual/pt/14-pres-clasico.webp" alt="Layout clássico" loading="lazy"><figcaption><strong>Clássico:</strong> o layout de sempre, com o contador de participações.</figcaption></figure>
+    <figure><img src="manual/pt/13-pres-semaforo.webp" alt="Formato Semáforo" loading="lazy"><figcaption><strong>Semáforo:</strong> a tela inteira muda de cor.</figcaption></figure>
+    <figure><img src="manual/pt/14-pres-clasico.webp" alt="Formato Clássico" loading="lazy"><figcaption><strong>Clássico:</strong> com o contador de comentários.</figcaption></figure>
   </div>
-  <p>No modo apresentação, o <strong>botão grande</strong> avança sozinho pelo estudo: <em>Iniciar estudo → Ir para o parágrafo 1 → Próximo parágrafo → Pergunta de recapitulação → Ir para a conclusão → Encerrar estudo</em>. Nos últimos 5 minutos, aparece o aviso de que é hora de terminar.</p>
+  <p>No final, o botão grande diz <strong>“Encerrar estudo”</strong> e depois <strong>“Ver relatório”</strong>.</p>
 </section>
 
 <!-- 10 -->
 <section id="calculo">
   <h2><span class="n">10</span>Como os tempos são calculados</h2>
   <ol class="steps">
-    <li><strong>Leitura de cada parágrafo</strong> = as palavras ÷ a velocidade de leitura (150, 180 ou 210 palavras por minuto), mais o <strong>tempo por resposta</strong> escolhido nas Configurações (<strong>mínimo de 30 segundos</strong>; 35 por padrão) para cada texto bíblico a ser lido, imagem, nota ou ponto principal. Se o dirigente quiser mais tempo para comentá-los, pode aumentar o tempo por resposta. A leitura nunca é encurtada nem alongada.</li>
-    <li><strong>Introdução e conclusão</strong> têm sempre reservado o tempo definido nas Configurações (1 minuto cada, por padrão).</li>
-    <li><strong>Comentários:</strong> o tempo que sobra é distribuído entre todas as perguntas (dos parágrafos e de recapitulação). Os <strong>parágrafos longos ou agrupados</strong> recebem um pouco mais de tempo para comentários, conforme o tamanho.</li>
-    <li><strong>Durante o estudo:</strong> o plano da parte em andamento não muda. Cada vez que você toca em <strong>Próximo</strong>, o que falta é recalculado com o tempo disponível até a hora de término, reservando a conclusão.</li>
+    <li><strong>Leitura de cada parágrafo</strong> = suas palavras ÷ a velocidade de leitura (150, 180 ou 210 palavras por minuto), mais o <strong>tempo por resposta</strong> (no mínimo 30 segundos; 35 se não mudar) para cada texto, imagem, nota ou ponto principal.</li>
+    <li><strong>A introdução e a conclusão</strong> têm o tempo das Configurações (1 minuto cada, se não mudar). <strong>Se sobrar tempo depois da recapitulação, a conclusão fica com todo esse tempo.</strong></li>
+    <li><strong>Comentários:</strong> o tempo que sobra é dividido entre todas as perguntas. Os <strong>parágrafos longos ou agrupados</strong> recebem um pouco mais (o “extra” verde da seção 6).</li>
+    <li><strong>Durante o estudo:</strong> cada vez que você toca em <strong>Próximo</strong>, o que falta é recalculado para terminar na hora.</li>
   </ol>
-  <div class="note"><p><strong>Exemplo</strong> (o artigo das imagens): num estudo de 60 minutos com 11 parágrafos e 21 perguntas (18 dos parágrafos e 3 de recapitulação), com o tempo por resposta em 35 segundos, cerca de 7 minutos são de leitura, 2 minutos de introdução e conclusão e cerca de 51 minutos de comentários, o que dá um pouco mais de 2 minutos por pergunta.</p></div>
+  <div class="note"><p><strong>Exemplo:</strong> num estudo de 60 minutos com 11 parágrafos e 21 perguntas, cerca de 7 minutos vão para a leitura, 2 para a introdução e a conclusão, e cerca de 51 para os comentários: um pouco mais de 2 minutos por pergunta.</p></div>
 </section>
 
 <!-- 11 -->
@@ -258,6 +293,7 @@
     <li><strong>Faltam 5 minutos:</strong> 5 minutos antes da hora de término, com som, vibração e uma mensagem na tela.</li>
     <li><strong>Antes da recapitulação:</strong> escreva quantos minutos antes das perguntas de recapitulação você quer um aviso (por exemplo, 10 e 5). Deixe em branco se não quiser.</li>
     <li><strong>Pouco tempo para a recapitulação:</strong> se restarem menos de 20 segundos por pergunta de recapitulação, o aplicativo avisa.</li>
+    <!-- next-btn --><li><strong>Botão “Próximo” vermelho:</strong> o botão para avançar fica vermelho quando uma parte passa do tempo e pisca quando já não dá para recuperar (seção 8).</li><!-- /next-btn -->
   </ul>
   <p>Verifique se o celular não está no silencioso se quiser ouvir os avisos. A vibração funciona no Android; no iPhone, depende do navegador.</p>
 </section>
@@ -288,13 +324,46 @@
 
 <!-- 15 -->
 <section id="final">
-  <h2><span class="n">15</span>No final: estatísticas e exportar</h2>
+  <h2><span class="n">15</span>No final: o relatório e o histórico</h2>
+  <p class="lead">Quando você toca em <strong>“Encerrar estudo”</strong>, o aplicativo salva um <strong>relatório</strong> com os tempos de cada parte. Ele ajuda a ver o que demorou demais e a melhorar da próxima vez.</p>
+  <div class="figs"><figure><img src="manual/pt/19-fin.webp" alt="Estudo terminado" loading="lazy"><figcaption>Em cima aparece o cartão “Estudo terminado”.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Ver relatório:</strong> abre o relatório deste estudo numa aba separada.</li>
+    <li><strong>Histórico de estudos:</strong> abre a lista de todos os estudos salvos.</li>
+  </ol>
+  <h3>O relatório</h3>
   <div class="figs">
-    <figure><img src="manual/pt/18-estadisticas.webp" alt="Estatísticas" loading="lazy"><figcaption>Estatísticas de tempo por parágrafo.</figcaption></figure>
+    <figure><img src="manual/pt/20-informe.webp" alt="Relatório do estudo" loading="lazy"><figcaption>Parte de cima do relatório.</figcaption></figure>
+    <figure><img src="manual/pt/21-informe-tabla.webp" alt="Tabela do relatório" loading="lazy"><figcaption>A tabela com cada parte.</figcaption></figure>
   </div>
-  <p>As <strong>Estatísticas de tempo</strong> comparam o tempo <strong>previsto</strong> com o <strong>real</strong> no estudo todo e em cada parágrafo, com a diferença em verde (mais rápido) ou vermelho (mais lento) e os comentários marcados. Elas ajudam a ver que partes demoraram mais e a ajustar da próxima vez (por exemplo, a velocidade de leitura).</p>
-  <p>Com o botão <strong>exportar</strong> <span class="key">⬇</span> da barra superior, você pode salvar o plano do estudo como <strong>imagem (PNG)</strong> ou como <strong>PDF</strong>, para imprimir ou compartilhar.</p>
-  <p>Para preparar outro estudo, use o botão <strong>começar de novo</strong> <span class="key">↻</span>.</p>
+  <ol class="callouts">
+    <li><strong>Início, fim e duração</strong> do estudo, com o horário de término previsto e o total de comentários.</li>
+    <li><strong>Resumo numa frase</strong>, por exemplo <em>“Terminou 3:57 antes do previsto”</em> (em verde) ou <em>“depois”</em> (em vermelho).</li>
+    <li><strong>Imprimir / Salvar PDF:</strong> para imprimir em papel ou salvar como arquivo.</li>
+  </ol>
+  <p>A <strong>tabela</strong> tem uma linha para cada parte: introdução, cada parágrafo, cada pergunta de recapitulação e a conclusão. Em cada linha você vê:</p>
+  <ul>
+    <li>a <strong>hora</strong> em que essa parte começou;</li>
+    <li><strong>Previsto</strong> e <strong>Real</strong>: o tempo do programa e o tempo que realmente foi usado;</li>
+    <li><strong>Diferença:</strong> em <span style="color:#15803d;font-weight:800">verde</span> se foi mais rápido e em <span style="color:#dc2626;font-weight:800">vermelho</span> se demorou mais;</li>
+    <li><strong>✋</strong>: os comentários marcados.</li>
+  </ul>
+  <p>No computador e ao imprimir, aparecem também as <strong>palavras</strong> e as <strong>perguntas</strong> de cada parágrafo. O relatório impresso cabe em <strong>uma única página</strong>.</p>
+  <div class="figs"><figure class="wide"><img src="manual/pt/23-informe-pc.webp" alt="Relatório no computador" loading="lazy"><figcaption>O relatório completo, como aparece no computador ou impresso.</figcaption></figure></div>
+  <h3>O histórico de estudos</h3>
+  <div class="figs"><figure><img src="manual/pt/22-historial.webp" alt="Histórico de estudos" loading="lazy"><figcaption>Lista de estudos salvos, embaixo do relatório.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Toque num estudo</strong> para ver o relatório dele. Mostra a data, os horários, a duração e os comentários.</li>
+    <li><strong>Lixeira:</strong> para apagar um relatório. Toque uma vez e confirme em <strong>“Excluir?”</strong>.</li>
+  </ol>
+  <div class="note blue"><p><strong>Os relatórios ficam salvos só neste aparelho</strong>, nunca na internet. São guardados até 100 estudos. Se você apagar os dados do navegador ou do aplicativo, o histórico se perde.</p></div>
+  <p>Você também pode abrir o histórico pelo link <strong>“Histórico de estudos”</strong> no final da tela inicial.</p>
+  <h3>Outras opções</h3>
+  <ul>
+    <li>Embaixo do programa estão também as <strong>estatísticas de tempo</strong> de cada parágrafo.</li>
+    <li>Com o botão <strong>exportar</strong> <span class="key">⬇</span> em cima, você pode salvar o programa como imagem ou PDF.</li>
+    <li>Para preparar outro estudo, toque em <strong>reiniciar</strong> <span class="key">↻</span>.</li>
+  </ul>
 </section>
 
 <!-- 16 -->
@@ -319,11 +388,19 @@
     <dd>Verifique em Configurações → Avisos se estão ativados, toque em “Testar som” e veja se o celular não está no silencioso.</dd>
     <dt>Que dados o aplicativo guarda?</dt>
     <dd>Só as suas configurações e as revistas que você escolhe guardar, e sempre no seu aparelho. Não há contas nem dados enviados a nenhum servidor. Mais informações na <a href="/privacidad">política de privacidade</a>.</dd>
+  
+    <dt>Onde vejo os estudos de outras semanas?</dt>
+    <dd>No <strong>histórico de estudos</strong>: toque em “Histórico de estudos” ao terminar um estudo, ou use o link no final da tela inicial.</dd>
+    <dt>Posso apagar um relatório?</dt>
+    <dd>Sim. No histórico, toque na lixeira ao lado do estudo e confirme em “Excluir?”.</dd>
+    <dt>Por que a conclusão durou mais do que o previsto?</dt>
+    <dd>Se sobra tempo depois da recapitulação, a conclusão fica com esse tempo para terminar na hora. O relatório mostra isso embaixo de “Conclusão”.</dd>
+  <!-- data-v4 -->
   </dl>
 </section>
 
 <footer>
-  <p>Cronômetro do Estudo · Manual de uso · versão 3.1, novembro de 2026.<br>
+  <p>Cronômetro do Estudo · Manual de uso · versão 4.0, novembro de 2026.<br>
   Aplicativo gratuito e não oficial, sem relação com jw.org. Site: <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> · <a href="/privacidad">Privacidade</a></p>
   <p class="no-print"><a href="/manual_usuario_pt.pdf">Baixar este manual em PDF</a> · <a href="/">Voltar ao aplicativo</a></p>
 </footer>

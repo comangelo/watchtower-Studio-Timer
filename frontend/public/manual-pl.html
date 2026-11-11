@@ -15,7 +15,7 @@
     <div>
       <h1>Instrukcja obsługi<br>Minutnik Studium</h1>
       <p>Jak przygotować i prowadzić Studium Strażnicy w wyznaczonym czasie</p>
-      <p class="meta">Wersja 3.1 · listopad 2026</p>
+      <p class="meta">Wersja 4.0 · listopad 2026</p>
       <nav class="langbar" aria-label="Języki instrukcji"><a href="/manual.html" lang="es">ES</a><a href="/manual-en.html" lang="en">EN</a><a href="/manual-de.html" lang="de">DE</a><a href="/manual-it.html" lang="it">IT</a><a href="/manual-fr.html" lang="fr">FR</a><a href="/manual-pt.html" lang="pt">PT</a><a href="/manual-pl.html" lang="pl" class=on>PL</a><a href="/manual-nl.html" lang="nl">NL</a><a href="/manual-ro.html" lang="ro">RO</a></nav>
     </div>
   </div>
@@ -46,11 +46,11 @@
     <li><a href="#avisos">Alerty dźwiękowe i wibracje</a></li>
     <li><a href="#circuito">Wizyta nadzorcy obwodu</a></li>
     <li><a href="#idiomas">Języki</a></li>
-    <li><a href="#final">Na koniec: statystyki i eksport</a></li>
+    <li><a href="#final">Na koniec: raport i historia</a></li>
     <li><a href="#faq">Najczęstsze pytania</a></li>
   </ol>
 </nav>
-<p class="sample" style="font-style:normal;font-size:15px">Chcesz zacząć od razu? Zobacz <a href="/guia-rapida-pl.html"><strong>krótki przewodnik w 7 krokach</strong></a>.</p>
+<p class="start">Chcesz zacząć od razu? <a href="/guia-rapida-pl.html">Otwórz krótki przewodnik w 7 krokach</a></p>
 
 <!-- 1 -->
 <section id="que-es">
@@ -70,37 +70,46 @@
 <!-- 2 -->
 <section id="instalar">
   <h2><span class="n">2</span>Instalacja aplikacji</h2>
-  <h3>Android</h3>
-  <p>Zainstaluj ją z Google Play: wyszukaj <strong>„Temporizador de Estudio”</strong> albo otwórz ten link:<br>
-  <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio</a></p>
+  <p class="lead">Ikona aplikacji to <strong>pomarańczowa książka z kolorowym wskaźnikiem</strong> (zielonym, żółtym i czerwonym) na czarnym tle.</p>
+  <div class="figs"><figure style="width:140px"><img src="/icon-192.png" alt="Ikona aplikacji"><figcaption>Ikona</figcaption></figure></div>
+  <h3>Telefon lub tablet z Androidem</h3>
+  <ol class="steps">
+    <li>Otwórz <strong>Google Play</strong>.</li>
+    <li>Otwórz ten link: <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">otwórz w Google Play</a> (albo wyszukaj aplikację w Google Play).</li>
+    <li>Naciśnij <strong>Zainstaluj</strong>.</li>
+  </ol>
+  <div class="tip"><p>Jeśli już używasz aplikacji w przeglądarce na urządzeniu z Androidem, na ekranie startowym zobaczysz zieloną kartę <strong>„Używasz Androida?”</strong> z przyciskiem <strong>„Otwórz w Google Play”</strong>.</p></div>
   <h3>iPhone i iPad</h3>
-  <p>Nie ma jej jeszcze w App Store, ale działa tak samo w przeglądarce i można ją dodać do ekranu początkowego:</p>
+  <p>Aplikacji nie ma jeszcze w App Store, ale działa tak samo przez internet:</p>
   <ol class="steps">
     <li>Otwórz <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> w <strong>Safari</strong>.</li>
-    <li>Stuknij przycisk <strong>Udostępnij</strong> (kwadrat ze strzałką w górę).</li>
-    <li>Wybierz <strong>„Do ekranu początk.”</strong> i stuknij <strong>Dodaj</strong>. Pojawi się pomarańczowa ikona stopera.</li>
+    <li>Naciśnij przycisk <strong>Udostępnij</strong> (kwadrat ze strzałką w górę).</li>
+    <li>Wybierz <strong>„Do ekranu początkowego”</strong> i naciśnij <strong>Dodaj</strong>. Ikona pojawi się na ekranie.</li>
   </ol>
-  <h3>Komputer lub tablet</h3>
-  <p>Otwórz <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> w przeglądarce. W Chrome i Edge możesz ją zainstalować jako aplikację za pomocą ikony instalacji na pasku adresu.</p>
-  <div class="note blue"><p><strong>Aktualizacje:</strong> gdy pojawi się nowa wersja, aplikacja wyświetli komunikat <em>„Dostępna jest nowa wersja aplikacji.”</em> z przyciskiem <strong>Aktualizuj</strong>. Nigdy nie aktualizuje się sama w trakcie studium.</p></div>
+  <h3>Komputer</h3>
+  <p>Otwórz <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> w Chrome lub Edge. Jeśli chcesz, zainstaluj ją jak program za pomocą ikony instalacji na pasku adresu.</p>
+  <div class="note blue"><p><strong>Aktualizacje:</strong> gdy pojawi się nowa wersja, zobaczysz komunikat z przyciskiem <strong>Aktualizuj</strong>. Aplikacja nigdy nie aktualizuje się sama w trakcie studium.</p></div>
 </section>
 
 <!-- 3 -->
 <section id="inicio">
   <h2><span class="n">3</span>Ekran startowy</h2>
-  <div class="figs">
-    <figure><img src="manual/pl/01-inicio.webp" alt="Ekran startowy" loading="lazy"><figcaption>Ekran startowy z planem na dziś i artykułem na ten tydzień.</figcaption></figure>
-  </div>
-  <p>Od góry do dołu znajdziesz:</p>
+  <p class="lead">To pierwsze, co widzisz po otwarciu aplikacji. Czerwone numery na obrazku pokazują, gdzie co jest.</p>
+  <div class="figs"><figure><img src="manual/pl/01-inicio.webp" alt="Ekran startowy" loading="lazy"><figcaption>Ekran startowy.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Przycisk z książką:</strong> otwiera tę instrukcję w każdej chwili.</li>
+    <li><strong>„Pierwszy raz w aplikacji?”:</strong> otwiera <strong>krótki przewodnik</strong> albo tę instrukcję. Gdy już znasz aplikację, naciśnij <strong>Ukryj</strong>.</li>
+    <li><strong>„Używasz Androida?”</strong> (tylko na telefonach z Androidem, w przeglądarce): zainstaluj aplikację z Google Play. Tę kartę też można ukryć.</li>
+  </ol>
+  <p>Niżej znajdziesz:</p>
   <ul>
-    <li><strong>Górny pasek:</strong> wybór <strong>języka</strong> (globus z kodem, na przykład <span class="key">PL</span>) i przycisk <strong>ustawień</strong> <span class="key">⚙</span>. Po wczytaniu artykułu pojawiają się też przyciski pełnego ekranu, <strong>eksportu</strong> i <strong>rozpoczęcia od nowa</strong>.</li>
-    <li><strong>Plan na dziś:</strong> aktualna godzina, godzina <strong>końca</strong> studium i jego <strong>czas trwania</strong>. Przyciskiem <strong>„Zmień godzinę końca”</strong> sam ustalasz, o której skończyć (na przykład o 20:28); aplikacja dopasowuje czas trwania.</li>
-    <li><strong>Artykuł na ten tydzień:</strong> do pobrania czasopisma z jw.org i otwarcia go w aplikacji (zobacz rozdział 4).</li>
-    <li><strong>Wizyta nadzorcy obwodu:</strong> przełącznik dla 30-minutowego studium bez czytania akapitów (rozdział 13).</li>
-    <li><strong>Ustawienia studium:</strong> podsumowanie twoich ustawień (czas trwania, tempo czytania, czas na odpowiedź i wstęp) z linkiem <strong>Zmień</strong>.</li>
-    <li><strong>Przycisk z książką</strong> <span class="key">📖</span> (u góry): otwiera tę instrukcję w dowolnej chwili. Jest też w Ustawieniach i na dole ekranu startowego.</li>
-    <li><strong>„Pierwszy raz w aplikacji?”:</strong> karta z <strong>krótkim przewodnikiem</strong> i instrukcją. Gdy już znasz aplikację, możesz ją usunąć przyciskiem <strong>„Ukryj”</strong>.</li>
+    <li><strong>Plan na dziś:</strong> aktualną godzinę, godzinę <strong>końca</strong> studium i <strong>czas trwania</strong>.</li>
+    <li><strong>Artykuł na ten tydzień:</strong> pobranie czasopisma i otwarcie go (punkt 4).</li>
+    <li><strong>Wizyta nadzorcy obwodu:</strong> przełącznik dla 30-minutowego studium (punkt 13).</li>
+    <li><strong>Ustawienia studium:</strong> podsumowanie ustawień z linkiem do <strong>edycji</strong>.</li>
+    <li>Na samym dole linki do <strong>prywatności</strong>, <strong>instrukcji</strong>, <strong>Google Play</strong> i <strong>historii studiów</strong>.</li>
   </ul>
+  <p>Na górze jest też <strong>język</strong> (<span class="key">PL</span>) i <strong>ustawienia</strong> <span class="key">⚙</span>.</p>
 </section>
 
 <!-- 4 -->
@@ -121,65 +130,72 @@
 <section id="resumen">
   <h2><span class="n">5</span>Podsumowanie i plan studium</h2>
   <div class="figs">
-    <figure><img src="manual/pl/04-plan.webp" alt="Plan studium" loading="lazy"><figcaption>U góry plan na dziś, niżej podsumowanie artykułu.</figcaption></figure>
-    <figure><img src="manual/pl/05-resumen.webp" alt="Podsumowanie artykułu" loading="lazy"><figcaption>Podsumowanie z podziałem 60 minut.</figcaption></figure>
+    <figure><img src="manual/pl/04-plan.webp" alt="Plan studium" loading="lazy"><figcaption>Plan na dziś.</figcaption></figure>
+    <figure><img src="manual/pl/05-resumen.webp" alt="Podsumowanie artykułu" loading="lazy"><figcaption>Podsumowanie artykułu.</figcaption></figure>
   </div>
-  <p>Po wczytaniu artykułu zobaczysz:</p>
+  <ol class="callouts">
+    <li><strong>Godzina końca:</strong> o której studium się kończy.</li>
+    <li><strong>„Zmień godzinę końca”:</strong> jeśli zebranie kończy się o innej godzinie, wpisz ją tutaj. Wszystko zostanie przeliczone, żeby skończyć o tej godzinie.</li>
+  </ol>
+  <p>Poniżej <strong>podsumowanie artykułu</strong> pokazuje:</p>
   <ul>
-    <li><strong>Tytuł i tydzień</strong> artykułu do studium.</li>
-    <li><strong>Etykiety treści:</strong> liczbę akapitów, pytań, wersetów do przeczytania, ilustracji, przypisów i pytań do powtórki.</li>
-    <li><strong>Podział czasu:</strong> kolorowy pasek pokazujący, ile czasu przypada na <span class="chip b">Wstęp</span>, <strong>Czytanie</strong>, <span class="chip o">Komentarze</span> i <span class="chip p">Zakończenie</span>. Pokazuje też, ile trwałby artykuł <em>czytany bez przerw</em>.</li>
+    <li><strong>tytuł i tydzień</strong>;</li>
+    <li>ile ma <strong>akapitów, pytań, wersetów, ilustracji i przypisów</strong>;</li>
+    <li><strong>kolorowy pasek</strong> z podziałem czasu: <span class="chip b">Wstęp</span> <strong>Czytanie</strong> <span class="chip o">Komentarze</span> <span class="chip p">Zakończenie</span>.</li>
   </ul>
-  <p>Na karcie planu komunikat <strong>„Komentarze: X s na pytanie”</strong> mówi, ile średnio czasu jest na odpowiedź na każde pytanie.</p>
-  <div class="note"><p>Jeśli artykuł jest za długi na wybrany czas, pojawi się komunikat <strong>„Nie mieści się”</strong> z informacją, ile brakuje. Możesz wydłużyć czas trwania albo wybrać szybsze czytanie w Ustawieniach.</p></div>
+  <p>Plan pokazuje też <strong>„Komentarze: X s na pytanie”</strong>, czyli średni czas na odpowiedzi do każdego pytania.</p>
+  <div class="note"><p>Jeśli artykuł nie mieści się w wybranym czasie, pojawi się ostrzeżenie. Możesz wydłużyć czas albo wybrać szybsze czytanie w Ustawieniach.</p></div>
 </section>
 
 <!-- 6 -->
 <section id="parrafos">
   <h2><span class="n">6</span>Lista akapitów</h2>
-  <div class="figs">
-    <figure><img src="manual/pl/06-parrafo-detalle.webp" alt="Szczegóły akapitu" loading="lazy"><figcaption>Otwarty akapit z pytaniem, ilustracją i przyciskiem „Zacznij stąd”.</figcaption></figure>
-  </div>
-  <p>Każdy akapit zajmuje jeden wiersz z <strong>numerem</strong>, <strong>planowanym czasem</strong> i przybliżoną <strong>godziną</strong>, o której powinien się skończyć. Kolorowe etykiety pokazują, na co zwrócić uwagę:</p>
+  <p class="lead">Każdy akapit jest w osobnym wierszu z <strong>numerem</strong> i <strong>planowanym czasem</strong>. Naciśnij akapit, żeby go otworzyć.</p>
+  <div class="figs"><figure><img src="manual/pl/06-parrafo-detalle.webp" alt="Otwarty akapit" loading="lazy"><figcaption>Otwarty akapit.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Dane akapitu</strong>, każde w innym kolorze: <strong>słowa</strong> (szary), <strong>czas czytania</strong> (niebieski) i <strong>pytania</strong> (pomarańczowy). W trakcie studium widać też planowane <strong>godziny</strong> (fioletowy).</li>
+    <li><strong>Planowany czas akapitu:</strong> suma i jej podział. Pasek pokazuje <strong>czytanie</strong> (niebieski), <strong>komentarze</strong> (pomarańczowy), a przy długich akapitach także <strong>dodatek</strong> na więcej komentarzy (zielony). Części razem dają sumę.</li>
+    <li><strong>„Zacznij stąd”:</strong> jeśli studium już trwa (np. gdy się spóźnisz), przechodzi od razu do tego akapitu.</li>
+  </ol>
+  <p>Kolorowe etykiety podpowiadają, o czym pamiętać:</p>
   <table>
-    <tr><th>Etykieta</th><th>Co oznacza</th></tr>
-    <tr><td><span class="chip b">Jakuba 5:7, 8</span></td><td>Jest <strong>werset do przeczytania</strong>. Widać dokładne miejsce w Biblii.</td></tr>
-    <tr><td><span class="chip p">Ilustracja</span></td><td>Pytanie odsyła do <strong>ilustracji</strong> w artykule („Zobacz też ilustrację”).</td></tr>
+    <tr><th>Etykieta</th><th>Znaczenie</th></tr>
+    <tr><td><span class="chip b">Jakuba 5:7, 8</span></td><td>Jest <strong>werset do przeczytania</strong>.</td></tr>
+    <tr><td><span class="chip p">Ilustracja</span></td><td>Pytanie dotyczy <strong>ilustracji</strong> w artykule.</td></tr>
     <tr><td><span class="chip o">Przypis</span></td><td>Jest <strong>przypis</strong> do omówienia.</td></tr>
-    <tr><td>★ Ważna myśl</td><td>Pytanie wspomina o ramce albo o wyróżnionej myśli w cudzysłowie.</td></tr>
+    <tr><td>★ Ważna myśl</td><td>Pytanie wspomina ramkę albo myśl w cudzysłowie.</td></tr>
   </table>
-  <p>Stuknij akapit, żeby go <strong>otworzyć</strong>. Zobaczysz liczbę słów, czas czytania, pytanie, a przy długim akapicie – dodatkowy czas na więcej komentarzy. Stamtąd:</p>
-  <ul>
-    <li><strong>„Pokaż tekst akapitu”</strong> wyświetla cały tekst. <strong>„Pokaż wszystkie teksty”</strong> otwiera wszystkie naraz. Służy to tylko do przygotowania czasu: do prowadzenia używaj oryginalnej publikacji (zobacz uwagi na początku).</li>
-    <li><strong>„Zacznij stąd”</strong> przeskakuje do tego akapitu, jeśli studium już trwa (na przykład gdy się spóźnisz). Aplikacja liczy tak, jakby wcześniejsze części trwały tyle, ile zaplanowano.</li>
-  </ul>
-  <p>Akapity ze wspólnym pytaniem (na przykład <strong>„5, 6.”</strong>) są traktowane jako grupa, a przycisk <strong>Dalej</strong> przeskakuje całą grupę.</p>
+  <p>Przyciskiem <strong>„Pokaż tekst akapitu”</strong> możesz przeczytać tekst, żeby przygotować czasy. Do prowadzenia zawsze używaj oryginalnej publikacji.</p>
+  <p>Akapity z jednym wspólnym pytaniem (np. <strong>„5, 6”</strong>) idą razem, a przycisk <strong>Dalej</strong> przechodzi przez całą grupę.</p>
 </section>
 
 <!-- 7 -->
 <section id="conducir">
   <h2><span class="n">7</span>Prowadzenie studium krok po kroku</h2>
-  <div class="note"><p><strong>Zalecane:</strong> w czasie studium otwórz <strong>tryb prezentacji</strong> (rozdział 9). Tutaj opisano ogólne działanie, które jest takie samo w obu widokach.</p></div>
-  <p>Na telefonie główne przyciski są zawsze na dole, na <strong>dolnym pasku</strong>:</p>
-  <ul>
-    <li><span class="chip b">DALEJ</span> duży niebieski przycisk pokazuje, co będzie następne: <em>Rozpocznij studium → Akapit 1 → Akapit 2 → … → Powtórka 1 → … → Zakończenie → Zakończ studium</em>.</li>
-    <li><span class="chip o">✋ KOMENTARZ</span> dodaje komentarz do licznika. Na koniec zobaczysz, ile wypowiedzi było przy każdym akapicie.</li>
-    <li><span class="key">⛶</span> otwiera <strong>tryb prezentacji</strong> (rozdział 9).</li>
-  </ul>
+  <div class="tip"><p><strong>Zalecane:</strong> w czasie studium używaj <strong>trybu prezentacji</strong> (punkt 9). Tutaj wyjaśniamy, jak to działa; w obu widokach jest tak samo.</p></div>
+  <p>Na telefonie główne przyciski są zawsze <strong>na dole</strong>:</p>
+  <div class="figs">
+    <figure><img src="manual/pl/06b-barra.webp" alt="Dolny pasek" loading="lazy"><figcaption>Przed rozpoczęciem.</figcaption></figure>
+    <figure><img src="manual/pl/09-parrafo-verde.webp" alt="Trwający akapit" loading="lazy"><figcaption>W trakcie akapitu.</figcaption></figure>
+  </div>
+  <ol class="callouts">
+    <li><strong>Duży niebieski przycisk:</strong> mówi, co będzie dalej. Naciskaj go za każdym razem, gdy przechodzisz do kolejnej części: <em>Rozpocznij studium → Akapit 1 → Akapit 2 → … → Powtórka → Zakończenie → Zakończ studium</em>.</li>
+    <li><strong>Czarny przycisk</strong> <span class="key">⛶</span>: otwiera <strong>tryb prezentacji</strong>.</li>
+  </ol>
+  <p>Podczas akapitów widać też pomarańczowy przycisk <span class="chip o">✋ KOMENTARZ</span>: naciśnij go, gdy ktoś komentuje. Na końcu zobaczysz, ile było komentarzy.</p>
   <ol class="steps">
-    <li><strong>Wstęp.</strong> Stuknij <strong>„Rozpocznij studium”</strong>. Ruszają stoper ogólny i stoper wstępu (domyślnie 1 minuta). Karta wstępu robi się niebieska.</li>
-    <li><strong>Akapity.</strong> Stuknij <strong>Dalej</strong> na początku każdego akapitu. Karta bieżącego akapitu pokazuje czas, który upłynął, i czas planowany (na przykład <strong>1:11 / 5:43</strong>) i zmienia kolor (rozdział 8).</li>
-    <li><strong>Pytania do powtórki.</strong> Po ostatnim akapicie przychodzą pytania z ramki na końcu, każde ze swoim czasem.</li>
-    <li><strong>Zakończenie.</strong> Ostatnia część (domyślnie 1 minuta) na podsumowanie i zachęcenie zboru.</li>
-    <li><strong>Zakończ studium.</strong> Stoper się zatrzymuje i wyświetlają się statystyki.</li>
+    <li><strong>Wstęp.</strong> Naciśnij <strong>„Rozpocznij studium”</strong>. Ruszają zegar ogólny i zegar wstępu.</li>
+    <li><strong>Akapity.</strong> Naciskaj <strong>Dalej</strong> na początku każdego akapitu. Widzisz czas, który minął, i czas planowany (np. <strong>1:11 / 5:43</strong>) oraz kolor (punkt 8).</li>
+    <li><strong>Pytania do powtórki.</strong> Po ostatnim akapicie są pytania z ramki na końcu.</li>
+    <li><strong>Zakończenie.</strong> Ma czas ustawiony w Ustawieniach (domyślnie 1 minuta). <strong>Jeśli po powtórce zostanie czas, zakończenie wykorzystuje cały ten czas</strong>, nawet jeśli to więcej niż w ustawieniach.</li>
+    <li><strong>Zakończ studium.</strong> Zegar się zatrzymuje i zapisuje się <strong>raport ze studium</strong> (punkt 15).</li>
   </ol>
   <div class="figs">
-    <figure><img src="manual/pl/08-introduccion.webp" alt="Trwa wstęp" loading="lazy"><figcaption>Trwa wstęp.</figcaption></figure>
-    <figure><img src="manual/pl/16-repaso.webp" alt="Pytania do powtórki" loading="lazy"><figcaption>Pytania do powtórki: bieżące jest oznaczone „TERAZ”.</figcaption></figure>
-    <figure><img src="manual/pl/17-conclusion.webp" alt="Zakończenie" loading="lazy"><figcaption>Zakończenie, a pod nim statystyki.</figcaption></figure>
+    <figure><img src="manual/pl/08-introduccion.webp" alt="Trwający wstęp" loading="lazy"><figcaption>Trwa wstęp.</figcaption></figure>
+    <figure><img src="manual/pl/16-repaso.webp" alt="Pytania do powtórki" loading="lazy"><figcaption>Pytania do powtórki.</figcaption></figure>
+    <figure><img src="manual/pl/17-conclusion.webp" alt="Zakończenie" loading="lazy"><figcaption>Zakończenie.</figcaption></figure>
   </div>
-  <p>Na karcie planu u góry możesz <strong>wstrzymać</strong> i <strong>wznowić</strong> studium. Komunikat <strong>„Zakończ za m:ss”</strong> przypomina, ile zostało do godziny końca.</p>
-  <div class="note blue"><p><strong>Ekran nie gaśnie</strong>, dopóki trwa studium, więc nie musisz dotykać telefonu. Po zakończeniu telefon znowu wygasza ekran jak zwykle.</p></div>
+  <p>Przyciskiem <span class="key">⏸</span> w planie możesz <strong>wstrzymać</strong> zegar, jeśli coś przerwie studium.</p>
 </section>
 
 <!-- 8 -->
@@ -199,33 +215,52 @@
   </div>
   <p><strong>W ostatnich 5 minutach studium</strong> akapity i pytania do powtórki <strong>nie mają dogrywki</strong>: zmieniają kolor od razu z zielonego na czerwony, żeby nie zabierać czasu na końcówkę. <strong>Zakończenie zawsze zachowuje swoją dogrywkę</strong>.</p>
   <p>Jeśli jakaś część się przedłuży, nic się nie stanie: po stuknięciu <strong>Dalej</strong> aplikacja na nowo rozdzieli pozostały czas na to, co zostało, żebyś skończył punktualnie.</p>
+  <!-- next-btn -->
+  <h3>Przycisk „Dalej” też ostrzega</h3>
+  <p>Gdy bieżąca część robi się <strong>czerwona</strong>, zmienia się też duży przycisk do przechodzenia dalej, żebyś od razu to zauważył:</p>
+  <div class="figs">
+    <figure class="wide" style="max-width:420px"><img src="manual/pl/11b-boton-rojo.webp" alt="" loading="lazy"><figcaption>Czerwony: czas da się jeszcze odrobić.</figcaption></figure>
+    <figure class="wide" style="max-width:420px"><img src="manual/pl/11c-boton-parpadea.webp" alt="" loading="lazy"><figcaption>Miga: przejdź od razu dalej.</figcaption></figure>
+  </div>
+  <ul>
+    <li><strong>Czerwony przycisk:</strong> część przekroczyła czas, ale da się go jeszcze odrobić w tym, co zostało. Zacznij zamykać komentarze.</li>
+    <li><strong>Czerwony, migający przycisk z napisem „Przejdź od razu dalej!”:</strong> nie ma już skąd odzyskać czasu (zostałoby mniej niż 30 sekund na każde pozostałe pytanie albo trwa ostatnie 5 minut). Przejdź dalej jak najszybciej.</li>
+  </ul>
+  <p>W <strong>trybie prezentacji</strong> przycisk staje się <strong>biały z czerwonymi literami</strong>, żeby był dobrze widoczny na każdym kolorze tła.</p>
+  <div class="note"><p>Jeśli tego nie chcesz, wyłącz to w <strong>Ustawienia → Alerty → „Czerwony przycisk ‚Dalej’”</strong>.</p></div>
+  <!-- /next-btn -->
 </section>
 
 <!-- 9 -->
 <section id="presentacion">
   <h2><span class="n">9</span>Tryb prezentacji</h2>
-  <div class="note"><p><strong>To zalecany sposób prowadzenia studium.</strong> Tryb prezentacji nie rozprasza: pokazuje tylko to, co potrzebne, kolory zielony, żółty i czerwony od razu mówią ci, na jakim etapie jesteś i jak wyglądasz z czasem, a przyciski <strong>Dalej</strong> i <strong>Komentarz</strong> są duże i łatwo je znaleźć i nacisnąć.</p></div>
-  <p>Przeznaczony do położenia telefonu lub tabletu na pulpicie albo podium: wszystko jest duże i czytelne na pierwszy rzut oka. Otwiera się go przyciskiem <span class="key">⛶</span> na dolnym pasku, a zamyka przyciskiem <span class="key">✕</span> (albo klawiszem <span class="key">Esc</span> na komputerze). Na telefonie zamyka go też przycisk <strong>„wstecz”</strong>, bez wychodzenia z aplikacji.</p>
-  <p>U góry widać <strong>aktualną godzinę</strong>, godzinę <strong>końca</strong> i <strong>pozostały</strong> czas z paskiem postępu. Pośrodku – bieżąca część ze stoperem i kolorem oraz etykiety (na przykład <em>Przeczytaj Jakuba 5:7, 8</em>). Na dole przyciski <strong>Komentarz</strong> i <strong>Dalej</strong>.</p>
-  <p>Są <strong>trzy układy</strong>. Zmienia się je przyciskiem układu <span class="key">▦</span> (w prawym górnym rogu) albo w Ustawienia → Ekran:</p>
+  <div class="tip"><p><strong>To zalecany sposób prowadzenia studium.</strong> Pokazuje tylko to, co najważniejsze, dużymi literami i dużymi przyciskami, a kolor od razu mówi, jak stoisz z czasem.</p></div>
+  <p>Otwierasz go przyciskiem <span class="key">⛶</span> na dole, a zamykasz <span class="key">✕</span> na górze (albo przyciskiem <strong>„wstecz”</strong> w telefonie, bez wychodzenia z aplikacji).</p>
+  <div class="figs"><figure><img src="manual/pl/12-pres-panel.webp" alt="Tryb prezentacji" loading="lazy"><figcaption>Tryb prezentacji w trakcie akapitu.</figcaption></figure></div>
+  <ol class="callouts yellow">
+    <li><strong>Kolorowa ramka:</strong> gdzie jesteś (np. <em>Akapit 1</em>), zegar tej części i jej planowany czas. Jest zielona, żółta albo czerwona zależnie od czasu.</li>
+    <li><strong>Komentarz:</strong> naciśnij, gdy ktoś komentuje.</li>
+    <li><strong>Dalej:</strong> przechodzi do następnej części. Przycisk mówi, co będzie dalej.</li>
+  </ol>
+  <p>Na górze widać <strong>aktualną godzinę</strong>, godzinę <strong>końca</strong> studium i ile czasu <strong>zostało</strong>.</p>
+  <p>Są <strong>trzy układy</strong>. Zmieniasz je przyciskiem <span class="key">▦</span> na górze albo w Ustawienia → Ekran:</p>
   <div class="figs">
-    <figure><img src="manual/pl/12-pres-panel.webp" alt="Układ panel" loading="lazy"><figcaption><strong>Uporządkowany panel:</strong> ciemny, z dużym kolorowym polem.</figcaption></figure>
-    <figure><img src="manual/pl/13-pres-semaforo.webp" alt="Układ sygnalizator" loading="lazy"><figcaption><strong>Sygnalizator:</strong> cały ekran zmienia kolor.</figcaption></figure>
-    <figure><img src="manual/pl/14-pres-clasico.webp" alt="Układ klasyczny" loading="lazy"><figcaption><strong>Klasyczny:</strong> dotychczasowy układ z licznikiem wypowiedzi.</figcaption></figure>
+    <figure><img src="manual/pl/13-pres-semaforo.webp" alt="Układ Sygnalizator" loading="lazy"><figcaption><strong>Sygnalizator:</strong> cały ekran zmienia kolor.</figcaption></figure>
+    <figure><img src="manual/pl/14-pres-clasico.webp" alt="Układ Klasyczny" loading="lazy"><figcaption><strong>Klasyczny:</strong> z licznikiem komentarzy.</figcaption></figure>
   </div>
-  <p>W trybie prezentacji <strong>duży przycisk</strong> sam prowadzi przez studium: <em>Rozpocznij studium → Przejdź do akapitu 1 → Następny akapit → Pytanie do powtórki → Przejdź do zakończenia → Zakończ studium</em>. W ostatnich 5 minutach pojawia się komunikat, że trzeba kończyć.</p>
+  <p>Na końcu duży przycisk pokazuje <strong>„Zakończ studium”</strong>, a potem <strong>„Zobacz raport”</strong>.</p>
 </section>
 
 <!-- 10 -->
 <section id="calculo">
-  <h2><span class="n">10</span>Jak obliczany jest czas</h2>
+  <h2><span class="n">10</span>Jak liczone są czasy</h2>
   <ol class="steps">
-    <li><strong>Czytanie każdego akapitu</strong> = liczba słów ÷ tempo czytania (150, 180 lub 210 słów na minutę) plus <strong>czas na odpowiedź</strong> wybrany w Ustawieniach (<strong>co najmniej 30 sekund</strong>; domyślnie 35) za każdy werset do przeczytania, ilustrację, przypis lub ważną myśl. Jeśli prowadzący chce mieć więcej czasu na ich omówienie, może zwiększyć czas na odpowiedź. Czytania nigdy się nie skraca ani nie wydłuża.</li>
-    <li><strong>Wstęp i zakończenie</strong> mają zawsze zarezerwowany czas ustawiony w Ustawieniach (domyślnie po 1 minucie).</li>
-    <li><strong>Komentarze:</strong> pozostały czas jest rozdzielany na wszystkie pytania (do akapitów i do powtórki). <strong>Długie lub połączone akapity</strong> dostają trochę więcej czasu na komentarze, zależnie od długości.</li>
-    <li><strong>W trakcie studium:</strong> plan bieżącej części się nie zmienia. Za każdym stuknięciem <strong>Dalej</strong> to, co zostało, jest przeliczane z czasem dostępnym do godziny końca, z zarezerwowanym zakończeniem.</li>
+    <li><strong>Czytanie każdego akapitu</strong> = liczba słów ÷ tempo czytania (150, 180 lub 210 słów na minutę), plus <strong>czas na odpowiedź</strong> (co najmniej 30 sekund; domyślnie 35) za każdy werset, ilustrację, przypis lub ważną myśl.</li>
+    <li><strong>Wstęp i zakończenie</strong> mają czas z Ustawień (domyślnie po 1 minucie). <strong>Jeśli po powtórce zostanie czas, zakończenie dostaje cały ten czas.</strong></li>
+    <li><strong>Komentarze:</strong> pozostały czas dzieli się na wszystkie pytania. <strong>Długie lub zgrupowane akapity</strong> dostają trochę więcej (zielony „dodatek” z punktu 6).</li>
+    <li><strong>W trakcie studium:</strong> za każdym naciśnięciem <strong>Dalej</strong> reszta jest przeliczana, żeby skończyć na czas.</li>
   </ol>
-  <div class="note"><p><strong>Przykład</strong> (artykuł z ilustracji): w 60-minutowym studium z 11 akapitami i 21 pytaniami (18 do akapitów i 3 do powtórki), przy czasie na odpowiedź 35 sekund, około 7 minut zajmuje czytanie, 2 minuty wstęp i zakończenie, a około 51 minut komentarze – czyli trochę ponad 2 minuty na pytanie.</p></div>
+  <div class="note"><p><strong>Przykład:</strong> w 60-minutowym studium z 11 akapitami i 21 pytaniami około 7 minut to czytanie, 2 minuty to wstęp i zakończenie, a około 51 minut to komentarze, czyli trochę ponad 2 minuty na pytanie.</p></div>
 </section>
 
 <!-- 11 -->
@@ -258,6 +293,7 @@
     <li><strong>Zostało 5 minut:</strong> 5 minut przed godziną końca, z dźwiękiem, wibracją i komunikatem na ekranie.</li>
     <li><strong>Przed powtórką:</strong> wpisz, ile minut przed pytaniami do powtórki chcesz dostać alert (na przykład 10 i 5). Zostaw puste, jeśli nie chcesz.</li>
     <li><strong>Mało czasu na powtórkę:</strong> jeśli zostanie mniej niż 20 sekund na pytanie do powtórki, aplikacja cię ostrzeże.</li>
+    <!-- next-btn --><li><strong>Czerwony przycisk „Dalej”:</strong> przycisk do przechodzenia dalej robi się czerwony, gdy część przekroczy czas, i miga, gdy nie ma już skąd odzyskać czasu (punkt 8).</li><!-- /next-btn -->
   </ul>
   <p>Sprawdź, czy telefon nie jest wyciszony, jeśli chcesz słyszeć alerty. Wibracje działają na Androidzie; na iPhonie zależą od przeglądarki.</p>
 </section>
@@ -288,13 +324,46 @@
 
 <!-- 15 -->
 <section id="final">
-  <h2><span class="n">15</span>Na koniec: statystyki i eksport</h2>
+  <h2><span class="n">15</span>Na koniec: raport i historia</h2>
+  <p class="lead">Gdy naciśniesz <strong>„Zakończ studium”</strong>, aplikacja zapisze <strong>raport</strong> z czasami każdej części. Pomaga zobaczyć, co trwało za długo, i poprawić się następnym razem.</p>
+  <div class="figs"><figure><img src="manual/pl/19-fin.webp" alt="Studium zakończone" loading="lazy"><figcaption>Na górze pojawia się karta „Studium zakończone”.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Zobacz raport:</strong> otwiera raport z tego studium w osobnej karcie.</li>
+    <li><strong>Historia studiów:</strong> otwiera listę wszystkich zapisanych studiów.</li>
+  </ol>
+  <h3>Raport</h3>
   <div class="figs">
-    <figure><img src="manual/pl/18-estadisticas.webp" alt="Statystyki" loading="lazy"><figcaption>Statystyki czasu dla każdego akapitu.</figcaption></figure>
+    <figure><img src="manual/pl/20-informe.webp" alt="Raport ze studium" loading="lazy"><figcaption>Górna część raportu.</figcaption></figure>
+    <figure><img src="manual/pl/21-informe-tabla.webp" alt="Tabela raportu" loading="lazy"><figcaption>Tabela z każdą częścią.</figcaption></figure>
   </div>
-  <p><strong>Statystyki czasu</strong> porównują czas <strong>planowany</strong> z <strong>faktycznym</strong> dla całego studium i każdego akapitu, z różnicą na zielono (szybciej) lub na czerwono (wolniej) i z policzonymi komentarzami. Pomagają zobaczyć, które części się przedłużyły, i coś poprawić następnym razem (na przykład tempo czytania).</p>
-  <p>Przyciskiem <strong>eksportu</strong> <span class="key">⬇</span> na górnym pasku możesz zapisać plan studium jako <strong>obraz (PNG)</strong> lub <strong>PDF</strong>, żeby go wydrukować albo komuś przesłać.</p>
-  <p>Żeby przygotować kolejne studium, użyj przycisku <strong>rozpoczęcia od nowa</strong> <span class="key">↻</span>.</p>
+  <ol class="callouts">
+    <li><strong>Początek, koniec i czas trwania</strong> studium, z planowaną godziną końca i liczbą komentarzy.</li>
+    <li><strong>Podsumowanie w jednym zdaniu</strong>, np. <em>„Zakończone 3:57 przed czasem”</em> (na zielono) albo <em>„po czasie”</em> (na czerwono).</li>
+    <li><strong>Drukuj / Zapisz PDF:</strong> wydruk na papierze albo zapis jako plik.</li>
+  </ol>
+  <p><strong>Tabela</strong> ma wiersz dla każdej części: wstęp, każdy akapit, każde pytanie do powtórki i zakończenie. W każdym wierszu widzisz:</p>
+  <ul>
+    <li><strong>godzinę</strong> rozpoczęcia tej części;</li>
+    <li><strong>Plan</strong> i <strong>Faktycznie</strong>: czas z planu i czas naprawdę wykorzystany;</li>
+    <li><strong>Różnicę:</strong> na <span style="color:#15803d;font-weight:800">zielono</span>, jeśli poszło szybciej, i na <span style="color:#dc2626;font-weight:800">czerwono</span>, jeśli trwało dłużej;</li>
+    <li><strong>✋</strong>: zaznaczone komentarze.</li>
+  </ul>
+  <p>Na komputerze i na wydruku widać też <strong>słowa</strong> i <strong>pytania</strong> każdego akapitu. Wydrukowany raport mieści się na <strong>jednej stronie</strong>.</p>
+  <div class="figs"><figure class="wide"><img src="manual/pl/23-informe-pc.webp" alt="Raport na komputerze" loading="lazy"><figcaption>Cały raport, tak jak wygląda na komputerze lub na wydruku.</figcaption></figure></div>
+  <h3>Historia studiów</h3>
+  <div class="figs"><figure><img src="manual/pl/22-historial.webp" alt="Historia studiów" loading="lazy"><figcaption>Lista zapisanych studiów, pod raportem.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Naciśnij studium</strong>, żeby zobaczyć jego raport. Widać datę, godziny, czas trwania i komentarze.</li>
+    <li><strong>Kosz:</strong> usuwa raport. Naciśnij raz i potwierdź w <strong>„Usunąć?”</strong>.</li>
+  </ol>
+  <div class="note blue"><p><strong>Raporty są zapisywane tylko na tym urządzeniu</strong>, nigdy w internecie. Przechowywanych jest do 100 studiów. Jeśli usuniesz dane przeglądarki lub aplikacji, historia zniknie.</p></div>
+  <p>Historię możesz też otworzyć linkiem <strong>„Historia studiów”</strong> na dole ekranu startowego.</p>
+  <h3>Inne opcje</h3>
+  <ul>
+    <li>Pod planem są też <strong>statystyki czasu</strong> każdego akapitu.</li>
+    <li>Przyciskiem <strong>eksportuj</strong> <span class="key">⬇</span> na górze zapiszesz plan jako obraz lub PDF.</li>
+    <li>Żeby przygotować inne studium, naciśnij <strong>od nowa</strong> <span class="key">↻</span>.</li>
+  </ul>
 </section>
 
 <!-- 16 -->
@@ -319,11 +388,19 @@
     <dd>Sprawdź w Ustawienia → Alerty, czy są włączone, stuknij „Sprawdź dźwięk” i upewnij się, że telefon nie jest wyciszony.</dd>
     <dt>Jakie dane przechowuje aplikacja?</dt>
     <dd>Tylko twoje ustawienia i czasopisma, które zdecydujesz się zachować – i zawsze na twoim urządzeniu. Nie ma kont i żadne dane nie są wysyłane na serwer. Więcej informacji w <a href="/privacidad">polityce prywatności</a>.</dd>
+  
+    <dt>Gdzie zobaczę studia z innych tygodni?</dt>
+    <dd>W <strong>historii studiów</strong>: naciśnij „Historia studiów” po zakończeniu studium albo użyj linku na dole ekranu startowego.</dd>
+    <dt>Czy mogę usunąć raport?</dt>
+    <dd>Tak. W historii naciśnij kosz obok studium i potwierdź w „Usunąć?”.</dd>
+    <dt>Dlaczego zakończenie trwało dłużej niż w planie?</dt>
+    <dd>Jeśli po powtórce zostaje czas, zakończenie go wykorzystuje, żeby skończyć o czasie. Raport pokazuje to pod „Zakończenie”.</dd>
+  <!-- data-v4 -->
   </dl>
 </section>
 
 <footer>
-  <p>Minutnik Studium · Instrukcja obsługi · wersja 3.1, listopad 2026.<br>
+  <p>Minutnik Studium · Instrukcja obsługi · wersja 4.0, listopad 2026.<br>
   Bezpłatna, nieoficjalna aplikacja, niezwiązana z jw.org. Strona: <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> · <a href="/privacidad">Prywatność</a></p>
   <p class="no-print"><a href="/manual_usuario_pl.pdf">Pobierz tę instrukcję w PDF</a> · <a href="/">Wróć do aplikacji</a></p>
 </footer>

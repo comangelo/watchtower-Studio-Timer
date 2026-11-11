@@ -15,7 +15,7 @@
     <div>
       <h1>Handleiding<br>Studietimer</h1>
       <p>De Wachttorenstudie voorbereiden en op tijd leiden</p>
-      <p class="meta">Versie 3.1 · november 2026</p>
+      <p class="meta">Versie 4.0 · november 2026</p>
       <nav class="langbar" aria-label="Talen van de handleiding"><a href="/manual.html" lang="es">ES</a><a href="/manual-en.html" lang="en">EN</a><a href="/manual-de.html" lang="de">DE</a><a href="/manual-it.html" lang="it">IT</a><a href="/manual-fr.html" lang="fr">FR</a><a href="/manual-pt.html" lang="pt">PT</a><a href="/manual-pl.html" lang="pl">PL</a><a href="/manual-nl.html" lang="nl" class=on>NL</a><a href="/manual-ro.html" lang="ro">RO</a></nav>
     </div>
   </div>
@@ -46,11 +46,11 @@
     <li><a href="#avisos">Geluids- en trilmeldingen</a></li>
     <li><a href="#circuito">Bezoek van de kringopziener</a></li>
     <li><a href="#idiomas">Talen</a></li>
-    <li><a href="#final">Na afloop: statistieken en exporteren</a></li>
+    <li><a href="#final">Aan het eind: het rapport en de geschiedenis</a></li>
     <li><a href="#faq">Veelgestelde vragen</a></li>
   </ol>
 </nav>
-<p class="sample" style="font-style:normal;font-size:15px">Meteen beginnen? Bekijk de <a href="/guia-rapida-nl.html"><strong>snelstartgids in 7 stappen</strong></a>.</p>
+<p class="start">Wil je meteen beginnen? <a href="/guia-rapida-nl.html">Open de snelstartgids in 7 stappen</a></p>
 
 <!-- 1 -->
 <section id="que-es">
@@ -70,37 +70,46 @@
 <!-- 2 -->
 <section id="instalar">
   <h2><span class="n">2</span>De app installeren</h2>
-  <h3>Android</h3>
-  <p>Installeer hem via Google Play: zoek naar <strong>‘Temporizador de Estudio’</strong> of open deze link:<br>
-  <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio</a></p>
+  <p class="lead">Het pictogram van de app is een <strong>oranje boek met een gekleurde meter</strong> (groen, geel en rood) op een zwarte achtergrond.</p>
+  <div class="figs"><figure style="width:140px"><img src="/icon-192.png" alt="Pictogram van de app"><figcaption>Het pictogram</figcaption></figure></div>
+  <h3>Android-telefoon of -tablet</h3>
+  <ol class="steps">
+    <li>Open <strong>Google Play</strong>.</li>
+    <li>Open deze link: <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">openen in Google Play</a> (of zoek de app in Google Play).</li>
+    <li>Tik op <strong>Installeren</strong>.</li>
+  </ol>
+  <div class="tip"><p>Gebruik je de app al in de browser op een Android-toestel, dan zie je op het startscherm de groene kaart <strong>‘Gebruik je Android?’</strong> met de knop <strong>‘Openen in Google Play’</strong>.</p></div>
   <h3>iPhone en iPad</h3>
-  <p>Hij staat nog niet in de App Store, maar werkt net zo goed via het web en kan op het beginscherm gezet worden:</p>
+  <p>De app staat nog niet in de App Store, maar werkt net zo goed via internet:</p>
   <ol class="steps">
     <li>Open <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> in <strong>Safari</strong>.</li>
-    <li>Tik op de knop <strong>Deel</strong> (het vierkantje met de pijl omhoog).</li>
-    <li>Kies <strong>‘Zet op beginscherm’</strong> en tik op <strong>Voeg toe</strong>. Het oranje stopwatch-icoon verschijnt.</li>
+    <li>Tik op de knop <strong>Deel</strong> (het vierkantje met een pijl omhoog).</li>
+    <li>Kies <strong>‘Zet op beginscherm’</strong> en tik op <strong>Voeg toe</strong>. Het pictogram verschijnt op je scherm.</li>
   </ol>
-  <h3>Computer of tablet</h3>
-  <p>Open <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> in de browser. In Chrome en Edge kun je hem als app installeren via het installatie-icoon in de adresbalk.</p>
-  <div class="note blue"><p><strong>Updates:</strong> als er een nieuwe versie is, toont de app de melding <em>‘Er is een nieuwe versie van de app.’</em> met de knop <strong>Bijwerken</strong>. Hij werkt zichzelf nooit midden in een studie bij.</p></div>
+  <h3>Computer</h3>
+  <p>Open <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> in Chrome of Edge. Als je wilt, installeer je het als programma met het installatiepictogram in de adresbalk.</p>
+  <div class="note blue"><p><strong>Updates:</strong> als er een nieuwe versie is, verschijnt er een melding met de knop <strong>Bijwerken</strong>. De app wordt nooit vanzelf bijgewerkt midden in een studie.</p></div>
 </section>
 
 <!-- 3 -->
 <section id="inicio">
   <h2><span class="n">3</span>Het startscherm</h2>
-  <div class="figs">
-    <figure><img src="manual/nl/01-inicio.webp" alt="Startscherm" loading="lazy"><figcaption>Startscherm met het plan voor vandaag en het artikel van deze week.</figcaption></figure>
-  </div>
-  <p>Van boven naar beneden vind je:</p>
+  <p class="lead">Dit zie je als eerste als je de app opent. De rode nummers in de afbeelding laten zien waar alles staat.</p>
+  <div class="figs"><figure><img src="manual/nl/01-inicio.webp" alt="Startscherm" loading="lazy"><figcaption>Startscherm.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Knop met het boek:</strong> opent deze handleiding wanneer je maar wilt.</li>
+    <li><strong>‘Voor het eerst in de app?’:</strong> opent de <strong>snelstartgids</strong> of deze handleiding. Ken je de app al, tik dan op <strong>Verbergen</strong>.</li>
+    <li><strong>‘Gebruik je Android?’</strong> (alleen op Android-telefoons in de browser): installeer de app via Google Play. Ook deze kaart kun je verbergen.</li>
+  </ol>
+  <p>Verder naar beneden vind je:</p>
   <ul>
-    <li><strong>Bovenbalk:</strong> de <strong>taalkeuze</strong> (wereldbol met de code, bijvoorbeeld <span class="key">NL</span>) en de knop <strong>instellingen</strong> <span class="key">⚙</span>. Met een geladen artikel verschijnen ook de knoppen volledig scherm, <strong>exporteren</strong> en <strong>opnieuw beginnen</strong>.</li>
-    <li><strong>Plan voor vandaag:</strong> de huidige tijd, de tijd waarop de studie <strong>eindigt</strong> en de <strong>duur</strong>. Met <strong>‘Eindtijd wijzigen’</strong> stel je zelf de eindtijd in (bijvoorbeeld 20.28 uur); de app past de duur aan.</li>
-    <li><strong>Artikel van deze week:</strong> om het tijdschrift van jw.org te downloaden en in de app te openen (zie hoofdstuk 4).</li>
-    <li><strong>Bezoek van de kringopziener:</strong> een schakelaar voor de studie van 30 minuten zonder voorlezen van de paragrafen (hoofdstuk 13).</li>
-    <li><strong>Instellingen van de studie:</strong> een overzicht van je instellingen (duur, leessnelheid, tijd per antwoord en inleiding), met de link <strong>Wijzigen</strong>.</li>
-    <li><strong>Boekknop</strong> <span class="key">📖</span> (boven): opent deze handleiding op elk moment. Hij staat ook in de Instellingen en onderaan het startscherm.</li>
-    <li><strong>‘Voor het eerst in de app?’:</strong> een kaart met de <strong>snelstartgids</strong> en de handleiding. Als je de app kent, kun je hem weghalen met <strong>‘Verbergen’</strong>.</li>
+    <li><strong>Planning van vandaag:</strong> de huidige tijd, hoe laat de studie <strong>eindigt</strong> en hoe lang ze <strong>duurt</strong>.</li>
+    <li><strong>Artikel van deze week:</strong> om het tijdschrift te downloaden en te openen (onderdeel 4).</li>
+    <li><strong>Bezoek van de kringopziener:</strong> de schakelaar voor de studie van 30 minuten (onderdeel 13).</li>
+    <li><strong>Instellingen van de studie:</strong> een overzicht van je instellingen, met de link om te <strong>bewerken</strong>.</li>
+    <li>Helemaal onderaan de links naar <strong>privacy</strong>, de <strong>handleiding</strong>, <strong>Google Play</strong> en de <strong>geschiedenis van studies</strong>.</li>
   </ul>
+  <p>Bovenaan staan ook de <strong>taal</strong> (<span class="key">NL</span>) en de <strong>instellingen</strong> <span class="key">⚙</span>.</p>
 </section>
 
 <!-- 4 -->
@@ -119,67 +128,74 @@
 
 <!-- 5 -->
 <section id="resumen">
-  <h2><span class="n">5</span>Het overzicht en het studieplan</h2>
+  <h2><span class="n">5</span>Het overzicht en de planning van de studie</h2>
   <div class="figs">
-    <figure><img src="manual/nl/04-plan.webp" alt="Studieplan" loading="lazy"><figcaption>Bovenaan het plan voor vandaag, daaronder het overzicht van het artikel.</figcaption></figure>
-    <figure><img src="manual/nl/05-resumen.webp" alt="Overzicht van het artikel" loading="lazy"><figcaption>Overzicht met de verdeling van de 60 minuten.</figcaption></figure>
+    <figure><img src="manual/nl/04-plan.webp" alt="Planning van de studie" loading="lazy"><figcaption>De planning van vandaag.</figcaption></figure>
+    <figure><img src="manual/nl/05-resumen.webp" alt="Overzicht van het artikel" loading="lazy"><figcaption>Het overzicht van het artikel.</figcaption></figure>
   </div>
-  <p>Na het laden van het artikel zie je:</p>
+  <ol class="callouts">
+    <li><strong>Eindtijd:</strong> hoe laat de studie afloopt.</li>
+    <li><strong>‘Eindtijd wijzigen’:</strong> eindigt jullie vergadering op een andere tijd, vul die dan hier in. Alles wordt opnieuw berekend om op die tijd klaar te zijn.</li>
+  </ol>
+  <p>Daaronder laat het <strong>overzicht van het artikel</strong> zien:</p>
   <ul>
-    <li>De <strong>titel en week</strong> van het studieartikel.</li>
-    <li><strong>Inhoudslabels:</strong> aantal paragrafen, vragen, teksten om te lezen, afbeeldingen, voetnoten en herhalingsvragen.</li>
-    <li><strong>Verdeling van de tijd:</strong> een gekleurde balk die laat zien wat er naar <span class="chip b">Inleiding</span>, <strong>Lezen</strong>, <span class="chip o">Commentaren</span> en <span class="chip p">Slot</span> gaat. Ook zie je hoelang het artikel zou duren als het <em>zonder pauzes voorgelezen</em> werd.</li>
+    <li>de <strong>titel en de week</strong>;</li>
+    <li>hoeveel <strong>paragrafen, vragen, teksten, afbeeldingen en voetnoten</strong> het heeft;</li>
+    <li>een <strong>gekleurde balk</strong> met de verdeling van de tijd: <span class="chip b">Inleiding</span> <strong>Lezen</strong> <span class="chip o">Commentaren</span> <span class="chip p">Slot</span>.</li>
   </ul>
-  <p>Op de plankaart vertelt de melding <strong>‘Commentaren: X s per vraag’</strong> je hoeveel tijd er gemiddeld is om elke vraag te beantwoorden.</p>
-  <div class="note"><p>Is het artikel te lang voor de gekozen tijd, dan verschijnt de melding <strong>‘Past niet’</strong> met wat er tekortkomt. Je kunt de duur verlengen of in de Instellingen sneller laten lezen.</p></div>
+  <p>De planning toont ook <strong>‘Commentaren: X s per vraag’</strong>: de gemiddelde tijd om elke vraag te beantwoorden.</p>
+  <div class="note"><p>Past het artikel niet in de gekozen tijd, dan verschijnt er een waarschuwing. Je kunt de tijd verlengen of in de Instellingen sneller laten lezen.</p></div>
 </section>
 
 <!-- 6 -->
 <section id="parrafos">
   <h2><span class="n">6</span>De lijst met paragrafen</h2>
-  <div class="figs">
-    <figure><img src="manual/nl/06-parrafo-detalle.webp" alt="Paragraaf in detail" loading="lazy"><figcaption>Geopende paragraaf met de vraag, de afbeelding en de knop ‘Hier beginnen’.</figcaption></figure>
-  </div>
-  <p>Elke paragraaf heeft een regel met het <strong>nummer</strong>, de <strong>geplande tijd</strong> en ongeveer het <strong>tijdstip</strong> waarop die zou moeten eindigen. Gekleurde labels laten zien waar je rekening mee moet houden:</p>
+  <p class="lead">Elke paragraaf staat op een eigen regel met zijn <strong>nummer</strong> en zijn <strong>geplande tijd</strong>. Tik op een paragraaf om hem te openen.</p>
+  <div class="figs"><figure><img src="manual/nl/06-parrafo-detalle.webp" alt="Geopende paragraaf" loading="lazy"><figcaption>Een geopende paragraaf.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Gegevens van de paragraaf</strong>, elk met een eigen kleur: <strong>woorden</strong> (grijs), <strong>leestijd</strong> (blauw) en <strong>vragen</strong> (oranje). Tijdens de studie staat er ook het geplande <strong>tijdvak</strong> bij (paars).</li>
+    <li><strong>Geplande tijd voor de paragraaf:</strong> het totaal en hoe het is opgebouwd. De balk toont het <strong>lezen</strong> (blauw), de <strong>commentaren</strong> (oranje) en bij lange paragrafen een <strong>extra</strong> voor meer commentaren (groen). Samen geven de delen het totaal.</li>
+    <li><strong>‘Hier beginnen’:</strong> is de studie al begonnen (bijvoorbeeld als je te laat bent), dan ga je direct naar deze paragraaf.</li>
+  </ol>
+  <p>De gekleurde labels laten zien waar je op moet letten:</p>
   <table>
-    <tr><th>Label</th><th>Wat het betekent</th></tr>
-    <tr><td><span class="chip b">Jakobus 5:7, 8</span></td><td>Er is een <strong>tekst die gelezen wordt</strong>. De precieze verwijzing wordt getoond.</td></tr>
-    <tr><td><span class="chip p">Afbeelding</span></td><td>De vraag verwijst naar een <strong>afbeelding</strong> in het artikel (‘Zie ook afbeelding’).</td></tr>
+    <tr><th>Label</th><th>Betekenis</th></tr>
+    <tr><td><span class="chip b">Jakobus 5:7, 8</span></td><td>Er is een <strong>tekst om te lezen</strong>.</td></tr>
+    <tr><td><span class="chip p">Afbeelding</span></td><td>De vraag gaat over een <strong>afbeelding</strong> in het artikel.</td></tr>
     <tr><td><span class="chip o">Voetnoot</span></td><td>Er is een <strong>voetnoot</strong> om te bespreken.</td></tr>
-    <tr><td>★ Kernpunt</td><td>De vraag noemt een kader of een benadrukte gedachte tussen aanhalingstekens.</td></tr>
+    <tr><td>★ Kernpunt</td><td>De vraag noemt een kader of een gedachte tussen aanhalingstekens.</td></tr>
   </table>
-  <p>Tik op een paragraaf om hem te <strong>openen</strong>. Je ziet de woorden, de leestijd, de vraag en, als hij lang is, de extra tijd voor meer commentaren. Van daaruit:</p>
-  <ul>
-    <li><strong>‘Tekst van de paragraaf tonen’</strong> toont de volledige tekst. Met <strong>‘Alle teksten tonen’</strong> gaan ze allemaal tegelijk open. Dat is alleen bedoeld om de tijden voor te bereiden: gebruik om te leiden de originele publicatie (zie de waarschuwingen aan het begin).</li>
-    <li><strong>‘Hier beginnen’</strong> springt naar die paragraaf als de studie al bezig is (bijvoorbeeld als je te laat bent). De app rekent alsof alles daarvoor de geplande tijd heeft geduurd.</li>
-  </ul>
-  <p>Paragrafen met een gezamenlijke vraag (bijvoorbeeld <strong>‘5, 6.’</strong>) worden als groep behandeld, en de knop <strong>Volgende</strong> slaat de hele groep over.</p>
+  <p>Met <strong>‘Tekst van de paragraaf tonen’</strong> kun je de tekst lezen om de tijden voor te bereiden. Gebruik voor het leiden altijd de originele publicatie.</p>
+  <p>Paragrafen met dezelfde vraag (bijvoorbeeld <strong>‘5, 6’</strong>) horen bij elkaar, en de knop <strong>Volgende</strong> slaat de hele groep in één keer over.</p>
 </section>
 
 <!-- 7 -->
 <section id="conducir">
   <h2><span class="n">7</span>De studie stap voor stap leiden</h2>
-  <div class="note"><p><strong>Aanbevolen:</strong> open tijdens de studie de <strong>presentatiemodus</strong> (hoofdstuk 9). Hier wordt de algemene werking uitgelegd, die in beide weergaven hetzelfde is.</p></div>
-  <p>Op de telefoon staan de belangrijkste knoppen altijd onderaan, in de <strong>onderbalk</strong>:</p>
-  <ul>
-    <li><span class="chip b">VOLGENDE</span> de grote blauwe knop laat zien wat er komt: <em>Studie starten → Paragraaf 1 → Paragraaf 2 → … → Herhaling 1 → … → Slot → Studie afronden</em>.</li>
-    <li><span class="chip o">✋ COMMENTAAR</span> telt een commentaar op bij de teller. Aan het eind zie je hoeveel commentaren er bij elke paragraaf waren.</li>
-    <li><span class="key">⛶</span> opent de <strong>presentatiemodus</strong> (hoofdstuk 9).</li>
-  </ul>
+  <div class="tip"><p><strong>Aanbevolen:</strong> gebruik tijdens de studie de <strong>presentatiemodus</strong> (onderdeel 9). Hier leggen we uit hoe het werkt; in beide weergaven is het hetzelfde.</p></div>
+  <p>Op de telefoon staan de belangrijkste knoppen altijd <strong>onderaan</strong>:</p>
+  <div class="figs">
+    <figure><img src="manual/nl/06b-barra.webp" alt="Onderste balk" loading="lazy"><figcaption>Voor het begin.</figcaption></figure>
+    <figure><img src="manual/nl/09-parrafo-verde.webp" alt="Paragraaf bezig" loading="lazy"><figcaption>Tijdens een paragraaf.</figcaption></figure>
+  </div>
+  <ol class="callouts">
+    <li><strong>Grote blauwe knop:</strong> laat zien wat er daarna komt. Tik erop telkens als je naar een volgend deel gaat: <em>Studie starten → Paragraaf 1 → Paragraaf 2 → … → Herhaling → Slot → Studie afronden</em>.</li>
+    <li><strong>Zwarte knop</strong> <span class="key">⛶</span>: opent de <strong>presentatiemodus</strong>.</li>
+  </ol>
+  <p>Tijdens de paragrafen zie je ook de oranje knop <span class="chip o">✋ COMMENTAAR</span>: tik erop elke keer dat iemand commentaar geeft. Aan het eind zie je hoeveel commentaren er waren.</p>
   <ol class="steps">
-    <li><strong>Inleiding.</strong> Tik op <strong>‘Studie starten’</strong>. De algemene stopwatch en die van de inleiding beginnen (standaard 1 minuut). De kaart van de inleiding wordt blauw.</li>
-    <li><strong>Paragrafen.</strong> Tik aan het begin van elke paragraaf op <strong>Volgende</strong>. De kaart van de huidige paragraaf toont de verstreken tijd tegenover de geplande tijd (bijvoorbeeld <strong>1:11 / 5:43</strong>) en verandert van kleur (hoofdstuk 8).</li>
-    <li><strong>Herhalingsvragen.</strong> Na de laatste paragraaf komen de vragen uit het kader aan het eind, elk met een eigen tijd.</li>
-    <li><strong>Slot.</strong> Het laatste deel (standaard 1 minuut) om samen te vatten en de gemeente aan te moedigen.</li>
-    <li><strong>Studie afronden.</strong> De stopwatch stopt en de statistieken verschijnen.</li>
+    <li><strong>Inleiding.</strong> Tik op <strong>‘Studie starten’</strong>. De totale klok en de klok van de inleiding beginnen te lopen.</li>
+    <li><strong>Paragrafen.</strong> Tik op <strong>Volgende</strong> aan het begin van elke paragraaf. Je ziet de verstreken tijd en de geplande tijd (bijvoorbeeld <strong>1:11 / 5:43</strong>) en de kleur (onderdeel 8).</li>
+    <li><strong>Herhalingsvragen.</strong> Na de laatste paragraaf komen de vragen uit het kader aan het eind.</li>
+    <li><strong>Slot.</strong> Heeft de tijd uit de Instellingen (standaard 1 minuut). <strong>Is er na de herhaling tijd over, dan gebruikt het slot al die tijd</strong>, ook als dat meer is dan ingesteld.</li>
+    <li><strong>Studie afronden.</strong> De klok stopt en het <strong>rapport van de studie</strong> wordt bewaard (onderdeel 15).</li>
   </ol>
   <div class="figs">
-    <figure><img src="manual/nl/08-introduccion.webp" alt="Inleiding bezig" loading="lazy"><figcaption>De inleiding is bezig.</figcaption></figure>
-    <figure><img src="manual/nl/16-repaso.webp" alt="Herhalingsvragen" loading="lazy"><figcaption>Herhalingsvragen: de huidige is gemarkeerd met ‘NU’.</figcaption></figure>
-    <figure><img src="manual/nl/17-conclusion.webp" alt="Slot" loading="lazy"><figcaption>Het slot en daaronder de statistieken.</figcaption></figure>
+    <figure><img src="manual/nl/08-introduccion.webp" alt="Inleiding bezig" loading="lazy"><figcaption>Inleiding bezig.</figcaption></figure>
+    <figure><img src="manual/nl/16-repaso.webp" alt="Herhalingsvragen" loading="lazy"><figcaption>Herhalingsvragen.</figcaption></figure>
+    <figure><img src="manual/nl/17-conclusion.webp" alt="Slot" loading="lazy"><figcaption>Slot.</figcaption></figure>
   </div>
-  <p>Bovenaan op de plankaart kun je de studie <strong>pauzeren</strong> en <strong>hervatten</strong>. De melding <strong>‘Over m:ss afronden’</strong> herinnert je eraan hoeveel tijd er nog is tot de eindtijd.</p>
-  <div class="note blue"><p><strong>Het scherm blijft aan</strong> zolang de studie loopt, zodat je de telefoon niet hoeft aan te raken. Daarna schakelt de telefoon het scherm weer gewoon uit.</p></div>
+  <p>Met de knop <span class="key">⏸</span> in de planning kun je de klok <strong>pauzeren</strong> als er een onderbreking is.</p>
 </section>
 
 <!-- 8 -->
@@ -199,33 +215,52 @@
   </div>
   <p><strong>In de laatste 5 minuten van de studie</strong> hebben paragrafen en herhalingsvragen <strong>geen uitloop</strong>: ze gaan direct van groen naar rood, zodat de tijd voor het einde niet opgaat. Het <strong>slot houdt altijd zijn uitloop</strong>.</p>
   <p>Loopt een deel uit, geen probleem: als je op <strong>Volgende</strong> tikt, verdeelt de app de resterende tijd opnieuw over wat er nog komt, zodat je op tijd eindigt.</p>
+  <!-- next-btn -->
+  <h3>Ook de knop ‘Volgende’ waarschuwt je</h3>
+  <p>Als het lopende deel <strong>rood</strong> wordt, verandert ook de grote knop om verder te gaan, zodat je het meteen ziet:</p>
+  <div class="figs">
+    <figure class="wide" style="max-width:420px"><img src="manual/nl/11b-boton-rojo.webp" alt="" loading="lazy"><figcaption>Rood: de tijd is nog in te halen.</figcaption></figure>
+    <figure class="wide" style="max-width:420px"><img src="manual/nl/11c-boton-parpadea.webp" alt="" loading="lazy"><figcaption>Knipperend: ga nu meteen door.</figcaption></figure>
+  </div>
+  <ul>
+    <li><strong>Rode knop:</strong> het deel is over tijd, maar de tijd is in de rest nog in te halen. Begin de commentaren af te ronden.</li>
+    <li><strong>Rode, knipperende knop met ‘Ga nu meteen door!’:</strong> de tijd is niet meer in te halen (er zou minder dan 30 seconden overblijven voor elke resterende vraag, of je zit in de laatste 5 minuten). Ga zo snel mogelijk door.</li>
+  </ul>
+  <p>In de <strong>presentatiemodus</strong> wordt de knop <strong>wit met rode letters</strong>, zodat hij op elke achtergrondkleur goed te zien is.</p>
+  <div class="note"><p>Wil je dit niet, zet het dan uit via <strong>Instellingen → Meldingen → ‘Rode knop ‘Volgende’’</strong>.</p></div>
+  <!-- /next-btn -->
 </section>
 
 <!-- 9 -->
 <section id="presentacion">
   <h2><span class="n">9</span>De presentatiemodus</h2>
-  <div class="note"><p><strong>Dit is de aanbevolen manier om de studie te leiden.</strong> De presentatiemodus voorkomt afleiding: hij toont alleen wat je nodig hebt, de kleuren groen, geel en rood laten je in één oogopslag zien waar je bent en hoe je ervoor staat met de tijd, en de knoppen <strong>Volgende</strong> en <strong>Commentaar</strong> zijn groot en makkelijk te vinden en in te drukken.</p></div>
-  <p>Bedoeld om de telefoon of tablet op de lessenaar of het podium te leggen: alles groot en in één oogopslag te zien. Je opent hem met de knop <span class="key">⛶</span> in de onderbalk en sluit hem met <span class="key">✕</span> (of de toets <span class="key">Esc</span> op de computer). Op de telefoon sluit je hem ook met de knop <strong>‘terug’</strong>, zonder de app te verlaten.</p>
-  <p>Bovenaan staan de <strong>huidige tijd</strong>, het <strong>einde</strong> en de <strong>resterende</strong> tijd, met een voortgangsbalk. In het midden het huidige deel met stopwatch en kleur, en de labels (bijvoorbeeld <em>Lees Jakobus 5:7, 8</em>). Onderaan de knoppen <strong>Commentaar</strong> en <strong>Volgende</strong>.</p>
-  <p>Er zijn <strong>drie weergaven</strong>. Je wisselt ze met de knop <span class="key">▦</span> (rechtsboven) of via Instellingen → Scherm:</p>
+  <div class="tip"><p><strong>Dit is de aanbevolen manier om de studie te leiden.</strong> Je ziet alleen het belangrijkste, met grote letters en grote knoppen, en aan de kleur zie je in één oogopslag hoe je met de tijd zit.</p></div>
+  <p>Je opent hem met de knop <span class="key">⛶</span> onderaan en sluit hem met de <span class="key">✕</span> bovenaan (of met de knop <strong>‘terug’</strong> van je telefoon, zonder de app te verlaten).</p>
+  <div class="figs"><figure><img src="manual/nl/12-pres-panel.webp" alt="Presentatiemodus" loading="lazy"><figcaption>De presentatiemodus tijdens een paragraaf.</figcaption></figure></div>
+  <ol class="callouts yellow">
+    <li><strong>Gekleurd kader:</strong> waar je bent (bijvoorbeeld <em>Paragraaf 1</em>), de klok van dat deel en de geplande tijd. Groen, geel of rood afhankelijk van de tijd.</li>
+    <li><strong>Commentaar:</strong> tik erop elke keer dat iemand commentaar geeft.</li>
+    <li><strong>Volgende:</strong> gaat naar het volgende deel. De knop laat zien wat er komt.</li>
+  </ol>
+  <p>Bovenaan zie je de <strong>huidige tijd</strong>, hoe laat de studie <strong>eindigt</strong> en hoeveel tijd er nog <strong>over</strong> is.</p>
+  <p>Er zijn <strong>drie weergaven</strong>. Wissel met de knop <span class="key">▦</span> bovenaan of via Instellingen → Scherm:</p>
   <div class="figs">
-    <figure><img src="manual/nl/12-pres-panel.webp" alt="Weergave paneel" loading="lazy"><figcaption><strong>Overzichtelijk paneel:</strong> donker, met een groot gekleurd vlak.</figcaption></figure>
-    <figure><img src="manual/nl/13-pres-semaforo.webp" alt="Weergave verkeerslicht" loading="lazy"><figcaption><strong>Verkeerslicht:</strong> het hele scherm verandert van kleur.</figcaption></figure>
-    <figure><img src="manual/nl/14-pres-clasico.webp" alt="Klassieke weergave" loading="lazy"><figcaption><strong>Klassiek:</strong> de vertrouwde weergave, met de commentaarteller.</figcaption></figure>
+    <figure><img src="manual/nl/13-pres-semaforo.webp" alt="Weergave Verkeerslicht" loading="lazy"><figcaption><strong>Verkeerslicht:</strong> het hele scherm verandert van kleur.</figcaption></figure>
+    <figure><img src="manual/nl/14-pres-clasico.webp" alt="Weergave Klassiek" loading="lazy"><figcaption><strong>Klassiek:</strong> met de teller voor commentaren.</figcaption></figure>
   </div>
-  <p>In de presentatiemodus gaat de <strong>grote knop</strong> vanzelf door de studie: <em>Studie starten → Naar paragraaf 1 → Volgende paragraaf → Herhalingsvraag → Naar het slot → Studie afronden</em>. In de laatste 5 minuten verschijnt de melding dat het tijd is om af te ronden.</p>
+  <p>Aan het eind staat op de grote knop <strong>‘Studie afronden’</strong> en daarna <strong>‘Rapport bekijken’</strong>.</p>
 </section>
 
 <!-- 10 -->
 <section id="calculo">
   <h2><span class="n">10</span>Hoe de tijden worden berekend</h2>
   <ol class="steps">
-    <li><strong>Voorlezen van elke paragraaf</strong> = het aantal woorden ÷ de leessnelheid (150, 180 of 210 woorden per minuut), plus de <strong>tijd per antwoord</strong> die je in de Instellingen kiest (<strong>minimaal 30 seconden</strong>; standaard 35) voor elke tekst die gelezen wordt, afbeelding, voetnoot of kernpunt. Wil de studieleider meer tijd om ze te bespreken, dan kan hij de tijd per antwoord verhogen. Het voorlezen wordt nooit ingekort of verlengd.</li>
-    <li><strong>Inleiding en slot</strong> krijgen altijd de tijd die je in de Instellingen kiest (standaard elk 1 minuut).</li>
-    <li><strong>Commentaren:</strong> de resterende tijd wordt verdeeld over alle vragen (bij de paragrafen en in de herhaling). <strong>Lange of samengevoegde paragrafen</strong> krijgen naar verhouding iets meer tijd voor commentaren.</li>
-    <li><strong>Tijdens de studie:</strong> het plan van het huidige deel verandert niet. Elke keer dat je op <strong>Volgende</strong> tikt, wordt de rest opnieuw berekend met de tijd die er nog is tot de eindtijd, waarbij het slot gereserveerd blijft.</li>
+    <li><strong>Lezen van elke paragraaf</strong> = het aantal woorden ÷ de leessnelheid (150, 180 of 210 woorden per minuut), plus de <strong>tijd per antwoord</strong> (minstens 30 seconden; standaard 35) voor elke tekst, afbeelding, voetnoot of elk kernpunt.</li>
+    <li><strong>De inleiding en het slot</strong> hebben de tijd uit de Instellingen (standaard elk 1 minuut). <strong>Is er na de herhaling tijd over, dan krijgt het slot al die tijd.</strong></li>
+    <li><strong>Commentaren:</strong> de rest van de tijd wordt over alle vragen verdeeld. <strong>Lange of samengevoegde paragrafen</strong> krijgen iets meer (de groene ‘extra’ uit onderdeel 6).</li>
+    <li><strong>Tijdens de studie:</strong> elke keer dat je op <strong>Volgende</strong> tikt, wordt de rest opnieuw berekend om op tijd klaar te zijn.</li>
   </ol>
-  <div class="note"><p><strong>Voorbeeld</strong> (het artikel op de afbeeldingen): bij een studie van 60 minuten met 11 paragrafen en 21 vragen (18 bij de paragrafen en 3 in de herhaling), met de tijd per antwoord op 35 seconden, gaat ongeveer 7 minuten naar voorlezen, 2 minuten naar inleiding en slot en ongeveer 51 minuten naar commentaren: iets meer dan 2 minuten per vraag.</p></div>
+  <div class="note"><p><strong>Voorbeeld:</strong> bij een studie van 60 minuten met 11 paragrafen en 21 vragen gaat ongeveer 7 minuten naar het lezen, 2 naar de inleiding en het slot, en ongeveer 51 naar de commentaren: iets meer dan 2 minuten per vraag.</p></div>
 </section>
 
 <!-- 11 -->
@@ -258,6 +293,7 @@
     <li><strong>Nog 5 minuten:</strong> 5 minuten voor de eindtijd, met geluid, trillen en een bericht op het scherm.</li>
     <li><strong>Voor de herhaling:</strong> vul in hoeveel minuten voor de herhalingsvragen je een melding wilt (bijvoorbeeld 10 en 5). Laat leeg als je er geen wilt.</li>
     <li><strong>Weinig tijd voor de herhaling:</strong> als er minder dan 20 seconden per herhalingsvraag over is, waarschuwt de app je.</li>
+    <!-- next-btn --><li><strong>Rode knop ‘Volgende’:</strong> de knop om verder te gaan wordt rood als een deel over tijd gaat en knippert als de tijd niet meer in te halen is (onderdeel 8).</li><!-- /next-btn -->
   </ul>
   <p>Zorg dat de telefoon niet op stil staat als je de meldingen wilt horen. Trillen werkt op Android; op de iPhone hangt het van de browser af.</p>
 </section>
@@ -288,13 +324,46 @@
 
 <!-- 15 -->
 <section id="final">
-  <h2><span class="n">15</span>Na afloop: statistieken en exporteren</h2>
+  <h2><span class="n">15</span>Aan het eind: het rapport en de geschiedenis</h2>
+  <p class="lead">Als je op <strong>‘Studie afronden’</strong> tikt, bewaart de app een <strong>rapport</strong> met de tijden van elk deel. Zo zie je wat te lang duurde en kun je het de volgende keer beter doen.</p>
+  <div class="figs"><figure><img src="manual/nl/19-fin.webp" alt="Studie afgelopen" loading="lazy"><figcaption>Bovenaan verschijnt de kaart ‘Studie afgelopen’.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Rapport bekijken:</strong> opent het rapport van deze studie in een apart tabblad.</li>
+    <li><strong>Geschiedenis van studies:</strong> opent de lijst met alle bewaarde studies.</li>
+  </ol>
+  <h3>Het rapport</h3>
   <div class="figs">
-    <figure><img src="manual/nl/18-estadisticas.webp" alt="Statistieken" loading="lazy"><figcaption>Tijdstatistieken per paragraaf.</figcaption></figure>
+    <figure><img src="manual/nl/20-informe.webp" alt="Rapport van de studie" loading="lazy"><figcaption>Bovenkant van het rapport.</figcaption></figure>
+    <figure><img src="manual/nl/21-informe-tabla.webp" alt="Tabel van het rapport" loading="lazy"><figcaption>De tabel met elk deel.</figcaption></figure>
   </div>
-  <p>De <strong>tijdstatistieken</strong> vergelijken de <strong>geplande</strong> tijd met de <strong>werkelijke</strong> tijd voor de hele studie en voor elke paragraaf, met het verschil in groen (sneller) of rood (langzamer) en de getelde commentaren. Zo zie je welke delen uitliepen en kun je het de volgende keer aanpassen (bijvoorbeeld de leessnelheid).</p>
-  <p>Met de knop <strong>exporteren</strong> <span class="key">⬇</span> in de bovenbalk kun je het studieplan opslaan als <strong>afbeelding (PNG)</strong> of als <strong>pdf</strong>, om het af te drukken of te delen.</p>
-  <p>Om een nieuwe studie voor te bereiden, gebruik je de knop <strong>opnieuw beginnen</strong> <span class="key">↻</span>.</p>
+  <ol class="callouts">
+    <li><strong>Begin, einde en duur</strong> van de studie, met de geplande eindtijd en het totaal aantal commentaren.</li>
+    <li><strong>Samenvatting in één zin</strong>, bijvoorbeeld <em>‘3:57 eerder klaar dan gepland’</em> (groen) of <em>‘later’</em> (rood).</li>
+    <li><strong>Afdrukken / Opslaan als pdf:</strong> om op papier af te drukken of als bestand te bewaren.</li>
+  </ol>
+  <p>De <strong>tabel</strong> heeft een regel voor elk deel: inleiding, elke paragraaf, elke herhalingsvraag en het slot. Op elke regel zie je:</p>
+  <ul>
+    <li>het <strong>tijdstip</strong> waarop dat deel begon;</li>
+    <li><strong>Gepland</strong> en <strong>Werkelijk</strong>: de tijd uit de planning en de tijd die echt gebruikt is;</li>
+    <li><strong>Verschil:</strong> <span style="color:#15803d;font-weight:800">groen</span> als het sneller ging en <span style="color:#dc2626;font-weight:800">rood</span> als het langer duurde;</li>
+    <li><strong>✋</strong>: de gemarkeerde commentaren.</li>
+  </ul>
+  <p>Op de computer en bij het afdrukken zie je ook de <strong>woorden</strong> en <strong>vragen</strong> van elke paragraaf. Het afgedrukte rapport past op <strong>één pagina</strong>.</p>
+  <div class="figs"><figure class="wide"><img src="manual/nl/23-informe-pc.webp" alt="Rapport op de computer" loading="lazy"><figcaption>Het volledige rapport, zoals het op de computer of op papier staat.</figcaption></figure></div>
+  <h3>De geschiedenis van studies</h3>
+  <div class="figs"><figure><img src="manual/nl/22-historial.webp" alt="Geschiedenis van studies" loading="lazy"><figcaption>Lijst met bewaarde studies, onder het rapport.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Tik op een studie</strong> om het rapport te zien. Je ziet de datum, de tijden, de duur en de commentaren.</li>
+    <li><strong>Prullenbak:</strong> om een rapport te verwijderen. Tik één keer en bevestig met <strong>‘Verwijderen?’</strong>.</li>
+  </ol>
+  <div class="note blue"><p><strong>Rapporten worden alleen op dit toestel bewaard</strong>, nooit op internet. Er worden tot 100 studies bewaard. Als je de gegevens van de browser of de app wist, ben je de geschiedenis kwijt.</p></div>
+  <p>Je kunt de geschiedenis ook openen met de link <strong>‘Geschiedenis van studies’</strong> onderaan het startscherm.</p>
+  <h3>Andere opties</h3>
+  <ul>
+    <li>Onder de planning staan ook de <strong>tijdstatistieken</strong> van elke paragraaf.</li>
+    <li>Met de knop <strong>exporteren</strong> <span class="key">⬇</span> bovenaan kun je de planning als afbeelding of pdf bewaren.</li>
+    <li>Om een andere studie voor te bereiden, tik je op <strong>opnieuw</strong> <span class="key">↻</span>.</li>
+  </ul>
 </section>
 
 <!-- 16 -->
@@ -319,11 +388,19 @@
     <dd>Controleer via Instellingen → Meldingen of ze aan staan, tik op ‘Geluid testen’ en zorg dat de telefoon niet op stil staat.</dd>
     <dt>Welke gegevens bewaart de app?</dt>
     <dd>Alleen je instellingen en de tijdschriften die je wilt bewaren, en altijd op je eigen apparaat. Er zijn geen accounts en er worden geen gegevens naar een server gestuurd. Meer informatie in het <a href="/privacidad">privacybeleid</a>.</dd>
+  
+    <dt>Waar zie ik de studies van andere weken?</dt>
+    <dd>In de <strong>geschiedenis van studies</strong>: tik op ‘Geschiedenis van studies’ als een studie klaar is, of gebruik de link onderaan het startscherm.</dd>
+    <dt>Kan ik een rapport verwijderen?</dt>
+    <dd>Ja. Tik in de geschiedenis op de prullenbak naast de studie en bevestig met ‘Verwijderen?’.</dd>
+    <dt>Waarom duurde het slot langer dan gepland?</dt>
+    <dd>Is er na de herhaling tijd over, dan gebruikt het slot die tijd om precies op tijd te eindigen. Het rapport laat dat zien onder ‘Slot’.</dd>
+  <!-- data-v4 -->
   </dl>
 </section>
 
 <footer>
-  <p>Studietimer · Handleiding · versie 3.1, november 2026.<br>
+  <p>Studietimer · Handleiding · versie 4.0, november 2026.<br>
   Gratis, onofficiële app, niet verbonden met jw.org. Web: <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> · <a href="/privacidad">Privacy</a></p>
   <p class="no-print"><a href="/manual_usuario_nl.pdf">Deze handleiding als pdf downloaden</a> · <a href="/">Terug naar de app</a></p>
 </footer>

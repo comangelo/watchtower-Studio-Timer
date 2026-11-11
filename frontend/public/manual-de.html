@@ -15,7 +15,7 @@
     <div>
       <h1>Bedienungsanleitung<br>Studien-Timer</h1>
       <p>Das Wachtturm-Studium vorbereiten und pünktlich leiten</p>
-      <p class="meta">Version 3.1 · November 2026</p>
+      <p class="meta">Version 4.0 · November 2026</p>
       <nav class="langbar" aria-label="Sprachen der Anleitung"><a href="/manual.html" lang="es">ES</a><a href="/manual-en.html" lang="en">EN</a><a href="/manual-de.html" lang="de" class=on>DE</a><a href="/manual-it.html" lang="it">IT</a><a href="/manual-fr.html" lang="fr">FR</a><a href="/manual-pt.html" lang="pt">PT</a><a href="/manual-pl.html" lang="pl">PL</a><a href="/manual-nl.html" lang="nl">NL</a><a href="/manual-ro.html" lang="ro">RO</a></nav>
     </div>
   </div>
@@ -46,11 +46,11 @@
     <li><a href="#avisos">Ton- und Vibrationshinweise</a></li>
     <li><a href="#circuito">Besuch des Kreisaufsehers</a></li>
     <li><a href="#idiomas">Sprachen</a></li>
-    <li><a href="#final">Am Ende: Statistik und Export</a></li>
+    <li><a href="#final">Am Ende: Bericht und Verlauf</a></li>
     <li><a href="#faq">Häufige Fragen</a></li>
   </ol>
 </nav>
-<p class="sample" style="font-style:normal;font-size:15px">Gleich loslegen? Sieh dir die <a href="/guia-rapida-de.html"><strong>Kurzanleitung in 7 Schritten</strong></a> an.</p>
+<p class="start">Möchtest du gleich loslegen? <a href="/guia-rapida-de.html">Kurzanleitung in 7 Schritten öffnen</a></p>
 
 <!-- 1 -->
 <section id="que-es">
@@ -70,37 +70,46 @@
 <!-- 2 -->
 <section id="instalar">
   <h2><span class="n">2</span>Die App installieren</h2>
-  <h3>Android</h3>
-  <p>Installiere sie über Google Play: Suche nach <strong>„Temporizador de Estudio“</strong> oder öffne diesen Link:<br>
-  <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio</a></p>
+  <p class="lead">Das Symbol der App ist ein <strong>orangefarbenes Buch mit einer farbigen Anzeige</strong> (Grün, Gelb und Rot) auf schwarzem Hintergrund.</p>
+  <div class="figs"><figure style="width:140px"><img src="/icon-192.png" alt="Symbol der App"><figcaption>Das Symbol</figcaption></figure></div>
+  <h3>Android-Handy oder -Tablet</h3>
+  <ol class="steps">
+    <li>Öffne <strong>Google Play</strong>.</li>
+    <li>Öffne diesen Link: <a href="https://play.google.com/store/apps/details?id=com.comangelo.temporizadorestudio">in Google Play öffnen</a> (oder suche die App in Google Play).</li>
+    <li>Tippe auf <strong>Installieren</strong>.</li>
+  </ol>
+  <div class="tip"><p>Wenn du die App auf einem Android-Gerät schon im Browser nutzt, siehst du auf dem Startbildschirm die grüne Karte <strong>„Nutzt du Android?“</strong> mit der Taste <strong>„In Google Play öffnen“</strong>.</p></div>
   <h3>iPhone und iPad</h3>
-  <p>Im App Store ist sie noch nicht, aber sie funktioniert genauso im Web und lässt sich auf den Home-Bildschirm legen:</p>
+  <p>Im App Store gibt es sie noch nicht, aber im Web funktioniert sie genauso:</p>
   <ol class="steps">
     <li>Öffne <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> in <strong>Safari</strong>.</li>
     <li>Tippe auf <strong>Teilen</strong> (das Quadrat mit dem Pfeil nach oben).</li>
-    <li>Wähle <strong>„Zum Home-Bildschirm“</strong> und tippe auf <strong>Hinzufügen</strong>. Das orange Stoppuhr-Symbol erscheint.</li>
+    <li>Wähle <strong>„Zum Home-Bildschirm“</strong> und tippe auf <strong>Hinzufügen</strong>. Das Symbol erscheint auf deinem Bildschirm.</li>
   </ol>
-  <h3>Computer oder Tablet</h3>
-  <p>Öffne <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> im Browser. In Chrome und Edge kannst du sie über das Installationssymbol in der Adressleiste als App installieren.</p>
-  <div class="note blue"><p><strong>Updates:</strong> Gibt es eine neue Version, zeigt die App die Meldung <em>„Eine neue Version der App ist verfügbar.“</em> mit der Taste <strong>Aktualisieren</strong>. Sie aktualisiert sich nie mitten in einem Studium von selbst.</p></div>
+  <h3>Computer</h3>
+  <p>Öffne <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> in Chrome oder Edge. Wenn du möchtest, installiere sie über das Installationssymbol in der Adressleiste als Programm.</p>
+  <div class="note blue"><p><strong>Updates:</strong> Wenn es eine neue Version gibt, erscheint ein Hinweis mit der Taste <strong>Aktualisieren</strong>. Mitten im Studium aktualisiert sich die App nie von selbst.</p></div>
 </section>
 
 <!-- 3 -->
 <section id="inicio">
   <h2><span class="n">3</span>Der Startbildschirm</h2>
-  <div class="figs">
-    <figure><img src="manual/de/01-inicio.webp" alt="Startbildschirm" loading="lazy"><figcaption>Startbildschirm mit dem Plan für heute und dem Artikel dieser Woche.</figcaption></figure>
-  </div>
-  <p>Von oben nach unten findest du:</p>
+  <p class="lead">Das siehst du als Erstes, wenn du die App öffnest. Die roten Zahlen im Bild zeigen, wo was ist.</p>
+  <div class="figs"><figure><img src="manual/de/01-inicio.webp" alt="Startbildschirm" loading="lazy"><figcaption>Startbildschirm.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Buch-Taste:</strong> öffnet diese Anleitung jederzeit.</li>
+    <li><strong>„Zum ersten Mal hier?“:</strong> öffnet die <strong>Kurzanleitung</strong> oder diese Anleitung. Wenn du die App kennst, tippe auf <strong>Ausblenden</strong>.</li>
+    <li><strong>„Nutzt du Android?“</strong> (nur auf Android-Handys im Browser): die App aus Google Play installieren. Auch diese Karte lässt sich ausblenden.</li>
+  </ol>
+  <p>Weiter unten findest du:</p>
   <ul>
-    <li><strong>Obere Leiste:</strong> die <strong>Sprachauswahl</strong> (Globus mit Kürzel, zum Beispiel <span class="key">DE</span>) und die Taste <strong>Einstellungen</strong> <span class="key">⚙</span>. Mit geladenem Artikel kommen die Tasten für Vollbild, <strong>Exportieren</strong> und <strong>Neu beginnen</strong> hinzu.</li>
-    <li><strong>Plan für heute:</strong> die aktuelle Uhrzeit, wann das Studium <strong>endet</strong> und seine <strong>Dauer</strong>. Mit <strong>„Endzeit ändern“</strong> legst du die Endzeit selbst fest (zum Beispiel 20:28 Uhr); die App passt die Dauer an.</li>
-    <li><strong>Artikel dieser Woche:</strong> um die Zeitschrift von jw.org herunterzuladen und in der App zu öffnen (siehe Abschnitt 4).</li>
-    <li><strong>Besuch des Kreisaufsehers:</strong> ein Schalter für das 30-Minuten-Studium ohne Lesen der Absätze (Abschnitt 13).</li>
-    <li><strong>Einstellungen des Studiums:</strong> eine Zusammenfassung deiner Einstellungen (Dauer, Lesegeschwindigkeit, Zeit pro Antwort und Einleitung) mit dem Link <strong>Ändern</strong>.</li>
-    <li><strong>Buch-Taste</strong> <span class="key">📖</span> (oben): öffnet diese Anleitung jederzeit. Sie ist auch in den Einstellungen und unten auf dem Startbildschirm.</li>
-    <li><strong>„Zum ersten Mal hier?“:</strong> eine Karte mit der <strong>Kurzanleitung</strong> und der Anleitung. Wenn du die App kennst, kannst du sie mit <strong>„Ausblenden“</strong> entfernen.</li>
+    <li><strong>Plan für heute:</strong> die aktuelle Uhrzeit, wann das Studium <strong>endet</strong> und seine <strong>Dauer</strong>.</li>
+    <li><strong>Artikel dieser Woche:</strong> um die Zeitschrift herunterzuladen und zu öffnen (Abschnitt 4).</li>
+    <li><strong>Besuch des Kreisaufsehers:</strong> der Schalter für das 30-Minuten-Studium (Abschnitt 13).</li>
+    <li><strong>Einstellungen des Studiums:</strong> eine Übersicht deiner Einstellungen mit dem Link <strong>Ändern</strong>.</li>
+    <li>Ganz unten Links zu <strong>Datenschutz</strong>, <strong>Anleitung</strong>, <strong>Google Play</strong> und dem <strong>Verlauf der Studien</strong>.</li>
   </ul>
+  <p>Oben findest du außerdem die <strong>Sprache</strong> (<span class="key">DE</span>) und die <strong>Einstellungen</strong> <span class="key">⚙</span>.</p>
 </section>
 
 <!-- 4 -->
@@ -119,67 +128,74 @@
 
 <!-- 5 -->
 <section id="resumen">
-  <h2><span class="n">5</span>Die Übersicht und der Studienplan</h2>
+  <h2><span class="n">5</span>Übersicht und Plan des Studiums</h2>
   <div class="figs">
-    <figure><img src="manual/de/04-plan.webp" alt="Studienplan" loading="lazy"><figcaption>Oben der Plan für heute, darunter die Übersicht des Artikels.</figcaption></figure>
-    <figure><img src="manual/de/05-resumen.webp" alt="Übersicht des Artikels" loading="lazy"><figcaption>Übersicht mit der Aufteilung der 60 Minuten.</figcaption></figure>
+    <figure><img src="manual/de/04-plan.webp" alt="Plan des Studiums" loading="lazy"><figcaption>Der Plan für heute.</figcaption></figure>
+    <figure><img src="manual/de/05-resumen.webp" alt="Übersicht des Artikels" loading="lazy"><figcaption>Die Übersicht des Artikels.</figcaption></figure>
   </div>
-  <p>Nach dem Laden des Artikels siehst du:</p>
+  <ol class="callouts">
+    <li><strong>Endzeit:</strong> wann das Studium endet.</li>
+    <li><strong>„Endzeit ändern“:</strong> Wenn eure Zusammenkunft zu einer anderen Zeit endet, gib sie hier ein. Alles wird neu berechnet, damit du pünktlich fertig wirst.</li>
+  </ol>
+  <p>Darunter zeigt die <strong>Übersicht des Artikels</strong>:</p>
   <ul>
-    <li><strong>Titel und Woche</strong> des Studienartikels.</li>
-    <li><strong>Inhaltsetiketten:</strong> Anzahl der Absätze, Fragen, zu lesenden Bibeltexte, Bilder, Anmerkungen und Wiederholungsfragen.</li>
-    <li><strong>Aufteilung der Zeit:</strong> ein farbiger Balken mit dem Anteil für <span class="chip b">Einleitung</span>, <strong>Lesen</strong>, <span class="chip o">Kommentare</span> und <span class="chip p">Schluss</span>. Außerdem, wie lange der Artikel <em>ohne Pausen gelesen</em> dauern würde.</li>
+    <li>den <strong>Titel und die Woche</strong>,</li>
+    <li>wie viele <strong>Absätze, Fragen, Bibeltexte, Bilder und Fußnoten</strong> er hat,</li>
+    <li>einen <strong>farbigen Balken</strong> mit der Zeitverteilung: <span class="chip b">Einleitung</span> <strong>Lesen</strong> <span class="chip o">Kommentare</span> <span class="chip p">Schluss</span>.</li>
   </ul>
-  <p>Auf der Plankarte sagt dir <strong>„Kommentare: X s pro Frage“</strong>, wie viel Zeit im Schnitt für jede Frage bleibt.</p>
-  <div class="note"><p>Ist der Artikel für die gewählte Zeit zu lang, erscheint der Hinweis <strong>„Passt nicht“</strong> mit der fehlenden Zeit. Du kannst die Dauer verlängern oder in den Einstellungen schneller lesen lassen.</p></div>
+  <p>Im Plan steht außerdem <strong>„Kommentare: X s pro Frage“</strong>: die durchschnittliche Zeit für die Antworten auf jede Frage.</p>
+  <div class="note"><p>Wenn der Artikel nicht in die gewählte Zeit passt, erscheint ein Hinweis. Du kannst die Dauer verlängern oder in den Einstellungen schneller lesen lassen.</p></div>
 </section>
 
 <!-- 6 -->
 <section id="parrafos">
-  <h2><span class="n">6</span>Die Absatzliste</h2>
-  <div class="figs">
-    <figure><img src="manual/de/06-parrafo-detalle.webp" alt="Absatz im Detail" loading="lazy"><figcaption>Geöffneter Absatz mit Frage, Bild und der Taste „Hier beginnen“.</figcaption></figure>
-  </div>
-  <p>Jeder Absatz hat eine Zeile mit seiner <strong>Nummer</strong>, seiner <strong>geplanten Zeit</strong> und der ungefähren <strong>Uhrzeit</strong>, zu der er enden sollte. Farbige Etiketten zeigen, worauf du achten musst:</p>
+  <h2><span class="n">6</span>Die Liste der Absätze</h2>
+  <p class="lead">Jeder Absatz steht in einer Zeile mit seiner <strong>Nummer</strong> und seiner <strong>geplanten Zeit</strong>. Tippe auf einen Absatz, um ihn zu öffnen.</p>
+  <div class="figs"><figure><img src="manual/de/06-parrafo-detalle.webp" alt="Geöffneter Absatz" loading="lazy"><figcaption>Ein geöffneter Absatz.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Angaben zum Absatz</strong>, jede in ihrer Farbe: <strong>Wörter</strong> (grau), <strong>Lesezeit</strong> (blau) und <strong>Fragen</strong> (orange). Während des Studiums erscheint auch die geplante <strong>Uhrzeit</strong> (lila).</li>
+    <li><strong>Geplante Zeit für den Absatz:</strong> die Gesamtzeit und wie sie sich aufteilt. Der Balken zeigt das <strong>Lesen</strong> (blau), die <strong>Kommentare</strong> (orange) und bei langen Absätzen einen <strong>Zusatz</strong> für mehr Kommentare (grün). Die Teile ergeben zusammen die Gesamtzeit.</li>
+    <li><strong>„Hier beginnen“:</strong> Wenn das Studium schon begonnen hat (zum Beispiel weil du zu spät kommst), springst du zu diesem Absatz.</li>
+  </ol>
+  <p>Die farbigen Markierungen zeigen, worauf du achten musst:</p>
   <table>
-    <tr><th>Etikett</th><th>Bedeutung</th></tr>
-    <tr><td><span class="chip b">Jakobus 5:7, 8</span></td><td>Es gibt einen <strong>Bibeltext zum Lesen</strong>. Die genaue Stelle wird angezeigt.</td></tr>
-    <tr><td><span class="chip p">Bild</span></td><td>Die Frage verweist auf ein <strong>Bild</strong> im Artikel („Siehe auch Bild“).</td></tr>
-    <tr><td><span class="chip o">Anmerkung</span></td><td>Es gibt eine <strong>Fußnote</strong>, die besprochen wird.</td></tr>
-    <tr><td>★ Kernpunkt</td><td>Die Frage erwähnt einen Kasten oder einen hervorgehobenen Gedanken in Anführungszeichen.</td></tr>
+    <tr><th>Markierung</th><th>Bedeutung</th></tr>
+    <tr><td><span class="chip b">Jakobus 5:7, 8</span></td><td>Es gibt einen <strong>Bibeltext zum Lesen</strong>.</td></tr>
+    <tr><td><span class="chip p">Bild</span></td><td>Die Frage bezieht sich auf ein <strong>Bild</strong> im Artikel.</td></tr>
+    <tr><td><span class="chip o">Anmerkung</span></td><td>Es gibt eine <strong>Anmerkung</strong> zu besprechen.</td></tr>
+    <tr><td>★ Kernpunkt</td><td>Die Frage erwähnt einen Kasten oder einen Gedanken in Anführungszeichen.</td></tr>
   </table>
-  <p>Tippe auf einen Absatz, um ihn zu <strong>öffnen</strong>. Du siehst die Wörter, die Lesezeit, die Frage und bei langen Absätzen die Extrazeit für mehr Kommentare. Von dort aus:</p>
-  <ul>
-    <li><strong>„Text des Absatzes anzeigen“</strong> zeigt den ganzen Text. Mit <strong>„Alle Texte anzeigen“</strong> öffnen sich alle auf einmal. Das dient nur der Vorbereitung der Zeiten: Zum Leiten verwende die Originalpublikation (siehe die Hinweise am Anfang).</li>
-    <li><strong>„Hier beginnen“</strong> springt zu diesem Absatz, wenn das Studium schon läuft (zum Beispiel, wenn du zu spät kommst). Die App rechnet so, als hätte alles Vorherige die geplante Zeit gedauert.</li>
-  </ul>
-  <p>Absätze mit gemeinsamer Frage (zum Beispiel <strong>„5, 6.“</strong>) werden als Gruppe behandelt, und die Taste <strong>Weiter</strong> überspringt die ganze Gruppe.</p>
+  <p>Mit <strong>„Text des Absatzes anzeigen“</strong> kannst du den Text lesen, um die Zeiten vorzubereiten. Zum Leiten nimm immer die Originalveröffentlichung.</p>
+  <p>Absätze mit einer gemeinsamen Frage (zum Beispiel <strong>„5, 6“</strong>) gehören zusammen, und die Taste <strong>Weiter</strong> überspringt die ganze Gruppe.</p>
 </section>
 
 <!-- 7 -->
 <section id="conducir">
   <h2><span class="n">7</span>Das Studium Schritt für Schritt leiten</h2>
-  <div class="note"><p><strong>Empfohlen:</strong> Öffne während des Studiums den <strong>Präsentationsmodus</strong> (Abschnitt 9). Hier wird die allgemeine Funktionsweise erklärt, die in beiden Ansichten gleich ist.</p></div>
-  <p>Auf dem Handy sind die wichtigsten Tasten immer unten in der <strong>unteren Leiste</strong>:</p>
-  <ul>
-    <li><span class="chip b">WEITER</span> Die große blaue Taste zeigt, was als Nächstes kommt: <em>Studium beginnen → Absatz 1 → Absatz 2 → … → Wiederholung 1 → … → Schluss → Studium beenden</em>.</li>
-    <li><span class="chip o">✋ KOMMENTAR</span> zählt einen Kommentar. Am Ende siehst du, wie viele Beteiligungen es bei jedem Absatz gab.</li>
-    <li><span class="key">⛶</span> öffnet den <strong>Präsentationsmodus</strong> (Abschnitt 9).</li>
-  </ul>
+  <div class="tip"><p><strong>Empfohlen:</strong> Nutze während des Studiums den <strong>Präsentationsmodus</strong> (Abschnitt 9). Hier wird erklärt, wie es funktioniert; in beiden Ansichten ist es gleich.</p></div>
+  <p>Auf dem Handy sind die wichtigsten Tasten immer <strong>unten</strong>:</p>
+  <div class="figs">
+    <figure><img src="manual/de/06b-barra.webp" alt="Untere Leiste" loading="lazy"><figcaption>Vor dem Beginn.</figcaption></figure>
+    <figure><img src="manual/de/09-parrafo-verde.webp" alt="Absatz läuft" loading="lazy"><figcaption>Während eines Absatzes.</figcaption></figure>
+  </div>
+  <ol class="callouts">
+    <li><strong>Große blaue Taste:</strong> sie zeigt, was als Nächstes kommt. Tippe darauf, wann immer du zum nächsten Teil gehst: <em>Studium beginnen → Absatz 1 → Absatz 2 → … → Wiederholung → Schluss → Studium beenden</em>.</li>
+    <li><strong>Schwarze Taste</strong> <span class="key">⛶</span>: öffnet den <strong>Präsentationsmodus</strong>.</li>
+  </ol>
+  <p>Während der Absätze erscheint auch die orange Taste <span class="chip o">✋ KOMMENTAR</span>: Tippe darauf, wann immer jemand einen Kommentar gibt. Am Ende siehst du, wie viele Kommentare es gab.</p>
   <ol class="steps">
-    <li><strong>Einleitung.</strong> Tippe auf <strong>„Studium beginnen“</strong>. Die Gesamtuhr und die Uhr der Einleitung starten (standardmäßig 1 Minute). Die Karte der Einleitung wird blau.</li>
-    <li><strong>Absätze.</strong> Tippe zu Beginn jedes Absatzes auf <strong>Weiter</strong>. Die Karte des laufenden Absatzes zeigt die verstrichene und die geplante Zeit (zum Beispiel <strong>1:11 / 5:43</strong>) und ändert die Farbe (Abschnitt 8).</li>
-    <li><strong>Wiederholungsfragen.</strong> Nach dem letzten Absatz kommen die Fragen aus dem Kasten am Ende, jede mit ihrer Zeit.</li>
-    <li><strong>Schluss.</strong> Der letzte Teil (standardmäßig 1 Minute), um zusammenzufassen und die Versammlung zu ermuntern.</li>
-    <li><strong>Studium beenden.</strong> Die Uhr stoppt und die Statistik wird angezeigt.</li>
+    <li><strong>Einleitung.</strong> Tippe auf <strong>„Studium beginnen“</strong>. Die Gesamtuhr und die Uhr für die Einleitung starten.</li>
+    <li><strong>Absätze.</strong> Tippe zu Beginn jedes Absatzes auf <strong>Weiter</strong>. Du siehst die verbrauchte und die geplante Zeit (zum Beispiel <strong>1:11 / 5:43</strong>) und die Farbe (Abschnitt 8).</li>
+    <li><strong>Wiederholungsfragen.</strong> Nach dem letzten Absatz kommen die Fragen aus dem Kasten am Ende.</li>
+    <li><strong>Schluss.</strong> Er hat die Zeit aus den Einstellungen (standardmäßig 1 Minute). <strong>Bleibt nach der Wiederholung Zeit übrig, bekommt der Schluss die ganze übrige Zeit</strong>, auch wenn es mehr als eingestellt ist.</li>
+    <li><strong>Studium beenden.</strong> Die Uhr stoppt und der <strong>Bericht zum Studium</strong> wird gespeichert (Abschnitt 15).</li>
   </ol>
   <div class="figs">
     <figure><img src="manual/de/08-introduccion.webp" alt="Einleitung läuft" loading="lazy"><figcaption>Die Einleitung läuft.</figcaption></figure>
-    <figure><img src="manual/de/16-repaso.webp" alt="Wiederholungsfragen" loading="lazy"><figcaption>Wiederholungsfragen: die aktuelle ist mit „JETZT“ markiert.</figcaption></figure>
-    <figure><img src="manual/de/17-conclusion.webp" alt="Schluss" loading="lazy"><figcaption>Schluss und darunter die Statistik.</figcaption></figure>
+    <figure><img src="manual/de/16-repaso.webp" alt="Wiederholungsfragen" loading="lazy"><figcaption>Wiederholungsfragen.</figcaption></figure>
+    <figure><img src="manual/de/17-conclusion.webp" alt="Schluss" loading="lazy"><figcaption>Schluss.</figcaption></figure>
   </div>
-  <p>Oben auf der Plankarte kannst du das Studium <strong>pausieren</strong> und <strong>fortsetzen</strong>. Die Meldung <strong>„In m:ss muss es enden“</strong> erinnert dich daran, wie viel Zeit bis zum Ende bleibt.</p>
-  <div class="note blue"><p><strong>Der Bildschirm bleibt an</strong>, solange das Studium läuft, damit du das Handy nicht berühren musst. Danach schaltet das Telefon den Bildschirm wieder wie gewohnt aus.</p></div>
+  <p>Mit der Taste <span class="key">⏸</span> im Plan kannst du die Uhr bei einer Unterbrechung <strong>anhalten</strong>.</p>
 </section>
 
 <!-- 8 -->
@@ -199,33 +215,52 @@
   </div>
   <p><strong>In den letzten 5 Minuten des Studiums</strong> haben Absätze und Wiederholungsfragen <strong>keine Nachspielzeit</strong>: Sie springen direkt von Grün auf Rot, damit die Zeit für das Ende nicht verloren geht. Der <strong>Schluss behält immer seine Nachspielzeit</strong>.</p>
   <p>Dauert ein Teil länger, ist das kein Problem: Beim Tippen auf <strong>Weiter</strong> verteilt die App die restliche Zeit neu, damit du pünktlich endest.</p>
+  <!-- next-btn -->
+  <h3>Auch der „Weiter“-Knopf warnt dich</h3>
+  <p>Wenn der laufende Teil <strong>rot</strong> wird, ändert sich auch der große Knopf zum Weitergehen, damit du es sofort siehst:</p>
+  <div class="figs">
+    <figure class="wide" style="max-width:420px"><img src="manual/de/11b-boton-rojo.webp" alt="" loading="lazy"><figcaption>Rot: Die Zeit lässt sich noch aufholen.</figcaption></figure>
+    <figure class="wide" style="max-width:420px"><img src="manual/de/11c-boton-parpadea.webp" alt="" loading="lazy"><figcaption>Blinkend: jetzt weitergehen.</figcaption></figure>
+  </div>
+  <ul>
+    <li><strong>Roter Knopf:</strong> Der Teil ist überzogen, aber die Zeit lässt sich im Rest noch aufholen. Beginne, die Kommentare abzuschließen.</li>
+    <li><strong>Roter, blinkender Knopf mit „Jetzt weitergehen!“:</strong> Die Zeit lässt sich nicht mehr aufholen (es blieben weniger als 30 Sekunden für jede restliche Frage, oder du bist in den letzten 5 Minuten). Geh so bald wie möglich weiter.</li>
+  </ul>
+  <p>Im <strong>Präsentationsmodus</strong> wird der Knopf <strong>weiß mit roter Schrift</strong>, damit er auf jeder Hintergrundfarbe gut zu sehen ist.</p>
+  <div class="note"><p>Wenn du das nicht möchtest, schalte es unter <strong>Einstellungen → Hinweise → „Roter ‚Weiter‘-Knopf“</strong> aus.</p></div>
+  <!-- /next-btn -->
 </section>
 
 <!-- 9 -->
 <section id="presentacion">
   <h2><span class="n">9</span>Der Präsentationsmodus</h2>
-  <div class="note"><p><strong>So wird das Studium am besten geleitet.</strong> Der Präsentationsmodus vermeidet Ablenkungen: Er zeigt nur das Nötige, die Farben Grün, Gelb und Rot sagen dir auf einen Blick, wo du stehst und wie du in der Zeit liegst, und die Tasten <strong>Weiter</strong> und <strong>Kommentar</strong> sind groß und leicht zu finden und zu drücken.</p></div>
-  <p>Gedacht, um Handy oder Tablet auf das Pult oder die Bühne zu legen: alles groß und auf einen Blick erkennbar. Er wird mit der Taste <span class="key">⛶</span> in der unteren Leiste geöffnet und mit <span class="key">✕</span> geschlossen (am Computer auch mit <span class="key">Esc</span>). Auf dem Handy schließt ihn auch die <strong>„Zurück“</strong>-Taste, ohne die App zu verlassen.</p>
-  <p>Oben stehen die <strong>Uhrzeit</strong>, das <strong>Ende</strong> und die <strong>verbleibende</strong> Zeit mit einem Fortschrittsbalken. In der Mitte der laufende Teil mit Stoppuhr und Farbe und die Etiketten (zum Beispiel <em>Lesen: Jakobus 5:7, 8</em>). Unten die Tasten <strong>Kommentar</strong> und <strong>Weiter</strong>.</p>
-  <p>Es gibt <strong>drei Designs</strong>. Du wechselst sie mit der Design-Taste <span class="key">▦</span> (oben rechts) oder unter Einstellungen → Anzeige:</p>
+  <div class="tip"><p><strong>So leitest du das Studium am besten.</strong> Er zeigt nur das Nötige, mit großer Schrift und großen Tasten, und die Farbe zeigt dir auf einen Blick, wie du in der Zeit liegst.</p></div>
+  <p>Du öffnest ihn mit der Taste <span class="key">⛶</span> unten und schließt ihn mit dem <span class="key">✕</span> oben (oder mit der <strong>Zurück</strong>-Taste des Handys, ohne die App zu verlassen).</p>
+  <div class="figs"><figure><img src="manual/de/12-pres-panel.webp" alt="Präsentationsmodus" loading="lazy"><figcaption>Präsentationsmodus während eines Absatzes.</figcaption></figure></div>
+  <ol class="callouts yellow">
+    <li><strong>Farbiges Feld:</strong> wo du gerade bist (zum Beispiel <em>Absatz 1</em>), die Uhr für diesen Teil und seine geplante Zeit. Grün, gelb oder rot, je nachdem, wie du in der Zeit liegst.</li>
+    <li><strong>Kommentar:</strong> Tippe darauf, wann immer jemand einen Kommentar gibt.</li>
+    <li><strong>Weiter:</strong> geht zum nächsten Teil. Die Taste zeigt, was als Nächstes kommt.</li>
+  </ol>
+  <p>Oben siehst du die <strong>aktuelle Uhrzeit</strong>, wann das Studium <strong>endet</strong> und wie viel Zeit <strong>bleibt</strong>.</p>
+  <p>Es gibt <strong>drei Ansichten</strong>. Du wechselst sie mit der Taste <span class="key">▦</span> oben oder unter Einstellungen → Anzeige:</p>
   <div class="figs">
-    <figure><img src="manual/de/12-pres-panel.webp" alt="Design Übersichtlich" loading="lazy"><figcaption><strong>Übersichtlich:</strong> dunkel, mit einem großen farbigen Feld.</figcaption></figure>
-    <figure><img src="manual/de/13-pres-semaforo.webp" alt="Design Ampel" loading="lazy"><figcaption><strong>Ampel:</strong> der ganze Bildschirm wechselt die Farbe.</figcaption></figure>
-    <figure><img src="manual/de/14-pres-clasico.webp" alt="Design Klassisch" loading="lazy"><figcaption><strong>Klassisch:</strong> das bisherige Design mit dem Beteiligungszähler.</figcaption></figure>
+    <figure><img src="manual/de/13-pres-semaforo.webp" alt="Ampel-Ansicht" loading="lazy"><figcaption><strong>Ampel:</strong> der ganze Bildschirm wechselt die Farbe.</figcaption></figure>
+    <figure><img src="manual/de/14-pres-clasico.webp" alt="Klassische Ansicht" loading="lazy"><figcaption><strong>Klassisch:</strong> mit dem Kommentarzähler.</figcaption></figure>
   </div>
-  <p>Im Präsentationsmodus führt die <strong>große Taste</strong> von selbst durch das Studium: <em>Studium beginnen → Zu Absatz 1 → Nächster Absatz → Wiederholungsfrage → Zum Schluss → Studium beenden</em>. In den letzten 5 Minuten erscheint der Hinweis, dass es Zeit ist, zu enden.</p>
+  <p>Am Ende zeigt die große Taste <strong>„Studium beenden“</strong> und danach <strong>„Bericht ansehen“</strong>.</p>
 </section>
 
 <!-- 10 -->
 <section id="calculo">
-  <h2><span class="n">10</span>Wie die Zeiten berechnet werden</h2>
+  <h2><span class="n">10</span>So werden die Zeiten berechnet</h2>
   <ol class="steps">
-    <li><strong>Lesen jedes Absatzes</strong> = seine Wörter ÷ Lesegeschwindigkeit (150, 180 oder 210 Wörter pro Minute) plus die in den Einstellungen gewählte <strong>Zeit pro Antwort</strong> (<strong>mindestens 30 Sekunden</strong>, standardmäßig 35) für jeden zu lesenden Bibeltext, jedes Bild, jede Anmerkung und jeden Kernpunkt. Möchte der Studienleiter mehr Zeit dafür, erhöht er die Zeit pro Antwort. Das Lesen wird nie gekürzt oder verlängert.</li>
-    <li><strong>Einleitung und Schluss</strong> bekommen immer die Zeit, die du in den Einstellungen festlegst (standardmäßig je 1 Minute).</li>
-    <li><strong>Kommentare:</strong> Die übrige Zeit wird auf alle Fragen verteilt (Absatz- und Wiederholungsfragen). <strong>Lange oder zusammengefasste Absätze</strong> bekommen je nach Länge etwas mehr Zeit für Kommentare.</li>
-    <li><strong>Während des Studiums:</strong> Der Plan des laufenden Teils ändert sich nicht. Bei jedem Tippen auf <strong>Weiter</strong> wird der Rest mit der Zeit bis zum Ende neu berechnet, wobei der Schluss reserviert bleibt.</li>
+    <li><strong>Lesen jedes Absatzes</strong> = seine Wörter ÷ Lesegeschwindigkeit (150, 180 oder 210 Wörter pro Minute), dazu die <strong>Zeit pro Antwort</strong> (mindestens 30 Sekunden, standardmäßig 35) für jeden Bibeltext, jedes Bild, jede Fußnote und jeden wichtigen Gedanken.</li>
+    <li><strong>Einleitung und Schluss</strong> haben die Zeit aus den Einstellungen (standardmäßig je 1 Minute). <strong>Bleibt nach der Wiederholung Zeit übrig, bekommt der Schluss die ganze übrige Zeit.</strong></li>
+    <li><strong>Kommentare:</strong> Die übrige Zeit wird auf alle Fragen verteilt. <strong>Lange oder zusammengefasste Absätze</strong> bekommen etwas mehr (der grüne „Zusatz“ aus Abschnitt 6).</li>
+    <li><strong>Während des Studiums:</strong> Jedes Mal, wenn du auf <strong>Weiter</strong> tippst, wird der Rest neu berechnet, damit du pünktlich fertig wirst.</li>
   </ol>
-  <div class="note"><p><strong>Beispiel</strong> (der Artikel auf den Bildern): Bei einem 60-Minuten-Studium mit 11 Absätzen und 21 Fragen (18 zu den Absätzen und 3 zur Wiederholung) und 35 Sekunden Zeit pro Antwort entfallen etwa 7 Minuten aufs Lesen, 2 Minuten auf Einleitung und Schluss und etwa 51 Minuten auf Kommentare – also gut 2 Minuten pro Frage.</p></div>
+  <div class="note"><p><strong>Beispiel:</strong> Bei einem 60-Minuten-Studium mit 11 Absätzen und 21 Fragen entfallen etwa 7 Minuten aufs Lesen, 2 auf Einleitung und Schluss und etwa 51 auf Kommentare: gut 2 Minuten pro Frage.</p></div>
 </section>
 
 <!-- 11 -->
@@ -258,6 +293,7 @@
     <li><strong>Noch 5 Minuten:</strong> 5 Minuten vor der Endzeit, mit Ton, Vibration und einer Meldung auf dem Bildschirm.</li>
     <li><strong>Vor der Wiederholung:</strong> Gib an, wie viele Minuten vor den Wiederholungsfragen du einen Hinweis möchtest (zum Beispiel 10 und 5). Leer lassen, wenn du keinen willst.</li>
     <li><strong>Wenig Zeit für die Wiederholung:</strong> Bleiben weniger als 20 Sekunden pro Wiederholungsfrage, warnt dich die App.</li>
+    <!-- next-btn --><li><strong>Roter „Weiter“-Knopf:</strong> Der Knopf zum Weitergehen wird rot, wenn ein Teil überzogen ist, und blinkt, wenn sich die Zeit nicht mehr aufholen lässt (Abschnitt 8).</li><!-- /next-btn -->
   </ul>
   <p>Achte darauf, dass das Handy nicht stumm geschaltet ist, wenn du die Hinweise hören willst. Vibration funktioniert unter Android; auf dem iPhone hängt sie vom Browser ab.</p>
 </section>
@@ -288,13 +324,46 @@
 
 <!-- 15 -->
 <section id="final">
-  <h2><span class="n">15</span>Am Ende: Statistik und Export</h2>
+  <h2><span class="n">15</span>Am Ende: Bericht und Verlauf</h2>
+  <p class="lead">Wenn du auf <strong>„Studium beenden“</strong> tippst, speichert die App einen <strong>Bericht</strong> mit den Zeiten jedes Teils. So siehst du, was zu lang war, und kannst es beim nächsten Mal besser machen.</p>
+  <div class="figs"><figure><img src="manual/de/19-fin.webp" alt="Studium beendet" loading="lazy"><figcaption>Oben erscheint die Karte „Studium beendet“.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Bericht ansehen:</strong> öffnet den Bericht dieses Studiums in einem eigenen Tab.</li>
+    <li><strong>Verlauf der Studien:</strong> öffnet die Liste aller gespeicherten Studien.</li>
+  </ol>
+  <h3>Der Bericht</h3>
   <div class="figs">
-    <figure><img src="manual/de/18-estadisticas.webp" alt="Statistik" loading="lazy"><figcaption>Zeitstatistik pro Absatz.</figcaption></figure>
+    <figure><img src="manual/de/20-informe.webp" alt="Bericht zum Studium" loading="lazy"><figcaption>Oberer Teil des Berichts.</figcaption></figure>
+    <figure><img src="manual/de/21-informe-tabla.webp" alt="Tabelle des Berichts" loading="lazy"><figcaption>Die Tabelle mit jedem Teil.</figcaption></figure>
   </div>
-  <p>Die <strong>Zeitstatistik</strong> vergleicht die <strong>geplante</strong> mit der <strong>tatsächlichen</strong> Zeit für das ganze Studium und jeden Absatz, mit der Differenz in Grün (schneller) oder Rot (langsamer) und den gezählten Kommentaren. So siehst du, welche Teile länger gedauert haben, und kannst beim nächsten Mal anpassen (zum Beispiel die Lesegeschwindigkeit).</p>
-  <p>Mit der Taste <strong>Exportieren</strong> <span class="key">⬇</span> in der oberen Leiste kannst du den Studienplan als <strong>Bild (PNG)</strong> oder als <strong>PDF</strong> speichern, um ihn zu drucken oder zu teilen.</p>
-  <p>Für ein neues Studium nutze die Taste <strong>Neu beginnen</strong> <span class="key">↻</span>.</p>
+  <ol class="callouts">
+    <li><strong>Beginn, Ende und Dauer</strong> des Studiums, mit dem geplanten Ende und der Zahl der Kommentare.</li>
+    <li><strong>Zusammenfassung in einem Satz</strong>, zum Beispiel <em>„3:57 vor der geplanten Zeit beendet“</em> (grün) oder <em>„nach“</em> (rot).</li>
+    <li><strong>Drucken / PDF speichern:</strong> um ihn auf Papier zu drucken oder als Datei zu speichern.</li>
+  </ol>
+  <p>Die <strong>Tabelle</strong> hat für jeden Teil eine Zeile: Einleitung, jeder Absatz, jede Wiederholungsfrage und Schluss. In jeder Zeile siehst du:</p>
+  <ul>
+    <li>die <strong>Uhrzeit</strong>, zu der dieser Teil begann,</li>
+    <li><strong>Geplant</strong> und <strong>Tatsächlich</strong>: die geplante und die wirklich verbrauchte Zeit,</li>
+    <li><strong>Differenz:</strong> <span style="color:#15803d;font-weight:800">grün</span>, wenn es schneller ging, und <span style="color:#dc2626;font-weight:800">rot</span>, wenn es länger dauerte,</li>
+    <li><strong>✋</strong>: die markierten Kommentare.</li>
+  </ul>
+  <p>Am Computer und beim Drucken erscheinen auch die <strong>Wörter</strong> und <strong>Fragen</strong> jedes Absatzes. Der gedruckte Bericht passt auf <strong>eine Seite</strong>.</p>
+  <div class="figs"><figure class="wide"><img src="manual/de/23-informe-pc.webp" alt="Bericht am Computer" loading="lazy"><figcaption>Der vollständige Bericht, wie er am Computer oder gedruckt aussieht.</figcaption></figure></div>
+  <h3>Der Verlauf der Studien</h3>
+  <div class="figs"><figure><img src="manual/de/22-historial.webp" alt="Verlauf der Studien" loading="lazy"><figcaption>Liste der gespeicherten Studien unter dem Bericht.</figcaption></figure></div>
+  <ol class="callouts">
+    <li><strong>Tippe auf ein Studium</strong>, um seinen Bericht zu sehen. Datum, Uhrzeiten, Dauer und Kommentare werden angezeigt.</li>
+    <li><strong>Papierkorb:</strong> um einen Bericht zu löschen. Einmal tippen und dann mit <strong>„Löschen?“</strong> bestätigen.</li>
+  </ol>
+  <div class="note blue"><p><strong>Berichte werden nur auf diesem Gerät gespeichert</strong>, nie im Internet. Es werden bis zu 100 Studien aufbewahrt. Wenn du die Daten des Browsers oder der App löschst, geht der Verlauf verloren.</p></div>
+  <p>Du kannst den Verlauf auch über den Link <strong>„Verlauf der Studien“</strong> unten auf dem Startbildschirm öffnen.</p>
+  <h3>Weitere Möglichkeiten</h3>
+  <ul>
+    <li>Unter dem Plan findest du auch die <strong>Zeitstatistik</strong> für jeden Absatz.</li>
+    <li>Mit der Taste <strong>Exportieren</strong> <span class="key">⬇</span> oben kannst du den Plan als Bild oder PDF speichern.</li>
+    <li>Für ein neues Studium tippe auf <strong>Neu beginnen</strong> <span class="key">↻</span>.</li>
+  </ul>
 </section>
 
 <!-- 16 -->
@@ -319,11 +388,19 @@
     <dd>Prüfe unter Einstellungen → Hinweise, ob sie aktiviert sind, tippe auf „Ton testen“ und achte darauf, dass das Handy nicht stumm ist.</dd>
     <dt>Welche Daten speichert die App?</dt>
     <dd>Nur deine Einstellungen und die Zeitschriften, die du behalten möchtest – und immer auf deinem Gerät. Es gibt keine Konten und es werden keine Daten an einen Server gesendet. Mehr dazu in der <a href="/privacidad">Datenschutzerklärung</a>.</dd>
+  
+    <dt>Wo sehe ich die Studien anderer Wochen?</dt>
+    <dd>Im <strong>Verlauf der Studien</strong>: Tippe am Ende eines Studiums auf „Verlauf der Studien“ oder nutze den Link unten auf dem Startbildschirm.</dd>
+    <dt>Kann ich einen Bericht löschen?</dt>
+    <dd>Ja. Tippe im Verlauf auf den Papierkorb neben dem Studium und bestätige mit „Löschen?“.</dd>
+    <dt>Warum dauerte der Schluss länger als geplant?</dt>
+    <dd>Bleibt nach der Wiederholung Zeit übrig, bekommt der Schluss diese Zeit, damit du pünktlich fertig wirst. Der Bericht zeigt das unter „Schluss“.</dd>
+  <!-- data-v4 -->
   </dl>
 </section>
 
 <footer>
-  <p>Studien-Timer · Bedienungsanleitung · Version 3.1, November 2026.<br>
+  <p>Studien-Timer · Bedienungsanleitung · Version 4.0, November 2026.<br>
   Kostenlose, inoffizielle App ohne Verbindung zu jw.org. Web: <a href="https://temporizador-estudio.vercel.app">temporizador-estudio.vercel.app</a> · <a href="/privacidad">Datenschutz</a></p>
   <p class="no-print"><a href="/manual_usuario_de.pdf">Diese Anleitung als PDF herunterladen</a> · <a href="/">Zurück zur App</a></p>
 </footer>
