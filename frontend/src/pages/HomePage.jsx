@@ -1471,6 +1471,7 @@ export default function HomePage() {
                         isTimerRunning={isTimerRunning && !isInIntroductionMode}
                         isCurrentParagraph={isCurrentGroup}
                         segmentElapsed={isCurrentGroup ? segmentElapsed : undefined}
+                        extraItemSeconds={analysisResult.extra_item_seconds}
                         isCompletedParagraph={isCompletedGroup || isInReviewMode}
                         elapsedTime={elapsedTime}
                         onGoToNext={goToNextGroup}
