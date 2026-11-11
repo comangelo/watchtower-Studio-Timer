@@ -26,8 +26,10 @@ import {
   Globe, ChevronDown as ChevronDownLv,
   BookOpen,
   Compass,
+  Smartphone,
 } from "lucide-react";
 import { manualUrl, guideUrl } from "@/utils/manual";
+import { playStoreUrl, suggestPlayStoreApp } from "@/utils/donation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -114,6 +116,8 @@ export default function HomePage() {
   const [soundEnabled, setSoundEnabled] = useLocalStorage('pdfTimer_soundEnabled', true);
   // Tarjeta «¿Primera vez?» con el manual; el botón del manual de la cabecera queda siempre.
   const [manualCardHidden, setManualCardHidden] = useLocalStorage('pdfTimer_manualCardHidden', false);
+  const [playCardHidden, setPlayCardHidden] = useLocalStorage('pdfTimer_playCardHidden', false);
+  const showPlayCard = !playCardHidden && suggestPlayStoreApp();
   const [vibrationEnabled, setVibrationEnabled] = useLocalStorage('pdfTimer_vibrationEnabled', true);
   const [alertTimes, setAlertTimes] = useLocalStorage('pdfTimer_alertTimes', { firstAlert: 0, secondAlert: 0 });
   // Aviso cuando faltan 5 minutos para la hora de fin (modo presentación y alerta)
@@ -1152,6 +1156,40 @@ export default function HomePage() {
                       onClick={() => setManualCardHidden(true)}
                       className={`ml-1 text-xs font-semibold ${darkMode ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-700'}`}
                       data-testid="manual-card-hide"
+                    >
+                      {t('manualHide')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {showPlayCard && (
+              <div
+                className={`rounded-2xl border shadow-sm p-4 flex items-start gap-3 ${
+                  darkMode ? 'bg-zinc-800 border-emerald-500/40' : 'bg-emerald-50 border-emerald-200'
+                }`}
+                data-testid="play-card"
+              >
+                <span className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center bg-emerald-600 text-white">
+                  <Smartphone className="w-5 h-5" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className={`font-semibold text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{t('playCardTitle')}</p>
+                  <p className={`text-xs mt-0.5 leading-relaxed ${darkMode ? 'text-zinc-400' : 'text-slate-600'}`}>{t('playCardText')}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <a
+                      href={playStoreUrl('banner')}
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold"
+                      data-testid="play-card-open"
+                    >
+                      <Download className="w-4 h-4" /> {t('playCardOpen')}
+                    </a>
+                    <button
+                      onClick={() => setPlayCardHidden(true)}
+                      className={`ml-1 text-xs font-semibold ${darkMode ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-700'}`}
+                      data-testid="play-card-hide"
                     >
                       {t('manualHide')}
                     </button>
