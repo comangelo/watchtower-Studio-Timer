@@ -28,3 +28,18 @@ export function isPlayStoreApp() {
 export function donationAvailable() {
   return !!DONATION_URL && !isPlayStoreApp();
 }
+
+/** Enlace a la ficha de Google Play (con origen «web» para verlo en las estadísticas de Play Console). */
+export function playStoreUrl(medium = 'banner') {
+  const ref = encodeURIComponent(`utm_source=web&utm_medium=${medium}`);
+  return `https://play.google.com/store/apps/details?id=${PLAY_PACKAGE}&referrer=${ref}`;
+}
+
+/** true en un móvil o tableta Android que usa la web (no la app de Google Play). */
+export function suggestPlayStoreApp() {
+  try {
+    return /Android/i.test(navigator.userAgent) && !isPlayStoreApp();
+  } catch {
+    return false;
+  }
+}
