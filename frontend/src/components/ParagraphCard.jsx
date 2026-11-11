@@ -38,6 +38,7 @@ export function ParagraphCard({
   commentCount = 0,
   finalStretch = false, // últimos 5 minutos del estudio: sin prórroga
   segmentElapsed, // segundos del tramo en curso (reloj central): no se reinicia al pausar
+  extraItemSeconds, // segundos por cada texto, imagen, nota o idea importante (del análisis)
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [showContent, setShowContent] = useState(true); // Individual content visibility
@@ -70,6 +71,21 @@ export function ParagraphCard({
   const hasImageContent = allQuestions.some(q => q.content_type === 'image' || q.content_type === 'both');
   const hasScriptureContent = allQuestions.some(q => q.content_type === 'scripture' || q.content_type === 'both');
   const hasNoteContent = allQuestions.some(q => q.content_type === 'note');
+  // Elementos extra (visita del superintendente: su tiempo sustituye a la lectura)
+  const extraItems = [
+    { key: 'tbScripture', n: allQuestions.filter(q => q.content_type === 'scripture' || q.content_type === 'both').length },
+    { key: 'tbImage', n: allQuestions.filter(q => q.content_type === 'image' || q.content_type === 'both').length },
+    { key: 'tbNote', n: allQuestions.filter(q => q.content_type === 'note').length },
+    { key: 'tbHighlight', n: allQuestions.reduce((sum, q) => sum + (q.highlight_contents || []).length, 0) },
+  ].filter(x => x.n > 0);
+  const extraItemCount = extraItems.reduce((sum, x) => sum + x.n, 0);
+  // En la visita del superintendente todo el tiempo de «lectura» son estos elementos;
+  // en el estudio normal se separa la lectura del párrafo de lo que suman estos elementos
+  const extraPerItem = paragraph.skip_reading
+    ? (extraItemCount > 0 ? totalReadingTime / extraItemCount : 0)
+    : (extraItemSeconds || 0);
+  const splitExtras = extraItemCount > 0 && (paragraph.skip_reading || extraItemSeconds > 0);
+  const paragraphReadingOnly = paragraph.skip_reading ? 0 : Math.max(0, totalReadingTime - extraItemCount * extraPerItem);
   // Citas concretas que hay que leer ("lee Efesios 4:25-27", "léelo", …)
   const scriptureRefs = [...new Set(allParagraphs.flatMap(p => p.scripture_refs || []))];
   // "Ideas importantes": textos entre comillas en el paréntesis de la pregunta
@@ -258,7 +274,7 @@ export function ParagraphCard({
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-sky-900/60 text-sky-200' : 'bg-sky-50 text-sky-800'}`}>
               <BookOpen className="w-3 h-3" /> {paragraph.skip_reading
                 ? (totalReadingTime > 0 ? t('noReadingWithExtras', { time: formatTimeText(totalReadingTime) }) : t('noReading'))
-                : t('readingTime', { time: formatTimeText(totalReadingTime) })}
+                : t('readingTime', { time: formatTimeText(Math.round(splitExtras ? paragraphReadingOnly : totalReadingTime)) })}
             </span>
             {hasQuestions && (
               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-orange-950/60 text-orange-200' : 'bg-orange-50 text-orange-800'}`}>
@@ -293,7 +309,19 @@ export function ParagraphCard({
                   {extra >= 5 && <span className="bg-emerald-400" style={{ width: pct(extra) }} />}
                 </div>
                 <div className={`mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
-                  <span><span className="inline-block w-2 h-2 rounded-full bg-sky-400 mr-1" />{t('tbReading')}: <b>{formatTimeText(reading)}</b></span>
+                  {splitExtras ? (
+                    // Se dice qué ocupa ese tiempo: lectura del párrafo, textos, imágenes, notas…
+                    <>
+                      {!paragraph.skip_reading && paragraphReadingOnly > 0 && (
+                        <span data-testid={`tb-reading-${paragraph.number}`}><span className="inline-block w-2 h-2 rounded-full bg-sky-400 mr-1" />{t('tbParagraphReading')}: <b>{formatTimeText(Math.round(paragraphReadingOnly))}</b></span>
+                      )}
+                      {extraItems.map(({ key, n }) => (
+                        <span key={key} data-testid={`tb-${key}-${paragraph.number}`}><span className="inline-block w-2 h-2 rounded-full bg-sky-400 mr-1" />{tn(key, n)}: <b>{formatTimeText(Math.round(n * extraPerItem))}</b></span>
+                      ))}
+                    </>
+                  ) : !paragraph.skip_reading && (
+                    <span><span className="inline-block w-2 h-2 rounded-full bg-sky-400 mr-1" />{t(!paragraph.skip_reading && extraItemSeconds > 0 ? 'tbParagraphReading' : 'tbReading')}: <b>{formatTimeText(reading)}</b></span>
+                  )}
                   {hasQuestions && (
                     <span><span className="inline-block w-2 h-2 rounded-full bg-orange-400 mr-1" />{t('tbComments')}: <b>{formatTimeText(comments)}</b>
                       {realQuestionCount > 1 && perQ > 0 && <span className={muted}> {t('tbPerQuestion', { time: formatTimeText(perQ) })}</span>}
