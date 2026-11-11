@@ -595,26 +595,40 @@ export default function HomePage() {
   }, [analysisResult, totalDurationSeconds]);
 
   // Timer effect
+  // Los segundos se cuentan con el reloj real (Date.now), no sumando 1 en cada tic:
+  // si el móvil apaga la pantalla o el navegador frena la página, al volver se
+  // recupera el tiempo transcurrido. Lo que falta se calcula siempre contra la hora de fin.
+  const lastTickRef = useRef(0);
+  const endTimeRef = useRef(null);
+  endTimeRef.current = endTime;
+  const runningRef = useRef(false);
+  runningRef.current = isTimerRunning;
   useEffect(() => {
-    if (isTimerRunning) {
-      timerRef.current = setInterval(() => {
-        setElapsedTime(prev => prev + 1);
-        setRemainingTime(prev => Math.max(0, prev - 1));
-        setSegmentTimer(prev => prev.key === segmentKeyRef.current
-          ? { key: prev.key, elapsed: prev.elapsed + 1 }
-          : { key: segmentKeyRef.current, elapsed: 1 });
-      }, 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    }
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+    if (!startTime) return undefined;
+    lastTickRef.current = Date.now();
+    const tick = () => {
+      const now = Date.now();
+      const d = Math.floor((now - lastTickRef.current) / 1000);
+      if (d <= 0) return;
+      lastTickRef.current += d * 1000;
+      const end = endTimeRef.current ? new Date(endTimeRef.current).getTime() : null;
+      // La hora de fin es fija: lo que falta sigue bajando aunque el cronómetro esté en pausa
+      if (end) setRemainingTime(Math.max(0, Math.round((end - now) / 1000)));
+      if (!runningRef.current) return; // en pausa no cuentan el total ni el tramo
+      if (!end) setRemainingTime(prev => Math.max(0, prev - d));
+      setElapsedTime(prev => prev + d);
+      setSegmentTimer(prev => prev.key === segmentKeyRef.current
+        ? { key: prev.key, elapsed: prev.elapsed + d }
+        : { key: segmentKeyRef.current, elapsed: d });
     };
-  }, [isTimerRunning]);
+    timerRef.current = setInterval(tick, 250);
+    const onVisible = () => { if (document.visibilityState === 'visible') tick(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [startTime]);
 
   // File upload handler
   const handleFileUpload = async (file, targetDate = jwWeekMonday) => {
@@ -783,6 +797,8 @@ export default function HomePage() {
 
   // Start review questions mode
   const startReviewMode = useCallback(() => {
+    // Solo se entra una vez: un segundo toque no debe reiniciar la primera pregunta
+    if (studyPhase === 'review' || studyPhase === 'conclusion' || studyPhase === 'finished') return;
     // El último párrafo o grupo termina al empezar el repaso: también cuenta en las estadísticas
     if (studyPhase === 'paragraphs') recordCurrentGroupStats();
     else closeLogSegment();
@@ -812,21 +828,25 @@ export default function HomePage() {
 
   // Start closing words mode
   const startClosingWordsMode = useCallback(() => {
+    if (studyPhase === 'conclusion' || studyPhase === 'finished') return;
     if (studyPhase === 'paragraphs') recordCurrentGroupStats();
     else if (studyPhase === 'review') closeReviewSegment();
     else closeLogSegment();
-    // Si sobran minutos, la conclusión los aprovecha aunque supere lo configurado
-    const target = Math.max(closingWordsDuration, Math.round(remainingTime || 0));
-    openLogSegment({ kind: 'conclusion', estimated: closingWordsDuration, extraTime: target - closingWordsDuration });
+    // La conclusión dura exactamente lo que queda hasta la hora de fin:
+    // si sobran minutos los aprovecha, y si queda menos de lo configurado se acorta
+    const endMs = endTime ? new Date(endTime).getTime() : null;
+    const target = Math.max(0, Math.round(endMs ? (endMs - Date.now()) / 1000 : (remainingTime || 0)));
+    openLogSegment({ kind: 'conclusion', estimated: closingWordsDuration, extraTime: Math.max(0, target - closingWordsDuration) });
     setConclusionTarget(target);
     setIsInClosingWordsMode(true);
     setClosingWordsStartTime(Date.now());
     setPresentationPhase('conclusion'); // Sync presentation phase
     toast.success("Iniciando Palabras de Conclusión");
-  }, [studyPhase, recordCurrentGroupStats, closeReviewSegment, closeLogSegment, openLogSegment, closingWordsDuration, remainingTime]);
+  }, [studyPhase, recordCurrentGroupStats, closeReviewSegment, closeLogSegment, openLogSegment, closingWordsDuration, remainingTime, endTime]);
 
   // Finish study
   const finishStudy = useCallback(() => {
+    if (studyPhase === 'finished') return;
     if (studyPhase === 'paragraphs') recordCurrentGroupStats();
     else if (studyPhase === 'review') closeReviewSegment();
     else closeLogSegment();
@@ -1372,6 +1392,7 @@ export default function HomePage() {
                 isActive={isInIntroductionMode}
                 isTimerRunning={isTimerRunning}
                 estimatedTime={introductionDuration}
+                segmentElapsed={studyPhase === 'intro' ? segmentElapsed : undefined}
                 onStartIntroduction={startIntroductionMode}
                 onGoToFirstParagraph={goToFirstParagraph}
                 hasStarted={startTime !== null}
@@ -1431,7 +1452,8 @@ export default function HomePage() {
                     const firstIndex = group.indices[0];
                     const lastIndex = group.indices[group.indices.length - 1];
                     // Show as current if timer is running and we're on this group
-                    const isCurrentGroup = isTimerRunning && !isInIntroductionMode && group.indices.includes(currentManualParagraph);
+                    // (solo durante los párrafos: al pasar al repaso el último deja de estar en curso)
+                    const isCurrentGroup = isTimerRunning && studyPhase === 'paragraphs' && group.indices.includes(currentManualParagraph);
                     // Show as completed if we've passed this group (regardless of timer state)
                     const isCompletedGroup = !isInIntroductionMode && (lastIndex < currentManualParagraph
                       || studyPhase === 'review' || studyPhase === 'conclusion' || studyPhase === 'finished');
@@ -1448,6 +1470,7 @@ export default function HomePage() {
                         onStartFromHere={() => startFromParagraph(firstIndex)}
                         isTimerRunning={isTimerRunning && !isInIntroductionMode}
                         isCurrentParagraph={isCurrentGroup}
+                        segmentElapsed={isCurrentGroup ? segmentElapsed : undefined}
                         isCompletedParagraph={isCompletedGroup || isInReviewMode}
                         elapsedTime={elapsedTime}
                         onGoToNext={goToNextGroup}
@@ -1489,7 +1512,9 @@ export default function HomePage() {
                   onNextReviewQuestion={goToNextReviewQuestion}
                   onStartClosingWords={startClosingWordsMode}
                   isInClosingWordsMode={isInClosingWordsMode}
-                  closingWordsDuration={isInClosingWordsMode && conclusionTarget ? conclusionTarget : closingWordsDuration}
+                  closingWordsDuration={isInClosingWordsMode && conclusionTarget != null ? conclusionTarget : closingWordsDuration}
+                  pastEnd={remainingTime <= 0}
+                  segmentElapsed={studyPhase === 'review' || studyPhase === 'conclusion' ? segmentElapsed : undefined}
                   onFinishStudy={finishStudy}
                   overtimeAlertEnabled={overtimeAlertEnabled}
                   soundEnabled={soundEnabled}
@@ -1526,6 +1551,8 @@ export default function HomePage() {
           canComment={studyPhase === 'paragraphs' || studyPhase === 'review'}
           onAddComment={handleAddComment}
           totalComments={totalComments}
+          phaseComments={phaseComments}
+          phaseLabel={studyPhase === 'review' ? t('pmThisQuestion') : t('pmThisParagraph')}
           onPresentation={enterPresentationMode}
           darkMode={darkMode}
           urgency={nextUrgency}
@@ -1608,6 +1635,7 @@ export default function HomePage() {
           onFinishStudy={finishStudy}
           onOpenReport={lastReportId ? () => openReport(lastReportId) : undefined}
           urgency={nextUrgency}
+          startTime={startTime}
         />
       )}
     </div>
