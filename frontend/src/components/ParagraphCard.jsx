@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { isRealQuestion } from "../utils/timePlan";
-import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff, Image, BookOpen, Star, Hand } from "lucide-react";
+import { Play, Clock, ArrowRight, ChevronDown, ChevronUp, MessageCircleQuestion, Check, Timer, Eye, EyeOff, Image, BookOpen, Star, Hand, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { t, tn } from "@/i18n";
@@ -248,27 +248,64 @@ export function ParagraphCard({
             </p>
           )}
 
-          {/* Datos del párrafo */}
-          <div className={`flex flex-wrap items-center gap-1.5 mt-2 text-xs ${muted}`}>
-            <span>{t('words', { n: totalWordCount })}</span>
-            <span>·</span>
-            <span>{paragraph.skip_reading
-              ? (totalReadingTime > 0 ? t('noReadingWithExtras', { time: formatTimeText(totalReadingTime) }) : t('noReading'))
-              : t('readingTime', { time: formatTimeText(totalReadingTime) })}</span>
-            {hasQuestions && <><span>·</span><span>{tn('questions', realQuestionCount)}</span></>}
-            {paragraphTimes.extraCommentSeconds >= 5 && (
-              <span className={`px-2 py-0.5 rounded-full font-medium ${darkMode ? 'bg-emerald-900 text-emerald-200' : 'bg-emerald-50 text-emerald-700'}`}
-                title={t('longParagraphHint')} data-testid={`extra-comments-${paragraph.number}`}>
-                {t('extraComments', { time: formatTimeText(paragraphTimes.extraCommentSeconds) })}
+          {/* Datos del párrafo: cada dato con su color */}
+          <div className="flex flex-wrap items-center gap-1.5 mt-2 text-xs font-medium">
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-zinc-700 text-zinc-200' : 'bg-slate-100 text-slate-700'}`} data-testid={`data-words-${paragraph.number}`}>
+              <FileText className="w-3 h-3" /> {t('words', { n: totalWordCount })}
+            </span>
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-sky-900/60 text-sky-200' : 'bg-sky-50 text-sky-800'}`}>
+              <BookOpen className="w-3 h-3" /> {paragraph.skip_reading
+                ? (totalReadingTime > 0 ? t('noReadingWithExtras', { time: formatTimeText(totalReadingTime) }) : t('noReading'))
+                : t('readingTime', { time: formatTimeText(totalReadingTime) })}
+            </span>
+            {hasQuestions && (
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-orange-950/60 text-orange-200' : 'bg-orange-50 text-orange-800'}`}>
+                <MessageCircleQuestion className="w-3 h-3" /> {tn('questions', realQuestionCount)}
               </span>
             )}
             {startTime && paragraphTimes.start && !isCompletedParagraph && (
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-zinc-700' : 'bg-slate-100'}`}>
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-violet-900/60 text-violet-200' : 'bg-violet-50 text-violet-800'}`}>
                 <Clock className="w-3 h-3" /> {formatClockTime(paragraphTimes.start)} – {formatClockTime(paragraphTimes.end)}
                 {!paragraphTimes.isCompleted && adjustedQuestionTime && Math.abs(adjustedQuestionTime - plannedQuestionTime) >= 1 && <b className="text-orange-500 ml-1">{t('adjusted')}</b>}
               </span>
             )}
           </div>
+
+          {/* Reparto del tiempo previsto: lectura + comentarios (+ extra si el párrafo es largo) */}
+          {estimatedTime > 0 && (() => {
+            const reading = Math.max(0, Math.round(totalReadingTime));
+            const extra = Math.max(0, Math.round(paragraphTimes.extraCommentSeconds || 0));
+            const comments = Math.max(0, Math.round(estimatedTime) - reading - (extra >= 5 ? extra : 0));
+            const perQ = Math.round(isTimerRunning && adjustedQuestionTime ? adjustedQuestionTime : plannedQuestionTime);
+            const total = Math.max(1, reading + comments + (extra >= 5 ? extra : 0));
+            const pct = (v) => `${Math.max(0, (v / total) * 100)}%`;
+            return (
+              <div className={`mt-2.5 rounded-xl p-2.5 ${darkMode ? 'bg-zinc-900/60' : 'bg-slate-50 border border-slate-200'}`} data-testid={`time-breakdown-${paragraph.number}`}>
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className={`text-[11px] font-bold uppercase tracking-wide ${muted}`}>{t('tbTitle')}</span>
+                  <span className={`text-sm font-black tabular-nums ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{formatTimeText(Math.round(estimatedTime))}</span>
+                </div>
+                <div className="flex h-2 rounded-full overflow-hidden mt-1.5 bg-slate-200">
+                  <span className="bg-sky-400" style={{ width: pct(reading) }} />
+                  <span className="bg-orange-400" style={{ width: pct(comments) }} />
+                  {extra >= 5 && <span className="bg-emerald-400" style={{ width: pct(extra) }} />}
+                </div>
+                <div className={`mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
+                  <span><span className="inline-block w-2 h-2 rounded-full bg-sky-400 mr-1" />{t('tbReading')}: <b>{formatTimeText(reading)}</b></span>
+                  {hasQuestions && (
+                    <span><span className="inline-block w-2 h-2 rounded-full bg-orange-400 mr-1" />{t('tbComments')}: <b>{formatTimeText(comments)}</b>
+                      {realQuestionCount > 1 && perQ > 0 && <span className={muted}> {t('tbPerQuestion', { time: formatTimeText(perQ) })}</span>}
+                    </span>
+                  )}
+                  {extra >= 5 && (
+                    <span title={t('longParagraphHint')} data-testid={`extra-comments-${paragraph.number}`}>
+                      <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1" />{t('tbExtra')}: <b>+{formatTimeText(extra)}</b>
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Ideas importantes */}
           {highlightTexts.length > 0 && (
@@ -286,7 +323,6 @@ export function ParagraphCard({
             <div className="mt-3 space-y-1.5" data-testid={`questions-${paragraph.number}`}>
               {allQuestions.map((q, qIndex) => {
                 const isQuestion = isRealQuestion(q);
-                const displayTime = isTimerRunning && adjustedQuestionTime ? adjustedQuestionTime : plannedQuestionTime;
                 const hasExtraContent = q.parenthesis_content && q.parenthesis_content.length > 0;
                 return (
                   <div key={qIndex}
@@ -299,7 +335,6 @@ export function ParagraphCard({
                       {q.text}
                       {hasExtraContent && <span className={`ml-1 ${muted}`}>({q.parenthesis_content})</span>}
                     </span>
-                    {isQuestion && <span className="text-xs text-orange-500 shrink-0 tabular-nums">+{formatTimeCompact(displayTime)}</span>}
                   </div>
                 );
               })}

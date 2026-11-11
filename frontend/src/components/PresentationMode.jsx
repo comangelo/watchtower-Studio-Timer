@@ -83,6 +83,7 @@ export default function PresentationMode({
   onNextReviewQuestion,
   onStartClosingWords,
   onFinishStudy,
+  onOpenReport,
   layout: layoutProp = DEFAULT_LAYOUT,
   onLayoutChange,
 }) {
@@ -216,6 +217,7 @@ export default function PresentationMode({
         else onNextReviewQuestion?.();
         break;
       case PHASES.CONCLUSION: onFinishStudy?.(); break;
+      case PHASES.FINISHED: onOpenReport?.(); break;
       default: break;
     }
   };
@@ -239,6 +241,7 @@ export default function PresentationMode({
           ? { kicker: t("next"), main: t("conclusion") }
           : { kicker: t("next"), main: t("reviewN", { n: currentReviewQuestion + 2 }) };
       case PHASES.CONCLUSION: return { kicker: null, main: t("finishStudy") };
+      case PHASES.FINISHED: return onOpenReport ? { kicker: null, main: t("viewReport") } : null;
       default: return null;
     }
   })();

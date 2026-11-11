@@ -11,7 +11,7 @@ const weekChipLabel = (label) => {
 
 // Número del artículo (sale del nombre del archivo, p. ej. "Articulo_de_Estudio_83_…")
 // y título (el impreso en el PDF; si no se encontró, el del nombre del archivo).
-function getArticleHeading(analysisResult) {
+export function getArticleHeading(analysisResult) {
   const filename = analysisResult?.filename || '';
   let name = filename.replace(/\.[^/.]+$/, '');
   // Prefijos añadidos por algunos sistemas al subir el archivo ("24046e1c-…")
