@@ -42,18 +42,19 @@ const isUpperChar = (c) => !!c && c === c.toUpperCase() && c !== c.toLowerCase()
 export const cleanHyphenatedText = (text) => text.replace(/(\p{L})-\s+(\p{Ll})/gu, '$1$2');
 
 /** Verbo de lectura al inicio: "lea", "léalo", "lee", "léelo", "lean", "léanlo" (forma de usted y de tú). */
+// Gallego: le/lede; catalán: llegeix/llegiu; euskera: irakurri
 // Otros idiomas: read (EN), lies/lest (DE), leggi/leggete (IT), lis/lisez/lire (FR), leia/leiam/lê/ler (PT)
 const ci = (w) => [...w].map((c) => (c.toLowerCase() !== c.toUpperCase() ? `[${c.toLowerCase()}${c.toUpperCase()}]` : c)).join('');
 export const READ_VERB = '(?:' + [
   '[Ll][EeÉé](?:[Aa]|[Ee])[Nn]?(?:[Ll][Oo][Ss]?)?',
-  ...['read', 'lies', 'lest', 'lesen', 'leggi', 'leggete', 'leggiamo', 'leggetelo', 'leggilo', 'lisez', 'lis', 'lire', 'lisons', 'leia', 'leiam', 'lê', 'ler', 'leiamos', 'przeczytaj', 'przeczytajcie', 'lees', 'leest', 'citește', 'citiți', 'citeste', 'cititi'].map(ci),
+  ...['read', 'lies', 'lest', 'lesen', 'leggi', 'leggete', 'leggiamo', 'leggetelo', 'leggilo', 'lisez', 'lis', 'lire', 'lisons', 'leia', 'leiam', 'lê', 'ler', 'leiamos', 'przeczytaj', 'przeczytajcie', 'lees', 'leest', 'citește', 'citiți', 'citeste', 'cititi', 'le', 'lede', 'llegeix', 'llegiu', 'llegeixi', 'llegeixin', 'irakurri'].map(ci),
 ].join('|') + ')(?![\\p{L}])';
 const READ_PREFIX = new RegExp('^' + READ_VERB + '\\s+', 'u');
 /** "Efesios 6: 11, 12" (cita partida entre dos líneas) -> "Efesios 6:11, 12" */
 export const joinVerseColon = (text) => text.replace(/(\d+):\s+(\d+)/g, '$1:$2');
 // Cita bíblica: "Santiago 3:14-16", "1 Sam. 18:9-11", "Mat. 5:43, 44"
 // Libros de un solo capítulo: sus citas no llevan "capítulo:" ("Filemón 8, 9, 17", "Judas 3")
-const SINGLE_CHAPTER = '(?:Abd[ií]as|Abd\\.|Filem[oó]n|Filem\\.|Flm\\.|[23]\\s?Juan|[23]\\s?Jn\\.|Judas|Jud\\.)';
+const SINGLE_CHAPTER = '(?:Abd[ií]as|Abdies|Abd\\.|Filem[oó]n?|Filemoni|Filem\\.|File\\.|Flm\\.|[23]\\s?Juan|[23]\\s?Xo[aá]n|[23]\\s?Joan|[23]\\s?Jn\\.|Judas|Xudas|Judes|Jud\\.)';
 const SINGLE_CHAPTER_REF = new RegExp(SINGLE_CHAPTER + '\\s+\\d+(?:\\s?[-–,]\\s?\\d+)*', 'u');
 const BIBLE_REF = new RegExp(
   '(?:[1-3]\\.?\\s?)?\\p{Lu}\\p{Ll}+\\.?\\s+\\d+:\\d+(?:\\s?[-–,]\\s?\\d+(?::\\d+)?)*'
@@ -66,6 +67,7 @@ export function chapterKey(ref) {
   const book = m[1].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f\s]/g, '').slice(0, 4);
   return book + m[2];
 }
+const BASQUE_PSALM_REF = /(?<![\p{L}\d])\d{1,3}\.\s*Salmoa\s+\d+/u;
 // Tras "lee/lea": nombre de libro + número basta ("lee Filemón 10-12", "lea Judas 3")
 const READ_BOOK_REF = /^(?:[1-3]\.?\s?)?\p{Lu}\p{Ll}+\.?\s+\d+/u;
 
@@ -106,15 +108,15 @@ export function joinParagraphLines(lines) {
 export function classifyParenthesisContent(paren) {
   // "vea también la imagen", "See also picture", "Siehe auch Bild", "Vedi anche immagine",
   // "Voir aussi l’image", "Veja também a imagem"; nota/note/footnote/Fußnote
-  const VERB = '(?:vea|mira|mire|observe|observa|see|siehe|seht|vedi|vedete|voir|vois|voyez|veja|vejam|ver|olhe|zobacz|zob\\.|zie|vezi|vedeți|vedeti)';
-  const ALSO = '(?:también|also|auch|anche|aussi|também|też|także|również|ook|și|si)';
-  const ART = "(?:(?:la|las|the|das|die|den|le|les|l['’]|a|as|o|os|i|gli|l|de|het)\\s*)?";
-  const IMAGE = '(?:im[aá]gen(?:es)?|ilustraci[oó]n(?:es)?|pictures?|illustrations?|images?|bild(?:er)?|abbildung(?:en)?|immagin[ei]|illustrazion[ei]|imagens?|imagem|ilustra[çc](?:ão|ões)|ilustracj[aęei]|ilustracji|zdjęci[ae]|afbeelding(?:en)?|plaat(?:je)?s?|imaginea|imaginile|imagini|ilustrația|ilustrațiile)';
-  const NOTE = '(?:nota|note|footnote|fu[ßs]note|anmerkung|przypis(?:y|u|ie)?|voetnoot|nota de subsol)';
+  const VERB = '(?:vea|mira|mire|observe|observa|see|siehe|seht|vedi|vedete|voir|vois|voyez|veja|vejam|ver|olhe|zobacz|zob\\.|zie|vezi|vedeți|vedeti|vexa|olla|mireu|vegeu|vegi|ikusi)';
+  const ALSO = '(?:también|also|auch|anche|aussi|também|też|także|również|ook|și|si|tamén|també)';
+  const ART = "(?:(?:la|las|the|das|die|den|le|les|l['’]|a|as|o|os|i|gli|l|de|het|el|els)\\s*)?";
+  const IMAGE = '(?:im[aá]gen(?:es)?|ilustraci[oó]n(?:es)?|pictures?|illustrations?|images?|bild(?:er)?|abbildung(?:en)?|immagin[ei]|illustrazion[ei]|imagens?|imagem|ilustra[çc](?:ão|ões)|ilustracj[aęei]|ilustracji|zdjęci[ae]|afbeelding(?:en)?|plaat(?:je)?s?|imaginea|imaginile|imagini|ilustrația|ilustrațiile|imaxe(?:s)?|ilustraci[oó]ns|imatge(?:s)?|il·lustraci[oó](?:ns)?|irudi(?:a|ak)?)';
+  const NOTE = '(?:nota|note|footnote|fu[ßs]note|anmerkung|przypis(?:y|u|ie)?|voetnoot|nota de subsol|oharra)';
   const END = '(?![\\p{L}])';
   const lead = '(?<![\\p{L}])' + VERB + '\\s*(?:' + ALSO + '\\s+)?' + ART;
   const hasNote = new RegExp(lead + NOTE + END, 'iu').test(paren);
-  const ADJ = '(?:(?:cover|front|portada|titelbild|copertina|couverture|capa)\\s+)?';
+  const ADJ = '(?:(?:cover|front|portada|titelbild|copertina|couverture|capa|azaleko)\\s+)?';
 
   let hasImage = false;
   if (!hasNote) {
@@ -132,6 +134,8 @@ export function classifyParenthesisContent(paren) {
   if (!hasScripture) hasScripture = /\p{L}+\.?\s+\d+:\d+/u.test(paren);
   if (!hasScripture) hasScripture = /\p{L}+\d+:\d+/u.test(paren);
   if (!hasScripture) hasScripture = SINGLE_CHAPTER_REF.test(paren);
+  // Euskera: los salmos llevan el número delante ("118. Salmoa 5, 6")
+  if (!hasScripture) hasScripture = BASQUE_PSALM_REF.test(paren);
 
   if (hasNote) return 'note';
   if (hasImage && hasScripture) return 'both';
@@ -167,11 +171,12 @@ export function extractQuestionWithParenthesis(questionText) {
 
 // Cita bíblica dentro del propio texto de la pregunta ("Según Mateo 5:43, 44, ¿…?")
 const SCRIPTURE_IN_TEXT_CV = /\p{L}+\.?\s+\d+:\d+/u;
-const SCRIPTURE_IN_TEXT = { test: (t) => SCRIPTURE_IN_TEXT_CV.test(t) || SINGLE_CHAPTER_REF.test(t) };
+const SCRIPTURE_IN_TEXT = { test: (t) => SCRIPTURE_IN_TEXT_CV.test(t) || SINGLE_CHAPTER_REF.test(t) || BASQUE_PSALM_REF.test(t) };
 
 export function createQuestionInfo(questionText, answerTime, isFinal = false) {
   const e = extractQuestionWithParenthesis(questionText);
-  if (SCRIPTURE_IN_TEXT.test(e.text)) {
+  // "Salm 91: 14-16": la cita puede venir partida tras los dos puntos
+  if (SCRIPTURE_IN_TEXT.test(joinVerseColon(e.text))) {
     if (e.content_type === '') e.content_type = 'scripture';
     else if (e.content_type === 'image') e.content_type = 'both';
   }
@@ -285,6 +290,7 @@ const isBoldFontName = (name) => /bold|demi|black|heavy|semibold/i.test(name || 
  */
 export async function extractSpans(doc, OPS) {
   const pages = [];
+  const langVotes = { ca: 0, pt: 0 };
   for (let pn = 1; pn <= doc.numPages; pn++) {
     const page = await doc.getPage(pn);
     const vp = page.getViewport({ scale: 1 });
@@ -310,6 +316,14 @@ export async function extractSpans(doc, OPS) {
       const size = Math.hypot(it.transform[2], it.transform[3]);
       items.push({ str: it.str, x, y, size, width: it.width || 0, fontName: it.fontName, eol: !!it.hasEOL });
     }
+
+    // Catalán: "Jehov" + "à", "est" + "às", "t" + "é" son una sola palabra (en portugués y
+    // gallego "à", "às", "é" sí pueden ir sueltas). Se reconoce por sus palabras más comunes.
+    // (se cuenta en todo lo leído hasta ahora: una página corta no basta para decidirlo)
+    const pageText = items.map((it) => it.str).join(' ');
+    langVotes.ca += (pageText.match(/(?<![\p{L}])(?:amb|els|perquè|aquest|aquesta|però|també)(?![\p{L}])/gu) || []).length;
+    langVotes.pt += (pageText.match(/(?<![\p{L}])(?:uma|para|não|também|dos|das)(?![\p{L}])/gu) || []).length;
+    const catalan = langVotes.ca > 2 * langVotes.pt + 3;
 
     // 1b) Polaco: algunas fuentes traen "ę" como "©" y "ą" como "§" ("si©" -> "się", "s§" -> "są").
     //     Solo pegados a una letra (el "© 2026" del pie no se toca).
@@ -367,7 +381,10 @@ export async function extractSpans(doc, OPS) {
           const prev = items[k];
           // (la letra empieza antes de que acabe el tramo anterior: ese espacio no existe)
           // Excepción: palabras de una sola letra acentuada ("como é que", "à", "às").
-          const standalone = /^(?:[éÉàÀóÓ]|[àÀ]s)(?=$|[\s,.;:!?)])/u.test(next.str);
+          // En catalán solo "és" va suelta ("més", "només", "després" van juntas).
+          const standalone = catalan
+            ? /^[éÉ]s(?=$|[\s,.;:!?)])/u.test(next.str) && !/(?:^|\s)(?:m|nom|despr)\s*$/iu.test(prev?.str || '')
+            : /^(?:[éÉàÀóÓ]|[àÀ]s)(?=$|[\s,.;:!?)])/u.test(next.str);
           // Polaco: ś/ź/ż también empiezan palabras ("na świecie", "Przyznał, że"): ahí el espacio es real.
           const keepSpace = !!prev && polishWordStart(prev.str, next.str);
           if (prev && / $/.test(prev.str) && !standalone && !keepSpace && next.x < prev.x + prev.width - it.size * 0.1) prev.str = prev.str.replace(/ +$/, '');
@@ -506,8 +523,11 @@ export function detectHorizontalLine(pages, OPS) {
  * Sirve tanto si los puntos son preguntas como si son frases ("Ser más accesibles.").
  */
 // "CANCIÓN 12" en cada idioma (cierra el artículo)
-const SONG_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO|PIEŚŃ|PIESN|C[ÂA]NTAREA)\s+\d+/u;
-const SONG_WORD_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO|PIEŚŃ|PIESN|C[ÂA]NTAREA)(?![\p{L}])/u;
+// Catalán: "CANÇÓ 55"; euskera: "55. KANTA" (el número va delante);
+// gallego: "CANCIÓN sjj 150" (el símbolo del cancionero puede ir en otro tramo: basta la palabra sola)
+const SONG_WORDS = 'CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO|PIEŚŃ|PIESN|C[ÂA]NTAREA|CAN[ÇC][OÓ]';
+const SONG_RE = new RegExp(`^(?:(?:${SONG_WORDS})(?:\\s+SJJ)?\\s+\\d+|(?:${SONG_WORDS})$|\\d+\\.\\s*KANTA(?![\\p{L}]))`, 'u');
+const SONG_WORD_RE = /^(?:CANCI[OÓ]N|SONG|LIED|CANTICO|CANTIQUE|C[AÂ]NTICO|PIEŚŃ|PIESN|C[ÂA]NTAREA|CAN[ÇC][OÓ]|KANTA|\d+\.\s*KANTA)(?![\p{L}])/u;
 const BULLET_CHARS = '˛•·■□▪▫❑☐◻◼●○✓✔➢►';
 const REVIEW_BULLET = new RegExp('^[' + BULLET_CHARS + ']$', 'u');
 // Casilla pegada al texto: "• Explica por qué…"
@@ -618,23 +638,23 @@ function extractQuestionsAfterLine(pages, line) {
 
 // Meses en los idiomas de la app (sin tildes, en mayúsculas)
 const MONTH_NAMES = [
-  ['ENERO', 'JANUARY', 'JANUAR', 'GENNAIO', 'JANVIER', 'JANEIRO', 'STYCZNIA', 'STYCZEN', 'JANUARI', 'IANUARIE'],
-  ['FEBRERO', 'FEBRUARY', 'FEBRUAR', 'FEBBRAIO', 'FEVRIER', 'FEVEREIRO', 'LUTEGO', 'LUTY', 'FEBRUARI', 'FEBRUARIE'],
-  ['MARZO', 'MARCH', 'MARZ', 'MARS', 'MARCO', 'MARCA', 'MARZEC', 'MAART', 'MARTIE'],
-  ['ABRIL', 'APRIL', 'APRILE', 'AVRIL', 'KWIETNIA', 'KWIECIEN', 'APRILIE'],
-  ['MAYO', 'MAY', 'MAI', 'MAGGIO', 'MAIO', 'MAJA', 'MAJ', 'MEI'],
-  ['JUNIO', 'JUNE', 'JUNI', 'GIUGNO', 'JUIN', 'JUNHO', 'CZERWCA', 'CZERWIEC', 'IUNIE'],
-  ['JULIO', 'JULY', 'JULI', 'LUGLIO', 'JUILLET', 'JULHO', 'LIPCA', 'LIPIEC', 'IULIE'],
-  ['AGOSTO', 'AUGUST', 'AOUT', 'SIERPNIA', 'SIERPIEN', 'AUGUSTUS'],
-  ['SEPTIEMBRE', 'SETIEMBRE', 'SEPTEMBER', 'SETTEMBRE', 'SEPTEMBRE', 'SETEMBRO', 'WRZESNIA', 'WRZESIEN', 'SEPTEMBRIE'],
-  ['OCTUBRE', 'OCTOBER', 'OKTOBER', 'OTTOBRE', 'OCTOBRE', 'OUTUBRO', 'PAZDZIERNIKA', 'PAZDZIERNIK', 'OCTOMBRIE'],
-  ['NOVIEMBRE', 'NOVEMBER', 'NOVEMBRE', 'NOVEMBRO', 'LISTOPADA', 'LISTOPAD', 'NOIEMBRIE'],
-  ['DICIEMBRE', 'DECEMBER', 'DEZEMBER', 'DICEMBRE', 'DECEMBRE', 'DEZEMBRO', 'GRUDNIA', 'GRUDZIEN', 'DECEMBRIE'],
+  ['ENERO', 'XANEIRO', 'GENER', 'URTARRILA', 'URTARRILAREN', 'JANUARY', 'JANUAR', 'GENNAIO', 'JANVIER', 'JANEIRO', 'STYCZNIA', 'STYCZEN', 'JANUARI', 'IANUARIE'],
+  ['FEBRERO', 'FEBREIRO', 'FEBRER', 'OTSAILA', 'OTSAILAREN', 'FEBRUARY', 'FEBRUAR', 'FEBBRAIO', 'FEVRIER', 'FEVEREIRO', 'LUTEGO', 'LUTY', 'FEBRUARI', 'FEBRUARIE'],
+  ['MARZO', 'MARC', 'MARTXOA', 'MARTXOAREN', 'MARCH', 'MARZ', 'MARS', 'MARCO', 'MARCA', 'MARZEC', 'MAART', 'MARTIE'],
+  ['ABRIL', 'APIRILA', 'APIRILAREN', 'APRIL', 'APRILE', 'AVRIL', 'KWIETNIA', 'KWIECIEN', 'APRILIE'],
+  ['MAYO', 'MAIG', 'MAIATZA', 'MAIATZAREN', 'MAY', 'MAI', 'MAGGIO', 'MAIO', 'MAJA', 'MAJ', 'MEI'],
+  ['JUNIO', 'XUNO', 'JUNY', 'EKAINA', 'EKAINAREN', 'JUNE', 'JUNI', 'GIUGNO', 'JUIN', 'JUNHO', 'CZERWCA', 'CZERWIEC', 'IUNIE'],
+  ['JULIO', 'XULLO', 'JULIOL', 'UZTAILA', 'UZTAILAREN', 'JULY', 'JULI', 'LUGLIO', 'JUILLET', 'JULHO', 'LIPCA', 'LIPIEC', 'IULIE'],
+  ['AGOSTO', 'AGOST', 'ABUZTUA', 'ABUZTUAREN', 'AUGUST', 'AOUT', 'SIERPNIA', 'SIERPIEN', 'AUGUSTUS'],
+  ['SEPTIEMBRE', 'SETEMBRE', 'IRAILA', 'IRAILAREN', 'SETIEMBRE', 'SEPTEMBER', 'SETTEMBRE', 'SEPTEMBRE', 'SETEMBRO', 'WRZESNIA', 'WRZESIEN', 'SEPTEMBRIE'],
+  ['OCTUBRE', 'URRIA', 'URRIAREN', 'OCTOBER', 'OKTOBER', 'OTTOBRE', 'OCTOBRE', 'OUTUBRO', 'PAZDZIERNIKA', 'PAZDZIERNIK', 'OCTOMBRIE'],
+  ['NOVIEMBRE', 'AZAROA', 'AZAROAREN', 'NOVEMBER', 'NOVEMBRE', 'NOVEMBRO', 'LISTOPADA', 'LISTOPAD', 'NOIEMBRIE'],
+  ['DICIEMBRE', 'DECEMBRO', 'DESEMBRE', 'ABENDUA', 'ABENDUAREN', 'DECEMBER', 'DEZEMBER', 'DICEMBRE', 'DECEMBRE', 'DEZEMBRO', 'GRUDNIA', 'GRUDZIEN', 'DECEMBRIE'],
 ];
 const MONTHS = {};
 MONTH_NAMES.forEach((names, idx) => names.forEach((n) => { MONTHS[n] = idx; }));
 // Palabras de unión permitidas en la cabecera ("2 A 8 DE MARÇO DE 2026", "MARCH 2-8, 2026")
-const WEEK_FILLERS = new Set(['DE', 'DEL', 'A', 'AL', 'AU', 'DU', 'BIS', 'TO', 'DO']);
+const WEEK_FILLERS = new Set(['DE', 'DEL', 'A', 'AL', 'AU', 'DU', 'BIS', 'TO', 'DO', 'D']);
 const stripMarks = (t) => t.normalize('NFD').replace(/\p{M}/gu, '');
 
 /**
@@ -647,7 +667,8 @@ const stripMarks = (t) => t.normalize('NFD').replace(/\p{M}/gu, '');
 export function parseWeekHeader(text) {
   const t = (text || '').toUpperCase().replace(/\s+/g, ' ').trim();
   if (!t || t.length > 60) return null;
-  const tokens = stripMarks(t).replace(/[-–—,.]/g, ' ').split(' ').filter(Boolean);
+  // "D’OCTUBRE" (catalán) → "D OCTUBRE"; "2026KO URRIAREN 5-11" (euskera): el año lleva "-KO"
+  const tokens = stripMarks(t).replace(/[-–—,.’']/g, ' ').replace(/\b(\d{4})KO\b/g, '$1').split(' ').filter(Boolean);
   const days = [], months = [], years = [];
   for (const tok of tokens) {
     if (/^\d{4}$/.test(tok)) years.push(parseInt(tok, 10));
