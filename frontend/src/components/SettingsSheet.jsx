@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { LAYOUTS } from "@/components/PresentationMode";
-import { darkThemes } from "@/utils/darkThemes";
+import { darkThemes, lightThemes } from "@/utils/darkThemes";
 import { t, LANGUAGES, currentLanguage, setLanguage, currentPtVariant, setPtVariant } from "@/i18n";
 import { manualUrl } from "@/utils/manual";
 
@@ -148,6 +148,7 @@ export function SettingsSheet({
   // Pantalla
   darkMode, setDarkMode,
   darkTheme, setDarkTheme,
+  lightTheme, setLightTheme,
   presentationLayout, setPresentationLayout,
 }) {
   const c = darkMode
@@ -342,6 +343,23 @@ export function SettingsSheet({
                     </button>
                   ))}
                 </div>
+                {!darkMode && (
+                  <div className="space-y-1.5" data-testid="light-variants">
+                    <p className={`text-xs flex items-center gap-1 ${c.muted}`}><Palette className="w-3 h-3" /> {t("lightVariant")}</p>
+                    {Object.entries(lightThemes).map(([key, th]) => (
+                      <button key={key} onClick={() => setLightTheme(key)} data-testid={`light-theme-${key}`}
+                        className={`w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left border ${lightTheme === key ? "ring-2 ring-orange-500" : ""}`}
+                        style={{ backgroundColor: th.colors.panel, borderColor: th.colors.border, color: '#1e293b' }}>
+                        <span className="w-5 h-5 rounded-full border-2 shrink-0" style={{ backgroundColor: th.colors.bg, borderColor: th.colors.border }} />
+                        <span className="flex-1 min-w-0">
+                          <span className="block text-sm font-semibold">{t(`ltheme_${key}`)}</span>
+                          <span className="block text-[11px] opacity-70">{t(`ltheme_${key}_desc`)}</span>
+                        </span>
+                        {lightTheme === key && <Check className="w-4 h-4 text-orange-500" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {darkMode && (
                   <div className="space-y-1.5" data-testid="dark-variants">
                     <p className={`text-xs flex items-center gap-1 ${c.muted}`}><Palette className="w-3 h-3" /> {t("darkVariant")}</p>
