@@ -78,7 +78,7 @@ import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
 
 // Import utils
 import { addSecondsToDate } from "@/utils/timeFormatters";
-import { darkThemes, defaultDarkTheme, applyDarkTheme, defaultLightTheme, applyLightTheme } from "@/utils/darkThemes";
+import { darkThemes, defaultDarkTheme, applyDarkTheme, defaultLightTheme, applyLightTheme, applyBarsColor } from "@/utils/darkThemes";
 
 
 /** Lo que hay que leer o comentar en un tramo, para el informe: citas, imágenes, notas e ideas importantes. */
@@ -168,6 +168,7 @@ export default function HomePage() {
   // La variante cambia los grises de toda la app (también el modo presentación y los diálogos)
   useEffect(() => { applyDarkTheme(darkTheme, darkMode); }, [darkTheme, darkMode]);
   useEffect(() => { applyLightTheme(lightTheme, darkMode); }, [lightTheme, darkMode]);
+  useEffect(() => { applyBarsColor(darkMode, darkTheme, lightTheme); }, [darkMode, darkTheme, lightTheme]);
   
   // Configurable reading settings
   const [readingSpeed, setReadingSpeed] = useLocalStorage('pdfTimer_readingSpeed', 180);
@@ -1020,9 +1021,9 @@ export default function HomePage() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${darkMode ? currentTheme?.bg || 'bg-zinc-900' : 'bg-stone-50'}`}>
       {isDragging && !analysisResult && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-orange-500/15 backdrop-blur-sm pointer-events-none p-6" data-testid="drop-overlay">
-          <div className={`rounded-3xl border-4 border-dashed border-orange-500 px-10 py-12 text-center shadow-2xl ${darkMode ? 'bg-zinc-900/95 text-zinc-100' : 'bg-white/95 text-slate-800'}`}>
-            <FileText className="w-14 h-14 mx-auto mb-4 text-orange-500" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-500/15 backdrop-blur-sm pointer-events-none p-6" data-testid="drop-overlay">
+          <div className={`rounded-3xl border-4 border-dashed border-brand-500 px-10 py-12 text-center shadow-2xl ${darkMode ? 'bg-zinc-900/95 text-zinc-100' : 'bg-white/95 text-slate-800'}`}>
+            <FileText className="w-14 h-14 mx-auto mb-4 text-brand-500" />
             <p className="font-heading font-bold text-2xl">{t('dropPdfAnywhere')}</p>
           </div>
         </div>
@@ -1042,7 +1043,7 @@ export default function HomePage() {
                 className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl shadow-lg"
               />
               <div className={analysisResult ? 'hidden sm:block' : ''}>
-                <h1 className="font-heading font-bold text-base sm:text-xl text-orange-500" data-testid="app-title">
+                <h1 className="font-heading font-bold text-base sm:text-xl text-brand-500" data-testid="app-title">
                   {t('appNameUpper')}
                 </h1>
                 <p className={`text-xs font-semibold tracking-wide hidden sm:block ${darkMode ? currentTheme?.textMuted || 'text-zinc-400' : 'text-slate-700'}`}>{t('appTagline')}</p>
@@ -1060,7 +1061,7 @@ export default function HomePage() {
                 }`}
               >
                 <a href={manualUrl()} target="_blank" rel="noopener">
-                  <BookOpen className="w-4 h-4 text-orange-500" />
+                  <BookOpen className="w-4 h-4 text-brand-500" />
                   <span className="hidden sm:inline">{t("manualShort")}</span>
                 </a>
               </Button>
@@ -1091,7 +1092,7 @@ export default function HomePage() {
                     >
                       <span className="w-7 text-[11px] font-black opacity-60">{l.short}</span>
                       <span className="flex-1">{l.name}</span>
-                      {currentLanguage() === l.code && <Check className="w-4 h-4 text-orange-500" />}
+                      {currentLanguage() === l.code && <Check className="w-4 h-4 text-brand-500" />}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -1117,8 +1118,8 @@ export default function HomePage() {
                   onClick={enterPresentationMode} 
                   className={`rounded-full px-2 sm:px-5 py-1.5 sm:py-2 border-2 font-medium transition-all text-xs sm:text-sm ${
                     darkMode
-                      ? 'border-zinc-500 text-zinc-100 hover:border-orange-400 hover:text-orange-400 hover:bg-orange-500/10'
-                      : 'border-slate-300 text-slate-700 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50'
+                      ? 'border-zinc-500 text-zinc-100 hover:border-brand-400 hover:text-brand-400 hover:bg-brand-500/10'
+                      : 'border-slate-300 text-slate-700 hover:border-brand-400 hover:text-brand-600 hover:bg-brand-50'
                   }`}
                   data-testid="presentation-mode-btn"
                 >
@@ -1263,11 +1264,11 @@ export default function HomePage() {
             {!manualCardHidden && (
               <div
                 className={`rounded-2xl border shadow-sm p-4 flex items-start gap-3 ${
-                  darkMode ? 'bg-zinc-800 border-orange-500/40' : 'bg-orange-50 border-orange-200'
+                  darkMode ? 'bg-zinc-800 border-brand-500/40' : 'bg-brand-50 border-brand-200'
                 }`}
                 data-testid="manual-card"
               >
-                <span className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center bg-orange-500 text-white">
+                <span className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center bg-brand-500 text-white">
                   <BookOpen className="w-5 h-5" />
                 </span>
                 <div className="flex-1 min-w-0">
@@ -1278,7 +1279,7 @@ export default function HomePage() {
                       href={guideUrl()}
                       target="_blank"
                       rel="noopener"
-                      className="inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold"
+                      className="inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold"
                       data-testid="guide-card-open"
                     >
                       <Compass className="w-4 h-4" /> {t('quickGuide')}
@@ -1288,7 +1289,7 @@ export default function HomePage() {
                       target="_blank"
                       rel="noopener"
                       className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 h-9 border text-sm font-bold ${
-                        darkMode ? 'border-orange-400/60 text-orange-300 hover:bg-zinc-700' : 'border-orange-300 text-orange-700 hover:bg-orange-100'
+                        darkMode ? 'border-brand-400/60 text-brand-300 hover:bg-zinc-700' : 'border-brand-300 text-brand-700 hover:bg-brand-100'
                       }`}
                       data-testid="manual-card-open"
                     >
@@ -1370,7 +1371,7 @@ export default function HomePage() {
                   {t('settingsSummary', { dur: totalDuration, speed: speedLabel(readingSpeed).toLowerCase(), answer: answerTime, intro: introductionDuration })}
                 </span>
               </span>
-              <span className="text-sm font-semibold text-orange-500 shrink-0">{t("change")}</span>
+              <span className="text-sm font-semibold text-brand-500 shrink-0">{t("change")}</span>
             </button>
             <UploadZone
               onFileSelect={handleFileUpload}
