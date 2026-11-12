@@ -78,7 +78,7 @@ import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
 
 // Import utils
 import { addSecondsToDate } from "@/utils/timeFormatters";
-import { darkThemes, defaultDarkTheme } from "@/utils/darkThemes";
+import { darkThemes, defaultDarkTheme, applyDarkTheme } from "@/utils/darkThemes";
 
 
 export default function HomePage() {
@@ -148,6 +148,8 @@ export default function HomePage() {
   const [settingsTab, setSettingsTab] = useState('tiempo');
   const openSettings = (tab = 'tiempo') => { setSettingsTab(tab); setSettingsOpen(true); };
   const currentTheme = darkMode ? (darkThemes[darkTheme] || darkThemes.zinc) : null;
+  // La variante cambia los grises de toda la app (también el modo presentación y los diálogos)
+  useEffect(() => { applyDarkTheme(darkTheme, darkMode); }, [darkTheme, darkMode]);
   
   // Configurable reading settings
   const [readingSpeed, setReadingSpeed] = useLocalStorage('pdfTimer_readingSpeed', 180);
