@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Trash2, History, ClipboardList, Clock, MessageCircle } from "lucide-react";
 import { t, currentLocale } from "@/i18n";
+import { longDate as fmtLongDate, shortDate as fmtShortDate } from "@/i18n/dates";
 import { loadHistory, deleteReport, reportUrl } from "@/utils/studyHistory";
 
 /**
@@ -22,8 +23,8 @@ function diffText(sec) {
   return `${sec > 0 ? "+" : "−"}${mmss(sec)}`;
 }
 const clock = (ms) => (ms ? new Date(ms).toLocaleTimeString(currentLocale(), { hour: "2-digit", minute: "2-digit" }) : "—");
-const longDate = (ms) => new Date(ms).toLocaleDateString(currentLocale(), { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-const shortDate = (ms) => new Date(ms).toLocaleDateString(currentLocale(), { day: "numeric", month: "short", year: "numeric" });
+const longDate = (ms) => fmtLongDate(ms);
+const shortDate = (ms) => fmtShortDate(ms);
 
 function segLabel(sg) {
   switch (sg.kind) {
