@@ -17,10 +17,16 @@ import pt from "./pt";
 import pl from "./pl";
 import nl from "./nl";
 import ro from "./ro";
+import gl from "./gl";
+import ca from "./ca";
+import eu from "./eu";
 // Japonés y coreano: traducidos (ja.js, ko.js), pendientes de que el analizador lea sus PDF
 
 export const LANGUAGES = [
   { code: "es", name: "Español", short: "ES", locale: "es-ES" },
+  { code: "ca", name: "Català", short: "CA", locale: "ca-ES" },
+  { code: "eu", name: "Euskara", short: "EU", locale: "eu-ES" },
+  { code: "gl", name: "Galego", short: "GL", locale: "gl-ES" },
   { code: "en", name: "English", short: "EN", locale: "en-GB" },
   { code: "de", name: "Deutsch", short: "DE", locale: "de-DE" },
   { code: "it", name: "Italiano", short: "IT", locale: "it-IT" },
@@ -31,12 +37,12 @@ export const LANGUAGES = [
   { code: "ro", name: "Română", short: "RO", locale: "ro-RO" },
 ];
 
-const dictionaries = { es, en, de, it, fr, pt, pl, nl, ro };
+const dictionaries = { es, en, de, it, fr, pt, pl, nl, ro, gl, ca, eu };
 const STORAGE_KEY = "pdfTimer_language";
 const PT_KEY = "pdfTimer_ptVariant";
 
 /** Código de idioma de jw.org (w_S_202609.pdf, w_E_…). Portugués: T (Brasil) o TPO (Portugal). */
-const JW_CODES = { es: "S", en: "E", de: "X", it: "I", fr: "F", pl: "P", nl: "O", ro: "M", ja: "J", ko: "KO" };
+const JW_CODES = { es: "S", en: "E", de: "X", it: "I", fr: "F", pl: "P", nl: "O", ro: "M", gl: "GLC", ca: "AN", eu: "BQ", ja: "J", ko: "KO" };
 
 function detectLanguage() {
   try {
@@ -91,7 +97,7 @@ export function setPtVariant(v) {
   notify();
 }
 
-/** Código de jw.org para el idioma de la app ("S", "E", "X", "I", "F", "T" o "TPO"). */
+/** Código de jw.org para el idioma de la app ("S", "E", "X", "I", "F", "T", "TPO", "GLC", "AN", "BQ"…). */
 export function jwLanguageCode() {
   if (current === "pt") return ptVariant === "PT" ? "TPO" : "T";
   return JW_CODES[current] || "S";
