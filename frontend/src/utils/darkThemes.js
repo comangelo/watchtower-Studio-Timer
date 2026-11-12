@@ -1,79 +1,29 @@
-// Dark theme variants configuration
-export const darkThemes = {
-  zinc: {
-    name: 'Zinc',
-    description: 'Equilibrado y suave',
-    bg: 'bg-zinc-900',
-    panel: 'bg-zinc-800',
-    panelHover: 'hover:bg-zinc-700',
-    border: 'border-zinc-700',
-    borderHover: 'hover:border-zinc-600',
-    text: 'text-zinc-200',
-    textMuted: 'text-zinc-400',
-    textSubtle: 'text-zinc-500',
-    // Raw colors for inline styles or dynamic usage
-    colors: {
-      bg: '#18181b',
-      panel: '#27272a',
-      border: '#3f3f46',
-      text: '#e4e4e7',
-    }
-  },
-  amoled: {
-    name: 'AMOLED Negro',
-    description: 'Negro puro para OLED',
-    bg: 'bg-black',
-    panel: 'bg-zinc-950',
-    panelHover: 'hover:bg-zinc-900',
-    border: 'border-zinc-800',
-    borderHover: 'hover:border-zinc-700',
-    text: 'text-zinc-100',
-    textMuted: 'text-zinc-400',
-    textSubtle: 'text-zinc-600',
-    colors: {
-      bg: '#000000',
-      panel: '#09090b',
-      border: '#27272a',
-      text: '#f4f4f5',
-    }
-  },
-  slate: {
-    name: 'Slate Oscuro',
-    description: 'Tono azulado frío',
-    bg: 'bg-slate-900',
-    panel: 'bg-slate-800',
-    panelHover: 'hover:bg-slate-700',
-    border: 'border-slate-700',
-    borderHover: 'hover:border-slate-600',
-    text: 'text-slate-200',
-    textMuted: 'text-slate-400',
-    textSubtle: 'text-slate-500',
-    colors: {
-      bg: '#0f172a',
-      panel: '#1e293b',
-      border: '#334155',
-      text: '#e2e8f0',
-    }
-  },
-  neutral: {
-    name: 'Neutral Oscuro',
-    description: 'Tono cálido marrón',
-    bg: 'bg-neutral-900',
-    panel: 'bg-neutral-800',
-    panelHover: 'hover:bg-neutral-700',
-    border: 'border-neutral-700',
-    borderHover: 'hover:border-neutral-600',
-    text: 'text-neutral-200',
-    textMuted: 'text-neutral-400',
-    textSubtle: 'text-neutral-500',
-    colors: {
-      bg: '#171717',
-      panel: '#262626',
-      border: '#404040',
-      text: '#e5e5e5',
-    }
-  }
+// Variantes del modo oscuro. La app pinta el modo oscuro con la escala «zinc» de Tailwind;
+// cada variante cambia esa escala por otra paleta (variables --zinc-* en index.css),
+// así que afecta a toda la app y no solo al fondo.
+const base = {
+  bg: 'bg-zinc-900', panel: 'bg-zinc-800', panelHover: 'hover:bg-zinc-700',
+  border: 'border-zinc-700', borderHover: 'hover:border-zinc-600',
+  text: 'text-zinc-200', textMuted: 'text-zinc-400', textSubtle: 'text-zinc-500',
 };
+
+export const darkThemes = {
+  zinc: { ...base, name: 'Grafito', colors: { bg: '#18181b', panel: '#27272a', border: '#52525b', text: '#e4e4e7' } },
+  amoled: { ...base, name: 'AMOLED negro', colors: { bg: '#000000', panel: '#141416', border: '#46464c', text: '#e4e4e7' } },
+  slate: { ...base, name: 'Azul noche', colors: { bg: '#0c152a', panel: '#182644', border: '#405478', text: '#d6e1f2' } },
+  neutral: { ...base, name: 'Cálido', colors: { bg: '#1c1713', panel: '#2d251e', border: '#5a4f44', text: '#e7dfd5' } },
+  forest: { ...base, name: 'Verde bosque', colors: { bg: '#0e1a14', panel: '#1b2b23', border: '#425c4e', text: '#d6e5dd' } },
+  plum: { ...base, name: 'Berenjena', colors: { bg: '#191122', panel: '#2a1e38', border: '#5c4a70', text: '#e3dbed' } },
+};
+
+/** Aplica la variante a toda la página (o la quita en modo claro). */
+export function applyDarkTheme(themeKey, darkMode) {
+  try {
+    const el = document.documentElement;
+    if (darkMode && darkThemes[themeKey] && themeKey !== 'zinc') el.dataset.darkTheme = themeKey;
+    else delete el.dataset.darkTheme;
+  } catch { /* sin documento */ }
+}
 
 // Helper function to get theme classes
 export function getThemeClasses(themeKey, darkMode) {
