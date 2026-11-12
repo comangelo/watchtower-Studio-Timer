@@ -20,7 +20,7 @@ function Section({ children, testid }) {
   );
 }
 
-function Row({ icon: Icon, color = "text-orange-500", label, hint, value, valueColor = "text-orange-500" }) {
+function Row({ icon: Icon, color = "text-brand-500", label, hint, value, valueColor = "text-brand-500" }) {
   const c = useContext(ThemeCtx);
   return (
   <div className="flex items-start justify-between gap-3">
@@ -36,7 +36,7 @@ function Row({ icon: Icon, color = "text-orange-500", label, hint, value, valueC
   );
 }
 
-function Range({ value, onChange, min, max, step, left, right, thumb = "", range = "[&>span>span]:bg-orange-500", testid }) {
+function Range({ value, onChange, min, max, step, left, right, thumb = "", range = "[&>span>span]:bg-brand-500", testid }) {
   const c = useContext(ThemeCtx);
   return (
   <div>
@@ -47,7 +47,7 @@ function Range({ value, onChange, min, max, step, left, right, thumb = "", range
   );
 }
 
-function Choice({ options, value, onChange, active = "bg-orange-500 text-white", sub = "text-orange-100", testid }) {
+function Choice({ options, value, onChange, active = "bg-brand-500 text-white", sub = "text-brand-100", testid }) {
   const c = useContext(ThemeCtx);
   return (
   <div className="flex gap-2">
@@ -188,11 +188,11 @@ export function SettingsSheet({
         data-testid="settings-sheet">
         <div className="px-5 pt-5 pb-3">
           <SheetTitle className={`flex items-center gap-2 text-lg font-bold ${c.text}`}>
-            <Settings className="w-5 h-5 text-orange-500" /> {t("settings")}
+            <Settings className="w-5 h-5 text-brand-500" /> {t("settings")}
           </SheetTitle>
           <SheetDescription className={`text-xs ${c.muted}`}>{t("settingsSavedHere")}</SheetDescription>
           <a href={manualUrl()} target="_blank" rel="noopener"
-            className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-orange-500 hover:text-orange-600"
+            className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-500 hover:text-brand-600"
             data-testid="settings-manual-link">
             <BookOpen className="w-4 h-4" /> {t("userManual")}
           </a>
@@ -280,7 +280,7 @@ export function SettingsSheet({
                 </div>
               </Section>
               <Section>
-                <Toggle icon={Timer} color="text-orange-500" label={t("alertParagraphOver")} hint={t("alertParagraphOverHint")}
+                <Toggle icon={Timer} color="text-brand-500" label={t("alertParagraphOver")} hint={t("alertParagraphOverHint")}
                   checked={overtimeAlertEnabled} onChange={setOvertimeAlertEnabled} testid="overtime-alert-toggle" />
                 {setNextButtonAlertEnabled && (
                   <Toggle icon={ArrowRight} color="text-red-500" label={t("alertNextButton")} hint={t("alertNextButtonHint")}
@@ -306,7 +306,7 @@ export function SettingsSheet({
                     const on = currentLanguage() === l.code;
                     return (
                       <button key={l.code} onClick={() => setLanguage(l.code)}
-                        className={`rounded-xl py-2.5 px-3 flex items-center gap-2 text-sm font-semibold ${on ? "bg-orange-500 text-white shadow-md" : c.chip}`}
+                        className={`rounded-xl py-2.5 px-3 flex items-center gap-2 text-sm font-semibold ${on ? "bg-brand-500 text-white shadow-md" : c.chip}`}
                         data-testid={`language-${l.code}`}>
                         <span className="text-[11px] font-black opacity-80 w-6">{l.short}</span>{l.name}
                         {on && <Check className="w-4 h-4 ml-auto" />}
@@ -322,7 +322,7 @@ export function SettingsSheet({
                         const on = currentPtVariant() === v;
                         return (
                           <button key={v} onClick={() => setPtVariant(v)}
-                            className={`rounded-xl py-2 px-3 flex items-center gap-2 text-sm font-semibold ${on ? "bg-orange-500 text-white shadow-md" : c.chip}`}
+                            className={`rounded-xl py-2 px-3 flex items-center gap-2 text-sm font-semibold ${on ? "bg-brand-500 text-white shadow-md" : c.chip}`}
                             data-testid={`settings-pt-${v}`}>
                             {label}{on && <Check className="w-4 h-4 ml-auto" />}
                           </button>
@@ -333,11 +333,11 @@ export function SettingsSheet({
                 )}
               </Section>
               <Section testid="settings-section-pantalla">
-                <Row icon={darkMode ? Moon : Sun} color={darkMode ? "text-yellow-400" : "text-orange-500"} label={t("theme")} />
+                <Row icon={darkMode ? Moon : Sun} color={darkMode ? "text-yellow-400" : "text-brand-500"} label={t("theme")} />
                 <div className="flex gap-2">
                   {[{ v: false, label: t("light"), Icon: Sun }, { v: true, label: t("dark"), Icon: Moon }].map(({ v, label, Icon }) => (
                     <button key={label} onClick={() => setDarkMode(v)}
-                      className={`flex-1 rounded-xl py-2.5 flex items-center justify-center gap-2 text-sm font-semibold ${darkMode === v ? "bg-orange-500 text-white shadow-md" : c.chip}`}
+                      className={`flex-1 rounded-xl py-2.5 flex items-center justify-center gap-2 text-sm font-semibold ${darkMode === v ? "bg-brand-500 text-white shadow-md" : c.chip}`}
                       data-testid={`theme-${v ? "dark" : "light"}`}>
                       <Icon className="w-4 h-4" />{label}
                     </button>
@@ -348,14 +348,14 @@ export function SettingsSheet({
                     <p className={`text-xs flex items-center gap-1 ${c.muted}`}><Palette className="w-3 h-3" /> {t("lightVariant")}</p>
                     {Object.entries(lightThemes).map(([key, th]) => (
                       <button key={key} onClick={() => setLightTheme(key)} data-testid={`light-theme-${key}`}
-                        className={`w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left border ${lightTheme === key ? "ring-2 ring-orange-500" : ""}`}
+                        className={`w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left border ${lightTheme === key ? "ring-2 ring-brand-500" : ""}`}
                         style={{ backgroundColor: th.colors.panel, borderColor: th.colors.border, color: '#1e293b' }}>
                         <span className="w-5 h-5 rounded-full border-2 shrink-0" style={{ backgroundColor: th.colors.bg, borderColor: th.colors.border }} />
                         <span className="flex-1 min-w-0">
                           <span className="block text-sm font-semibold">{t(`ltheme_${key}`)}</span>
                           <span className="block text-[11px] opacity-70">{t(`ltheme_${key}_desc`)}</span>
                         </span>
-                        {lightTheme === key && <Check className="w-4 h-4 text-orange-500" />}
+                        {lightTheme === key && <Check className="w-4 h-4 text-brand-500" />}
                       </button>
                     ))}
                   </div>
@@ -365,13 +365,13 @@ export function SettingsSheet({
                     <p className={`text-xs flex items-center gap-1 ${c.muted}`}><Palette className="w-3 h-3" /> {t("darkVariant")}</p>
                     {Object.entries(darkThemes).map(([key, th]) => (
                       <button key={key} onClick={() => setDarkTheme(key)}
-                        className={`w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left ${darkTheme === key ? "ring-2 ring-orange-500" : ""} ${c.chip}`}>
+                        className={`w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left ${darkTheme === key ? "ring-2 ring-brand-500" : ""} ${c.chip}`}>
                         <span className="w-5 h-5 rounded-full border-2 shrink-0" style={{ backgroundColor: th.colors.panel, borderColor: th.colors.border }} />
                         <span className="flex-1 min-w-0">
                           <span className="block text-sm font-semibold">{t(`theme_${key}`)}</span>
                           <span className={`block text-[11px] ${c.subtle}`}>{t(`theme_${key}_desc`)}</span>
                         </span>
-                        {darkTheme === key && <Check className="w-4 h-4 text-orange-500" />}
+                        {darkTheme === key && <Check className="w-4 h-4 text-brand-500" />}
                       </button>
                     ))}
                   </div>
