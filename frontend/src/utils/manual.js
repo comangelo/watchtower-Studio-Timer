@@ -1,7 +1,7 @@
 import { currentLanguage } from "@/i18n";
 
 /** Idiomas con manual traducido (el español es /manual.html). */
-const MANUAL_LANGS = ["en", "de", "it", "fr", "pt", "pl", "nl", "ro"];
+const MANUAL_LANGS = ["en", "de", "it", "fr", "pt", "pl", "nl", "ro", "gl", "ca", "eu"];
 
 /** Dirección del manual en el idioma actual de la app. */
 export function manualUrl() {

@@ -15,7 +15,8 @@ const SETTINGS = 'settings';
 const DAY = 86400000;
 const KEEP_DAYS_AFTER_LAST_WEEK = 90;
 
-import { t, currentLocale, jwLanguageCode } from '@/i18n';
+import { t, jwLanguageCode } from '@/i18n';
+import { monthYear, dayMonth } from '@/i18n/dates';
 
 function openDb() {
   return new Promise((resolve, reject) => {
@@ -58,17 +59,13 @@ export function issueTitle(fileName, weeks) {
   const m = /w_[A-Z]+_(\d{4})(\d{2})/i.exec(fileName || '');
   if (m) {
     const d = new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, 1);
-    const txt = d.toLocaleDateString(currentLocale(), { month: 'long', year: 'numeric' });
+    const txt = monthYear(d);
     return txt.charAt(0).toUpperCase() + txt.slice(1);
   }
   if (weeks?.length) {
     const a = new Date(weeks[0].start);
     const b = new Date(new Date(weeks[weeks.length - 1].start).getTime() + 6 * DAY);
-    const fmt = { day: 'numeric', month: 'long' };
-    return t('weeksFromTo', {
-      from: a.toLocaleDateString(currentLocale(), fmt),
-      to: b.toLocaleDateString(currentLocale(), { ...fmt, year: 'numeric' }),
-    });
+    return t('weeksFromTo', { from: dayMonth(a), to: dayMonth(b, true) });
   }
   return fileName || t('magazine');
 }

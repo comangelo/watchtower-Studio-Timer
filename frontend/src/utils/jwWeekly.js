@@ -10,7 +10,8 @@
  * para que cada persona lo descargue en su dispositivo (uso personal), y después lo
  * analiza en el propio dispositivo.
  */
-import { currentLocale, jwLanguageCode } from '@/i18n';
+import { jwLanguageCode } from '@/i18n';
+import { weekRange } from '@/i18n/dates';
 
 export function mondayOf(date) {
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -28,9 +29,7 @@ export function addWeeks(date, n) {
 export function weekLabel(monday) {
   const sunday = new Date(monday);
   sunday.setDate(sunday.getDate() + 6);
-  const fmt = new Intl.DateTimeFormat(currentLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
-  if (typeof fmt.formatRange === 'function') return fmt.formatRange(monday, sunday);
-  return `${fmt.format(monday)} – ${fmt.format(sunday)}`;
+  return weekRange(monday, sunday);
 }
 
 /** Número de la revista que corresponde a una semana: "202608" para las semanas de octubre de 2026. */
