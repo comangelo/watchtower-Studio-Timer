@@ -4,6 +4,87 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Variantes del modo oscuro: la app usa la escala «zinc» para todo el modo oscuro;
+   cada variante la cambia por otra paleta (data-dark-theme en <html>, solo con el modo oscuro). */
+:root {
+  --zinc-50: 250 250 250;
+  --zinc-100: 244 244 245;
+  --zinc-200: 228 228 231;
+  --zinc-300: 212 212 216;
+  --zinc-400: 161 161 170;
+  --zinc-500: 113 113 122;
+  --zinc-600: 82 82 91;
+  --zinc-700: 63 63 70;
+  --zinc-800: 39 39 42;
+  --zinc-900: 24 24 27;
+  --zinc-950: 9 9 11;
+}
+html[data-dark-theme="amoled"] {
+  --zinc-50: 250 250 250;
+  --zinc-100: 244 244 245;
+  --zinc-200: 228 228 231;
+  --zinc-300: 212 212 216;
+  --zinc-400: 161 161 170;
+  --zinc-500: 113 113 122;
+  --zinc-600: 70 70 76;
+  --zinc-700: 40 40 44;
+  --zinc-800: 20 20 22;
+  --zinc-900: 0 0 0;
+  --zinc-950: 0 0 0;
+}
+html[data-dark-theme="slate"] {
+  --zinc-50: 244 247 252;
+  --zinc-100: 233 240 250;
+  --zinc-200: 214 225 242;
+  --zinc-300: 189 205 230;
+  --zinc-400: 140 160 194;
+  --zinc-500: 96 117 153;
+  --zinc-600: 64 84 120;
+  --zinc-700: 40 58 92;
+  --zinc-800: 24 38 68;
+  --zinc-900: 12 21 42;
+  --zinc-950: 5 10 24;
+}
+html[data-dark-theme="neutral"] {
+  --zinc-50: 250 248 245;
+  --zinc-100: 245 240 234;
+  --zinc-200: 231 223 213;
+  --zinc-300: 213 202 189;
+  --zinc-400: 168 156 142;
+  --zinc-500: 122 110 97;
+  --zinc-600: 90 79 68;
+  --zinc-700: 69 58 48;
+  --zinc-800: 45 37 30;
+  --zinc-900: 28 23 19;
+  --zinc-950: 15 12 10;
+}
+html[data-dark-theme="forest"] {
+  --zinc-50: 244 249 246;
+  --zinc-100: 234 243 238;
+  --zinc-200: 214 229 221;
+  --zinc-300: 190 210 199;
+  --zinc-400: 140 166 152;
+  --zinc-500: 98 125 111;
+  --zinc-600: 66 92 78;
+  --zinc-700: 45 66 55;
+  --zinc-800: 27 43 35;
+  --zinc-900: 14 26 20;
+  --zinc-950: 6 14 10;
+}
+html[data-dark-theme="plum"] {
+  --zinc-50: 249 246 251;
+  --zinc-100: 241 236 247;
+  --zinc-200: 227 219 237;
+  --zinc-300: 208 196 223;
+  --zinc-400: 166 150 186;
+  --zinc-500: 124 107 145;
+  --zinc-600: 92 74 112;
+  --zinc-700: 66 50 84;
+  --zinc-800: 42 30 56;
+  --zinc-900: 25 17 34;
+  --zinc-950: 13 8 19;
+}
+
 body {
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
