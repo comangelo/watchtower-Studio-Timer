@@ -14,6 +14,9 @@ module.exports = {
   		},
   		colors: {
   			// Grises del modo oscuro: cambian con la variante elegida (index.css, data-dark-theme)
+  			// Grises claros y fondo del modo claro: cambian con la variante clara (index.css, data-light-theme)
+  			slate: { ...require('tailwindcss/colors').slate, ...Object.fromEntries([50, 100, 200, 300].map((n) => [n, `rgb(var(--slate-${n}) / <alpha-value>)`])) },
+  			stone: { ...require('tailwindcss/colors').stone, 50: 'rgb(var(--stone-50) / <alpha-value>)', 100: 'rgb(var(--stone-100) / <alpha-value>)' },
   			zinc: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, `rgb(var(--zinc-${n}) / <alpha-value>)`])),
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
