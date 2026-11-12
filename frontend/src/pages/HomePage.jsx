@@ -762,7 +762,11 @@ export default function HomePage() {
     // Start main timer
     const now = new Date();
     setStartTime(now);
-    if (manualEndTime) {
+    // «Cambiar hora de fin» solo sirve para ACORTAR el estudio (p. ej. si el discurso
+    // público terminó tarde). El estudio nunca dura más de lo configurado: si se empieza
+    // antes, termina antes.
+    const fullEnd = addSecondsToDate(now, totalDurationSeconds);
+    if (manualEndTime && manualEndTime.getTime() < fullEnd.getTime()) {
       setEndTime(manualEndTime);
       const diffSeconds = Math.floor((manualEndTime.getTime() - now.getTime()) / 1000);
       setRemainingTime(Math.max(0, diffSeconds));
@@ -1151,10 +1155,9 @@ export default function HomePage() {
             {/* Plan de hoy (antes de cargar el artículo): compacto */}
             {(() => {
               const hhmm = (d) => d.toLocaleTimeString(currentLocale(), { hour: '2-digit', minute: '2-digit', hour12: false });
-              const endPreview = manualEndTime || new Date(Date.now() + totalDuration * 60 * 1000);
-              const durationPreview = manualEndTime
-                ? Math.max(0, Math.round((manualEndTime.getTime() - Date.now()) / 60000))
-                : totalDuration;
+              const fullEndPreview = new Date(Date.now() + totalDuration * 60 * 1000);
+              const endPreview = manualEndTime && manualEndTime < fullEndPreview ? manualEndTime : fullEndPreview;
+              const durationPreview = Math.min(totalDuration, Math.max(0, Math.round((endPreview.getTime() - Date.now()) / 60000)));
               const openEdit = () => {
                 setInitialEditHours(endPreview.getHours().toString().padStart(2, '0'));
                 setInitialEditMinutes(endPreview.getMinutes().toString().padStart(2, '0'));
