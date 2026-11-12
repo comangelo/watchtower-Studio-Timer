@@ -33,3 +33,23 @@ export function getThemeClasses(themeKey, darkMode) {
 
 // Default theme
 export const defaultDarkTheme = 'zinc';
+
+// Variantes del modo claro (fondo de la página, tarjetas y grises claros; ver index.css)
+export const lightThemes = {
+  classic: { colors: { bg: '#fafaf9', panel: '#ffffff', border: '#e2e8f0' } },
+  cream: { colors: { bg: '#f0e6d2', panel: '#fdf8ec', border: '#e8ddc8' } },
+  sky: { colors: { bg: '#e0ecfa', panel: '#f6faff', border: '#d4e0f2' } },
+  mint: { colors: { bg: '#def1e5', panel: '#f6fcf8', border: '#cfe5d7' } },
+  lavender: { colors: { bg: '#eae4f8', panel: '#faf8ff', border: '#ddd3f0' } },
+  pearl: { colors: { bg: '#e1e5ea', panel: '#f3f5f8', border: '#d4d9df' } },
+};
+export const defaultLightTheme = 'classic';
+
+/** Aplica la variante clara a toda la página (o la quita en modo oscuro). */
+export function applyLightTheme(themeKey, darkMode) {
+  try {
+    const el = document.documentElement;
+    if (!darkMode && lightThemes[themeKey] && themeKey !== 'classic') el.dataset.lightTheme = themeKey;
+    else delete el.dataset.lightTheme;
+  } catch { /* sin documento */ }
+}
