@@ -73,10 +73,10 @@ export function AnalysisSummary({
   // Reparto: lo que no es lectura, introducción ni conclusión queda para preguntas y comentarios
   const commentSeconds = totalDurationSeconds - paragraphReadingSeconds - fixedTimeSeconds;
   const segments = [
-    { key: 'intro', label: t('introduction'), seconds: introductionDuration, bar: 'bg-blue-500', testid: 'intro-time' },
-    { key: 'reading', label: t('reading'), seconds: paragraphReadingSeconds, bar: 'bg-slate-400', testid: 'reading-time' },
-    { key: 'comments', label: t('comments'), seconds: Math.max(0, commentSeconds), bar: 'bg-orange-500', testid: 'question-time' },
-    { key: 'closing', label: t('conclusion'), seconds: closingWordsDuration, bar: 'bg-purple-500', testid: 'closing-time' },
+    { key: 'intro', label: t('introduction'), seconds: introductionDuration, bar: 'bg-blue-500', hex: '#3b82f6', testid: 'intro-time' },
+    { key: 'reading', label: t('reading'), seconds: paragraphReadingSeconds, bar: 'bg-slate-400', hex: '#94a3b8', testid: 'reading-time' },
+    { key: 'comments', label: t('comments'), seconds: Math.max(0, commentSeconds), bar: 'bg-orange-500', hex: '#f97316', testid: 'question-time' },
+    { key: 'closing', label: t('conclusion'), seconds: closingWordsDuration, bar: 'bg-purple-500', hex: '#a855f7', testid: 'closing-time' },
   ].filter((seg) => seg.seconds > 0);
   const barTotal = Math.max(1, segments.reduce((sum, seg) => sum + seg.seconds, 0));
   const chipTone = darkMode
@@ -185,9 +185,10 @@ export function AnalysisSummary({
               {t('articleNoPauses', { time: shortMin(articleTimeSeconds) })}
             </p>
           </div>
-          <div className={`flex h-4 w-full overflow-hidden rounded-full ${darkMode ? 'bg-zinc-700' : 'bg-zinc-100'}`}>
+          {/* Barra por tramos: bloques separados con marco; los tramos cortos tienen un ancho mínimo */}
+          <div className={`flex gap-[2px] p-[2px] h-5 w-full rounded-lg border ${darkMode ? 'border-zinc-600 bg-zinc-800' : 'border-zinc-300 bg-white'}`} data-testid="time-split-bar">
             {segments.map((seg) => (
-              <div key={seg.key} className={`${seg.bar} h-full`} style={{ width: `${(seg.seconds / barTotal) * 100}%` }} title={`${seg.label}: ${formatTimeCompact(seg.seconds)}`} />
+              <div key={seg.key} className={`${seg.bar} rounded-[4px] min-w-[8px]`} style={{ flex: `${seg.seconds} 1 0px` }} title={`${seg.label}: ${formatTimeCompact(seg.seconds)}`} />
             ))}
           </div>
           <div className="mt-2.5 grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-1.5">

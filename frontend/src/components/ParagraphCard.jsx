@@ -308,11 +308,12 @@ export function ParagraphCard({
                   <span className={`text-[11px] font-bold uppercase tracking-wide ${muted}`}>{t('tbTitle')}</span>
                   <span className={`text-sm font-black tabular-nums ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{formatTimeText(Math.round(estimatedTime))}</span>
                 </div>
-                {/* Barra: cada tramo ocupa toda la altura para que los colores queden alineados */}
-                <div className="flex items-stretch h-2 rounded-full overflow-hidden mt-1.5 bg-slate-200" data-testid={`tb-bar-${paragraph.number}`}>
-                  {reading > 0 && <div className="h-full shrink-0 bg-sky-400" style={{ width: pct(reading) }} />}
-                  {comments > 0 && <div className="h-full shrink-0 bg-orange-400" style={{ width: pct(comments) }} />}
-                  {extra >= 5 && <div className="h-full shrink-0 bg-emerald-400" style={{ width: pct(extra) }} />}
+                {/* Barra por tramos: cada parte es un bloque propio, separado por un pequeño hueco y
+                    con marco. Los tramos cortos tienen un ancho mínimo para que siempre se vean enteros. */}
+                <div className={`flex gap-[2px] p-[2px] h-3.5 mt-1.5 rounded-md border ${darkMode ? 'border-zinc-600 bg-zinc-800' : 'border-slate-300 bg-white'}`} data-testid={`tb-bar-${paragraph.number}`}>
+                  {[[reading, 'bg-sky-400'], [comments, 'bg-orange-400'], [extra >= 5 ? extra : 0, 'bg-emerald-400']]
+                    .filter(([v]) => v > 0)
+                    .map(([v, cls]) => <div key={cls} className={`${cls} rounded-[3px] min-w-[6px]`} style={{ flex: `${v} 1 0px` }} />)}
                 </div>
                 <div className={`mt-1.5 flex flex-col gap-0.5 text-xs ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
                   {reading > 0 && (
