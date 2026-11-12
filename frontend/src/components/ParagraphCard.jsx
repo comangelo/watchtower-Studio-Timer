@@ -273,7 +273,7 @@ export function ParagraphCard({
             </span>
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${darkMode ? 'bg-sky-900/60 text-sky-200' : 'bg-sky-50 text-sky-800'}`}>
               <BookOpen className="w-3 h-3" /> {paragraph.skip_reading
-                ? (totalReadingTime > 0 ? t('noReadingWithExtras', { time: formatTimeText(totalReadingTime) }) : t('noReading'))
+                ? t('noReading')
                 : t('readingTime', { time: formatTimeText(Math.round(splitExtras ? paragraphReadingOnly : totalReadingTime)) })}
             </span>
             {hasQuestions && (
@@ -291,45 +291,52 @@ export function ParagraphCard({
 
           {/* Reparto del tiempo previsto: lectura + comentarios (+ extra si el párrafo es largo) */}
           {estimatedTime > 0 && (() => {
-            const reading = Math.max(0, Math.round(totalReadingTime));
+            // La lectura es solo la del párrafo. Los textos para leer, imágenes, notas e ideas
+            // importantes los comenta el auditorio: cuentan como comentarios.
+            const extrasTime = splitExtras ? Math.round(extraItemCount * extraPerItem) : 0;
+            const reading = Math.max(0, Math.round(paragraph.skip_reading ? 0 : (splitExtras ? paragraphReadingOnly : totalReadingTime)));
             const extra = Math.max(0, Math.round(paragraphTimes.extraCommentSeconds || 0));
             const comments = Math.max(0, Math.round(estimatedTime) - reading - (extra >= 5 ? extra : 0));
+            const questionComments = Math.max(0, comments - extrasTime);
             const perQ = Math.round(isTimerRunning && adjustedQuestionTime ? adjustedQuestionTime : plannedQuestionTime);
             const total = Math.max(1, reading + comments + (extra >= 5 ? extra : 0));
             const pct = (v) => `${Math.max(0, (v / total) * 100)}%`;
+            const dot = (cls) => <span className={`inline-block w-2 h-2 rounded-full ${cls} mr-1.5 align-middle`} />;
             return (
               <div className={`mt-2.5 rounded-xl p-2.5 ${darkMode ? 'bg-zinc-900/60' : 'bg-slate-50 border border-slate-200'}`} data-testid={`time-breakdown-${paragraph.number}`}>
                 <div className="flex items-baseline justify-between gap-2">
                   <span className={`text-[11px] font-bold uppercase tracking-wide ${muted}`}>{t('tbTitle')}</span>
                   <span className={`text-sm font-black tabular-nums ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{formatTimeText(Math.round(estimatedTime))}</span>
                 </div>
-                <div className="flex h-2 rounded-full overflow-hidden mt-1.5 bg-slate-200">
-                  <span className="bg-sky-400" style={{ width: pct(reading) }} />
-                  <span className="bg-orange-400" style={{ width: pct(comments) }} />
-                  {extra >= 5 && <span className="bg-emerald-400" style={{ width: pct(extra) }} />}
+                {/* Barra: cada tramo ocupa toda la altura para que los colores queden alineados */}
+                <div className="flex items-stretch h-2 rounded-full overflow-hidden mt-1.5 bg-slate-200" data-testid={`tb-bar-${paragraph.number}`}>
+                  {reading > 0 && <div className="h-full shrink-0 bg-sky-400" style={{ width: pct(reading) }} />}
+                  {comments > 0 && <div className="h-full shrink-0 bg-orange-400" style={{ width: pct(comments) }} />}
+                  {extra >= 5 && <div className="h-full shrink-0 bg-emerald-400" style={{ width: pct(extra) }} />}
                 </div>
-                <div className={`mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
-                  {splitExtras ? (
-                    // Se dice qué ocupa ese tiempo: lectura del párrafo, textos, imágenes, notas…
-                    <>
-                      {!paragraph.skip_reading && paragraphReadingOnly > 0 && (
-                        <span data-testid={`tb-reading-${paragraph.number}`}><span className="inline-block w-2 h-2 rounded-full bg-sky-400 mr-1" />{t('tbParagraphReading')}: <b>{formatTimeText(Math.round(paragraphReadingOnly))}</b></span>
-                      )}
-                      {extraItems.map(({ key, n }) => (
-                        <span key={key} data-testid={`tb-${key}-${paragraph.number}`}><span className="inline-block w-2 h-2 rounded-full bg-sky-400 mr-1" />{tn(key, n)}: <b>{formatTimeText(Math.round(n * extraPerItem))}</b></span>
-                      ))}
-                    </>
-                  ) : !paragraph.skip_reading && (
-                    <span><span className="inline-block w-2 h-2 rounded-full bg-sky-400 mr-1" />{t(!paragraph.skip_reading && extraItemSeconds > 0 ? 'tbParagraphReading' : 'tbReading')}: <b>{formatTimeText(reading)}</b></span>
+                <div className={`mt-1.5 flex flex-col gap-0.5 text-xs ${darkMode ? 'text-zinc-300' : 'text-slate-600'}`}>
+                  {reading > 0 && (
+                    <span data-testid={`tb-reading-${paragraph.number}`}>{dot('bg-sky-400')}{t(splitExtras || extraItemSeconds > 0 ? 'tbParagraphReading' : 'tbReading')}: <b>{formatTimeText(reading)}</b></span>
                   )}
                   {hasQuestions && (
-                    <span><span className="inline-block w-2 h-2 rounded-full bg-orange-400 mr-1" />{t('tbComments')}: <b>{formatTimeText(comments)}</b>
-                      {realQuestionCount > 1 && perQ > 0 && <span className={muted}> {t('tbPerQuestion', { time: formatTimeText(perQ) })}</span>}
+                    <span data-testid={`tb-comments-${paragraph.number}`}>{dot('bg-orange-400')}{t('tbComments')}: <b>{formatTimeText(comments)}</b>
+                      {!splitExtras && realQuestionCount > 1 && perQ > 0 && <span className={muted}> {t('tbPerQuestion', { time: formatTimeText(perQ) })}</span>}
+                    </span>
+                  )}
+                  {hasQuestions && splitExtras && (
+                    // Desglose de los comentarios: preguntas y lo que se comenta aparte
+                    <span className={`flex flex-col gap-0.5 pl-3.5 ml-1 border-l-2 ${darkMode ? 'border-orange-900' : 'border-orange-200'}`}>
+                      <span data-testid={`tb-questions-${paragraph.number}`}>{tn('tbForQuestions', realQuestionCount)}: <b>{formatTimeText(questionComments)}</b>
+                        {realQuestionCount > 1 && perQ > 0 && <span className={muted}> {t('tbPerQuestion', { time: formatTimeText(perQ) })}</span>}
+                      </span>
+                      {extraItems.map(({ key, n }) => (
+                        <span key={key} data-testid={`tb-${key}-${paragraph.number}`}>{tn(key, n)}: <b>{formatTimeText(Math.round(n * extraPerItem))}</b></span>
+                      ))}
                     </span>
                   )}
                   {extra >= 5 && (
                     <span title={t('longParagraphHint')} data-testid={`extra-comments-${paragraph.number}`}>
-                      <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 mr-1" />{t('tbExtra')}: <b>+{formatTimeText(extra)}</b>
+                      {dot('bg-emerald-400')}{t('tbExtra')}: <b>+{formatTimeText(extra)}</b>
                     </span>
                   )}
                 </div>

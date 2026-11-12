@@ -52,11 +52,12 @@ export function TimerDisplay({
     }
     const now = new Date();
     // Use manual end time if set, otherwise calculate from duration
-    if (manualEndTime) {
+    const projected = new Date(now.getTime() + totalDuration * 60 * 1000);
+    // La hora de fin manual solo acorta: nunca alarga el estudio más de lo configurado
+    if (manualEndTime && manualEndTime < projected) {
       const diffMinutes = Math.round((manualEndTime.getTime() - now.getTime()) / 60000);
       return { displayEndTime: manualEndTime, calculatedDuration: diffMinutes };
     }
-    const projected = new Date(now.getTime() + totalDuration * 60 * 1000);
     return { displayEndTime: projected, calculatedDuration: totalDuration };
   }, [startTime, endTime, totalDuration, manualEndTime]);
 

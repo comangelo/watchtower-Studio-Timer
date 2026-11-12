@@ -65,11 +65,16 @@ export function AnalysisSummary({
   const fixedTimeSeconds = introductionDuration + closingWordsDuration;
   const availableTimeSeconds = totalDurationSeconds - articleTimeSeconds - fixedTimeSeconds;
 
+  // Los textos para leer, imágenes, notas e ideas importantes los comenta el auditorio:
+  // son tiempo de comentarios, no de lectura. La lectura es solo la de los párrafos.
+  const extraItemsSeconds = (analysisResult.extra_item_seconds || 0)
+    * (totalImages + totalScriptures + totalNotes + totalHighlights);
+  const paragraphReadingSeconds = Math.max(0, readingTimeSeconds - extraItemsSeconds);
   // Reparto: lo que no es lectura, introducción ni conclusión queda para preguntas y comentarios
-  const commentSeconds = totalDurationSeconds - readingTimeSeconds - fixedTimeSeconds;
+  const commentSeconds = totalDurationSeconds - paragraphReadingSeconds - fixedTimeSeconds;
   const segments = [
     { key: 'intro', label: t('introduction'), seconds: introductionDuration, bar: 'bg-blue-500', testid: 'intro-time' },
-    { key: 'reading', label: t('reading'), seconds: readingTimeSeconds, bar: 'bg-slate-400', testid: 'reading-time' },
+    { key: 'reading', label: t('reading'), seconds: paragraphReadingSeconds, bar: 'bg-slate-400', testid: 'reading-time' },
     { key: 'comments', label: t('comments'), seconds: Math.max(0, commentSeconds), bar: 'bg-orange-500', testid: 'question-time' },
     { key: 'closing', label: t('conclusion'), seconds: closingWordsDuration, bar: 'bg-purple-500', testid: 'closing-time' },
   ].filter((seg) => seg.seconds > 0);
