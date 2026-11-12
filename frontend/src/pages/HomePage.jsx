@@ -78,8 +78,24 @@ import { useScheduleCalculator } from "@/hooks/useScheduleCalculator";
 
 // Import utils
 import { addSecondsToDate } from "@/utils/timeFormatters";
-import { darkThemes, defaultDarkTheme, applyDarkTheme } from "@/utils/darkThemes";
+import { darkThemes, defaultDarkTheme, applyDarkTheme, defaultLightTheme, applyLightTheme } from "@/utils/darkThemes";
 
+
+/** Lo que hay que leer o comentar en un tramo, para el informe: citas, imágenes, notas e ideas importantes. */
+function segmentExtras(questions, refs) {
+  const qs = questions || [];
+  const is = (q, ...types) => types.includes(q.content_type);
+  // "Esaera Zaharrak 14:29" y "Zaharrak 14:29" son la misma cita: se queda la completa
+  const all = [...new Set(refs || [])];
+  const x = {
+    refs: all.filter((r) => !all.some((o) => o !== r && o.endsWith(' ' + r))),
+    scriptures: qs.filter((q) => is(q, 'scripture', 'both')).length,
+    images: qs.filter((q) => is(q, 'image', 'both')).length,
+    notes: qs.filter((q) => is(q, 'note')).length,
+    highlights: qs.reduce((n, q) => n + (q.highlight_contents || []).length, 0),
+  };
+  return x.refs.length || x.scriptures || x.images || x.notes || x.highlights ? x : undefined;
+}
 
 export default function HomePage() {
   useLanguage(); // vuelve a pintar la pantalla al cambiar de idioma
@@ -131,6 +147,7 @@ export default function HomePage() {
   const [nextButtonAlertEnabled, setNextButtonAlertEnabled] = useLocalStorage('pdfTimer_nextButtonAlert', true);
   const [darkMode, setDarkMode] = useLocalStorage('pdfTimer_darkMode', false);
   const [darkTheme, setDarkTheme] = useLocalStorageString('pdfTimer_darkTheme', defaultDarkTheme);
+  const [lightTheme, setLightTheme] = useLocalStorageString('pdfTimer_lightTheme', defaultLightTheme);
   // Diseño del modo presentación: panel ordenado, semáforo o clásico
   const [presentationLayout, setPresentationLayout] = useLocalStorageString('pdfTimer_presentationLayout', DEFAULT_LAYOUT);
   // Ordenador (pantalla ancha): dos columnas. Móvil: el plan arriba y la barra de botones abajo.
@@ -150,6 +167,7 @@ export default function HomePage() {
   const currentTheme = darkMode ? (darkThemes[darkTheme] || darkThemes.zinc) : null;
   // La variante cambia los grises de toda la app (también el modo presentación y los diálogos)
   useEffect(() => { applyDarkTheme(darkTheme, darkMode); }, [darkTheme, darkMode]);
+  useEffect(() => { applyLightTheme(lightTheme, darkMode); }, [lightTheme, darkMode]);
   
   // Configurable reading settings
   const [readingSpeed, setReadingSpeed] = useLocalStorage('pdfTimer_readingSpeed', 180);
@@ -395,6 +413,7 @@ export default function HomePage() {
         words: group.reduce((sum, p) => sum + p.word_count, 0),
         questions: group.reduce((sum, p) => sum + countQuestions(p), 0),
         comments: commentStats.paragraphs[first] || 0,
+        extras: segmentExtras(group.flatMap((p) => p.questions || []), group.flatMap((p) => p.scripture_refs || [])),
       });
     }
   }, [analysisResult, currentGroupFirst, currentGroupLast, paragraphStartTime, getAdjustedParagraphTimes, commentStats, closeLogSegment, staticPlan]);
@@ -798,8 +817,9 @@ export default function HomePage() {
     closeLogSegment({
       estimated: Math.round(staticPlan?.perQuestion ?? getAdjustedFinalQuestionsTime().perQuestion ?? 0),
       comments: commentStats.review[open.index] || 0,
+      extras: segmentExtras([analysisResult?.final_questions?.[open.index]].filter(Boolean)),
     });
-  }, [closeLogSegment, getAdjustedFinalQuestionsTime, commentStats, staticPlan]);
+  }, [closeLogSegment, getAdjustedFinalQuestionsTime, commentStats, staticPlan, analysisResult]);
 
   // Start review questions mode
   const startReviewMode = useCallback(() => {
@@ -1605,6 +1625,8 @@ export default function HomePage() {
         setDarkMode={setDarkMode}
         darkTheme={darkTheme}
         setDarkTheme={setDarkTheme}
+        lightTheme={lightTheme}
+        setLightTheme={setLightTheme}
         presentationLayout={presentationLayout}
         setPresentationLayout={setPresentationLayout}
       />

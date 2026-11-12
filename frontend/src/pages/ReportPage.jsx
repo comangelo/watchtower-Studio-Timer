@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Trash2, History, ClipboardList, Clock, MessageCircle } from "lucide-react";
-import { t, currentLocale } from "@/i18n";
+import { t, tn, currentLocale } from "@/i18n";
 import { longDate as fmtLongDate, shortDate as fmtShortDate } from "@/i18n/dates";
 import { loadHistory, deleteReport, reportUrl } from "@/utils/studyHistory";
 
@@ -25,6 +25,18 @@ function diffText(sec) {
 const clock = (ms) => (ms ? new Date(ms).toLocaleTimeString(currentLocale(), { hour: "2-digit", minute: "2-digit" }) : "—");
 const longDate = (ms) => fmtLongDate(ms);
 const shortDate = (ms) => fmtShortDate(ms);
+
+/** "Texto para leer: Santiago 5:7, 8 · Imagen para comentar · Nota para comentar" */
+function extrasLine(x) {
+  if (!x) return "";
+  const parts = [];
+  const nScr = Math.max(x.scriptures || 0, x.refs?.length ? 1 : 0);
+  if (nScr) parts.push(x.refs?.length ? `${tn("tbScripture", x.refs.length)}: ${x.refs.join(", ")}` : tn("tbScripture", nScr));
+  if (x.images) parts.push(tn("tbImage", x.images));
+  if (x.notes) parts.push(tn("tbNote", x.notes));
+  if (x.highlights) parts.push(tn("tbHighlight", x.highlights));
+  return parts.join(" · ");
+}
 
 function segLabel(sg) {
   switch (sg.kind) {
@@ -113,6 +125,9 @@ function Report({ report }) {
                   <td className="py-1.5 px-1 sm:px-1.5 tabular-nums text-slate-500">{clock(sg.start)}</td>
                   <td className="py-1.5 px-1 sm:px-1.5 font-semibold text-slate-800">
                     {segLabel(sg)}
+                    {sg.extras ? (
+                      <span className="block text-[11px] font-normal text-blue-700" data-testid="report-extras">{extrasLine(sg.extras)}</span>
+                    ) : null}
                     {sg.kind === "conclusion" && sg.extraTime > 30 ? (
                       <span className="block text-[11px] font-normal text-slate-500">{t("rpConclusionExtra", { t: mmss(sg.extraTime) })}</span>
                     ) : null}
