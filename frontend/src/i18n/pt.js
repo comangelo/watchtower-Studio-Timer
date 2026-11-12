@@ -158,6 +158,8 @@ const d = {
   tbPerQuestion: "(≈ {time} por pergunta)",
   tbExtra: "Extra por ser parágrafo longo",
   tbParagraphReading: "Leitura do parágrafo",
+  tbForQuestions_one: "Pergunta",
+  tbForQuestions_other: "Perguntas",
   tbScripture_one: "Texto para ler",
   tbScripture_other: "{n} textos para ler",
   tbImage_one: "Imagem para comentar",

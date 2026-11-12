@@ -197,6 +197,8 @@ const d = {
   alertNextButton: "「次へ」ボタンを赤に",
   alertNextButtonHint: "時間を超えると赤くなり、取り戻す時間がもうないときは点滅します。",
   tbParagraphReading: "節の朗読",
+  tbForQuestions_one: "質問",
+  tbForQuestions_other: "質問",
   tbScripture_one: "読む聖句",
   tbScripture_other: "読む聖句（{n}）",
   tbImage_one: "コメントする挿絵",

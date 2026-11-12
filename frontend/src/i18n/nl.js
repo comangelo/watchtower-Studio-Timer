@@ -158,6 +158,8 @@ const d = {
   tbPerQuestion: "(≈ {time} per vraag)",
   tbExtra: "Extra voor lange paragraaf",
   tbParagraphReading: "Lezen van de paragraaf",
+  tbForQuestions_one: "Vraag",
+  tbForQuestions_other: "Vragen",
   tbScripture_one: "Tekst om te lezen",
   tbScripture_other: "{n} teksten om te lezen",
   tbImage_one: "Afbeelding om te bespreken",

@@ -197,6 +197,8 @@ const d = {
   alertNextButton: "빨간 ‘다음’ 버튼",
   alertNextButtonHint: "시간을 넘으면 빨갛게 바뀌고, 더 이상 시간을 만회할 수 없으면 깜박입니다.",
   tbParagraphReading: "항 낭독",
+  tbForQuestions_one: "질문",
+  tbForQuestions_other: "질문",
   tbScripture_one: "읽을 성구",
   tbScripture_other: "읽을 성구 {n}개",
   tbImage_one: "해설할 삽화",

@@ -158,6 +158,8 @@ const d = {
   tbPerQuestion: "(≈ {time} pro Frage)",
   tbExtra: "Zusatz für langen Absatz",
   tbParagraphReading: "Lesen des Absatzes",
+  tbForQuestions_one: "Frage",
+  tbForQuestions_other: "Fragen",
   tbScripture_one: "Bibeltext zum Lesen",
   tbScripture_other: "{n} Bibeltexte zum Lesen",
   tbImage_one: "Bild zum Kommentieren",
