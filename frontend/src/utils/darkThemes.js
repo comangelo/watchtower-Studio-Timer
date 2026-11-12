@@ -36,12 +36,12 @@ export const defaultDarkTheme = 'zinc';
 
 // Variantes del modo claro (fondo de la página, tarjetas y grises claros; ver index.css)
 export const lightThemes = {
-  classic: { colors: { bg: '#fafaf9', panel: '#ffffff', border: '#e2e8f0' } },
-  cream: { colors: { bg: '#f0e6d2', panel: '#fdf8ec', border: '#e8ddc8' } },
-  sky: { colors: { bg: '#e0ecfa', panel: '#f6faff', border: '#d4e0f2' } },
-  mint: { colors: { bg: '#def1e5', panel: '#f6fcf8', border: '#cfe5d7' } },
-  lavender: { colors: { bg: '#eae4f8', panel: '#faf8ff', border: '#ddd3f0' } },
-  pearl: { colors: { bg: '#e1e5ea', panel: '#f3f5f8', border: '#d4d9df' } },
+  classic: { colors: { bg: '#fafaf9', panel: '#ffffff', border: '#e2e8f0', accent: '#ea580c' } },
+  cream: { colors: { bg: '#f0e6d2', panel: '#fdf8ec', border: '#e8ddc8', accent: '#92400e' } },
+  sky: { colors: { bg: '#e0ecfa', panel: '#f6faff', border: '#d4e0f2', accent: '#1d4ed8' } },
+  mint: { colors: { bg: '#def1e5', panel: '#f6fcf8', border: '#cfe5d7', accent: '#047857' } },
+  lavender: { colors: { bg: '#eae4f8', panel: '#faf8ff', border: '#ddd3f0', accent: '#6d28d9' } },
+  pearl: { colors: { bg: '#e1e5ea', panel: '#f3f5f8', border: '#d4d9df', accent: '#334155' } },
 };
 export const defaultLightTheme = 'classic';
 
@@ -51,5 +51,17 @@ export function applyLightTheme(themeKey, darkMode) {
     const el = document.documentElement;
     if (!darkMode && lightThemes[themeKey] && themeKey !== 'classic') el.dataset.lightTheme = themeKey;
     else delete el.dataset.lightTheme;
+  } catch { /* sin documento */ }
+}
+
+/** Color de las barras del móvil (arriba la hora y la batería, abajo los botones de Android). */
+export function applyBarsColor(darkMode, darkTheme, lightTheme) {
+  try {
+    const color = darkMode
+      ? (darkThemes[darkTheme] || darkThemes.zinc).colors.bg
+      : (lightThemes[lightTheme] || lightThemes.classic).colors.accent;
+    let meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) { meta = document.createElement('meta'); meta.name = 'theme-color'; document.head.appendChild(meta); }
+    meta.setAttribute('content', color);
   } catch { /* sin documento */ }
 }
