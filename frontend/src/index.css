@@ -4,6 +4,64 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Variantes del modo claro: cambian el fondo de la página, las tarjetas blancas y los grises claros
+   (data-light-theme en <html>, solo con el modo claro). */
+:root {
+  --stone-50: 250 250 249;
+  --stone-100: 245 245 244;
+  --card-white: 255 255 255;
+  --slate-50: 248 250 252;
+  --slate-100: 241 245 249;
+  --slate-200: 226 232 240;
+  --slate-300: 203 213 225;
+}
+html[data-light-theme="cream"] {
+  --stone-50: 240 230 210;
+  --stone-100: 236 224 200;
+  --card-white: 253 248 236;
+  --slate-50: 250 245 235;
+  --slate-100: 243 235 220;
+  --slate-200: 232 221 200;
+  --slate-300: 214 199 170;
+}
+html[data-light-theme="sky"] {
+  --stone-50: 224 236 250;
+  --stone-100: 212 227 247;
+  --card-white: 246 250 255;
+  --slate-50: 242 247 253;
+  --slate-100: 230 238 249;
+  --slate-200: 212 224 242;
+  --slate-300: 184 203 230;
+}
+html[data-light-theme="mint"] {
+  --stone-50: 222 241 229;
+  --stone-100: 208 234 218;
+  --card-white: 246 252 248;
+  --slate-50: 241 248 244;
+  --slate-100: 227 241 232;
+  --slate-200: 207 229 215;
+  --slate-300: 176 210 188;
+}
+html[data-light-theme="lavender"] {
+  --stone-50: 234 228 248;
+  --stone-100: 223 215 245;
+  --card-white: 250 248 255;
+  --slate-50: 246 243 252;
+  --slate-100: 236 230 248;
+  --slate-200: 221 211 240;
+  --slate-300: 198 184 227;
+}
+html[data-light-theme="pearl"] {
+  --stone-50: 225 229 234;
+  --stone-100: 214 219 226;
+  --card-white: 243 245 248;
+  --slate-50: 240 242 245;
+  --slate-100: 229 232 236;
+  --slate-200: 212 217 223;
+  --slate-300: 188 195 204;
+}
+html[data-light-theme] .bg-white { background-color: rgb(var(--card-white) / var(--tw-bg-opacity, 1)); }
+
 /* Variantes del modo oscuro: la app usa la escala «zinc» para todo el modo oscuro;
    cada variante la cambia por otra paleta (data-dark-theme en <html>, solo con el modo oscuro). */
 :root {
