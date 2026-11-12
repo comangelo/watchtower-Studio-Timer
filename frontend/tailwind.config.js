@@ -13,6 +13,8 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+  			// Grises del modo oscuro: cambian con la variante elegida (index.css, data-dark-theme)
+  			zinc: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [n, `rgb(var(--zinc-${n}) / <alpha-value>)`])),
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
