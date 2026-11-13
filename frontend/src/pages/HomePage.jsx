@@ -32,7 +32,8 @@ import {
 } from "lucide-react";
 import { manualUrl, guideUrl } from "@/utils/manual";
 import { playStoreUrl, suggestPlayStoreApp } from "@/utils/donation";
-import { saveReport, openReport } from "@/utils/studyHistory";
+import { saveReport, openReport, loadHistory } from "@/utils/studyHistory";
+import { dayMonth } from "@/i18n/dates";
 import { getArticleHeading } from "@/components/AnalysisSummary";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1373,6 +1374,31 @@ export default function HomePage() {
               </span>
               <span className="text-sm font-semibold text-brand-500 shrink-0">{t("change")}</span>
             </button>
+            {(() => {
+              // Historial de estudios: acceso visible desde la pantalla de inicio
+              const history = loadHistory();
+              const last = history[0];
+              return (
+                <button
+                  onClick={() => openReport(null)}
+                  className={`w-full text-left rounded-2xl border shadow-sm p-4 flex items-center gap-3 transition-colors ${
+                    darkMode ? 'bg-zinc-800 border-emerald-500/40 hover:bg-zinc-700' : 'bg-emerald-50 border-emerald-200 hover:bg-emerald-100'
+                  }`}
+                  data-testid="history-card"
+                >
+                  <span className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center bg-emerald-600 text-white">
+                    <ClipboardList className="w-5 h-5" />
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className={`block font-semibold text-sm ${darkMode ? 'text-zinc-100' : 'text-slate-800'}`}>{t('studyHistory')}</span>
+                    <span className={`block text-xs mt-0.5 ${darkMode ? 'text-zinc-400' : 'text-slate-600'}`} data-testid="history-card-text">
+                      {last ? t('historyCount', { n: history.length, date: dayMonth(last.startedAt || Date.now()) }) : t('historyEmpty')}
+                    </span>
+                  </span>
+                  <span className={`text-sm font-semibold shrink-0 ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>{t('historyOpen')}</span>
+                </button>
+              );
+            })()}
             <UploadZone
               onFileSelect={handleFileUpload}
               fileInputRef={fileInputRef}
