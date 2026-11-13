@@ -56,8 +56,6 @@ export function UploadZone({ onFileSelect, fileInputRef, darkMode = false }) {
         <a href="/privacidad" className="underline hover:text-brand-600" data-testid="privacy-link">{t('privacyPolicy')}</a>
         {' '}·{' '}
         <a href={manualUrl()} target="_blank" rel="noopener" className="underline hover:text-brand-600" data-testid="manual-link">{t('userManual')}</a>
-        {' '}·{' '}
-        <a href="/informe" target="_blank" rel="noopener" className="underline hover:text-brand-600" data-testid="history-link">{t('studyHistory')}</a>
         {!isPlayStoreApp() && !/iPhone|iPad|iPod/i.test(navigator.userAgent) && (
           <>
             {' '}·{' '}
