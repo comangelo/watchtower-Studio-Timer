@@ -1,4 +1,4 @@
-const CACHE_NAME = 'atalaya-timer-v16';
+const CACHE_NAME = 'atalaya-timer-v17';
 // El análisis del PDF se hace en el dispositivo; se guarda también el motor de pdf.js
 // para que la app funcione sin conexión.
 const urlsToCache = [
