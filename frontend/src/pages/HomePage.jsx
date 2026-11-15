@@ -67,6 +67,8 @@ import { nextButtonUrgency } from "@/utils/nextUrgency";
 import { t, tn, useLanguage, LANGUAGES, currentLanguage, setLanguage, currentLocale, currentPtVariant } from "@/i18n";
 import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
 import { meetingPlan } from "@/utils/meeting";
+import { shouldShowWhatsNew, markWhatsNewSeen } from "@/utils/whatsNew";
+import { WhatsNewDialog } from "@/components/WhatsNewDialog";
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
 import { StudyActionBar } from "@/components/StudyActionBar";
 import { getNextStep } from "@/utils/nextStep";
@@ -251,6 +253,9 @@ export default function HomePage() {
 
   // Custom hooks
   useUpdateNotifier();
+  // Novedades: se enseñan una vez al abrir la app después de una actualización
+  const [whatsNewOpen, setWhatsNewOpen] = useState(() => shouldShowWhatsNew());
+  const closeWhatsNew = () => { markWhatsNewSeen(); setWhatsNewOpen(false); };
   const { playNotificationSound, triggerVibration } = useNotifications(soundEnabled, vibrationEnabled);
   const {
     getAdjustedFinalQuestionsTime,
@@ -1670,7 +1675,9 @@ export default function HomePage() {
         presentationLayout={presentationLayout}
         setPresentationLayout={setPresentationLayout}
         meetingStart={meetingStart} setMeetingStart={setMeetingStart}
+        onOpenWhatsNew={() => { setSettingsOpen(false); setWhatsNewOpen(true); }}
       />
+      <WhatsNewDialog open={whatsNewOpen} onClose={closeWhatsNew} darkMode={darkMode} />
 
       {/* Presentation Mode Overlay */}
       {isPresentationMode && (
