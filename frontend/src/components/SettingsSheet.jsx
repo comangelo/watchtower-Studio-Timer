@@ -134,6 +134,7 @@ export function SettingsSheet({
   closingWordsDuration, setClosingWordsDuration,
   circuitVisitMode, setCircuitVisitMode, circuitVisitMinutes,
   meetingStart, setMeetingStart,
+  onOpenWhatsNew,
   // Lectura
   readingSpeed, setReadingSpeed,
   answerTime, setAnswerTime,
@@ -197,6 +198,11 @@ export function SettingsSheet({
             data-testid="settings-manual-link">
             <BookOpen className="w-4 h-4" /> {t("userManual")}
           </a>
+          {onOpenWhatsNew && (
+            <button onClick={onOpenWhatsNew} className="mt-2 ml-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-500 hover:text-brand-600" data-testid="settings-whats-new">
+              <Sparkles className="w-4 h-4" /> {t("whatsNewLink")}
+            </button>
+          )}
           <div className={`mt-4 grid grid-cols-4 gap-1 rounded-xl p-1 ${c.tabs}`} role="tablist">
             {SETTINGS_TABS.map((tb) => {
               const Icon = tb.icon;
