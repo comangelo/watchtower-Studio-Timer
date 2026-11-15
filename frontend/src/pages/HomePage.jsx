@@ -66,6 +66,7 @@ import { countQuestions } from "@/utils/timePlan";
 import { nextButtonUrgency } from "@/utils/nextUrgency";
 import { t, tn, useLanguage, LANGUAGES, currentLanguage, setLanguage, currentLocale, currentPtVariant } from "@/i18n";
 import { withoutParagraphReading, CIRCUIT_VISIT_MINUTES } from "@/utils/circuitVisit";
+import { meetingPlan } from "@/utils/meeting";
 import { CircuitVisitToggle } from "@/components/CircuitVisitToggle";
 import { StudyActionBar } from "@/components/StudyActionBar";
 import { getNextStep } from "@/utils/nextStep";
@@ -183,6 +184,9 @@ export default function HomePage() {
   // Duración en uso: cada modo guarda la suya (al volver al modo normal se recuperan los 60 min)
   const totalDuration = circuitVisitMode ? circuitVisitDuration : normalDuration;
   const setTotalDuration = circuitVisitMode ? setCircuitVisitDuration : setNormalDuration;
+  // Hora de inicio de la reunión ("HH:MM" o vacío): fija sola la hora de fin del estudio
+  const [meetingStart, setMeetingStart] = useLocalStorage('pdfTimer_meetingStart', '');
+  const todayMeeting = meetingPlan(meetingStart, totalDuration);
   // Análisis en uso: en la visita del superintendente, sin la lectura de los párrafos
   const analysisResult = useMemo(
     () => (circuitVisitMode ? withoutParagraphReading(rawAnalysisResult) : rawAnalysisResult),
@@ -789,9 +793,11 @@ export default function HomePage() {
     // público terminó tarde). El estudio nunca dura más de lo configurado: si se empieza
     // antes, termina antes.
     const fullEnd = addSecondsToDate(now, totalDurationSeconds);
-    if (manualEndTime && manualEndTime.getTime() < fullEnd.getTime()) {
-      setEndTime(manualEndTime);
-      const diffSeconds = Math.floor((manualEndTime.getTime() - now.getTime()) / 1000);
+    // Hora de fin: la puesta a mano o, si no, la que sale de la hora de inicio de la reunión
+    const targetEnd = manualEndTime || meetingPlan(meetingStart, totalDurationSeconds / 60, now)?.end || null;
+    if (targetEnd && targetEnd.getTime() < fullEnd.getTime()) {
+      setEndTime(targetEnd);
+      const diffSeconds = Math.floor((targetEnd.getTime() - now.getTime()) / 1000);
       setRemainingTime(Math.max(0, diffSeconds));
     } else {
       setEndTime(addSecondsToDate(now, totalDurationSeconds));
@@ -799,7 +805,7 @@ export default function HomePage() {
     setIsTimerRunning(true);
     
     toast.success("Iniciando Palabras de Introducción");
-  }, [manualEndTime, totalDurationSeconds, introductionDuration, openLogSegment]);
+  }, [manualEndTime, meetingStart, totalDurationSeconds, introductionDuration, openLogSegment]);
 
   // Move to first paragraph after introduction
   const goToFirstParagraph = useCallback(() => {
@@ -986,6 +992,7 @@ export default function HomePage() {
       remainingTime={remainingTime}
       totalDuration={totalDuration}
       manualEndTime={manualEndTime}
+      meetingEndTime={todayMeeting?.end || null}
       onManualEndTimeChange={setManualEndTime}
       fiveMinuteWarningEnabled={fiveMinuteWarningEnabled}
       perQuestion={isTimerRunning && adjustedFinalTimes.perQuestion !== undefined ? adjustedFinalTimes.perQuestion : plannedPerQuestion}
@@ -1180,7 +1187,8 @@ export default function HomePage() {
             {(() => {
               const hhmm = (d) => d.toLocaleTimeString(currentLocale(), { hour: '2-digit', minute: '2-digit', hour12: false });
               const fullEndPreview = new Date(Date.now() + totalDuration * 60 * 1000);
-              const endPreview = manualEndTime && manualEndTime < fullEndPreview ? manualEndTime : fullEndPreview;
+              const targetPreview = manualEndTime || todayMeeting?.end || null;
+              const endPreview = targetPreview && targetPreview < fullEndPreview ? targetPreview : fullEndPreview;
               const durationPreview = Math.min(totalDuration, Math.max(0, Math.round((endPreview.getTime() - Date.now()) / 60000)));
               const openEdit = () => {
                 setInitialEditHours(endPreview.getHours().toString().padStart(2, '0'));
@@ -1200,8 +1208,13 @@ export default function HomePage() {
               return (
                 <div className="rounded-2xl bg-zinc-900 text-white p-4 shadow-xl border border-zinc-800" data-testid="start-plan-card">
                   <p className="text-[11px] font-bold tracking-[0.2em] text-zinc-400 uppercase">
-                    {t('planToday', { n: durationPreview })}{manualEndTime ? ` · ${t('manualEnd')}` : ''}
+                    {t('planToday', { n: durationPreview })}{manualEndTime ? ` · ${t('manualEnd')}` : todayMeeting ? ` · ${t('meetingEnd')}` : ''}
                   </p>
+                  {todayMeeting && !manualEndTime && (
+                    <p className="mt-1 text-xs text-zinc-400" data-testid="meeting-line">
+                      {t('meetingLine', { start: hhmm(todayMeeting.start), from: hhmm(todayMeeting.studyStart), to: hhmm(todayMeeting.end) })}
+                    </p>
+                  )}
                   <div className="mt-2 grid grid-cols-3 gap-2 text-center items-end">
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{t("now")}</p>
@@ -1656,6 +1669,7 @@ export default function HomePage() {
         setLightTheme={setLightTheme}
         presentationLayout={presentationLayout}
         setPresentationLayout={setPresentationLayout}
+        meetingStart={meetingStart} setMeetingStart={setMeetingStart}
       />
 
       {/* Presentation Mode Overlay */}
@@ -1673,7 +1687,7 @@ export default function HomePage() {
           currentReviewQuestion={currentReviewQuestion}
           phaseElapsedTime={segmentElapsed}
           estimatedTime={currentSegmentEstimate}
-          endTime={endTime || manualEndTime}
+          endTime={endTime || manualEndTime || todayMeeting?.end}
           layout={presentationLayout}
           onLayoutChange={setPresentationLayout}
           totalDurationSeconds={totalDurationSeconds}
