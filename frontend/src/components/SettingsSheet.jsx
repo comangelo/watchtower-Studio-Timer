@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import {
   Settings, Timer, Mic, Sparkles, Clock, MessageCircleQuestion, MessagesSquare,
-  Bell, Volume2, Vibrate, MonitorPlay, Sun, Moon, Check, BookOpen, Palette, Languages, ArrowRight,
+  CalendarClock, Bell, Volume2, Vibrate, MonitorPlay, Sun, Moon, Check, BookOpen, Palette, Languages, ArrowRight,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Slider } from "@/components/ui/slider";
@@ -133,6 +133,8 @@ export function SettingsSheet({
   introductionDuration, setIntroductionDuration,
   closingWordsDuration, setClosingWordsDuration,
   circuitVisitMode, setCircuitVisitMode, circuitVisitMinutes,
+  meetingStart, setMeetingStart,
+  onOpenWhatsNew,
   // Lectura
   readingSpeed, setReadingSpeed,
   answerTime, setAnswerTime,
@@ -196,6 +198,11 @@ export function SettingsSheet({
             data-testid="settings-manual-link">
             <BookOpen className="w-4 h-4" /> {t("userManual")}
           </a>
+          {onOpenWhatsNew && (
+            <button onClick={onOpenWhatsNew} className="mt-2 ml-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-500 hover:text-brand-600" data-testid="settings-whats-new">
+              <Sparkles className="w-4 h-4" /> {t("whatsNewLink")}
+            </button>
+          )}
           <div className={`mt-4 grid grid-cols-4 gap-1 rounded-xl p-1 ${c.tabs}`} role="tablist">
             {SETTINGS_TABS.map((tb) => {
               const Icon = tb.icon;
@@ -219,6 +226,30 @@ export function SettingsSheet({
                   hint={circuitVisitMode ? t("circuitVisit") : null} />
                 <Range value={totalDuration} onChange={setTotalDuration} min={0} max={60} step={1} left="0" right="60 min" testid="duration-slider" />
               </Section>
+              {setMeetingStart && (() => {
+                const plan = /^\d{1,2}:\d{2}$/.test(meetingStart || "") ? (() => {
+                  const [h, m] = meetingStart.split(":").map(Number);
+                  const f = (min) => { const x = h * 60 + m + min; return `${String(Math.floor(x / 60) % 24).padStart(2, "0")}:${String(x % 60).padStart(2, "0")}`; };
+                  return { from: f(40), to: f(40 + totalDuration) };
+                })() : null;
+                return (
+                  <Section testid="settings-meeting">
+                    <Row icon={CalendarClock} color="text-cyan-600" label={t("meetingStart")} hint={t("meetingStartHint")} />
+                    <div className="flex items-center gap-2">
+                      <input type="time" value={meetingStart || ""} onChange={(e) => setMeetingStart(e.target.value)}
+                        className={`h-11 rounded-xl border px-3 text-lg font-bold tabular-nums ${c.input}`} data-testid="meeting-start-input" />
+                      {meetingStart ? (
+                        <button onClick={() => setMeetingStart("")} className={`h-11 rounded-xl border px-3 text-sm font-semibold ${c.btn}`} data-testid="meeting-start-clear">
+                          {t("meetingClear")}
+                        </button>
+                      ) : null}
+                    </div>
+                    <p className={`text-xs ${plan ? "font-semibold text-cyan-600" : c.muted}`} data-testid="meeting-study-line">
+                      {plan ? t("meetingStudy", { from: plan.from, to: plan.to }) : t("meetingNone")}
+                    </p>
+                  </Section>
+                );
+              })()}
               <Section>
                 <Row icon={Mic} color="text-blue-500" label={t("introduction")} value={`${introductionDuration} s`} valueColor="text-blue-500" />
                 <Range value={introductionDuration} onChange={setIntroductionDuration} min={30} max={180} step={10}

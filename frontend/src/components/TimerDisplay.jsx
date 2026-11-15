@@ -15,6 +15,7 @@ export function TimerDisplay({
   remainingTime,
   totalDuration = 60,
   manualEndTime,
+  meetingEndTime = null,   // hora de fin según la hora de inicio de la reunión
   onManualEndTimeChange,
   fiveMinuteWarningEnabled = true,
   perQuestion,            // segundos de comentario por pregunta según el plan en vivo
@@ -54,15 +55,16 @@ export function TimerDisplay({
     // Use manual end time if set, otherwise calculate from duration
     const projected = new Date(now.getTime() + totalDuration * 60 * 1000);
     // La hora de fin manual solo acorta: nunca alarga el estudio más de lo configurado
-    if (manualEndTime && manualEndTime < projected) {
-      const diffMinutes = Math.round((manualEndTime.getTime() - now.getTime()) / 60000);
-      return { displayEndTime: manualEndTime, calculatedDuration: diffMinutes };
+    const target = manualEndTime || meetingEndTime;
+    if (target && target < projected) {
+      const diffMinutes = Math.round((target.getTime() - now.getTime()) / 60000);
+      return { displayEndTime: target, calculatedDuration: diffMinutes };
     }
     return { displayEndTime: projected, calculatedDuration: totalDuration };
-  }, [startTime, endTime, totalDuration, manualEndTime]);
+  }, [startTime, endTime, totalDuration, manualEndTime, meetingEndTime]);
 
   // Display duration - use calculated duration when we have start and end times, or manual end time
-  const displayDuration = (startTime && endTime) || manualEndTime ? calculatedDuration : totalDuration;
+  const displayDuration = (startTime && endTime) || manualEndTime || meetingEndTime ? calculatedDuration : totalDuration;
 
   const startEditingEndTime = () => {
     const timeToEdit = manualEndTime || displayEndTime;
@@ -141,7 +143,7 @@ export function TimerDisplay({
           </div>
           <div>
             <p className="text-[10px] sm:text-[11px] font-bold tracking-wider text-zinc-400 uppercase">
-              {t("ends")}{manualEndTime && !started ? ` (${t("manual")})` : ""}
+              {t("ends")}{!started ? (manualEndTime ? ` (${t("manual")})` : meetingEndTime ? ` (${t("meetingEnd")})` : "") : ""}
             </p>
             {isEditingEndTime ? (
               <div className="flex items-center justify-center gap-1 mt-0.5">
@@ -179,7 +181,7 @@ export function TimerDisplay({
                 {isOvertime ? `-${formatTime(overtimeSeconds)}` : formatTime(Math.max(0, remainingTime))}
               </p>
             ) : (
-              <p className={`text-2xl sm:text-3xl font-black tabular-nums ${manualEndTime ? "text-cyan-400" : "text-orange-400"}`}>
+              <p className={`text-2xl sm:text-3xl font-black tabular-nums ${manualEndTime || meetingEndTime ? "text-cyan-400" : "text-orange-400"}`}>
                 {displayDuration}<span className="text-sm ml-0.5">min</span>
               </p>
             )}
