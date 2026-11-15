@@ -236,8 +236,30 @@ export function SettingsSheet({
                   <Section testid="settings-meeting">
                     <Row icon={CalendarClock} color="text-cyan-600" label={t("meetingStart")} hint={t("meetingStartHint")} />
                     <div className="flex items-center gap-2">
-                      <input type="time" value={meetingStart || ""} onChange={(e) => setMeetingStart(e.target.value)}
-                        className={`h-11 rounded-xl border px-3 text-lg font-bold tabular-nums ${c.input}`} data-testid="meeting-start-input" />
+                      {/* Dos listas (hora y minutos) en lugar del selector de hora del sistema:
+                          en algunos móviles su ventana se salía de la pantalla. */}
+                      {(() => {
+                        const [hh, mm] = (meetingStart || "").split(":");
+                        const pad = (n) => String(n).padStart(2, "0");
+                        const sel = `h-11 rounded-xl border pl-3 pr-2 text-lg font-bold tabular-nums ${c.input}`;
+                        const minutes = Array.from({ length: 12 }, (_, i) => pad(i * 5));
+                        if (mm && !minutes.includes(mm)) minutes.push(mm);
+                        return (
+                          <>
+                            <select value={hh || ""} aria-label="h" className={sel} data-testid="meeting-start-input"
+                              onChange={(e) => setMeetingStart(e.target.value ? `${e.target.value}:${mm || "00"}` : "")}>
+                              <option value="">--</option>
+                              {Array.from({ length: 24 }, (_, i) => pad(i)).map((h) => <option key={h} value={h}>{h}</option>)}
+                            </select>
+                            <span className="text-lg font-bold">:</span>
+                            <select value={mm || ""} aria-label="min" className={sel} data-testid="meeting-start-minutes"
+                              onChange={(e) => setMeetingStart(`${hh || "10"}:${e.target.value || "00"}`)}>
+                              {!mm && <option value="">--</option>}
+                              {minutes.sort().map((m) => <option key={m} value={m}>{m}</option>)}
+                            </select>
+                          </>
+                        );
+                      })()}
                       {meetingStart ? (
                         <button onClick={() => setMeetingStart("")} className={`h-11 rounded-xl border px-3 text-sm font-semibold ${c.btn}`} data-testid="meeting-start-clear">
                           {t("meetingClear")}
